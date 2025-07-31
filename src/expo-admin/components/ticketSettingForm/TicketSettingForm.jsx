@@ -1,13 +1,37 @@
 import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
 function TicketSettingForm() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([
+    {
+      name: '화장품 박람회 1일권',
+      type: '얼리버드',
+      description: '1일권 - 할인 혜택 포함',
+      price: '10000',
+      quantity: '200',
+      saleStart: '2025-08-01',
+      saleEnd: '2025-08-10',
+    },
+      {
+      name: '화장품 박람회 1일권',
+      type: '얼리버드',
+      description: '1일권 - 할인 혜택 포함',
+      price: '10000',
+      quantity: '200',
+      saleStart: '2025-08-01',
+      saleEnd: '2025-08-10',
+    },
+  ]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [newTicket, setNewTicket] = useState(initTicket());
   const [editTicket, setEditTicket] = useState(initTicket());
+
+  // 토스트 상태
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   function initTicket() {
     return {
@@ -40,6 +64,7 @@ function TicketSettingForm() {
     setData([...data, newTicket]);
     setNewTicket(initTicket());
     setIsAdding(false);
+    triggerToast('티켓이 등록되었습니다.');
   };
 
   const handleCancel = () => {
@@ -58,6 +83,7 @@ function TicketSettingForm() {
     updated[editingIndex] = editTicket;
     setData(updated);
     setEditingIndex(null);
+    triggerToast('티켓 정보가 수정되었습니다.');
   };
 
   const handleCancelEdit = () => {
@@ -69,6 +95,13 @@ function TicketSettingForm() {
     const filtered = data.filter((_, i) => i !== index);
     setData(filtered);
     if (editingIndex === index) setEditingIndex(null);
+    triggerToast('티켓이 삭제되었습니다.');
+  };
+
+  const triggerToast = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
@@ -165,6 +198,8 @@ function TicketSettingForm() {
           </tbody>
         </table>
       </div>
+
+      {showToast && <ToastSuccess message={toastMessage} />}
     </div>
   );
 }
