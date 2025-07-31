@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AppRouter from './routes/AppRouter';
-import reportWebVitals from './reportWebVitals';
-import './styles/index.css'; //전역 css 설정
+import './styles/main.css'; //전역 css 설정
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
