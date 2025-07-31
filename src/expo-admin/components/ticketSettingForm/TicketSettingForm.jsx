@@ -14,7 +14,7 @@ function TicketSettingForm() {
       saleStart: '2025-08-01',
       saleEnd: '2025-08-10',
     },
-      {
+    {
       name: '화장품 박람회 1일권',
       type: '얼리버드',
       description: '1일권 - 할인 혜택 포함',
@@ -31,7 +31,6 @@ function TicketSettingForm() {
 
   // 토스트 상태
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
 
   function initTicket() {
     return {
@@ -64,7 +63,7 @@ function TicketSettingForm() {
     setData([...data, newTicket]);
     setNewTicket(initTicket());
     setIsAdding(false);
-    triggerToast('티켓이 등록되었습니다.');
+    triggerToast();
   };
 
   const handleCancel = () => {
@@ -83,7 +82,7 @@ function TicketSettingForm() {
     updated[editingIndex] = editTicket;
     setData(updated);
     setEditingIndex(null);
-    triggerToast('티켓 정보가 수정되었습니다.');
+    triggerToast();
   };
 
   const handleCancelEdit = () => {
@@ -95,11 +94,9 @@ function TicketSettingForm() {
     const filtered = data.filter((_, i) => i !== index);
     setData(filtered);
     if (editingIndex === index) setEditingIndex(null);
-    triggerToast('티켓이 삭제되었습니다.');
   };
 
-  const triggerToast = (message) => {
-    setToastMessage(message);
+  const triggerToast = () => {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
   };
@@ -199,7 +196,7 @@ function TicketSettingForm() {
         </table>
       </div>
 
-      {showToast && <ToastSuccess message={toastMessage} />}
+      {showToast && <ToastSuccess />}
     </div>
   );
 }

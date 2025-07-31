@@ -32,7 +32,12 @@ const managerFields = [
 function EventTable({ data = [], onUpdate, onDelete }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editForm, setEditForm] = useState(null);
-  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+  };
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
@@ -51,8 +56,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   const handleSave = () => {
     onUpdate(editForm);
-    setToastMessage('행사 정보가 저장되었습니다.');
-    setTimeout(() => setToastMessage(''), 2500);
+    triggerToast();
   };
 
   const handleDeleteClick = (e, id) => {
@@ -60,8 +64,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
     onDelete(id);
     setExpandedId(null);
     setEditForm(null);
-    setToastMessage('행사 정보가 삭제되었습니다.');
-    setTimeout(() => setToastMessage(''), 2500);
+    // 삭제 시에는 toast 띄우지 않음
   };
 
   const handleCancel = () => {
@@ -82,7 +85,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   return (
     <div className={styles.tableWrapper}>
-      {toastMessage && <ToastSuccess message={toastMessage} />}
+      {showToast && <ToastSuccess />}
 
       <table className={styles.table}>
         <thead>

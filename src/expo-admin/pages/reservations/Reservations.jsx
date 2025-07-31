@@ -144,7 +144,7 @@ function Reservations() {
         onSend={handleSendEmail}
       />
 
-      {showToast && <ToastSuccess message="엑셀 파일이 다운로드되었습니다." />}
+      {showToast && <ToastSuccess/>}
     </div>
   );
 }

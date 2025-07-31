@@ -50,7 +50,7 @@ function BoothSettingForm({ onSubmit }) {
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess message="부스가 성공적으로 등록되었습니다." />}
+      {showToast && <ToastSuccess/>}
 
       <div className={styles.posterWrapper}>
         <img

@@ -72,12 +72,11 @@ function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
     e.stopPropagation();
     onDelete(no);
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
     <div className={styles.tableWrapper}>
-      {showToast && <ToastSuccess message="성공적으로 처리되었습니다." />}
+      {showToast && <ToastSuccess/>}
 
       <table className={styles.table}>
         <thead>

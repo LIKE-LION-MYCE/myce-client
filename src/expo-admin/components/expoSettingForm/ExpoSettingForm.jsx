@@ -66,7 +66,7 @@ function ExpoSettingForm() {
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess message="수정되었습니다." />} 
+      {showToast && <ToastSuccess/>} 
 
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
