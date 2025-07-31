@@ -88,7 +88,9 @@ function Reservations() {
             >
               <option value="phone">전화번호</option>
               <option value="reservationNumber">예매번호</option>
+              {/* <option value={styles.dropdownMenu} value="name">이름</option> */}
               <option value="name">이름</option>
+              
             </select>
             <input
               type="text"
