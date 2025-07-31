@@ -13,17 +13,6 @@ function Payments() {
 
   const pageSize = 10;
 
-  const columns = [
-  { key: 'reservationNumber', header: '예약 번호' },
-  { key: 'name', header: '이름' },
-  { key: 'id', header: '아이디' },
-  { key: 'gender', header: '성별' },
-  { key: 'phone', header: '전화번호' },
-  { key: 'email', header: '이메일' },
-  { key: 'quantity', header: '수량' },
-  { key: 'totalPrice', header: '총 결제 금액' },
-  { key: 'paymentStatus', header: '결제 상태' },
-];
   const allData = [
     {
       reservationNumber: '59217342',
@@ -118,7 +107,7 @@ function Payments() {
         </div>
       </div>
 
-      <PaymentTable columns={columns} data={pageInfo.content} />
+      <PaymentTable data={pageInfo.content} />
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
     </div>
   );
