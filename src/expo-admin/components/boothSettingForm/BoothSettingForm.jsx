@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import styles from './BoothSettingForm.module.css';
 import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
-function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
+function BoothSettingForm({ onSubmit }) {
   const [form, setForm] = useState(initForm());
   const [isPremium, setIsPremium] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   function initForm() {
     return {
@@ -22,16 +24,6 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
     };
   }
 
-  useEffect(() => {
-    if (editingBooth) {
-      setForm(editingBooth);
-      setIsPremium(!!editingBooth.priority);
-    } else {
-      setForm(initForm());
-      setIsPremium(false);
-    }
-  }, [editingBooth]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -42,22 +34,27 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
       alert('회사명과 부스 위치는 필수입니다.');
       return;
     }
-    onSubmit(form);
-    setForm(initForm());
-    setIsPremium(false);
-  };
 
-  const handleCancel = () => {
+    const payload = {
+      ...form,
+      priority: isPremium ? parseInt(form.priority || '0', 10) : null,
+      isPremium,
+    };
+
+    onSubmit(payload);
     setForm(initForm());
     setIsPremium(false);
-    onCancel?.();
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
     <div className={styles.container}>
+      {showToast && <ToastSuccess message="부스가 성공적으로 등록되었습니다." />}
+
       <div className={styles.posterWrapper}>
         <img
-          src="https://designcompass.org/wp-content/uploads/2024/10/logo-naver-1536x1152.png"
+          src={form.imageUrl || 'https://designcompass.org/wp-content/uploads/2024/10/logo-naver-1536x1152.png'}
           alt="부스 이미지"
           className={styles.posterImage}
         />
@@ -183,14 +180,28 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
               onChange={handleChange}
             />
           </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>이미지 URL</label>
+            <input
+              name="imageUrl"
+              className={styles.inputField}
+              placeholder="이미지 주소 입력"
+              value={form.imageUrl}
+              onChange={handleChange}
+            />
+          </div>
         </div>
       </div>
 
       <div className={styles.buttonGroup}>
         <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleSubmit}>
-          <FaCheckCircle className={styles.iconBtn} /> {editingBooth ? '수정' : '등록'}
+          <FaCheckCircle className={styles.iconBtn} /> 등록
         </button>
-        <button className={`${styles.actionBtn} ${styles.cancelBtn}`} onClick={handleCancel}>
+        <button className={`${styles.actionBtn} ${styles.cancelBtn}`} onClick={() => {
+          setForm(initForm());
+          setIsPremium(false);
+        }}>
           <FaTimesCircle className={styles.iconBtn} /> 취소
         </button>
       </div>
