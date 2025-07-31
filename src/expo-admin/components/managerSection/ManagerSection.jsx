@@ -1,6 +1,7 @@
-import styles from './ManagerSection.module.css';
 import { useState } from 'react';
+import styles from './ManagerSection.module.css';
 import { FaSave } from 'react-icons/fa';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
 const permissionTabs = {
   '박람회 관리': ['박람회 상세', '참가 부스', '행사 일정'],
@@ -22,6 +23,12 @@ const initialPermissions = {
 
 function ManagerSection() {
   const [permissionsByCode, setPermissionsByCode] = useState(initialPermissions);
+  const [showToast, setShowToast] = useState(false);
+
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
 
   const togglePermission = (code, permission) => {
     if (code === '로그인계정') return;
@@ -38,6 +45,8 @@ function ManagerSection() {
       const selected = Array.from(permissionsByCode[code]);
       console.log(`📝 저장 - 코드 ${code}:`, selected);
     });
+
+    triggerToast(); 
   };
 
   const permissionLabels = Object.values(permissionTabs).flat();
@@ -54,7 +63,8 @@ function ManagerSection() {
 
   return (
     <div className={styles.container}>
-      {/* 상단 우측 저장 버튼 */}
+      {showToast && <ToastSuccess />}
+
       <div className={styles.headerControls}>
         <button className={`${styles.actionBtn} ${styles.saveBtn}`} onClick={saveAll}>
           <FaSave className={styles.icon} />

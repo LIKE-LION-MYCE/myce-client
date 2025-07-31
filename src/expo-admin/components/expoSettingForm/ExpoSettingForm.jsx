@@ -23,7 +23,7 @@ const mockExpoData = {
 function ExpoSettingForm() {
   const [form, setForm] = useState(initForm());
   const [isPremium, setIsPremium] = useState(false);
-  const [showToast, setShowToast] = useState(false); 
+  const [showToast, setShowToast] = useState(false);
 
   function initForm() {
     return {
@@ -52,21 +52,26 @@ function ExpoSettingForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
+
   const handleSubmit = () => {
     const payload = { ...form, isPremium };
     console.log('[제출할 데이터]', payload);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    triggerToast();
   };
 
   const handleCancel = () => {
     setForm(initForm());
     setIsPremium(false);
+    triggerToast();
   };
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess/>} 
+      {showToast && <ToastSuccess />}
 
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
