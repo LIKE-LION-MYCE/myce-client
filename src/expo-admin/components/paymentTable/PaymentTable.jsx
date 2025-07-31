@@ -6,8 +6,6 @@ function PaymentTable({ columns, data }) {
       const statusClass =
         value === '결제 완료'
           ? styles.badgePaid
-          : value === '결제 대기'
-          ? styles.badgePending
           : value === '결제 취소'
           ? styles.badgeCanceled
           : '';

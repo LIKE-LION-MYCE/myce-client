@@ -46,7 +46,7 @@ function Payments() {
       email: 'jiwoo@naver.com',
       quantity: 3,
       totalPrice: '90,000원',
-      paymentStatus: '결제 대기',
+      paymentStatus: '결제 완료',
       createdAt: '2025-07-25T09:12:00',
     },
     {
@@ -78,7 +78,7 @@ function Payments() {
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['결제 완료', '결제 대기', '결제 취소']}
+        tabs={['결제 완료', '결제 취소']}
         currentTab={currentTab}
         onChange={(tab) => setCurrentTab(tab)}
       />
