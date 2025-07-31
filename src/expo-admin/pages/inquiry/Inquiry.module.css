@@ -3,7 +3,6 @@
   flex-direction: column;
   padding: 32px;
   width: 1625px;
-  margin: 10px 0;
 }
 
 .sectionTitle {
@@ -51,7 +50,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   color: #333;
   transition: background-color 0.2s;
