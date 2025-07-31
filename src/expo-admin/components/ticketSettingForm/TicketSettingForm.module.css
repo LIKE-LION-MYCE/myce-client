@@ -1,0 +1,159 @@
+.container {
+  width: 100%;
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.addBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  font-weight: 400;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.addBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+
+.tableWrapper {
+  margin-top: 24px;
+  background-color: #fff;
+  border-radius: 7px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headerRow {
+  background-color: #f7f9fc;
+}
+
+.th {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.td {
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #222;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.input {
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionGroup {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 저장 = 수정 스타일 */
+.submitBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.submitBtn:hover {
+  background-color: #d9d9d9;
+}
+
+/* 취소 = 삭제 스타일 */
+.cancelBtn {
+  background-color: #f87171;
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cancelBtn:hover {
+  background-color: #ef4444;
+}
+
+/* 수정 버튼 = 저장 버튼과 동일 */
+.editBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.editBtn:hover {
+  background-color: #d9d9d9;
+}
+
+/* 삭제 버튼 = 취소 버튼과 동일 */
+.deleteBtn {
+  background-color: #f87171;
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background-color: #ef4444;
+}
+
+.iconBtn {
+  font-size: 14px;
+}

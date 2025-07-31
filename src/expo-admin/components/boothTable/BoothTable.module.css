@@ -1,0 +1,179 @@
+.tableWrapper {
+  margin-top: 24px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headerRow {
+  background-color: #f7f9fc;
+}
+
+.th {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.row {
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background-color: #f5f8ff;
+}
+
+.td {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #222;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.detailRow {
+  background-color: #fafcff;
+}
+
+.detailBox {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.imageWrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.boothImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.detailContent {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  width: 100%;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.leftColumn {
+  flex: 0 0 30%;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightColumn {
+  flex: 0 0 66%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.detailLabel {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+}
+
+.inputField {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #666;
+  background-color: #f9f9ff;
+}
+
+.disabledInput {
+  background-color: #f2f2f2;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.buttonGroupInline {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.buttonGroupBottom {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.editBtn {
+  background-color: #1e2a38;
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.editBtn:hover {
+  background-color: #2c3e50;
+}
+
+.cancelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.cancelBtn:hover {
+  background-color: #d9d9d9;
+}
+
+.deleteBtn {
+  background-color: #f87171;
+  color: white;
+  padding: 6px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background-color: #ef4444;
+}

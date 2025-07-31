@@ -1,0 +1,86 @@
+.container {
+  width: 100%;
+  margin: 10px 0;
+  background-color: #fff;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 저장 버튼 영역 - 우측 정렬 */
+.headerControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+/* 공통 테이블 스타일 */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: center;
+  padding: 12px 16px;
+  background-color: #f7f9fc;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.td {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #222;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 그룹 시작 컬럼에 세로 구분선 */
+.groupStart {
+  border-left: 1px solid #ccc;
+}
+
+/* 코드 셀 스타일 */
+.codeCell {
+  font-weight: bold;
+  color: #333;
+  background-color: #fafafa;
+  border-left: none;
+  text-align: center;
+}
+
+/* 공통 버튼 스타일 */
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: #ececec;
+  color: #111;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.actionBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+/* 아이콘 크기 통일 */
+.icon {
+  font-size: 14px;
+  margin-right: 4px;
+}

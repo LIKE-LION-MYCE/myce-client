@@ -1,0 +1,21 @@
+/* --- Layout Container --- */
+.boothsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 32px;
+  width: 1200px;
+}
+
+/* --- Section --- */
+.section {
+  text-align: left; 
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+}

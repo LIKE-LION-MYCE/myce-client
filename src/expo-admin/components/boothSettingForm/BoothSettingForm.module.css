@@ -1,0 +1,216 @@
+.container {
+  width: 100%;
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-sizing: border-box;
+}
+
+/* 포스터 */
+.posterWrapper {
+  width: 300px;
+}
+
+.posterImage {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  display: block;
+}
+
+/* 입력 영역 양열 배치 */
+.formGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 40px;
+  width: 100%;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.leftColumn {
+  flex: 0 0 30%;
+  min-width: 250px;
+}
+
+.rightColumn {
+  flex: 0 0 66%;
+}
+
+/* 폼 항목 */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.inputField {
+  padding: 10px 36px 10px 0;
+  font-size: 14px;
+  color: #333;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  outline: none;
+  width: 100%;
+}
+
+/* 포커스 시 밑줄 색상 */
+.inputField:focus {
+  border-color: #1e2a38;
+}
+
+/* 비활성화 input 스타일 */
+.inputField:disabled {
+  color: #aaa;
+  border-bottom: 1px dashed #ccc;
+  cursor: not-allowed;
+}
+
+.inputField:disabled::placeholder {
+  color: #ccc;
+  opacity: 1; /* ensure visibility */
+}
+
+/* 예/아니오 스위치 */
+.booleanGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 9px;
+}
+
+.booleanInput {
+  display: none;
+}
+
+.booleanLabel {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.booleanInput:checked + .booleanLabel {
+  background-color: #1e2a38;
+  color: white;
+  border-color: #1e2a38;
+}
+
+/* 뱃지 */
+.badgeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 9px;
+}
+
+.badge {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge.red {
+  background-color: #ffe5e5;
+  color: #c0392b;
+}
+
+/* 버튼 */
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.submitBtn {
+  background-color: #1e2a38;
+  color: white;
+}
+
+.submitBtn:hover {
+  background-color: #2c3e50;
+}
+
+.cancelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+}
+
+.cancelBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+.iconBtn {
+  font-size: 14px;
+}
+
+/* booleanGroup 내 라디오 버튼 스타일 */
+.booleanGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 9px;
+  align-items: center;
+}
+
+/* 라디오 버튼 실제 input은 숨김 */
+.booleanInput {
+  display: none;
+}
+
+/* 커스텀 라벨 스타일 */
+.booleanLabel {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  color: #555;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* 체크된 라벨에 강조 */
+.booleanInput:checked + .booleanLabel {
+  background-color: #1e2a38;
+  color: #fff;
+  border-color: #1e2a38;
+  font-weight: 500;
+  box-shadow: 0 0 0 2px rgba(30, 42, 56, 0.2);
+}

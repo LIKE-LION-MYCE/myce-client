@@ -1,0 +1,39 @@
+/* --- Layout Container --- */
+.settingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 32px;
+  width : 100%;
+}
+
+/* --- Section 공통 --- */
+.section{
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.ticketSection {
+    width : 100%;
+    max-width : 1550px;
+}
+
+
+/* --- Title --- */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* --- Divider --- */
+.divider {
+  height: 1px;
+  background-color: #ddd;
+  width: 100%; 
+  max-width: 1550px; 
+}
