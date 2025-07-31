@@ -6,6 +6,7 @@ import Tab from '../../../common/commponents/tab/Tab';
 import ReservationTable from '../../components/reservationTable/ReservationTable';
 import Pagination from '../../../common/commponents/pagination/Pagination';
 import EmailModal from '../../components/emailModal/EmailModal'; 
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
 function Reservations() {
   const [searchType, setSearchType] = useState('phone');
@@ -13,6 +14,7 @@ function Reservations() {
   const [statusFilter, setStatusFilter] = useState('');
   const [showEmailModal, setShowEmailModal] = useState(false); 
   const [currentTab, setCurrentTab] = useState('입장 전');
+  const [showToast, setShowToast] = useState(false);
 
   const [pageInfo, setPageInfo] = useState({
     content: [
@@ -56,20 +58,14 @@ function Reservations() {
     }));
   };
 
-  const columns = [
-    { key: 'reservationNumber', header: '예약 번호' },
-    { key: 'name', header: '이름' },
-    { key: 'gender', header: '성별' },
-    { key: 'phone', header: '전화번호' },
-    { key: 'email', header: '이메일' },
-    { key: 'ticketName', header: '티켓명' },
-    { key: 'checkinDateTime', header: '입장 일시' },
-    { key: 'checkinStatus', header: '입장 여부' },
-  ];
-
   const handleSendEmail = (formData) => {
     console.log('전송할 폼 데이터:', formData.get('subject'), formData.get('body'), formData.get('attachment'));
     setShowEmailModal(false);
+  };
+
+  const handleExcelDownload = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
   };
 
   return (
@@ -92,7 +88,7 @@ function Reservations() {
             >
               <option value="phone">전화번호</option>
               <option value="reservationNumber">예매번호</option>
-              <option value={styles.dropdownMenu} value="name">이름</option>
+              <option value="name">이름</option>
             </select>
             <input
               type="text"
@@ -110,8 +106,8 @@ function Reservations() {
               className={styles.select}
             >
               <option value="">티켓 분류</option>
-              <option value="입장 완료">2025 서울 스마트 모빌리티 엑스포 1일권</option>
-              <option value="입장 전">2025 서울 스마트 모빌리티 엑스포 2일권</option>
+              <option value="1">2025 서울 스마트 모빌리티 엑스포 1일권</option>
+              <option value="2">2025 서울 스마트 모빌리티 엑스포 2일권</option>
             </select>
           </div>
         </div>
@@ -124,7 +120,10 @@ function Reservations() {
             <FaEnvelope className={styles.icon} />
             이메일 전송
           </button>
-          <button className={`${styles.actionBtn} ${styles.excelBtn}`}>
+          <button
+            className={`${styles.actionBtn} ${styles.excelBtn}`}
+            onClick={handleExcelDownload}
+          >
             <FaDownload className={styles.icon} />
             엑셀 추출
           </button>
@@ -132,7 +131,7 @@ function Reservations() {
       </div>
 
       {/* 테이블 */}
-      <ReservationTable columns={columns} data={pageInfo.content} />
+      <ReservationTable data={pageInfo.content} />
 
       {/*페이징 */}
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
@@ -144,6 +143,8 @@ function Reservations() {
         selectedCount={3} // 실제 선택된 사용자 수로 변경 할 것
         onSend={handleSendEmail}
       />
+
+      {showToast && <ToastSuccess message="엑셀 파일이 다운로드되었습니다." />}
     </div>
   );
 }
