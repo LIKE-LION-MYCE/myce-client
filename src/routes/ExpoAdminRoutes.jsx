@@ -9,6 +9,7 @@ import Settlement from '../expo-admin/pages/settlement/Settlement';
 import Settings from '../expo-admin/pages/setting/Setting';
 import Booths from '../expo-admin/pages/booths/Booths';
 import Events from '../expo-admin/pages/events/Events';
+import Inquiry from '../expo-admin/pages/inquiry/Inquiry';
 
 function ExpoAdminRoutes() {
   return (
@@ -23,6 +24,7 @@ function ExpoAdminRoutes() {
           <Route path="emails" element={<Emails />} />
           <Route path="operation" element={<Operation />} />
           <Route path="settlement" element={<Settlement />} />
+          <Route path="inquiry" element={<Inquiry />} />
         </Route>
       </Routes>
   );

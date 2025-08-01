@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 import styles from './EventSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
   const [form, setForm] = useState(initForm());
+  const [toastMessage, setToastMessage] = useState('');
 
   function initForm() {
     return {
@@ -19,18 +21,24 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
     };
   }
 
+  useEffect(() => {
+    if (editingEvent) {
+      setForm(editingEvent);
+    } else {
+      setForm(initForm());
+    }
+  }, [editingEvent]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    if (!form.eventName || !form.eventLocation || !form.eventDate) {
-      alert('행사 이름, 위치, 날짜는 필수 항목입니다.');
-      return;
-    }
     onSubmit(form);
     setForm(initForm());
+    setToastMessage(editingEvent ? '행사 정보가 수정되었습니다.' : '행사 정보가 등록되었습니다.');
+    setTimeout(() => setToastMessage(''), 2500);
   };
 
   const handleCancel = () => {
@@ -40,6 +48,8 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
 
   return (
     <div className={styles.container}>
+      {toastMessage && <ToastSuccess message={toastMessage} />}
+
       <div className={styles.formGrid}>
         {/* 왼쪽 컬럼 */}
         <div className={styles.column}>

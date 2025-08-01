@@ -1,0 +1,36 @@
+.toastBox {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #dff0d8;
+  border: 1px solid #c3e6cb;
+  color: #dc3535;
+  padding: 12px 120px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: fadeInOut 1s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
