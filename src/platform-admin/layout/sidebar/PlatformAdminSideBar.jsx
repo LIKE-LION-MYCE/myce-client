@@ -18,15 +18,31 @@ import PlatformAdminInfoBox from '../../components/platformAdminInfoBox/Platform
 
 function PlatformAdminSideBar() {
   const location = useLocation();
-  const currentPath = location.pathname + location.hash;
+  const currentPath = location.pathname;
+  const currentHash = location.hash;
 
   const [selectedMenu, setSelectedMenu] = useState('');
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
+  // 경로 이동 시 해당 서브메뉴만 열리게 처리
   useEffect(() => {
     setSelectedMenu(currentPath);
+    if (currentPath.includes('/platform/admin/expo')) {
+      setOpenSubMenus(['expo']);
+    } else if (currentPath.includes('/platform/admin/banner')) {
+      setOpenSubMenus(['banner']);
+    } else if (currentPath.includes('/platform/admin/role')) {
+      setOpenSubMenus(['role']);
+    } else if (currentPath.includes('/platform/admin/setting')) {
+      setOpenSubMenus(['setting']);
+    } else if (currentPath === '/platform/admin') {
+      setOpenSubMenus(['dashboard']);
+    } else {
+      setOpenSubMenus([]);
+    }
   }, [currentPath]);
 
+  // 여러 개 열 수 있도록 유지
   const toggleSubMenu = (menuKey) => {
     setOpenSubMenus((prev) =>
       prev.includes(menuKey)
@@ -34,6 +50,30 @@ function PlatformAdminSideBar() {
         : [...prev, menuKey]
     );
   };
+
+  // 스크롤 위치에 따라 해시값 갱신 (선택사항)
+  useEffect(() => {
+    const handleScroll = () => {
+      const revenueSection = document.getElementById('revenue');
+      const usageSection = document.getElementById('usage');
+      const scrollY = window.scrollY + 150;
+
+      if (usageSection && scrollY >= usageSection.offsetTop) {
+        if (location.hash !== '#usage') {
+          window.history.replaceState(null, '', '#usage');
+        }
+      } else if (revenueSection && scrollY >= revenueSection.offsetTop) {
+        if (location.hash !== '#revenue') {
+          window.history.replaceState(null, '', '#revenue');
+        }
+      }
+    };
+
+    if (currentPath === '/platform/admin') {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [currentPath, location.hash]);
 
   return (
     <Sidebar
@@ -74,7 +114,6 @@ function PlatformAdminSideBar() {
           Dashboards
         </MenuItem>
 
-        {/* 대시보드 - 같은 페이지 내 해시 이동 */}
         <SubMenu
           icon={<AiOutlineBarChart />}
           label="대시 보드"
@@ -83,19 +122,18 @@ function PlatformAdminSideBar() {
         >
           <MenuItem
             component={<Link to="/platform/admin#revenue" />}
-            active={selectedMenu === '/platform/admin#revenue'}
+            active={currentPath === '/platform/admin' && currentHash === '#revenue'}
           >
             수익 정산
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin#usage" />}
-            active={selectedMenu === '/platform/admin#usage'}
+            active={currentPath === '/platform/admin' && currentHash === '#usage'}
           >
             이용량 조회
           </MenuItem>
         </SubMenu>
 
-        {/* 정산 내역 - 별도 페이지 */}
         <MenuItem
           icon={<MdOutlineSummarize />}
           component={<Link to="/platform/admin/settlementHistory" />}
@@ -108,7 +146,6 @@ function PlatformAdminSideBar() {
           Management
         </MenuItem>
 
-        {/* 박람회 관리 */}
         <SubMenu
           icon={<MdEventNote />}
           label="박람회 관리"
@@ -129,7 +166,6 @@ function PlatformAdminSideBar() {
           </MenuItem>
         </SubMenu>
 
-        {/* 배너 관리 */}
         <SubMenu
           icon={<MdOutlineOndemandVideo />}
           label="배너 관리"
@@ -150,7 +186,6 @@ function PlatformAdminSideBar() {
           </MenuItem>
         </SubMenu>
 
-        {/* 권한 관리 */}
         <SubMenu
           icon={<FaUserFriends />}
           label="권한 관리"
@@ -171,7 +206,6 @@ function PlatformAdminSideBar() {
           </MenuItem>
         </SubMenu>
 
-        {/* 문의 */}
         <MenuItem
           icon={<FiMessageSquare />}
           component={<Link to="/platform/admin/inquiry" />}
@@ -184,7 +218,6 @@ function PlatformAdminSideBar() {
           Setting
         </MenuItem>
 
-        {/* 시스템 설정 */}
         <SubMenu
           icon={<FiSettings />}
           label="시스템 설정"
