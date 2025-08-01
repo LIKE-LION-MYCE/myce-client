@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import PlatformAdminLayout from '../platform-admin/layout/PlatformAdminLayout';
-import PlatformDashboard from '../platform-admin/pages/platformDashboard/PlatformDashboard';
+import PlatformDashboard from '../platform-admin/pages/platformDashboard/platformDashboard';
 
 function PlatformAdminRoutes() {
   return (
