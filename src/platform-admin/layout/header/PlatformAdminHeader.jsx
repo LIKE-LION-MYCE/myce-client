@@ -9,7 +9,7 @@ const pathMap = {
   '/platform/admin/bannerCurrent': ['배너 관리', '현재 배너 관리'],
   '/platform/admin/bannerCancelled': ['배너 관리', '배너 취소 관리'],
   '/platform/admin/bannerMessage': ['배너 관리', '발송 메시지'],
-  '/platform/admin/roleAccounts': ['권한 관리', '관리자 계정'],
+  '/platform/admin/roleAdmins': ['권한 관리', '관리자 계정'],
   '/platform/admin/roleUsers': ['권한 관리', '일반 사용자'],
   '/platform/admin/inquiry': ['문의'],
   '/platform/admin/settingMessage': ['시스템 설정', '발송 메시지'],

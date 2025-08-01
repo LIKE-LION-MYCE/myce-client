@@ -8,14 +8,13 @@ import {
 } from 'react-pro-sidebar';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-
 import { AiOutlineBarChart } from 'react-icons/ai';
 import { MdOutlineSummarize } from 'react-icons/md';
 import { MdEventNote, MdOutlineOndemandVideo } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
 
-import PlatformAdminInfoBox from '../../components/PlatformAdminInfoBox.jsx/PlatformAdminInfoBox';
+import PlatformAdminInfoBox from '../../components/platformAdminInfoBox/PlatformAdminInfoBox';
 
 function PlatformAdminSideBar() {
   const location = useLocation();
@@ -171,10 +170,10 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('role')}
         >
           <MenuItem
-            component={<Link to="/platform/admin/roleAccounts" />}
-            active={selectedMenu === '/platform/admin/roleAccounts'}
+            component={<Link to="/platform/admin/roleAdmins" />}
+            active={selectedMenu === '/platform/admin/roleAdmins'}
           >
-            박람회 관리자계정 관리
+            박람회 관리자 계정
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin/roleUsers" />}
