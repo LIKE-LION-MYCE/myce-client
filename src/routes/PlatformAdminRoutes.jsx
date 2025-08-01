@@ -1,12 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
 import PlatformAdminLayout from '../platform-admin/layout/PlatformAdminLayout';
 import PlatformDashboard from '../platform-admin/pages/platformDashboard/platformDashboard';
+import SettlementHistory from '../platform-admin/pages/settlementHistory/SettlementHistory';
 
 function PlatformAdminRoutes() {
   return (
       <Routes>
         <Route path="/platform/admin" element={<PlatformAdminLayout />}>
             <Route index element={<PlatformDashboard/>}/>
+            <Route path="settlementHistory" element={<SettlementHistory/>}/>
         </Route>
       </Routes>
   );

@@ -68,7 +68,7 @@ function Payments() {
 
   const pageInfo = {
     content: allData,
-    totalPages: 0,
+    totalPages: 1,
     number: currentPage,
     size: pageSize,
     totalElements: 0,
