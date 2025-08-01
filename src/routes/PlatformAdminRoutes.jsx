@@ -6,6 +6,7 @@ import PlatformInquiry from '../platform-admin/pages/platformInquiry/PlatformInq
 import RoleAdmins from '../platform-admin/pages/roleAdmins/RoleAdmins';
 import RoleUsers from '../platform-admin/pages/roleUsers/RoleUsers';
 import ExpoApplications from '../platform-admin/pages/expoApplications/ExpoApplications';
+import ExpoApplicationDetail from '../platform-admin/pages/expoApplicationsDetail/ExpoApplicationDetail';
 
 function PlatformAdminRoutes() {
   return (
@@ -17,9 +18,10 @@ function PlatformAdminRoutes() {
             <Route path="roleAdmins" element={<RoleAdmins/>}/>
             <Route path="roleUsers" element={<RoleUsers/>}/>
             <Route path="expoApplications" element={<ExpoApplications/>}/>
+            <Route path="expoApplications/:id" element={<ExpoApplicationDetail />} />
         </Route>
       </Routes>
-  );
+  );s
 }
 
 export default PlatformAdminRoutes;
