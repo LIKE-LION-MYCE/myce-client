@@ -9,13 +9,9 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import {
-  AiOutlineBarChart,
-} from 'react-icons/ai';
-import {
-  MdEventNote,
-  MdOutlineOndemandVideo,
-} from 'react-icons/md';
+import { AiOutlineBarChart } from 'react-icons/ai';
+import { MdOutlineSummarize } from 'react-icons/md';
+import { MdEventNote, MdOutlineOndemandVideo } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
 
@@ -23,7 +19,7 @@ import PlatformAdminInfoBox from '../../components/PlatformAdminInfoBox.jsx/Plat
 
 function PlatformAdminSideBar() {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const currentPath = location.pathname + location.hash;
 
   const [selectedMenu, setSelectedMenu] = useState('');
   const [openSubMenus, setOpenSubMenus] = useState([]);
@@ -79,8 +75,7 @@ function PlatformAdminSideBar() {
           Dashboards
         </MenuItem>
 
-        {/* 대시보드 */}
-        {/* 하위탭들은 추후에 스크롤 값에 따라서 이동 및 활성화 되도록 수정 예정 */}
+        {/* 대시보드 - 같은 페이지 내 해시 이동 */}
         <SubMenu
           icon={<AiOutlineBarChart />}
           label="대시 보드"
@@ -88,24 +83,27 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('dashboard')}
         >
           <MenuItem
-            component={<Link to="/platform/admin" />}
-            active={selectedMenu === '/platform/admin'}
+            component={<Link to="/platform/admin#revenue" />}
+            active={selectedMenu === '/platform/admin#revenue'}
           >
             수익 정산
           </MenuItem>
           <MenuItem
-            component={<Link to="/platform/admin" />}
-            active={selectedMenu === '/platform/admin'}
+            component={<Link to="/platform/admin#usage" />}
+            active={selectedMenu === '/platform/admin#usage'}
           >
             이용량 조회
           </MenuItem>
-          <MenuItem
-            component={<Link to="/platform/admin" />}
-            active={selectedMenu === '/platform/admin'}
-          >
-            정산 내역
-          </MenuItem>
         </SubMenu>
+
+        {/* 정산 내역 - 별도 페이지 */}
+        <MenuItem
+          icon={<MdOutlineSummarize />}
+          component={<Link to="/platform/admin/settlementHistory" />}
+          active={selectedMenu === '/platform/admin/settlementHistory'}
+        >
+          정산 내역
+        </MenuItem>
 
         <MenuItem disabled style={{ cursor: 'default', opacity: '0.6' }}>
           Management

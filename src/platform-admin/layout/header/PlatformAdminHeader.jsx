@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import styles from './PlatformAdminHeader.module.css';
 
 const pathMap = {
-  '/platform/admin': ['대시보드'],
+  '/platform/admin/settlementHistory': ['정산', '정산 내역'],
   '/platform/admin/expoApplications': ['박람회 관리', '박람회 신청 관리'],
   '/platform/admin/expoCurrent': ['박람회 관리', '현재 박람회 관리'],
   '/platform/admin/bannerApplications': ['배너 관리', '배너 신청 관리'],
@@ -14,18 +14,21 @@ const pathMap = {
   '/platform/admin/inquiry': ['문의'],
   '/platform/admin/settingMessage': ['시스템 설정', '발송 메시지'],
   '/platform/admin/settingAmount': ['시스템 설정', '금액 설정'],
+  '/platform/admin': ['대시보드'],
 };
 
 function PlatformAdminHeader() {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const currentPath = location.pathname + location.hash;
 
   const matchedKey = Object.keys(pathMap)
-    .sort((a, b) => b.length - a.length) // 긴 경로부터 먼저 매칭
+    .sort((a, b) => b.length - a.length)
     .find((key) => currentPath.startsWith(key));
 
   const crumbs = matchedKey ? pathMap[matchedKey] : [];
-  const isDashboardOnly = currentPath === '/platform/admin';
+
+  const isDashboardOnly =
+    currentPath.startsWith('/platform/admin') && crumbs.length === 1 && crumbs[0] === '대시보드';
 
   return (
     <nav className={styles.breadcrumb}>
