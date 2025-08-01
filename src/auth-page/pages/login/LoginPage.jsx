@@ -114,7 +114,7 @@ const LoginPage = () => {
             <span>|</span>
             <a href="#">비밀번호 찾기</a>
             <span>|</span>
-            <a href="#">회원가입</a>
+            <a href="/signup">회원가입</a>
           </div>
         </>
       )}
