@@ -1,0 +1,37 @@
+.breadcrumb {
+  padding: 20px 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 16px;
+  gap: 8px;
+}
+
+/* › 삽입 */
+.item + .item::before {
+  content: '›';
+  color: #999;
+  padding-right : 10px;
+}
+
+/* 기본 스타일 */
+.item {
+  color: #999;
+  font-weight: 300;
+  text-decoration: none;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* 마지막 crumb 강조 */
+.active {
+  color: #000;
+  font-weight: 600;
+}
+
+/* prefix 용 */
+.prefix {
+  color: #999;
+  font-weight: 300;
+}
