@@ -148,18 +148,6 @@ function PlatformAdminSideBar() {
           >
             현재 배너 관리
           </MenuItem>
-          <MenuItem
-            component={<Link to="/platform/admin/bannerCancelled" />}
-            active={selectedMenu === '/platform/admin/bannerCancelled'}
-          >
-            배너 취소 관리
-          </MenuItem>
-          <MenuItem
-            component={<Link to="/platform/admin/bannerMessage" />}
-            active={selectedMenu === '/platform/admin/bannerMessage'}
-          >
-            발송 메시지
-          </MenuItem>
         </SubMenu>
 
         {/* 권한 관리 */}

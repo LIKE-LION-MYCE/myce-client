@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
+import { FaQrcode } from 'react-icons/fa'; // QR 코드 아이콘 추가
 import styles from './RoleAdmins.module.css';
 import RoleAdminTable from '../../components/roleAdminTable/RoleAdminTable';
 import Pagination from '../../../common/commponents/pagination/Pagination';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess'; // ToastSuccess 컴포넌트 추가
 
 function RoleAdmins() {
   const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [showToast, setShowToast] = useState(false);
   const [pageInfo, setPageInfo] = useState({
     content: [
       {
@@ -88,6 +91,12 @@ function RoleAdmins() {
     }));
   };
 
+  const handleReissueAdminCode = () => {
+    console.log('관리자 코드 발급');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500); // 2.5초 뒤에 토스트 메시지 숨기기
+  };
+
   return (
     <div className={styles.emailsWrapper}>
       <div className={styles.topControls}>
@@ -97,7 +106,7 @@ function RoleAdmins() {
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              placeholder="아이디, 이름, 박람회명 검색"
+              placeholder="아이디, 신청자, 박람회명 검색"
               className={styles.input}
             />
             <FiSearch className={styles.searchIcon} />
@@ -114,6 +123,15 @@ function RoleAdmins() {
             </select>
           </div>
         </div>
+
+        {/* 관리자 코드 발급 버튼 */}
+        <button
+          className={`${styles.actionBtn} ${styles.codeBtn}`}
+          onClick={handleReissueAdminCode}
+        >
+          <FaQrcode className={styles.icon} />
+          관리자 코드 발급
+        </button>
       </div>
 
       {/* 테이블 */}
@@ -121,6 +139,9 @@ function RoleAdmins() {
 
       {/* 페이징 */}
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+
+      {/* 토스트 메시지 */}
+      {showToast && <ToastSuccess message="관리자 코드가 발급되었습니다!" />}
     </div>
   );
 }

@@ -7,8 +7,6 @@ const pathMap = {
   '/platform/admin/expoCurrent': ['박람회 관리', '현재 박람회 관리'],
   '/platform/admin/bannerApplications': ['배너 관리', '배너 신청 관리'],
   '/platform/admin/bannerCurrent': ['배너 관리', '현재 배너 관리'],
-  '/platform/admin/bannerCancelled': ['배너 관리', '배너 취소 관리'],
-  '/platform/admin/bannerMessage': ['배너 관리', '발송 메시지'],
   '/platform/admin/roleAdmins': ['권한 관리', '관리자 계정'],
   '/platform/admin/roleUsers': ['권한 관리', '일반 사용자'],
   '/platform/admin/inquiry': ['문의'],
