@@ -1,0 +1,7 @@
+/* src/mainpage/pages/adApply/AdApply.module.css */
+.ad-apply-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
