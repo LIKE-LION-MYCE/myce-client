@@ -1,0 +1,21 @@
+.layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header를 고정 */
+.headerFixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* 고정된 Header 아래에 콘텐츠가 보이도록 여백 줌 */
+.main {
+  flex-grow: 1;
+  padding-top: 4rem; /* Header 높이에 맞게 조절 (예: 64px = 4rem) */
+}
