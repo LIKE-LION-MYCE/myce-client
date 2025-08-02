@@ -116,8 +116,8 @@
 }
 
 .loginLink a {
-  color: #000;
-  text-decoration: underline;
+  color: #666;
+  text-decoration: none;
   font-weight: 500;
 }
 
