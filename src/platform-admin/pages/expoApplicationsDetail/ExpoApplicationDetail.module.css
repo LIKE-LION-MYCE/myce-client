@@ -26,3 +26,101 @@
   background-color: #ddd;
   width: 100%;
 }
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.backArrow {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+
+.backArrow:hover {
+  color: #999;
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 400;
+  padding: 4px 10px 6px 10px;
+  border-radius: 20px;
+  color: white;
+  white-space: nowrap;
+  margin-bottom: 7px;
+}
+
+/* 임의 색상 */
+.승인_대기 {
+  background-color: #f0ad4e;
+}
+
+.승인_완료 {
+  background-color: #5cb85c;
+}
+
+.승인_거절 {
+  background-color: #d9534f;
+}
+
+.취소_완료 {
+  background-color: #6c757d;
+}
+
+.정산_대기 {
+  background-color: #f0ad4e;
+}
+
+.정산_완료 {
+  background-color: #5cb85c;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.rejectBtn {
+  padding: 10px 81px;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rejectBtn:hover {
+  background-color: #f9f9f9;
+  border-color: #999;
+}
+
+.approveBtn {
+  padding: 10px 81px;
+  font-size: 14px;
+  font-weight: 400;
+  border: none;
+  border-radius: 6px;
+  background-color: #1e2a38;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.approveBtn:hover {
+  background-color: #17212c;
+}
