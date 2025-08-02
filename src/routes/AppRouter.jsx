@@ -2,6 +2,7 @@ import { BrowserRouter } from "react-router-dom";
 import ExpoAdminRoutes from "./ExpoAdminRoutes";
 import MainPageRoutes from "./MainPageRoutes";
 import AuthPageRoutes from "./AuthPageRoutes";
+import MyPageRoutes from "./MyPageRoutes";
 
 function AppRouter() {
   return (
@@ -9,6 +10,7 @@ function AppRouter() {
       <ExpoAdminRoutes />
       <MainPageRoutes />
       <AuthPageRoutes />
+      <MyPageRoutes />
     </BrowserRouter>
   );
 }
