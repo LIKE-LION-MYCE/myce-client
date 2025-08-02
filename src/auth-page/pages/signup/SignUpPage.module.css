@@ -1,0 +1,129 @@
+.signUpForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.signUpForm label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.signUpForm input {
+  width: 100%;
+  padding: 10px 10px;
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  height: 42px;
+  line-height: 1.2; /* 텍스트 높이 조절 */
+  vertical-align: middle; /* 텍스트 수직 중앙 정렬 */
+}
+
+.passwordWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0 10px;
+  margin-top: 6px;
+  background-color: #fff;
+  height: 42px;
+}
+
+.passwordWrapper input {
+  flex: 1;
+  border: none;
+  padding: 0; /* 좌우도 제거 */
+  font-size: 14px;
+  line-height: 14px; /* 폰트 사이즈와 동일하게 */
+  background: none;
+  outline: none;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.passwordWrapper button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  height: 100%; /* 아이콘도 동일 높이 */
+}
+
+.rowInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.rowInput input {
+  flex: 1;
+  height: 42px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  line-height: 20px;
+}
+
+/* 인증발송 / 확인 버튼 크기 동일 */
+.grayButton {
+  width: 80px; /* 버튼 너비 동일하게 고정 */
+  height: 42px;
+  padding: 0 16px;
+  background-color: #999;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.submitButton {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.loginLink {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.loginLink a {
+  color: #666;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* 이메일, 인증번호 입력칸 일관 정렬용 */
+.rowInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
