@@ -1,0 +1,123 @@
+/* src/pages/MessageTemplateList.module.css */
+.container {
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.searchCreateWrap {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.searchInput {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 240px;
+}
+
+.createButton {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.listSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.cardContent {
+  color: #4b5563;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tagActive {
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.tagInactive {
+  background-color: #d1d5db; /* gray-300 */
+  color: #6b7280; /* gray-500 */
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.metaRow {
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  gap: 1rem;
+}
+
+.editRow {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.editButton {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deleteButton {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}

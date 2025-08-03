@@ -1,0 +1,125 @@
+/* src/pages/AmountSettingPage.module.css */
+.container {
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+/* 카드 영역 */
+.gridBox {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.cardDesc {
+  font-size: 0.9rem;
+}
+
+/* 색상별 카드 배경 */
+.purple {
+  background-color: #5b21b6;
+}
+
+.green {
+  background-color: #047857;
+}
+
+.red {
+  background-color: #dc2626;
+}
+
+.orange {
+  background-color: #ea580c;
+}
+
+/* > 아이콘 */
+.arrow {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* 변경 내역 테이블 */
+.historySection {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.subTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.date {
+  text-align: right;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* 원형 색상 표시 */
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.dot.purple {
+  background-color: #5b21b6;
+}
+
+.dot.green {
+  background-color: #047857;
+}
+
+.dot.red {
+  background-color: #dc2626;
+}
+
+.dot.orange {
+  background-color: #ea580c;
+}

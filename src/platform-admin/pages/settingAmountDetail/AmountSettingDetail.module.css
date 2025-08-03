@@ -1,0 +1,189 @@
+/* src/pages/FeeDetailPage.module.css */
+.container {
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.backButton {
+  margin-bottom: 1.5rem;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.headerBox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cardHeader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.purple {
+  background-color: #5b21b6;
+}
+
+.green {
+  background-color: #047857;
+}
+
+.red {
+  background-color: #dc2626;
+}
+
+.orange {
+  background-color: #ea580c;
+}
+
+.pageTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.pageDesc {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.noticeWrapper {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.warningBox {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #674f00;
+  padding: 1rem;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.warningBox ul {
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+.infoBox {
+  background-color: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #003877;
+  padding: 1rem;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.addSection {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  width: 400px;
+}
+
+.addButton {
+  background-color: #3b82f6; /* 더 선명한 보라색 */
+  color: white;
+  padding: 0.75rem 1.4rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  height: 40px;
+}
+
+
+.actionBox {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.applyButton {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* 토글 스위치 */
+.toggleWrapper {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d5db;
+  border-radius: 999px;
+  transition: 0.4s;
+  cursor: pointer;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: #3b82f6;
+}
+
+.toggleInput:checked + .toggleSlider::before {
+  transform: translateX(20px);
+}

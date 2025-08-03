@@ -9,6 +9,12 @@ import ExpoApplications from '../platform-admin/pages/expoApplications/ExpoAppli
 import ExpoApplicationDetail from '../platform-admin/pages/expoApplicationsDetail/ExpoApplicationDetail';
 import ExpoCurrent from '../platform-admin/pages/expoCurrent/ExpoCurrent';
 import ExpoCurrentDetail from '../platform-admin/pages/expoCurrentDetail/ExpoCurrentDetail';
+import MessageTemplateList from '../platform-admin/pages/settingMessages/MessageTemplateList';
+import MessageTemplateDetail from '../platform-admin/pages/settingMessagesDetail/MessageTemplateDetail';
+import MessageTemplateEdit from '../platform-admin/pages/settingMessagesDetail/MessageTemplateEdit';
+import MessageTemplateNew from '../platform-admin/pages/settingMessagesDetail/MessageTemplateNew';
+import AmountSettingList from '../platform-admin/pages/settingAmount/AmountSettingList';
+import AmountSettingDetail from '../platform-admin/pages/settingAmountDetail/AmountSettingDetail';
 
 function PlatformAdminRoutes() {
   return (
@@ -23,6 +29,12 @@ function PlatformAdminRoutes() {
             <Route path="expoApplications/:id" element={<ExpoApplicationDetail />} />
             <Route path="expoCurrent" element={<ExpoCurrent />} />
             <Route path="expoCurrent/:id" element={<ExpoCurrentDetail />} />
+            <Route path="settingMessage" element={<MessageTemplateList />} />
+            <Route path="settingMessage/:id" element={<MessageTemplateDetail />} />
+            <Route path="settingMessage/:id/edit" element={<MessageTemplateEdit />} />
+            <Route path="settingMessage/new" element={<MessageTemplateNew />} />
+            <Route path="settingAmount" element={<AmountSettingList />} />
+            <Route path="settingAmount/:name" element={<AmountSettingDetail />} />
         </Route>
       </Routes>
   );s
