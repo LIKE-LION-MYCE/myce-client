@@ -7,6 +7,7 @@ import MySavedExpoPage from "../mypage/pages/saved-expo/MySavedExpoPage";
 import MySettingPage from "../mypage/pages/setting/MySettingPage";
 import AdsStatusPage from "../mypage/pages/ads-status/AdsStatusPage";
 import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
+import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
 
 const MyPageRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const MyPageRoutes = () => {
         <Route path="info" element={<MyInfoPage />} />
         <Route path="payment" element={<MyPaymentPage />} />
         <Route path="reservation" element={<MyReservationPage />} />
+        <Route path="reservation/:id" element={<ReservationDetailPage />} />
         <Route path="saved-expo" element={<MySavedExpoPage />} />
         <Route path="setting" element={<MySettingPage />} />
 

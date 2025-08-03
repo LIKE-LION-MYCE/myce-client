@@ -1,0 +1,187 @@
+.wrapper {
+  background: #f9fafb;
+  min-height: 600px;
+  font-family: 'Noto Sans KR', sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  letter-spacing: -1px;
+}
+
+.section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  margin-bottom: 28px;
+  padding: 28px 24px 22px 24px;
+}
+
+.subTitle {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #242424;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editBtn {
+  background: #f5f6fa;
+  color: #222;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 6px 16px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.editActionGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.saveBtn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background: #f5f6fa;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 6px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.expoBox {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 6px;
+}
+
+.poster {
+  width: 100px;
+  height: 130px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+}
+
+.expoTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.grayDotList {
+  color: #888;
+  font-size: 14px;
+}
+
+.eventDate, .eventPlace {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.reservationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 36px;
+  margin-bottom: 6px;
+}
+
+.label {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.memberTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+.memberTable th,
+.memberTable td {
+  border: 1px solid #e7e7e7;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.memberTable th {
+  background: #f3f4f7;
+  font-weight: 700;
+  color: #333;
+}
+
+.memberTable td {
+  background: #fff;
+  color: #444;
+}
+
+.input {
+  border: 1px solid #e3e3e3;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 14px;
+  width: 100px;
+}
+
+.qrBtn {
+  background: #fff;
+  border: 1px solid #767676;
+  color: #222;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.qrBtn:hover {
+  background: #222;
+  color: #fff;
+}
+
+/* 예약취소 버튼(가운데 정렬) */
+.neutralCancelBtn {
+  background: #fff;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 12px 130px;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  box-shadow: none;
+  transition: background 0.18s;
+}
+.neutralCancelBtn:hover {
+  background: #ececec;
+  color: #555;
+}
