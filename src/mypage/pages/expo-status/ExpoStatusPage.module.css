@@ -1,0 +1,76 @@
+.container {
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.table thead tr {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  font-weight: 600;
+  text-align: left;
+}
+
+.table th, .table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tableRow {
+  cursor: pointer;
+}
+
+.tableRow:hover td {
+  background-color: #f3f4f6; /* hover 시 조금 더 강조되는 색상 */
+  cursor: pointer;
+}
+
+.tableRow:last-child td {
+  border-bottom: none;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.결제대기 {
+  background-color: #fde68a;
+  color: #92400e;
+}
+
+.진행중 {
+  background-color: #bbf7d0;
+  color: #15803d;
+}
+
+.승인대기 {
+  background-color: #c7d2fe;
+  color: #312e81;
+}
+
+.종료됨 {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
