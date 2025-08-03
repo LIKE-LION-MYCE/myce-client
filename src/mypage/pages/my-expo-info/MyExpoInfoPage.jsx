@@ -1,4 +1,4 @@
-// src/mainpage/pages/myPage/MyExpoInfoPage.jsx
+// src/mainpage/pages/myPage/my-expo-info/MyExpoInfoPage.jsx
 import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoApplicationDetail'
 import styles from './MyExpoInfoPage.module.css';
 

@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MyPageLayout from "../mypage/layout/MyPageLayout";
 import MyInfoPage from "../mypage/pages/info/MyInfoPage";
-import MyExpoInfoPage from "../mypage/pages/info/MyExpoInfoPage";
+import MyExpoInfoPage from "../mypage/pages/my-expo-info/MyExpoInfoPage";
 import MyPaymentPage from "../mypage/pages/payment/MyPaymentPage";
 import MyReservationPage from "../mypage/pages/reservation/MyReservationPage";
 import MySavedExpoPage from "../mypage/pages/saved-expo/MySavedExpoPage";
