@@ -22,6 +22,7 @@ const dummyDetail = {
       name: "김한수",
       reservationId: "B0014561892370",
       birth: "00.00.00",
+      gender: "남자",
       phone: "090-1234-1234",
       email: "abc@abc.abc",
       qrUrl:
@@ -31,6 +32,7 @@ const dummyDetail = {
       name: "박지민",
       reservationId: "B0014561892371",
       birth: "99.05.12",
+      gender: "여자",
       phone: "010-5678-5678",
       email: "jimin@abc.com",
       qrUrl:
@@ -40,6 +42,7 @@ const dummyDetail = {
       name: "최은영",
       reservationId: "B0014561892372",
       birth: "98.11.23",
+      gender: "여자",
       phone: "010-3333-4444",
       email: "eychoi@abc.com",
       qrUrl:
@@ -49,6 +52,7 @@ const dummyDetail = {
       name: "이성준",
       reservationId: "B0014561892373",
       birth: "00.03.08",
+      gender: "남자",
       phone: "010-2222-8888",
       email: "sjlee@abc.com",
       qrUrl:
