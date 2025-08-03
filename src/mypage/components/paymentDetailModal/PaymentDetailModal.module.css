@@ -1,0 +1,77 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(51, 51, 51, 0.38);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modalBox {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding: 40px 34px 34px 34px;
+  box-sizing: border-box;
+}
+.title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 32px;
+}
+.infoSection {
+  margin-bottom: 32px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+.feeBox {
+  margin-top: 28px;
+  background: #fafbfc;
+  border-radius: 11px;
+  padding: 16px;
+}
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+.btnRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+.whiteBtn {
+  background: #fff;
+  border: 1.8px solid #d8d8d8;
+  color: #222;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 12px 0;
+  flex: 1;
+  transition: background .13s;
+  cursor: pointer;
+}
+.blackBtn {
+  background: #232323;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 12px 0;
+  flex: 1;
+  transition: background .13s;
+  cursor: pointer;
+}
+.whiteBtn:hover { background: #f3f3f3; }
+.blackBtn:hover { background: #222; }
