@@ -1,6 +1,7 @@
 // src/pages/AmountSettingList.jsx
 import { Link } from 'react-router-dom';
 import styles from './AmountSettingList.module.css';
+import ToastFail from '../../../common/commponents/toastFail/ToastFail';
 
 const cardData = [
   {
@@ -48,6 +49,8 @@ export default function AmountSettingList() {
           </Link>
         ))}
       </section>
+
+          <ToastFail></ToastFail>
 
       <section className={styles.historySection}>
         <h2 className={styles.subTitle}>최근 설정 변경 내역</h2>
