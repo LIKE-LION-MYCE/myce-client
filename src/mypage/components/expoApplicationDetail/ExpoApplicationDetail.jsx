@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styles from './ExpoApplicationDetail.module.css';
 import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
 
-// ExpoApplicationDetail 컴포넌트가 props로 expoData를 받도록 변경
-function ExpoApplicationDetail({ expoData, onPayButtonClick }) {
+// ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick을 받도록 변경
+function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick }) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState('');
@@ -65,7 +65,8 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick }) {
   const renderAdminButton = () => {
     if (status === '종료됨' || status === '정산완료') {
       return (
-        <button className={`${styles.adminButton}`} onClick={() => console.log('관리자 정보 클릭')}>관리자 정보</button>
+        // 관리자 정보 버튼 클릭 시 onAdminInfoClick prop 호출
+        <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
       );
     }
     return null;

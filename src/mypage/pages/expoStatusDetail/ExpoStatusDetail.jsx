@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoApplicationDetail';
 import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
+import AdminInfoModal from '../../components/adminInfoModal/AdminInfoModal'; // AdminInfoModal 컴포넌트 임포트
 import { mockExpoApplications } from '../expo-status/ExpoStatusPage';
 import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
@@ -12,7 +13,6 @@ const mockExpoDetails = mockExpoApplications.map(app => ({
   name: app.title,
   location: app.location,
   capacity: 1000,
-  // 날짜 형식 오류를 수정했습니다. .slice(0, -1)을 제거하여 'yyyy-MM-dd' 형식을 유지합니다.
   startDate: app.postPeriod.split('~')[0].trim().replace(/\./g, '-'),
   endDate: app.postPeriod.split('~')[1].trim().replace(/\./g, '-'),
   startTime: '09:00',
@@ -45,6 +45,7 @@ const ExpoStatusDetail = () => {
   const [expoData, setExpoData] = useState(null);
   const [modalType, setModalType] = useState(null); // 'waiting' | null
   const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단선택 페이지 표시 상태
+  const [showAdminModal, setShowAdminModal] = useState(false); // 관리자 정보 모달 표시 상태
 
   useEffect(() => {
     const foundData = mockExpoDetails.find(data => data.id === parseInt(id));
@@ -65,6 +66,15 @@ const ExpoStatusDetail = () => {
     handleCloseModal();
   };
 
+  // 관리자 정보 모달 열기/닫기 핸들러
+  const handleOpenAdminModal = () => {
+    setShowAdminModal(true);
+  };
+
+  const handleCloseAdminModal = () => {
+    setShowAdminModal(false);
+  };
+
   if (!expoData) {
     return (
       <div className={styles.container}>
@@ -83,6 +93,7 @@ const ExpoStatusDetail = () => {
       <ExpoApplicationDetail
         expoData={expoData}
         onPayButtonClick={handleOpenModal}
+        onAdminInfoClick={handleOpenAdminModal} // 관리자 정보 모달을 여는 핸들러 전달
       />
 
       {modalType === 'waiting' && (
@@ -95,6 +106,14 @@ const ExpoStatusDetail = () => {
           onPay={handlePay}
           onClose={handleCloseModal}
           onCancel={handleCloseModal}
+        />
+      )}
+
+      {/* 관리자 정보 모달 조건부 렌더링 */}
+      {showAdminModal && expoData && (
+        <AdminInfoModal
+          expoData={expoData}
+          onClose={handleCloseAdminModal}
         />
       )}
     </div>
