@@ -73,6 +73,4 @@ const MyInfoPage = () => {
       {isModalOpen && <ChangePasswordModal onClose={closeModal} />}
     </div>
   );
-};
-
-export default MyInfoPage;
+}
