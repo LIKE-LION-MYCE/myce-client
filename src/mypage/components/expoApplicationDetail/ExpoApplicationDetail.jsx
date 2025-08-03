@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './ExpoApplicationDetail.module.css';
 import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
 
 // ExpoApplicationDetail 컴포넌트가 props로 expoData를 받도록 변경
-function ExpoApplicationDetail({ expoData }) {
+function ExpoApplicationDetail({ expoData, onPayButtonClick }) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState('');
@@ -41,20 +41,20 @@ function ExpoApplicationDetail({ expoData }) {
       case '승인대기':
         return (
           <div className={styles.buttonGroup}>
-            <button className={`${styles.button} ${styles.cancelButton}`}>신청 취소</button>
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('신청 취소 클릭')}>신청 취소</button>
           </div>
         );
       case '진행중':
         return (
           <div className={styles.buttonGroup}>
-            <button className={`${styles.button} ${styles.cancelButton}`}>취소 신청</button>
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('취소 신청 클릭')}>취소 신청</button>
           </div>
         );
       case '결제대기':
         return (
           <div className={`${styles.buttonGroup} ${styles.inlineButtons}`}>
-            <button className={`${styles.button} ${styles.cancelButton}`}>신청 취소</button>
-            <button className={`${styles.button} ${styles.paymentButton}`}>결제</button>
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('신청 취소 클릭')}>신청 취소</button>
+            <button className={`${styles.button} ${styles.paymentButton}`} onClick={onPayButtonClick}>결제</button>
           </div>
         );
       default:
@@ -65,7 +65,7 @@ function ExpoApplicationDetail({ expoData }) {
   const renderAdminButton = () => {
     if (status === '종료됨' || status === '정산완료') {
       return (
-        <button className={`${styles.adminButton}`}>관리자 정보</button>
+        <button className={`${styles.adminButton}`} onClick={() => console.log('관리자 정보 클릭')}>관리자 정보</button>
       );
     }
     return null;

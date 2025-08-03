@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoApplicationDetail';
+import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
 import { mockExpoApplications } from '../expo-status/ExpoStatusPage';
 import styles from './ExpoStatusDetail.module.css';
 
@@ -40,11 +41,26 @@ const mockExpoDetails = mockExpoApplications.map(app => ({
 const ExpoStatusDetail = () => {
   const { id } = useParams();
   const [expoData, setExpoData] = useState(null);
+  const [modalType, setModalType] = useState(null); // 'waiting' | null
 
   useEffect(() => {
     const foundData = mockExpoDetails.find(data => data.id === parseInt(id));
     setExpoData(foundData);
   }, [id]);
+
+  const handleOpenModal = () => {
+    setModalType('waiting');
+  };
+
+  const handleCloseModal = () => {
+    setModalType(null);
+  };
+
+  const handlePay = () => {
+    // 실제 결제 로직 구현
+    console.log('결제하기 (연동 예정)');
+    handleCloseModal();
+  };
 
   if (!expoData) {
     return (
@@ -56,7 +72,24 @@ const ExpoStatusDetail = () => {
 
   return (
     <div className={styles.container}>
-      <ExpoApplicationDetail expoData={expoData} />
+      <ExpoApplicationDetail
+        expoData={expoData}
+        onPayButtonClick={handleOpenModal}
+      />
+
+      {/* 결제 대기 모달 조건부 렌더링 */}
+      {modalType === 'waiting' && (
+        <PaymentWaitingModal
+          expoName={expoData.name}
+          applicant={expoData.applicantName}
+          period={`${expoData.startDate} ~ ${expoData.endDate}`}
+          amount={expoData.registrationFee}
+          totalAmount={expoData.registrationFee}
+          onPay={handlePay}
+          onClose={handleCloseModal}
+          onCancel={handleCloseModal}
+        />
+      )}
     </div>
   );
 };
