@@ -6,6 +6,7 @@ import MyReservationPage from "../mypage/pages/reservation/MyReservationPage";
 import MySavedExpoPage from "../mypage/pages/saved-expo/MySavedExpoPage";
 import MySettingPage from "../mypage/pages/setting/MySettingPage";
 import AdsStatusPage from "../mypage/pages/ads-status/AdsStatusPage";
+import AdsStatusDetail from "../mypage/pages/adsStatusDetail/AdsStatusDetail";
 import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
 import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
 
@@ -23,6 +24,7 @@ const MyPageRoutes = () => {
         <Route path="setting" element={<MySettingPage />} />
 
         <Route path="ads-status" element={<AdsStatusPage />} />
+        <Route path="ads-status/:id" element={<AdsStatusDetail />} />
         <Route path="expo-status" element={<ExpoStatusPage />} />
       </Route>
     </Routes>
