@@ -1,0 +1,51 @@
+.footer {
+  width: 100%;
+  background-color: #2D2D2D; /* 이미지 기반 짙은 회색 */
+  color: #D1D5DB; /* 밝은 회색 글자 */
+  font-size: 14px;
+  padding: 3rem 1rem 2rem;
+}
+
+.content {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  justify-content: flex-start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.title {
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.text {
+  color: #A3A3A3;
+}
+
+.link {
+  color: #D1D5DB;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: white;
+}
+
+.copyright {
+  border-top: 1px solid #444;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  text-align: center;
+  color: #A3A3A3;
+}

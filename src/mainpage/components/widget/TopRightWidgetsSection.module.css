@@ -1,0 +1,16 @@
+.section {
+  position: relative;
+  padding-top: 4rem; /* 헤더 높이만큼 공백 확보 */
+  width: 100%;
+  height: 0; /* 콘텐츠 높이에 맞게 늘어나지 않도록 */
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

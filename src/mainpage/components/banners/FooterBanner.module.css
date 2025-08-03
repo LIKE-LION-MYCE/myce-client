@@ -1,0 +1,12 @@
+.banner {
+  width: 100%;
+  aspect-ratio: 5 / 1; /* 원하는 비율로 조절 가능 */
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
