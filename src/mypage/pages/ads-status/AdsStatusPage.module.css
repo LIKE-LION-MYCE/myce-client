@@ -1,0 +1,141 @@
+.wrapper {
+  font-family: 'Noto Sans KR', sans-serif;
+  width: 100%;
+  background: #f9fafb;
+  padding: 0;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+/* 테이블 전체 컨테이너 (가로 스크롤 대응) */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* 테이블 스타일 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  min-width: 760px; /* 내용 좁아지지 않게 최소폭 지정 */
+  margin-bottom: 34px;
+}
+
+.table th, .table td {
+  text-align: left;
+  padding: 18px 16px;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.table th {
+  background: #f7f8fa;
+  color: #232323;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  border-bottom: 2px solid #eee;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.statusBadge {
+  display: inline-block;
+  min-width: 58px;
+  padding: 5px 18px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  background: #f7f8fa;
+  color: #555;
+  margin: 0 2px;
+  letter-spacing: -0.2px;
+  border: none;
+  /* 그림자, 테두리 없이 flat */
+}
+
+/* 승인 대기: 부드러운 파스텔 노랑 */
+.pending {
+  background: #fffbe4; /* 연한 노랑 (레몬 + 크림빛) */
+  color: #b28a15;      /* 골드 계열 텍스트 */
+}
+
+/* 결제 대기중: 맑은 하늘색 */
+.waiting {
+  background: #eaf4fd;
+  color: #357ec7;
+}
+
+/* 게시중: 부드러운 민트 */
+.statusBadge.active {
+  background: hsl(150, 67%, 94%);
+  color: #29966a;
+}
+
+/* 취소됨: 연한 핑크 */
+.canceled {
+  background: #faeded;
+  color: #e05260;
+}
+
+/* 종료됨: 밝은 라이트그레이 */
+.finished {
+  background: #f6f6f7;
+  color: #a6adb6;
+}
+
+.clickableRow:hover {
+  background: #f5f7fb;
+  transition: background 0.12s;
+}
+
+/* 페이지네이션 컨테이너 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+/* 페이지네이션 버튼 스타일 */
+.pageBtn {
+  padding: 8px 16px;
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background-color: #c1c4cc;
+  color: #666;
+}
+
+.pageBtn:disabled {
+  background-color: #f5f5f5;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+/* 현재 페이지 활성화 표시 */
+.active {
+  background-color: #666;
+  color: white;
+  font-weight: 700;
+  cursor: default;
+}
