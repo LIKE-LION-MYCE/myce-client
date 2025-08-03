@@ -4,7 +4,7 @@ import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoAp
 import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
 import { mockExpoApplications } from '../expo-status/ExpoStatusPage';
 import styles from './ExpoStatusDetail.module.css';
-import PaymentSelection from '../payment-selection/PaymentSelection'; // PaymentSelection 컴포넌트 임포트
+import PaymentSelection from '../payment-selection/PaymentSelection';
 
 // mockExpoDetails를 확장된 데이터에 맞게 업데이트
 const mockExpoDetails = mockExpoApplications.map(app => ({
@@ -12,12 +12,13 @@ const mockExpoDetails = mockExpoApplications.map(app => ({
   name: app.title,
   location: app.location,
   capacity: 1000,
-  startDate: app.postPeriod.split('~')[0].trim().replace(/\./g, '-').slice(0, -1),
-  endDate: app.postPeriod.split('~')[1].trim().replace(/\./g, '-').slice(0, -1),
+  // 날짜 형식 오류를 수정했습니다. .slice(0, -1)을 제거하여 'yyyy-MM-dd' 형식을 유지합니다.
+  startDate: app.postPeriod.split('~')[0].trim().replace(/\./g, '-'),
+  endDate: app.postPeriod.split('~')[1].trim().replace(/\./g, '-'),
   startTime: '09:00',
   endTime: '18:00',
-  postStartDate: app.postPeriod.split('~')[0].trim().replace(/\./g, '-').slice(0, -1),
-  postEndDate: app.postPeriod.split('~')[1].trim().replace(/\./g, '-').slice(0, -1),
+  postStartDate: app.postPeriod.split('~')[0].trim().replace(/\./g, '-'),
+  postEndDate: app.postPeriod.split('~')[1].trim().replace(/\./g, '-'),
   isPremium: app.id % 2 === 0,
   isPublic: true,
   category: 'IT',
@@ -72,9 +73,9 @@ const ExpoStatusDetail = () => {
     );
   }
 
-  // 결제수단선택 페이지가 표시될 경우 해당 컴포넌트만 렌더링
   if (showPaymentSelection) {
-    return <PaymentSelection />;
+    // 박람회 결제이므로 paymentType="expo" prop과 함께 expoId를 전달합니다.
+    return <PaymentSelection paymentType="expo" expoId={id} />;
   }
 
   return (
@@ -84,7 +85,6 @@ const ExpoStatusDetail = () => {
         onPayButtonClick={handleOpenModal}
       />
 
-      {/* 결제 대기 모달 조건부 렌더링 */}
       {modalType === 'waiting' && (
         <PaymentWaitingModal
           expoName={expoData.name}

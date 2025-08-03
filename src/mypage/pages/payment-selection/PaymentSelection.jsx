@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './PaymentSelection.module.css';
+import PaymentFinishedModal from '../../components/paymentDetailModal/PaymentFinishedModal';
+import ExpoPaymentCompleted from '../../../mypage/components/paymentCompletedModal/ExpoPaymentCompleted';
 
-const PaymentSelection = () => {
-  // 상태 관리를 위해 선택된 결제 수단을 저장하는 useState 훅
+// PaymentSelection 컴포넌트가 expoId를 prop으로 받도록 수정합니다.
+const PaymentSelection = ({ paymentType = 'expo', expoId }) => {
   const [selectedMethod, setSelectedMethod] = useState('');
+  const [isPaymentCompleted, setIsPaymentCompleted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSelectPaymentMethod = (method) => {
     setSelectedMethod(method);
@@ -11,12 +16,40 @@ const PaymentSelection = () => {
 
   const handleContinuePayment = () => {
     if (selectedMethod) {
+      setIsPaymentCompleted(true);
       console.log(`선택된 결제 수단: ${selectedMethod}`);
-      // 실제 결제 로직을 여기에 구현하세요.
-    } else {
-      alert('결제 수단을 선택해주세요.');
+      
+      // 결제 완료 후 페이지 이동 로직을 여기에 추가합니다.
+      if (paymentType === 'ads') {
+        // 광고 결제 완료 페이지로 이동 (PaymentFinishedModal은 모달이므로, 여기서는 페이지 이동은 하지 않습니다.)
+        // 또는 특정 경로로 이동하도록 설정
+        // navigate('/ads-payment-completed');
+      } else {
+        // 박람회 등록 결제 완료 페이지로 이동
+        // ExpoPaymentCompleted는 컴포넌트이므로, 페이지 이동을 위한 별도 라우트가 필요
+        // ExpoStatusDetail 페이지로 이동하도록 설정
+        navigate(`/mypage/expo-status/${expoId}`);
+      }
     }
   };
+
+  if (isPaymentCompleted) {
+    if (paymentType === 'ads') {
+      return (
+        <PaymentFinishedModal
+          expoName="광고명"
+          applicant="신청자명"
+          period="2023.01.01 ~ 2023.01.31"
+          amount="600,000원"
+          totalAmount="600,000원"
+          onClose={() => setIsPaymentCompleted(false)}
+        />
+      );
+    } else {
+      // ExpoPaymentCompleted 컴포넌트를 렌더링할 때 expoId prop을 전달합니다.
+      return <ExpoPaymentCompleted expoId={expoId} />;
+    }
+  }
 
   return (
     <div className={styles.container}>

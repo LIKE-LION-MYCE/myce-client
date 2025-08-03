@@ -114,7 +114,8 @@ function AdsStatusDetail() {
 
   // 결제수단선택 페이지가 표시될 경우 해당 컴포넌트만 렌더링
   if (showPaymentSelection) {
-    return <PaymentSelection />;
+    // 광고 결제이므로 paymentType="ads" prop을 전달합니다.
+    return <PaymentSelection paymentType="ads" />;
   }
 
   return (
