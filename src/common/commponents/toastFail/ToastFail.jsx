@@ -1,11 +1,11 @@
 import styles from './ToastFail.module.css';
 import { FaCheckCircle } from 'react-icons/fa';
 
-function ToastFail({message}) {
+function ToastFail() {
   return (
     <div className={styles.toastBox}>
       <FaCheckCircle />
-      <span>{message}</span>
+      <span>요청이 실패되었습니다.</span>
     </div>
   );
 }

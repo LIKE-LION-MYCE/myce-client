@@ -11,7 +11,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(255, 34, 34, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   z-index: 9999;
   animation: fadeInOut 1s ease-in-out forwards;
 }
