@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './MessageTemplateDetail.module.css';
 
 export default function MessageTemplateDetail() {
+  const navigate = useNavigate();
+
   const template = {
+    id: 1,
     title: '박람회 신청 승인 알림',
     content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
     createdAt: '2024-01-15',
@@ -15,13 +18,12 @@ export default function MessageTemplateDetail() {
 
   return (
     <main className={styles.container}>
-      <div className={styles.headerRow}>
-        <h1 className={styles.pageTitle}>발송 메시지 관리</h1>
-      </div>
-
       <div className={styles.card}>
         <div className={styles.topRow}>
-          <h2 className={styles.templateTitle}>{template.title}</h2>
+          <div className={styles.titleWithBack}>
+            <button className={styles.backArrow} onClick={() => navigate(-1)}>←</button>
+            <h2 className={styles.templateTitle}>{template.title}</h2>
+          </div>
           <div className={styles.actionButtons}>
             <Link to={`/platform/admin/settingMessage/${template.id}/edit`}>
               <button className={styles.editButton}>편집</button>

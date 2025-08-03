@@ -67,13 +67,17 @@
   align-items: center;
   gap: 6px;
   padding: 8px 20px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   border: none;
   border-radius: 20px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.2s ease;
+}
+
+.actionBtn:hover {
+  background-color: #ececec;
 }
 
 /* 이메일 전송 버튼 */

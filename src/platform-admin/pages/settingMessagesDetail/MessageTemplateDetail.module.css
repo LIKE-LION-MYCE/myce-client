@@ -1,23 +1,11 @@
-/* src/pages/MessageTemplateDetail.module.css */
 .container {
-  padding: 2rem;
   min-height: 100vh;
-}
-
-.headerRow {
-  margin-bottom: 2rem;
-}
-
-.pageTitle {
-  font-size: 1.5rem;
-  font-weight: bold;
 }
 
 .card {
   background-color: white;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .topRow {
@@ -27,9 +15,33 @@
   margin-bottom: 1rem;
 }
 
+.titleWithBack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .templateTitle {
   font-size: 1.25rem;
   font-weight: 600;
+  margin: 0;
+}
+
+.backArrow {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.backArrow:hover {
+  color: #999;
 }
 
 .actionButtons {
@@ -42,7 +54,7 @@
   color: #0369a1;
   border: none;
   padding: 0.4rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
@@ -51,7 +63,7 @@
   color: #b91c1c;
   border: none;
   padding: 0.4rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
@@ -83,24 +95,6 @@
   flex-wrap: wrap;
 }
 
-.grayButton {
-  background-color: #d1d5db;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-}
-
-.blackButton {
-  background-color: black;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-}
-
 .metaRow {
   margin-top: 1.5rem;
   font-size: 0.875rem;
@@ -109,20 +103,18 @@
   gap: 1.5rem;
 }
 
-
-/* 상태 태그용 스타일 */
 .tagActive {
   background-color: black;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
 }
 
 .tagInactive {
-  background-color: #d1d5db; /* gray-300 */
-  color: #6b7280; /* gray-500 */
+  background-color: #d1d5db;
+  color: #6b7280;
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
 }

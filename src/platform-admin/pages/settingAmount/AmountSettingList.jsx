@@ -40,8 +40,6 @@ const historyData = [
 export default function AmountSettingList() {
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>금액 설정</h1>
-
       <section className={styles.gridBox}>
         {cardData.map((card) => (
           <Link to={`/platform/admin/settingAmount/${card.name}`}>

@@ -4,12 +4,6 @@
   min-height: 100vh;
 }
 
-.title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-}
-
 /* 카드 영역 */
 .gridBox {
   display: grid;
