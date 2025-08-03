@@ -25,9 +25,12 @@ export default function MessageTemplateDetail() {
             <h2 className={styles.templateTitle}>{template.title}</h2>
           </div>
           <div className={styles.actionButtons}>
-            <Link to={`/platform/admin/settingMessage/${template.id}/edit`}>
-              <button className={styles.editButton}>편집</button>
-            </Link>
+            <button
+              className={styles.editButton}
+              onClick={() => navigate(`/platform/admin/settingMessage/${template.id}/edit`)}
+            >
+              편집
+            </button>
             <button className={styles.deleteButton}>삭제</button>
           </div>
         </div>
