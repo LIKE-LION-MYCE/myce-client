@@ -13,7 +13,12 @@ import BannerApplications from '../platform-admin/pages/bannerApplications/Banne
 import BannerApplicationsDetail from '../platform-admin/pages/bannerApplicationsDetail/BannerApplicationsDetail';
 import BannerCurrent from '../platform-admin/pages/bannerCurrent/BannerCurrent';
 import BannerCurrentDetail from '../platform-admin/pages/bannerCurrentDetail/BannerCurrentDetail';
-
+import MessageTemplateList from '../platform-admin/pages/settingMessages/MessageTemplateList';
+import MessageTemplateDetail from '../platform-admin/pages/settingMessagesDetail/MessageTemplateDetail';
+import MessageTemplateEdit from '../platform-admin/pages/settingMessagesDetail/MessageTemplateEdit';
+import MessageTemplateNew from '../platform-admin/pages/settingMessagesDetail/MessageTemplateNew';
+import AmountSettingList from '../platform-admin/pages/settingAmount/AmountSettingList';
+import AmountSettingDetail from '../platform-admin/pages/settingAmountDetail/AmountSettingDetail';
 
 function PlatformAdminRoutes() {
   return (
@@ -32,6 +37,12 @@ function PlatformAdminRoutes() {
             <Route path="bannerApplications/:id" element={<BannerApplicationsDetail />} />
             <Route path="bannerCurrent" element={<BannerCurrent />} />
             <Route path="bannerCurrent/:id" element={<BannerCurrentDetail />} />
+            <Route path="settingMessage" element={<MessageTemplateList />} />
+            <Route path="settingMessage/:id" element={<MessageTemplateDetail />} />
+            <Route path="settingMessage/:id/edit" element={<MessageTemplateEdit />} />
+            <Route path="settingMessage/new" element={<MessageTemplateNew />} />
+            <Route path="settingAmount" element={<AmountSettingList />} />
+            <Route path="settingAmount/:name" element={<AmountSettingDetail />} />
         </Route>
       </Routes>
   );s
