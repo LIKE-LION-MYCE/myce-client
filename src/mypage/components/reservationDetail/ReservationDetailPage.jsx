@@ -99,152 +99,174 @@ const ReservationDetailPage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.pageTitle}>예약 확인</h2>
+      <div className={styles.mainBox}>
+        <h2 className={styles.pageTitle}>예약 확인</h2>
 
-      <section className={styles.section}>
-        <h3 className={styles.subTitle}>참여 행사 정보</h3>
-        <div className={styles.expoBox}>
-          <img src={expo.posterUrl} alt="포스터" className={styles.poster} />
-          <div>
-            <div className={styles.expoTitle}>{expo.title}</div>
-            <div className={styles.grayDotList}>
-              <div>
-                <div className={styles.eventDate}>● {expo.dateRange}</div>
-                <div className={styles.eventPlace}>● {expo.place}</div>
+        <section className={styles.section}>
+          <h3 className={styles.subTitle}>참여 행사 정보</h3>
+          <div className={styles.expoBox}>
+            <img src={expo.posterUrl} alt="포스터" className={styles.poster} />
+            <div>
+              <div className={styles.expoTitle}>{expo.title}</div>
+              <div className={styles.grayDotList}>
+                <div>
+                  <div className={styles.eventDate}>● {expo.dateRange}</div>
+                  <div className={styles.eventPlace}>● {expo.place}</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className={styles.section}>
-        <h3 className={styles.subTitle}>예매 정보</h3>
-        <div className={styles.reservationGrid}>
-          <div>
-            <div className={styles.label}>예매일</div>
-            <div>{reservation.date}</div>
-          </div>
-          <div>
-            <div className={styles.label}>티켓 장수</div>
-            <div>{reservation.ticketCount}매</div>
-          </div>
-          <div>
-            <div className={styles.label}>총 결제금액</div>
-            <div>{reservation.totalAmount.toLocaleString()}원</div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h3 className={styles.subTitle}>참여 인원</h3>
-          {!isEditMode ? (
-            <button className={styles.editBtn} onClick={handleEdit}>
-              편집
-            </button>
-          ) : (
-            <div className={styles.editActionGroup}>
-              <button className={styles.saveBtn} onClick={handleSave}>
-                저장
-              </button>
-              <button className={styles.cancelBtn} onClick={handleCancel}>
-                취소
-              </button>
+        <section className={styles.section}>
+          <h3 className={styles.subTitle}>예매 정보</h3>
+          <div className={styles.reservationGrid}>
+            <div>
+              <div className={styles.label}>예매일</div>
+              <div>{reservation.date}</div>
             </div>
-          )}
-        </div>
-        <table className={styles.memberTable}>
-          <thead>
-            <tr>
-              <th>이름</th>
-              <th>예매번호</th>
-              <th>생년월일</th>
-              <th>전화번호</th>
-              <th>이메일</th>
-              <th>QR 확인</th>
-            </tr>
-          </thead>
-          <tbody>
-            {editMembers.map((m, idx) => (
-              <tr key={idx}>
-                <td>
-                  {isEditMode ? (
-                    <input
-                      value={m.name}
-                      onChange={(e) =>
-                        handleChange(idx, "name", e.target.value)
-                      }
-                      className={styles.input}
-                    />
-                  ) : (
-                    m.name
-                  )}
-                </td>
-                <td>{m.reservationId}</td>
-                <td>
-                  {isEditMode ? (
-                    <input
-                      value={m.birth}
-                      onChange={(e) =>
-                        handleChange(idx, "birth", e.target.value)
-                      }
-                      className={styles.input}
-                    />
-                  ) : (
-                    m.birth
-                  )}
-                </td>
-                <td>
-                  {isEditMode ? (
-                    <input
-                      value={m.phone}
-                      onChange={(e) =>
-                        handleChange(idx, "phone", e.target.value)
-                      }
-                      className={styles.input}
-                    />
-                  ) : (
-                    m.phone
-                  )}
-                </td>
-                <td>
-                  {isEditMode ? (
-                    <input
-                      value={m.email}
-                      onChange={(e) =>
-                        handleChange(idx, "email", e.target.value)
-                      }
-                      className={styles.input}
-                    />
-                  ) : (
-                    m.email
-                  )}
-                </td>
-                <td>
-                  <button
-                    className={styles.qrBtn}
-                    onClick={() => handleQrOpen(m.qrUrl)}
-                  >
-                    상세보기
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* 예약 취소 버튼 (가운데, 연회색) */}
-        <div
-          style={{ display: "flex", justifyContent: "center", marginTop: 28 }}
-        >
-          <button className={styles.neutralCancelBtn}>예약 취소</button>
-        </div>
-      </section>
+            <div>
+              <div className={styles.label}>티켓 장수</div>
+              <div>{reservation.ticketCount}매</div>
+            </div>
+            <div>
+              <div className={styles.label}>총 결제금액</div>
+              <div>{reservation.totalAmount.toLocaleString()}원</div>
+            </div>
+          </div>
+        </section>
 
-      <QRModal
-        open={qrModalOpen}
-        onClose={() => setQrModalOpen(false)}
-        qrImgUrl={qrImgUrl}
-      />
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.subTitle}>참여 인원</h3>
+            {!isEditMode ? (
+              <button className={styles.editBtn} onClick={handleEdit}>
+                편집
+              </button>
+            ) : (
+              <div className={styles.editActionGroup}>
+                <button className={styles.saveBtn} onClick={handleSave}>
+                  저장
+                </button>
+                <button className={styles.cancelBtn} onClick={handleCancel}>
+                  취소
+                </button>
+              </div>
+            )}
+          </div>
+          <table className={styles.memberTable}>
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>예매번호</th>
+                <th>생년월일</th>
+                <th>성별</th>
+                <th>전화번호</th>
+                <th>이메일</th>
+                <th>QR 확인</th>
+              </tr>
+            </thead>
+            <tbody>
+              {editMembers.map((m, idx) => (
+                <tr key={idx}>
+                  <td>
+                    {isEditMode ? (
+                      <input
+                        value={m.name}
+                        onChange={(e) =>
+                          handleChange(idx, "name", e.target.value)
+                        }
+                        className={styles.input}
+                      />
+                    ) : (
+                      m.name
+                    )}
+                  </td>
+                  <td>{m.reservationId}</td>
+                  <td>
+                    {isEditMode ? (
+                      <input
+                        value={m.birth}
+                        onChange={(e) =>
+                          handleChange(idx, "birth", e.target.value)
+                        }
+                        className={styles.input}
+                      />
+                    ) : (
+                      m.birth
+                    )}
+                  </td>
+                  <td>
+                    {isEditMode ? (
+                      <select
+                        value={m.gender || ""}
+                        onChange={(e) =>
+                          handleChange(idx, "gender", e.target.value)
+                        }
+                        className={styles.input}
+                        style={{ width: "70px" }}
+                      >
+                        <option value="">선택</option>
+                        <option value="남자">남자</option>
+                        <option value="여자">여자</option>
+                        <option value="기타">기타</option>
+                      </select>
+                    ) : (
+                      m.gender || "-"
+                    )}
+                  </td>
+                  <td>
+                    {isEditMode ? (
+                      <input
+                        value={m.phone}
+                        onChange={(e) =>
+                          handleChange(idx, "phone", e.target.value)
+                        }
+                        className={styles.input}
+                      />
+                    ) : (
+                      m.phone
+                    )}
+                  </td>
+                  <td>
+                    {isEditMode ? (
+                      <input
+                        value={m.email}
+                        onChange={(e) =>
+                          handleChange(idx, "email", e.target.value)
+                        }
+                        className={styles.input}
+                      />
+                    ) : (
+                      m.email
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      className={styles.qrBtn}
+                      onClick={() => handleQrOpen(m.qrUrl)}
+                    >
+                      상세보기
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* 예약 취소 버튼 (가운데, 연회색) */}
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 28 }}
+          >
+            <button className={styles.neutralCancelBtn}>예약 취소</button>
+          </div>
+        </section>
+
+        <QRModal
+          open={qrModalOpen}
+          onClose={() => setQrModalOpen(false)}
+          qrImgUrl={qrImgUrl}
+        />
+      </div>
     </div>
   );
 };
