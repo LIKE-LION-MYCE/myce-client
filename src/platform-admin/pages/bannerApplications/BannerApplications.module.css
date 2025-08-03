@@ -1,0 +1,59 @@
+.paymentContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+.select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+.input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  outline: none;
+  width: 160px;
+}
+
+.searchIcon {
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
