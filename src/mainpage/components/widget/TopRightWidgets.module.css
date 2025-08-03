@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  z-index: 50;
+  position: relative; /* absolute 사용 금지 */
+  max-width: 100%;
+}
+
+
+.searchBox {
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.input {
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  width: 200px;
+}
