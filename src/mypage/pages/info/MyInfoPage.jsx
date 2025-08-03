@@ -74,3 +74,4 @@ const MyInfoPage = () => {
     </div>
   );
 }
+export default MyInfoPage;
