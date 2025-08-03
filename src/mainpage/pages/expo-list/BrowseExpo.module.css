@@ -1,0 +1,38 @@
+/* BrowseExpo.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+.sidebar {
+  width: 280px;
+  margin-right: 2rem;
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.count {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #888;
+}

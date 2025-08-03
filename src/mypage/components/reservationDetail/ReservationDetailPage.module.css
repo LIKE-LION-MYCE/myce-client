@@ -1,0 +1,213 @@
+/* 전체 배경 */
+.wrapper {
+  min-height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 한 개의 큰 흰 박스 */
+.mainBox {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+  padding: 48px 56px 46px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* section 구분 강조 + 간격 확장 */
+.section {
+  padding: 20px 0 20px 0;   /* 하단 패딩 늘림 */
+  margin-bottom: 0;
+  border-top: 2.5px solid #f0f1f6;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  position: relative;
+}
+.section:not(:first-of-type) {
+  margin-top: 40px;     /* 섹션 사이 간격 넉넉하게 */
+}
+.section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* 섹션 구분용 그림자(선택 사항, 좀 더 구분감 원할 때) */
+/* .section:not(:first-of-type) {
+  box-shadow: 0 8px 16px rgba(60,80,210,0.04);
+} */
+
+.pageTitle {
+  margin-bottom: 38px;
+  letter-spacing: -1.5px;
+}
+
+/* 소제목 크기 확장 + 강조 */
+.subTitle {
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 21px;
+  color: #222;
+  letter-spacing: -0.5px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 13px;
+}
+
+/* 편집/저장/취소 버튼들 */
+.editBtn {
+  background: #f5f6fa;
+  color: #222;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.editActionGroup {
+  display: flex;
+  gap: 10px;
+}
+.saveBtn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+.cancelBtn {
+  background: #f5f6fa;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+/* 행사 정보 */
+.expoBox {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 6px;
+}
+.poster {
+  width: 110px;
+  height: 144px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+}
+.expoTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.grayDotList {
+  color: #888;
+  font-size: 15px;
+}
+.eventDate, .eventPlace {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+/* 예매 정보 그리드 */
+.reservationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 48px;
+  margin-bottom: 8px;
+}
+
+.label {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+/* 테이블 */
+.memberTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 17px;
+}
+.memberTable th,
+.memberTable td {
+  border: 1px solid #e7e7e7;
+  padding: 13px 8px;
+  text-align: center;
+}
+.memberTable th {
+  background: #f3f4f7;
+  font-weight: 600;
+  color: #222;
+  font-size: 17px;
+}
+.memberTable td {
+  background: #fff;
+  color: #444;
+  font-size: 16px;
+}
+
+/* 인풋 크기 */
+.input {
+  border: 1.2px solid #e3e3e3;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 15px;
+  width: 110px;
+}
+
+/* QR 버튼 */
+.qrBtn {
+  background: #fff;
+  border: 1px solid #767676;
+  color: #222;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.qrBtn:hover {
+  background: #222;
+  color: #fff;
+}
+
+/* 예약취소 버튼(가운데 정렬) */
+.neutralCancelBtn {
+  background: #fff;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 14px 140px;
+  font-size: 18px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  box-shadow: none;
+  transition: background 0.18s;
+}
+.neutralCancelBtn:hover {
+  background: #ececec;
+  color: #555;
+}
