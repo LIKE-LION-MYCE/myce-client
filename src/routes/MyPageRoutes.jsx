@@ -10,6 +10,7 @@ import AdsStatusDetail from "../mypage/pages/adsStatusDetail/AdsStatusDetail";
 import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
 import ExpoStatusDetail from "../mypage/pages/expoStatusDetail/ExpoStatusDetail";
 import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
+import PaymentSelection from "../mypage/pages/payment-selection/PaymentSelection";
 
 const MyPageRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const MyPageRoutes = () => {
         <Route path="expo-status" element={<ExpoStatusPage />} />
         <Route path="expo-status/:id" element={<ExpoStatusDetail />} />        
         <Route path="expo-status" element={<ExpoStatusPage />} />
+        <Route path="payment-selection" element={<PaymentSelection />} />
       </Route>
     </Routes>
   );

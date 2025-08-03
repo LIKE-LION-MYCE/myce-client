@@ -4,6 +4,7 @@ import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoAp
 import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
 import { mockExpoApplications } from '../expo-status/ExpoStatusPage';
 import styles from './ExpoStatusDetail.module.css';
+import PaymentSelection from '../payment-selection/PaymentSelection'; // PaymentSelection 컴포넌트 임포트
 
 // mockExpoDetails를 확장된 데이터에 맞게 업데이트
 const mockExpoDetails = mockExpoApplications.map(app => ({
@@ -42,6 +43,7 @@ const ExpoStatusDetail = () => {
   const { id } = useParams();
   const [expoData, setExpoData] = useState(null);
   const [modalType, setModalType] = useState(null); // 'waiting' | null
+  const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단선택 페이지 표시 상태
 
   useEffect(() => {
     const foundData = mockExpoDetails.find(data => data.id === parseInt(id));
@@ -57,8 +59,8 @@ const ExpoStatusDetail = () => {
   };
 
   const handlePay = () => {
-    // 실제 결제 로직 구현
-    console.log('결제하기 (연동 예정)');
+    // 결제 버튼 클릭 시 결제수단선택 페이지로 이동
+    setShowPaymentSelection(true);
     handleCloseModal();
   };
 
@@ -68,6 +70,11 @@ const ExpoStatusDetail = () => {
         <div className={styles.loading}>데이터를 찾을 수 없습니다.</div>
       </div>
     );
+  }
+
+  // 결제수단선택 페이지가 표시될 경우 해당 컴포넌트만 렌더링
+  if (showPaymentSelection) {
+    return <PaymentSelection />;
   }
 
   return (
