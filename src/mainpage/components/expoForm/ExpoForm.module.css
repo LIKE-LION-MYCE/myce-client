@@ -121,3 +121,38 @@
 .submit-button:hover {
   background-color: #333;
 }
+
+/* 포스터 업로드 관련 스타일 */
+.poster-upload-group {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 1.5rem; /* 기존에 있던 margin-bottom 유지 */
+}
+
+.upload-button {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #555;
+}
+
+.upload-info {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
+.upload-button:hover {
+  background-color: #f0f0f0;
+}
+
+.upload-info {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  color: #888;
+}
