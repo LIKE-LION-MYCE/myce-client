@@ -1,38 +1,24 @@
-// src/mainpage/layout/header/MainPageHeader.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styles from './MainPageHeader.module.css';
+import React, { useState } from 'react';
+import MemberMainPageHeader from './MemberMainPageHeader'; // 이름이 변경된 컴포넌트 임포트
+import GuestMainPageHeader from './GuestMainPageHeader';
 
-function MainPageHeader() {
+const MainPageHeader = () => {
+  // 로그인 상태를 관리하는 useState 훅을 사용합니다. 임시로 boolean값줘서 로그인 상태 바꾸기
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  const handleLogin = () => setIsLoggedIn(true);
+  const handleLogout = () => setIsLoggedIn(false);
+
+  // 로그인 상태에 따라 다른 헤더 컴포넌트를 조건부 렌더링합니다.
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        <div className={styles.logo}>
-          <Link to="/">
-            <img src="/myce_logo.png" alt="MYCE Logo" /> 
-          </Link>
-        </div>
-        <nav className={styles.nav}>
-          <ul className={styles.navList}>
-            <li className={styles.navItem}>
-              <Link to="/expo-list">박람회 목록</Link>
-            </li>
-            <li className={styles.navItem}>
-              <Link to="/expo-apply">박람회 등록</Link>
-            </li>
-            <li className={styles.navItem}>
-              <Link to="/ad-apply">광고 신청</Link>
-            </li>
-          </ul>
-        </nav>
-        <div className={styles.authButtons}>
-          <button className={styles.loginButton}>로그인</button>
-          <button className={styles.signupButton}>회원가입</button>
-          <button className={styles.myPageButton}>마이페이지</button>
-        </div>
-      </div>
-    </header>
+    <>
+      {isLoggedIn ? (
+        <MemberMainPageHeader onLogout={handleLogout} /> // 이름이 변경된 컴포넌트 사용
+      ) : (
+        <GuestMainPageHeader onLogin={handleLogin} />
+      )}
+    </>
   );
-}
+};
 
 export default MainPageHeader;
