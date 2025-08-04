@@ -81,6 +81,10 @@ function ExpoAdminSideBar() {
           [`.${menuClasses.subMenuRoot}`]: {
             backgroundColor: '#1e2a38',
           },
+          [`.${menuClasses.subMenuContent}`]: {
+            backgroundColor: '#1e2a38',
+            paddingLeft: '20px',
+          },
         }}
       >
         <MenuItem disabled style={{ cursor: 'default' , opacity: '0.6'}}>
