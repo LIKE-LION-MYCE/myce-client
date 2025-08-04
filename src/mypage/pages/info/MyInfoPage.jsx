@@ -20,23 +20,23 @@ const MyInfoPage = () => {
         <div className={styles.formGrid}>
           <div className={styles.formGroup}>
             <label>이름</label>
-            <input type="text" value="홍길동" disabled />
+            <input type="text" value="홍길동" disabled className={styles.inputText} />
           </div>
           <div className={styles.formGroup}>
             <label>생년월일</label>
-            <input type="date" value="2001-09-16" disabled />
+            <input type="date" value="2001-09-16" disabled className={styles.inputDate} />
           </div>
           <div className={styles.formGroup}>
             <label>아이디</label>
-            <input type="text" disabled value="honggildong" />
+            <input type="text" disabled value="honggildong" className={styles.inputText} />
           </div>
           <div className={styles.formGroup}>
             <label>전화번호</label>
-            <input type="tel" value="010-1234-5678" />
+            <input type="tel" value="010-1234-5678" className={styles.inputTel} />
           </div>
           <div className={styles.formGroupFull}>
             <label>이메일</label>
-            <input type="email" placeholder="example@email.com" />
+            <input type="email" placeholder="example@email.com" className={styles.inputEmail} />
           </div>
           <div className={styles.genderGroup}>
             <label>성별</label>
@@ -73,5 +73,6 @@ const MyInfoPage = () => {
       {isModalOpen && <ChangePasswordModal onClose={closeModal} />}
     </div>
   );
-}
+};
+
 export default MyInfoPage;
