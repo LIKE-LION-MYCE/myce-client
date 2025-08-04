@@ -46,6 +46,7 @@ const LoginPage = () => {
                 placeholder="아이디를 입력하세요"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
+                className={styles.inputText}
               />
             </label>
             <label>
@@ -57,17 +58,14 @@ const LoginPage = () => {
                     placeholder="비밀번호를 입력하세요"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className={styles.inputPassword}
                   />
                   <button
                     type="button"
                     className={styles.togglePassword}
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <AiOutlineEye />
-                    ) : (
-                      <AiOutlineEyeInvisible />
-                    )}
+                    {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
                   </button>
                 </div>
               </div>
@@ -93,7 +91,7 @@ const LoginPage = () => {
             </button>
             <button className={styles.socialButton}>
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png?20230822192911"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png"
                 alt="구글"
                 className={styles.socialIcon}
               />
@@ -101,7 +99,7 @@ const LoginPage = () => {
             </button>
             <button className={styles.socialButton}>
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png?20180806170715"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png"
                 alt="깃허브"
                 className={styles.socialIcon}
               />
@@ -128,6 +126,7 @@ const LoginPage = () => {
               placeholder="최상위 관리자 아이디를 입력하세요"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
+              className={styles.inputText}
             />
           </label>
           <label>
@@ -139,6 +138,7 @@ const LoginPage = () => {
                   placeholder="관리자 코드를 입력하세요"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={styles.inputPassword}
                 />
                 <button
                   type="button"
