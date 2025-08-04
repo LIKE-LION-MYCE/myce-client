@@ -21,7 +21,7 @@ function ExpoAdminSideBar() {
   const currentPath = location.pathname;
 
   const [selectedMenu, setSelectedMenu] = useState('');
-  const [openSubMenus, setOpenSubMenus] = useState([]); // <-- 타입 제거 (JS 전용)
+  const [openSubMenus, setOpenSubMenus] = useState([]);
 
   const expoPaths = ['/expo/admin/setting', '/expo/admin/booths', '/expo/admin/events'];
   const reservationPaths = ['/expo/admin/payments', '/expo/admin/reservations', '/expo/admin/emails'];
@@ -80,14 +80,10 @@ function ExpoAdminSideBar() {
           },
           [`.${menuClasses.subMenuRoot}`]: {
             backgroundColor: '#1e2a38',
-          },
-          [`.${menuClasses.subMenuContent}`]: {
-            backgroundColor: '#1e2a38',
-            paddingLeft: '20px',
-          },
+          }
         }}
       >
-        <MenuItem disabled style={{ cursor: 'default' , opacity: '0.6'}}>
+        <MenuItem disabled style={{ cursor: 'default', opacity: '0.6' }}>
           Dashboards
         </MenuItem>
 
@@ -99,7 +95,7 @@ function ExpoAdminSideBar() {
           대시 보드
         </MenuItem>
 
-        <MenuItem disabled style={{ cursor: 'default' , opacity: '0.6'}}>
+        <MenuItem disabled style={{ cursor: 'default', opacity: '0.6' }}>
           Pages
         </MenuItem>
 
@@ -109,26 +105,24 @@ function ExpoAdminSideBar() {
           open={openSubMenus.includes('expo')}
           onOpenChange={() => toggleSubMenu('expo')}
         >
-          <Menu>
-            <MenuItem
-              component={<Link to="/expo/admin/setting" />}
-              active={selectedMenu === '/expo/admin/setting'}
-            >
-              박람회 상세
-            </MenuItem>
-            <MenuItem
-              component={<Link to="/expo/admin/booths" />}
-              active={selectedMenu === '/expo/admin/booths'}
-            >
-              참가 부스
-            </MenuItem>
-            <MenuItem
-              component={<Link to="/expo/admin/events" />}
-              active={selectedMenu === '/expo/admin/events'}
-            >
-              행사 일정
-            </MenuItem>
-          </Menu>
+          <MenuItem
+            component={<Link to="/expo/admin/setting" />}
+            active={selectedMenu === '/expo/admin/setting'}
+          >
+            박람회 상세
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/expo/admin/booths" />}
+            active={selectedMenu === '/expo/admin/booths'}
+          >
+            참가 부스
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/expo/admin/events" />}
+            active={selectedMenu === '/expo/admin/events'}
+          >
+            행사 일정
+          </MenuItem>
         </SubMenu>
 
         <SubMenu
@@ -137,26 +131,24 @@ function ExpoAdminSideBar() {
           open={openSubMenus.includes('reservation')}
           onOpenChange={() => toggleSubMenu('reservation')}
         >
-          <Menu>
-            <MenuItem
-              component={<Link to="/expo/admin/payments" />}
-              active={selectedMenu === '/expo/admin/payments'}
-            >
-              결제 내역
-            </MenuItem>
-            <MenuItem
-              component={<Link to="/expo/admin/reservations" />}
-              active={selectedMenu === '/expo/admin/reservations'}
-            >
-              예약자 리스트
-            </MenuItem>
-            <MenuItem
-              component={<Link to="/expo/admin/emails" />}
-              active={selectedMenu === '/expo/admin/emails'}
-            >
-              이메일 전송 이력
-            </MenuItem>
-          </Menu>
+          <MenuItem
+            component={<Link to="/expo/admin/payments" />}
+            active={selectedMenu === '/expo/admin/payments'}
+          >
+            결제 내역
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/expo/admin/reservations" />}
+            active={selectedMenu === '/expo/admin/reservations'}
+          >
+            예약자 리스트
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/expo/admin/emails" />}
+            active={selectedMenu === '/expo/admin/emails'}
+          >
+            이메일 전송 이력
+          </MenuItem>
         </SubMenu>
 
         <MenuItem
