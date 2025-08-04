@@ -55,7 +55,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   return (
     <div className={styles['form-container']}>
       <form onSubmit={handleSubmit}>
-        <h1 className={styles['title']}>광고 등록</h1>
+        <h1 className={styles['title']}>광고 신청</h1>
         <p className={styles['subtitle']}>광고 정보를 입력해주세요.</p>
 
         {/* 광고 배너 위치 */}

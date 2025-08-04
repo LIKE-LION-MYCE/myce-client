@@ -41,7 +41,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     <div className={styles['form-container']}>
       {/* <form> 태그를 추가하고, onSubmit 이벤트를 연결합니다. */}
       <form onSubmit={handleSubmit}>
-        <h1 className={styles['title']}>박람회 등록</h1>
+        <h1 className={styles['title']}>박람회 신청</h1>
         <p className={styles['subtitle']}>박람회 기본정보를 입력해주세요.</p>
 
         {/* 박람회 포스터 */}
