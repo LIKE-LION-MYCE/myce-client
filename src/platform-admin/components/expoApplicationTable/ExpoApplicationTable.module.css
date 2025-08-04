@@ -1,0 +1,81 @@
+.tableWrapper {
+  margin-top: 24px;
+  background-color: #fff;
+  border-radius: 7px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headerRow {
+  background-color: #f7f9fc;
+}
+
+.th {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #222;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: center;
+}
+
+.row:hover {
+  background-color: #f0f8ff;
+  cursor: pointer;
+}
+
+.selectedRow {
+  background-color: #f4f9ff;
+}
+
+/* 공통 뱃지 */
+.badge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* 결제 상태별 뱃지 */
+.badgePaid {
+  background-color: #ebf9f1;
+  color: #2a9c68;
+}
+
+.badgeCanceled {
+  background-color: #ffecec;
+  color: #e74c3c;
+}
+
+.detailBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 18px;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.detailBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}

@@ -83,7 +83,7 @@ function ExpoAdminSideBar() {
           },
         }}
       >
-        <MenuItem disabled style={{ cursor: 'default' }}>
+        <MenuItem disabled style={{ cursor: 'default' , opacity: '0.6'}}>
           Dashboards
         </MenuItem>
 
@@ -95,7 +95,7 @@ function ExpoAdminSideBar() {
           대시 보드
         </MenuItem>
 
-        <MenuItem disabled style={{ cursor: 'default' }}>
+        <MenuItem disabled style={{ cursor: 'default' , opacity: '0.6'}}>
           Pages
         </MenuItem>
 

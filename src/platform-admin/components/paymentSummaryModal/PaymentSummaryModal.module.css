@@ -1,0 +1,107 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  width: 480px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Pretendard', sans-serif;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.infoBox {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.feeBox {
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.label {
+  color: #333;
+  font-weight: 500;
+}
+
+.value {
+  color: #111;
+}
+
+.amount {
+  font-weight: 500;
+}
+
+.totalRow {
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 12px;
+}
+
+.totalLabel {
+  color: #111;
+}
+
+.totalAmount {
+  color: #111;
+}
+
+.actionBox {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.actionBox button {
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.cancelBtn {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+.submitBtn {
+  background-color: #17212c;
+  color: white;
+  border: none;
+}
+
+.submitBtn:hover {
+  background-color: #0f1820;
+}

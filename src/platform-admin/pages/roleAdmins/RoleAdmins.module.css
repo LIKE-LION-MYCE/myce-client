@@ -1,0 +1,115 @@
+/* 전체 wrapper */
+.emailsWrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  width: 1625px;
+  margin: 10px 0;
+}
+
+/* 상단 필터 + 버튼 wrapper */
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+/* 필터 & 버튼 구역 */
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 드롭다운 + 검색 input + 아이콘 그룹 */
+.filterGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+/* 드롭다운 */
+.select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+/* 검색 input */
+.input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  outline: none;
+  width: 200px;
+}
+
+/* 검색 아이콘 */
+.searchIcon {
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 공통 버튼 스타일 */
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.actionBtn:hover {
+  background-color: #ececec;
+}
+
+/* 이메일 전송 버튼 */
+.emailBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  font-size: 12px;
+  font-weight: 400;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.emailBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+/* 엑셀 추출 버튼 */
+.excelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  font-size: 12px;
+  font-weight: 400;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.excelBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+/* 아이콘 */
+.icon {
+  font-size: 14px;
+  margin-right: 4px;
+}

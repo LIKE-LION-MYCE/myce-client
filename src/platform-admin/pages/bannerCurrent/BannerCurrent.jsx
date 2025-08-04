@@ -1,68 +1,68 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { FaQrcode } from 'react-icons/fa';
-import styles from './Payments.module.css';
+import styles from './BannerCurrent.module.css';
 
 import Tab from '../../../common/commponents/tab/Tab';
-import PaymentTable from '../../components/paymentTable/PaymentTable';
+import CurrentBannerTable from '../../components/currentBannerTable/CurrentBannerTable';
 import Pagination from '../../../common/commponents/pagination/Pagination';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
-function Payments() {
+const bannerStatusMap = {
+  PENDING: '취소 대기',
+  POSTING: '게시중'
+};
+
+function BannerCurrent() {
   const [currentTab, setCurrentTab] = useState('결제 완료');
   const [currentPage, setCurrentPage] = useState(0);
   const [sortOrder, setSortOrder] = useState('desc');
   const [searchText, setSearchText] = useState('');
-  const [showToast, setShowToast] = useState(false);
-
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
-  };
-
-  const handleReissueQR = () => {
-    console.log('QR 재발급');
-    triggerToast();
-  };
 
   const pageSize = 10;
 
   const allData = [
     {
-      reservationNumber: '59217342',
+      id: 1,
+      username: 'hj1234',
       name: '황지현',
-      id: 'hj1234',
-      gender: '여',
-      phone: '010-1234-5678',
+      bannerName: '2025 귀농귀촌 박람회',
+      bannerType: '사이드 배너',
       email: 'hj1234@naver.com',
-      quantity: 5,
-      totalPrice: '150,000원',
-      paymentStatus: '결제 완료',
-      createdAt: '2025-08-01T14:23:45',
+      phone: '010-1234-5678',
+      createdAt: '2025-08-01',
+      status: 'PENDING',
     },
     {
-      reservationNumber: '59217343',
+      id: 2,
+      username: 'jiwoo',
       name: '김지우',
-      id: 'jiwoo',
-      gender: '여',
-      phone: '010-3333-4444',
+      bannerName: '전국 촌캉스 박람회',
+      bannerType: '상단 배너',
       email: 'jiwoo@naver.com',
-      quantity: 3,
-      totalPrice: '90,000원',
-      paymentStatus: '결제 완료',
-      createdAt: '2025-07-25T09:12:00',
+      phone: '010-3333-4444',
+      createdAt: '2025-07-25',
+      status: 'PENDING',
     },
     {
-      reservationNumber: '59217344',
+      id: 3,
+      username: 'minsoo',
       name: '최민수',
-      id: 'minsoo',
-      gender: '남',
-      phone: '010-7777-8888',
+      bannerName: '2025 로컬 청년 페스타',
+      bannerType: '하단 배너',
       email: 'minsoo@naver.com',
-      quantity: 1,
-      totalPrice: '30,000원',
-      paymentStatus: '결제 취소',
-      createdAt: '2025-07-20T15:00:00',
+      phone: '010-7777-8888',
+      createdAt: '2025-07-20',
+      status: 'PENDING',
+    },
+    {
+      id: 4,
+      username: 'junho',
+      name: '박준호',
+      bannerName: '청년창업 박람회',
+      bannerType: '상단 배너',
+      email: 'junho@naver.com',
+      phone: '010-5555-6666',
+      createdAt: '2025-07-15',
+      status: 'POSTING',
     },
   ];
 
@@ -71,7 +71,7 @@ function Payments() {
     totalPages: 1,
     number: currentPage,
     size: pageSize,
-    totalElements: 0,
+    totalElements: allData.length,
   };
 
   const handlePageChange = (page) => {
@@ -81,7 +81,7 @@ function Payments() {
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['결제 완료', '결제 취소']}
+        tabs={['게시중', '취소 대기']}
         currentTab={currentTab}
         onChange={(tab) => setCurrentTab(tab)}
       />
@@ -96,7 +96,7 @@ function Payments() {
                 setSearchText(e.target.value);
                 setCurrentPage(0);
               }}
-              placeholder="예약 번호 검색"
+              placeholder="검색"
               className={styles.input}
             />
             <FiSearch className={styles.searchIcon} />
@@ -116,24 +116,12 @@ function Payments() {
             </select>
           </div>
         </div>
-
-        <div className={styles.buttons}>
-          <button
-            className={`${styles.actionBtn} ${styles.qrBtn}`}
-            onClick={handleReissueQR}
-          >
-            <FaQrcode className={styles.icon} />
-            QR 재발급
-          </button>
-        </div>
       </div>
 
-      <PaymentTable data={pageInfo.content} />
+      <CurrentBannerTable data={pageInfo.content} statusMap={bannerStatusMap} />
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
-
-      {showToast && <ToastSuccess />}
     </div>
   );
 }
 
-export default Payments;
+export default BannerCurrent;
