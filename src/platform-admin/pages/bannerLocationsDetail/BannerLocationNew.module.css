@@ -1,5 +1,3 @@
-/* BannerLocationDetail.module.css */
-
 .bannerSettings {
   width: 100%;
   max-width: 800px;
@@ -28,78 +26,29 @@
   margin-bottom: 0.5rem;
 }
 
+/* 공통 input 스타일 */
 .input {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  outline: none;
   background-color: #f9f9f9;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
 .input:focus {
   border-color: #007bff;
 }
 
-.checkboxLabel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* 확장용 input 타입 */
+.inputText {
+  /* 텍스트 기본 */
 }
 
-.checkboxLabel .input {
-  width: auto;
-}
-
-.formActions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-}
-
-.btnPrimary {
-  padding: 0.8rem 2rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.btnPrimary:hover {
-  background-color: #0056b3;
-}
-
-.btnDanger {
-  padding: 0.8rem 2rem;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.btnDanger:hover {
-  background-color: #c82333;
-}
-
-input[type="date"] {
-  padding: 0.8rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-}
-
-input[type="date"]:focus {
-  border-color: #007bff;
-}
-
-button[type="button"]:focus,
-button[type="submit"]:focus {
-  outline: none;
+.inputNumber {
+  text-align: right;
 }
 
 /* 토글 스위치 */
@@ -146,4 +95,39 @@ button[type="submit"]:focus {
 
 .toggleInput:checked + .toggleSlider::before {
   transform: translateX(20px);
+}
+
+/* 버튼 영역 */
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.btnPrimary {
+  padding: 0.8rem 2rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btnPrimary:hover {
+  background-color: #0056b3;
+}
+
+.btnDanger {
+  padding: 0.8rem 2rem;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btnDanger:hover {
+  background-color: #c82333;
 }
