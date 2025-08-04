@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IoNotifications } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './MemberMainPageHeader.module.css';
+import NotificationButton from '../../components/notification/NotificationButton';
 
 const MemberMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
@@ -53,10 +54,7 @@ const MemberMainPageHeader = () => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
-        <div className={styles.notificationWrapper}>
-          <IoNotifications className={styles.notificationIcon} size={20} />
-          <div className={styles.notificationBadge}>2</div>
-        </div>
+        <NotificationButton />
         
         <button className={styles.logoutBtn}>로그아웃</button>
         <button className={styles.mypageBtn} onClick={handleMypageClick}>마이페이지</button>

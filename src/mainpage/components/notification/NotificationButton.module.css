@@ -1,0 +1,25 @@
+.wrapper {
+  position: relative;
+}
+
+.notificationWrapper {
+  position: relative;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.notificationIcon {
+  color: #000;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 9999px;
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: bold;
+}

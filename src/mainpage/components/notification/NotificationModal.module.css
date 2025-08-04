@@ -1,0 +1,143 @@
+/* src/components/modal/NotificationModal.module.css */
+
+.modalContainer {
+  background: white;
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
+  padding: 1.25rem;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  z-index: 999;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  gap: 0.4rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.readAll,
+.close {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.notificationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.notificationItem {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notificationIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.notificationContent {
+  flex-grow: 1;
+}
+
+.notificationTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.notificationDesc {
+  font-size: 0.875rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.notificationMeta {
+  font-size: 0.75rem;
+  color: #999;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.typeBadge {
+  background-color: #f4f4f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.timeAgo {
+  font-style: italic;
+}
+
+.unreadDot {
+  width: 6px;
+  height: 6px;
+  background-color: #f87171;
+  border-radius: 50%;
+}
+
+.confirmButton {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* 알림 아이콘 트리거 버튼 */
+.notificationWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.notificationIcon {
+  color: #000;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: bold;
+}
