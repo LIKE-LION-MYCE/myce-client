@@ -1,0 +1,90 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 40px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 60px;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.question {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.contactIcon {
+  font-size: 16px;
+}
+
+.contactLink {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+}
+
+.redirectButton {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 400px;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.redirectButton:hover {
+  background: #333;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 40px;
+  }
+  
+  .content {
+    padding: 30px 20px;
+  }
+}

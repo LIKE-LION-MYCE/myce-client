@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import styles from "./AdsStatusDetail.module.css";
 import PaymentWaitingModal from "../../components/paymentDetailModal/PaymentWaitingModal";
 import PaymentFinishedModal from "../../components/paymentDetailModal/PaymentFinishedModal";
+import PaymentSelection from "../payment-selection/PaymentSelection";
 
 // 광고 상태 매핑 객체
 const AD_STATUS_MAP = {
@@ -57,6 +58,7 @@ function AdsStatusDetail() {
 
   // 모달 상태
   const [modalType, setModalType] = useState(null); // 'waiting' | 'finished' | null
+  const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단 선택 페이지 표시 상태
 
   // 메인 버튼 클릭 핸들러
   const handleMainBtnClick = () => {
@@ -71,10 +73,11 @@ function AdsStatusDetail() {
         break;
       case "신청 취소":
         // 실제 취소 연동 또는 confirm alert 등
-        alert("신청 취소 기능 연동 예정");
+        // alert("신청 취소 기능 연동 예정");
         break;
       default:
-        alert(statusConf.mainBtn.label + " 클릭됨");
+        // alert(statusConf.mainBtn.label + " 클릭됨");
+        break;
     }
   };
 
@@ -87,15 +90,16 @@ function AdsStatusDetail() {
         setModalType("finished");
         break;
       case "신청 취소":
-        alert("신청 취소 기능 연동 예정");
+        // alert("신청 취소 기능 연동 예정");
         break;
       default:
-        alert(statusConf.subBtn.label + " 클릭됨");
+        // alert(statusConf.subBtn.label + " 클릭됨");
+        break;
     }
   };
 
   const handleDownload = () => {
-    alert("다운로드 기능 연동 필요");
+    // alert("다운로드 기능 연동 필요");
   };
 
   // 모달 닫기
@@ -104,9 +108,15 @@ function AdsStatusDetail() {
   // 결제하기 버튼 (모달 내)
   const handlePay = () => {
     // 실제 결제 연동
-    alert("결제하기 (연동 예정)");
+    setShowPaymentSelection(true); // 결제수단 선택 페이지 표시
     handleCloseModal();
   };
+
+  // 결제수단선택 페이지가 표시될 경우 해당 컴포넌트만 렌더링
+  if (showPaymentSelection) {
+    // 광고 결제이므로 paymentType="ads" prop을 전달합니다.
+    return <PaymentSelection paymentType="ads" />;
+  }
 
   return (
     <div className={styles.wrapper}>

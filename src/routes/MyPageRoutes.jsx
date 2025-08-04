@@ -8,7 +8,9 @@ import MySettingPage from "../mypage/pages/setting/MySettingPage";
 import AdsStatusPage from "../mypage/pages/ads-status/AdsStatusPage";
 import AdsStatusDetail from "../mypage/pages/adsStatusDetail/AdsStatusDetail";
 import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
+import ExpoStatusDetail from "../mypage/pages/expoStatusDetail/ExpoStatusDetail";
 import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
+import PaymentSelection from "../mypage/pages/payment-selection/PaymentSelection";
 
 const MyPageRoutes = () => {
   return (
@@ -22,10 +24,12 @@ const MyPageRoutes = () => {
         <Route path="reservation/:id" element={<ReservationDetailPage />} />
         <Route path="saved-expo" element={<MySavedExpoPage />} />
         <Route path="setting" element={<MySettingPage />} />
-
         <Route path="ads-status" element={<AdsStatusPage />} />
         <Route path="ads-status/:id" element={<AdsStatusDetail />} />
         <Route path="expo-status" element={<ExpoStatusPage />} />
+        <Route path="expo-status/:id" element={<ExpoStatusDetail />} />        
+        <Route path="expo-status" element={<ExpoStatusPage />} />
+        <Route path="payment-selection" element={<PaymentSelection />} />
       </Route>
     </Routes>
   );
