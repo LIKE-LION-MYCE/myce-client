@@ -3,7 +3,7 @@
 .expo-apply-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   background-color: #f9f9f9;
 }
