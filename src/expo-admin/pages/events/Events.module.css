@@ -9,7 +9,7 @@
 
 /* --- Section --- */
 .section {
-  text-align: left; 
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -20,6 +20,7 @@
   font-weight: 700;
 }
 
+/* --- 안내 박스 --- */
 .alertBox {
   display: flex;
   align-items: flex-start;
@@ -41,4 +42,27 @@
 
 .alertText {
   line-height: 1.5;
+}
+
+.topControls {
+  display: flex;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+.select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
 }
