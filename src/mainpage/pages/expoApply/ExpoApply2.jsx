@@ -200,18 +200,6 @@ const ExpoApply2 = () => {
               className={styles['input-field']}
             />
           </div>
-
-          {/* 첨부 자료 */}
-          <div className={styles['form-group']}>
-            <label>첨부 자료</label>
-            <p className={styles['sub-text']}>기획서, 사진 등 추가 자료를 첨부해주세요.</p>
-            <div className={styles['upload-file-area']}>
-              <label htmlFor="fileUpload" className={styles['upload-file-button']}>
-                파일 업로드
-              </label>
-              <input type="file" id="fileUpload" style={{ display: 'none' }} />
-            </div>
-          </div>
           
           <div className={styles['button-group']}>
             <button type="button" className={styles['cancel-button']}>취소</button>
