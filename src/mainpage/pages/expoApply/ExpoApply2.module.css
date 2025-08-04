@@ -1,3 +1,13 @@
+/* 페이지 전체 배경색 */
+.page-background {
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 0;
+}
+
 /* ExpoApply2.module.css */
 .form-container {
   width: 50%;
