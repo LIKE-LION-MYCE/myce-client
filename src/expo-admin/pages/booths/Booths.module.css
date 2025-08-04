@@ -9,7 +9,7 @@
 
 /* --- Section --- */
 .section {
-  text-align: left; 
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -18,4 +18,52 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 700;
+}
+
+/* --- 상단 필터 그룹 --- */
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+.select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+.input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  outline: none;
+  width: 200px;
+}
+
+.searchIcon {
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
 }

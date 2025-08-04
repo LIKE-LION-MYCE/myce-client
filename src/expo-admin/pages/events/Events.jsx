@@ -71,6 +71,7 @@ const dummyDB = [
 function Events() {
   const [eventList, setEventList] = useState([]);
   const [page, setPage] = useState(0);
+  const [sortOrder, setSortOrder] = useState('desc');
   const size = 4;
 
   const pageInfo = {
@@ -78,32 +79,31 @@ function Events() {
     number: page,
   };
 
-  // 초기 데이터 로딩
   useEffect(() => {
     fetchEvents(page);
-  }, [page]);
+  }, [page, sortOrder]);
 
   const fetchEvents = async (pageNum) => {
-    // 실제 API 사용 시:
-    // const res = await axios.get(`/api/events?page=${pageNum}&size=${size}`);
-    // setEventList(res.data.content);
-
     const start = pageNum * size;
     const end = start + size;
-    setEventList(dummyDB.slice(start, end));
+
+    const sorted = [...dummyDB].sort((a, b) => {
+      const dateA = new Date(a.eventDate);
+      const dateB = new Date(b.eventDate);
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    setEventList(sorted.slice(start, end));
   };
 
-  // 추가
   const handleAdd = async (event) => {
     const newId = Math.max(...dummyDB.map((e) => e.id), 0) + 1;
     const newEvent = { ...event, id: newId };
     dummyDB.push(newEvent);
-
-    fetchEvents(0); // 첫 페이지로 리셋
     setPage(0);
+    fetchEvents(0);
   };
 
-  // 수정
   const handleUpdate = async (updatedEvent) => {
     const index = dummyDB.findIndex((e) => e.id === updatedEvent.id);
     if (index !== -1) {
@@ -112,7 +112,6 @@ function Events() {
     }
   };
 
-  // 삭제
   const handleDelete = async (id) => {
     const index = dummyDB.findIndex((e) => e.id === id);
     if (index !== -1) {
@@ -135,6 +134,23 @@ function Events() {
       {/* 행사 목록 */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>행사 목록</h4>
+
+        <div className={styles.topControls}>
+          <div className={styles.filterGroup}>
+            <select
+              value={sortOrder}
+              onChange={(e) => {
+                setSortOrder(e.target.value);
+                setPage(0);
+              }}
+              className={styles.select}
+            >
+              <option value="desc">최근 일정순</option>
+              <option value="asc">과거 일정순</option>
+            </select>
+          </div>
+        </div>
+
         <EventTable
           data={eventList}
           onUpdate={handleUpdate}
