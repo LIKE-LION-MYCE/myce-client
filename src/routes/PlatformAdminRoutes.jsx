@@ -19,6 +19,9 @@ import MessageTemplateEdit from '../platform-admin/pages/settingMessagesDetail/M
 import MessageTemplateNew from '../platform-admin/pages/settingMessagesDetail/MessageTemplateNew';
 import AmountSettingList from '../platform-admin/pages/settingAmount/AmountSettingList';
 import AmountSettingDetail from '../platform-admin/pages/settingAmountDetail/AmountSettingDetail';
+import BannerLocation from '../platform-admin/pages/bannerLocations/BannerLocation';
+import BannerLocationDetail from '../platform-admin/pages/bannerLocationsDetail/BannerLocationDetail';
+import BannerLocationNew from '../platform-admin/pages/bannerLocationsDetail/BannerLocationNew';
 
 function PlatformAdminRoutes() {
   return (
@@ -43,6 +46,9 @@ function PlatformAdminRoutes() {
             <Route path="settingMessage/new" element={<MessageTemplateNew />} />
             <Route path="settingAmount" element={<AmountSettingList />} />
             <Route path="settingAmount/:name" element={<AmountSettingDetail />} />
+            <Route path="bannerLocations" element={<BannerLocation />} />
+            <Route path="bannerLocations/:id" element={<BannerLocationDetail />} />
+            <Route path="bannerLocations/new" element={<BannerLocationNew />} />
         </Route>
       </Routes>
   );s

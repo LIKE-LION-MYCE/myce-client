@@ -236,6 +236,12 @@ function PlatformAdminSideBar() {
           >
             금액 설정
           </MenuItem>
+          <MenuItem
+            component={<Link to="/platform/admin/bannerLocations" />}
+            active={selectedMenu === '/platform/admin/bannerLocations'}
+          >
+            배너 타입 설정
+          </MenuItem>
         </SubMenu>
       </Menu>
     </Sidebar>

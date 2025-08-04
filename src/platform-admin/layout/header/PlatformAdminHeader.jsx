@@ -12,6 +12,7 @@ const pathMap = {
   '/platform/admin/inquiry': ['문의'],
   '/platform/admin/settingMessage': ['시스템 설정', '발송 메시지'],
   '/platform/admin/settingAmount': ['시스템 설정', '금액 설정'],
+  '/platform/admin/bannerLocation': ['시스템 설정', '배너 위치 설정'],
   '/platform/admin': ['대시보드']
 };
 
