@@ -1,5 +1,5 @@
 // ExpoForm.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from './ExpoForm.module.css';
 
 // onNextPage prop을 받도록 수정
@@ -15,7 +15,9 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     openingHours: '',
     // 기타 필요한 필드 추가
   });
-
+  // 포스터 파일 입력 참조
+  const posterInputRef = useRef(null);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -24,8 +26,20 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     });
   };
 
-  const handlePosterUpload = (e) => {
-    console.log("포스터 업로드 버튼 클릭됨.");
+    // 포스터 파일 변경 핸들러
+  const handlePosterFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        posterFile: file,
+      }));
+    }
+  };
+
+  // 이미지 업로드 버튼 클릭 시 숨겨진 input을 클릭하도록 하는 함수
+  const handleFileUploadClick = () => {
+    posterInputRef.current.click();
   };
 
   const handleSubmit = (e) => {
@@ -44,9 +58,26 @@ const ExpoForm = ({ onNextPage, initialData }) => {
         <h1 className={styles['title']}>박람회 신청</h1>
         <p className={styles['subtitle']}>박람회 기본정보를 입력해주세요.</p>
 
-        {/* 박람회 포스터 */}
         <h2 className={styles['section-title']}>박람회 포스터</h2>
-        {/* ... 포스터 업로드 관련 JSX ... */}
+        <div className={styles['poster-upload-group']}>
+          <button
+            type="button"
+            className={styles['upload-button']}
+            onClick={handleFileUploadClick}
+          >
+            {formData.posterFile ? formData.posterFile.name : '이미지 업로드'}
+          </button>
+          <p className={styles['upload-info']}>JPG, PNG 파일들을 업로드해주세요 (최대 10MB)</p>
+          <input
+            type="file"
+            id="posterFile"
+            name="posterFile"
+            ref={posterInputRef}
+            onChange={handlePosterFileChange}
+            style={{ display: 'none' }}
+            accept=".jpg, .jpeg, .png"
+          />
+        </div>
 
         {/* 박람회 이름 */}
         <div className={styles['form-group']}>
