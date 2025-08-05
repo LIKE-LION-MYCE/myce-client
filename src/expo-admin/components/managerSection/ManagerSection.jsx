@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ManagerSection.module.css';
 import { FaSave } from 'react-icons/fa';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 const permissionTabs = {
   '박람회 관리': ['박람회 상세', '참가 부스', '행사 일정'],

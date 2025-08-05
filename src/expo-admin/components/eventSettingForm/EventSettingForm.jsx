@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import styles from './EventSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 

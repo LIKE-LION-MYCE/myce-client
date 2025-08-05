@@ -3,7 +3,7 @@ import { FaInfoCircle } from 'react-icons/fa';
 import styles from './Events.module.css';
 import EventTable from '../../components/eventTable/EventTable';
 import EventSettingForm from '../../components/eventSettingForm/EventSettingForm';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 const dummyDB = [
   {

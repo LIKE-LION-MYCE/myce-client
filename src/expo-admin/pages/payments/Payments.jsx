@@ -3,10 +3,10 @@ import { FiSearch } from 'react-icons/fi';
 import { FaQrcode } from 'react-icons/fa';
 import styles from './Payments.module.css';
 
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import PaymentTable from '../../components/paymentTable/PaymentTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import Pagination from '../../../common/components/pagination/Pagination';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function Payments() {
   const [currentTab, setCurrentTab] = useState('결제 완료');

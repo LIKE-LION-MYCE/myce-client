@@ -3,8 +3,8 @@ import { FiSearch } from 'react-icons/fi';
 import { FaQrcode } from 'react-icons/fa'; // QR 코드 아이콘 추가
 import styles from './RoleAdmins.module.css';
 import RoleAdminTable from '../../components/roleAdminTable/RoleAdminTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess'; // ToastSuccess 컴포넌트 추가
+import Pagination from '../../../common/components/pagination/Pagination';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess'; // ToastSuccess 컴포넌트 추가
 
 function RoleAdmins() {
   const [searchText, setSearchText] = useState('');

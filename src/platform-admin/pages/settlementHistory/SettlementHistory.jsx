@@ -3,10 +3,10 @@ import { FiSearch } from 'react-icons/fi';
 import { FaDownload } from 'react-icons/fa'; // 🔄 바뀐 부분
 import styles from './SettlementHistory.module.css';
 
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import SettlementHistoryTable from '../../components/settlementHistoryTable/SettlementHistoryTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import Pagination from '../../../common/components/pagination/Pagination';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function SettlementHistory() {
   const [currentTab, setCurrentTab] = useState('결제 완료');

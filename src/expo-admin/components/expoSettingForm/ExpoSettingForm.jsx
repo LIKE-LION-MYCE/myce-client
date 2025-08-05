@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from './ExpoSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 const mockExpoData = {
   name: '2025 AI 박람회',

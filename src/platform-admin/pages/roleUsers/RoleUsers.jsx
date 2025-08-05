@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './RoleUsers.module.css';
 import RoleUserTable from '../../components/roleUserTable/RoleUserTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 function RoleUsers() {
   const [searchText, setSearchText] = useState('');

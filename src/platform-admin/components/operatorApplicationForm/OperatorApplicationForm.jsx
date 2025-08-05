@@ -8,7 +8,7 @@ import {
   FaBuilding,
 } from 'react-icons/fa';
 import styles from './OperatorApplicationForm.module.css';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 const mockOperatorData = {
   companyName: '토스트 컴퍼니',

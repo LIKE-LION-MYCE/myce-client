@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './ExpoApplicationForm.module.css';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
 const mockExpoData = {
   name: '2025 AI 박람회',
