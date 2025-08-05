@@ -1,0 +1,143 @@
+.chatWrapper {
+  display: flex;
+  height: calc(100vh - 80px); /* 상단 헤더 제외한 높이 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+/* --- 좌측 채팅 목록 --- */
+.chatList {
+  width: 280px;
+  border-right: 1px solid #ddd;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatRoomList {
+  margin-top: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.chatRoom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.chatRoom:hover {
+  background-color: #f5f5f5;
+}
+
+.chatRoom img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.chatRoomText {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+}
+
+.chatRoomText span {
+  color: gray;
+  font-size: 0.75rem;
+}
+
+/* --- 우측 채팅 영역 --- */
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #fafafa;
+}
+
+.messageRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.messageRow img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.messageBubble {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  max-width: 70%;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.me {
+  justify-content: flex-end;
+}
+
+.myBubble {
+  background-color: #3478f6;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  max-width: 70%;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+/* --- 입력창 --- */
+.chatInput {
+  display: flex;
+  padding: 0.8rem;
+  border-top: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.chatInput input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.chatInput button {
+  margin-left: 0.5rem;
+  background-color: #888;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}

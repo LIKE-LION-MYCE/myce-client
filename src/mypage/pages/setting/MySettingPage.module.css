@@ -1,0 +1,88 @@
+/* 전체 배경 */
+.wrapper {
+  background: #f9fafb;
+  min-height: 600px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 페이지 제목 */
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.form {
+  width: 100%;
+  margin: 0 0 60px 0;  /* 왼쪽 정렬 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* 왼쪽 정렬 */
+  gap: 0;
+}
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  min-height: 180px;
+  padding: 36px 52px 32px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 28px;
+  /* 카드 간격 */
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #232323;
+  margin-bottom: 30px;
+  margin-left: 6px;
+}
+
+/* 라디오 버튼 세로정렬, 라벨(폰트) 우측 정렬 */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-size: 1.13rem;
+  margin-left: 16px;
+}
+
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  font-size: 1.12rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+  /* 왼쪽 radio, 오른쪽 label */
+}
+
+input[type="radio"] {
+  accent-color: #222;
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+}
+
+.applyBtn {
+  display: block;
+  margin: 36px auto 0 auto;
+  background: #232323;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 18px 90px;
+  font-size: 1.16rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.16s;
+  letter-spacing: -0.5px;
+}
+.applyBtn:hover {
+  background: #111;
+}

@@ -1,0 +1,8 @@
+/* src/mainpage/pages/adApply/AdApply.module.css */
+.ad-apply-container {
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}

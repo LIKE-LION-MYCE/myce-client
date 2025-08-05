@@ -1,5 +1,4 @@
 .tableWrapper {
-  margin-top: 24px;
   background-color: #fff;
   border-radius: 8px;
   overflow-x: auto;
@@ -111,7 +110,6 @@
 .buttonGroupBottom {
   display: flex;
   gap: 12px;
-  justify-content: flex;
 }
 
 .editBtn {

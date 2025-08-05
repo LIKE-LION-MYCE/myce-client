@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './BoothTable.module.css';
 import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
 const fieldLabelMap = {
   boothLocation: '부스 위치',
@@ -33,6 +34,7 @@ const DEFAULT_IMAGE = 'https://via.placeholder.com/240x180?text=No+Image';
 function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
   const [expandedRow, setExpandedRow] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   const columns = [
     { header: 'No', key: 'no' },
@@ -62,15 +64,20 @@ function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
     onUpdate(editForm);
     setExpandedRow(null);
     setEditForm(null);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
-  const handleCancel = () => {
-    setExpandedRow(null);
-    setEditForm(null);
+  const handleDeleteClick = (e, no) => {
+    e.stopPropagation();
+    onDelete(no);
+    setShowToast(true);
   };
 
   return (
     <div className={styles.tableWrapper}>
+      {showToast && <ToastSuccess/>}
+
       <table className={styles.table}>
         <thead>
           <tr className={styles.headerRow}>
@@ -103,10 +110,7 @@ function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
                     <div className={styles.buttonGroupInline}>
                       <button
                         className={styles.deleteBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(row.no);
-                        }}
+                        onClick={(e) => handleDeleteClick(e, row.no)}
                       >
                         삭제
                       </button>
@@ -168,15 +172,7 @@ function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
                           </div>
 
                           <div className={styles.rightColumn}>
-                            {[
-                              'companyName',
-                              'description',
-                              'ceo',
-                              'address',
-                              'website',
-                              'phone',
-                              'email',
-                            ].map((key) => (
+                            {[ 'companyName', 'description', 'ceo', 'address', 'website', 'phone', 'email' ].map((key) => (
                               <div key={key} className={styles.detailItem}>
                                 <div className={styles.detailLabel}>
                                   {fieldLabelMap[key]}
@@ -196,7 +192,10 @@ function BoothTable({ data = [], onEdit, onDelete, onUpdate }) {
                           <button className={styles.editBtn} onClick={handleSave}>
                             저장
                           </button>
-                          <button className={styles.cancelBtn} onClick={handleCancel}>
+                          <button className={styles.cancelBtn} onClick={() => {
+                            setExpandedRow(null);
+                            setEditForm(null);
+                          }}>
                             취소
                           </button>
                         </div>

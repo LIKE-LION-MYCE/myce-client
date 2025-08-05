@@ -1,0 +1,181 @@
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f6f7;
+}
+
+.loginBox {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.tab {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #888;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.tabButton:hover {
+  color: #333;
+}
+
+.active {
+  color: #000;
+  border-bottom: 3px solid #000;
+  font-weight: 600;
+}
+
+.loginForm {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.loginForm label {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.inputText,
+.inputPassword {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.passwordInputWrapper {
+  margin-top: 5px;
+}
+
+.passwordInputInner {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+}
+
+.inputPassword {
+  flex: 1;
+  border: none;
+  font-size: 14px;
+  padding: 10px 0;
+  height: auto;
+  background: none;
+  outline: none;
+}
+
+.togglePassword {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.loginButton {
+  width: 100%;
+  background: black;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 30px 0 20px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+  margin: 0 10px;
+}
+
+.orText {
+  white-space: nowrap;
+}
+
+.socialLogin {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.socialButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.socialButton:hover {
+  background-color: #e9e9e9;
+}
+
+.socialIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+.loginFooter {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loginFooter a {
+  color: #666;
+  text-decoration: none;
+  margin: 0 5px;
+}

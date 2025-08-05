@@ -1,0 +1,17 @@
+.section {
+  position: relative;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  height: 50px; /* 콘텐츠 높이에 맞게 늘어나지 않도록 */
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

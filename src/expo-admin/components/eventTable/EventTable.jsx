@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 import styles from './EventTable.module.css';
 
 const fieldLabelMap = {
@@ -29,16 +30,22 @@ const managerFields = [
 ];
 
 function EventTable({ data = [], onUpdate, onDelete }) {
-  const [expandedRow, setExpandedRow] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
-  const handleRowClick = (index) => {
-    if (expandedRow === index) {
-      setExpandedRow(null);
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+  };
+
+  const handleRowClick = (row) => {
+    if (expandedId === row.id) {
+      setExpandedId(null);
       setEditForm(null);
     } else {
-      setExpandedRow(index);
-      setEditForm(data[index]);
+      setExpandedId(row.id);
+      setEditForm(row);
     }
   };
 
@@ -49,16 +56,24 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   const handleSave = () => {
     onUpdate(editForm);
-    setExpandedRow(null);
+    triggerToast();
+  };
+
+  const handleDeleteClick = (e, id) => {
+    e.stopPropagation();
+    onDelete(id);
+    setExpandedId(null);
     setEditForm(null);
+    // 삭제 시에는 toast 띄우지 않음
   };
 
   const handleCancel = () => {
-    setExpandedRow(null);
+    setExpandedId(null);
     setEditForm(null);
   };
 
   const columns = [
+    { header: 'ID', key: 'id' },
     { header: '행사 이름', key: 'eventName' },
     { header: '행사 위치', key: 'eventLocation' },
     { header: '행사 날짜', key: 'eventDate' },
@@ -70,6 +85,8 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   return (
     <div className={styles.tableWrapper}>
+      {showToast && <ToastSuccess />}
+
       <table className={styles.table}>
         <thead>
           <tr className={styles.headerRow}>
@@ -82,15 +99,15 @@ function EventTable({ data = [], onUpdate, onDelete }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => {
-            const isExpanded = expandedRow === rowIndex;
+          {data.map((row) => {
+            const isExpanded = expandedId === row.id;
 
             return (
               <>
                 <tr
                   key={`row-${row.id}`}
                   className={styles.row}
-                  onClick={() => handleRowClick(rowIndex)}
+                  onClick={() => handleRowClick(row)}
                 >
                   {columns.map((col) => (
                     <td key={col.key} className={styles.td}>
@@ -101,10 +118,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                     <div className={styles.buttonGroupInline}>
                       <button
                         className={styles.deleteBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(row.id);
-                        }}
+                        onClick={(e) => handleDeleteClick(e, row.id)}
                       >
                         삭제
                       </button>
@@ -117,7 +131,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                     <td colSpan={columns.length + 1}>
                       <div className={styles.detailBox}>
                         <div className={styles.detailGrid}>
-                          {/* 왼쪽: 행사 정보 */}
+                          {/* 행사 정보 */}
                           <div className={styles.column}>
                             {eventFields.map((key) => {
                               if (key === 'eventTimeStart') return null;
@@ -163,7 +177,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                             })}
                           </div>
 
-                          {/* 오른쪽: 담당자 정보 */}
+                          {/* 담당자 정보 */}
                           <div className={styles.column}>
                             {managerFields.map((key) => (
                               <div key={key} className={styles.detailItem}>

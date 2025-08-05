@@ -1,0 +1,64 @@
+.receiptContainer {
+  width: 380px;
+  background-color: #fff;
+  padding: 24px;
+  font-family: 'Pretendard', sans-serif;
+  color: #111;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #666;
+}
+
+.section {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.label {
+  color: #555;
+}
+
+.value {
+  font-weight: 500;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: #333;
+  margin: 12px 0;
+}
+
+.dividerDashed {
+  border-top: 1px dashed #bbb;
+  margin: 12px 0;
+}

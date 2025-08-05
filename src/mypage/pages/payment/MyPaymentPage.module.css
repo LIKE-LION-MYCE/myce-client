@@ -1,0 +1,107 @@
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.wrapper {
+  background: #f9fafb;
+  border-radius: 18px;
+  min-height: 600px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 16px;
+  text-align: left;
+}
+
+.table th {
+  background: #f4f4f4;
+  font-weight: 600;
+}
+
+.table tr:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.done {
+  background: #e5f8ed;
+  color: #28a745;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 4px 12px;
+  display: inline-block;
+}
+
+.canceled {
+  background: #fde8e9;
+  color: #ea4e54;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 4px 12px;
+  display: inline-block;
+}
+
+.expoLink {
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.expoLink:hover {
+  color: #5b9cff;
+}
+
+/* 페이지네이션 컨테이너 */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+/* 페이지네이션 버튼 스타일 */
+
+.pageBtn {
+  padding: 8px 16px;
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background-color: #c1c4cc;
+  color: #666;
+}
+
+.pageBtn:disabled {
+  background-color: #f5f5f5;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+/* 현재 페이지 활성화 표시 */
+
+.active {
+  background-color: #666;
+  color: white;
+  font-weight: 700;
+  cursor: default;
+}

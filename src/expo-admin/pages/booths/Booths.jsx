@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { FiSearch } from 'react-icons/fi';
 import styles from './Booths.module.css';
 import BoothTable from '../../components/boothTable/BoothTable';
 import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm';
 import Pagination from '../../../common/commponents/pagination/Pagination';
 
 function Booths() {
+  const [searchText, setSearchText] = useState('');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const [boothList, setBoothList] = useState([
     {
@@ -74,13 +77,21 @@ function Booths() {
     },
   ]);
 
-
   const [page, setPage] = useState(0);
   const size = 4;
 
-  const pagedData = boothList.slice(page * size, (page + 1) * size);
+  const filtered = boothList
+    .filter((b) =>
+      b.companyName.includes(searchText) ||
+      b.description.includes(searchText)
+    )
+    .sort((a, b) =>
+      sortOrder === 'asc' ? a.priority - b.priority : b.priority - a.priority
+    );
+
+  const pagedData = filtered.slice(page * size, (page + 1) * size);
   const pageInfo = {
-    totalPages: Math.ceil(boothList.length / size),
+    totalPages: Math.ceil(filtered.length / size),
     number: page,
   };
 
@@ -101,9 +112,36 @@ function Booths() {
 
   return (
     <div className={styles.boothsContainer}>
-      {/* 행사 목록 */}
+      {/* 참가 부스 목록 */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>참가 부스 목록</h4>
+
+        <div className={styles.topControls}>
+          <div className={styles.filters}>
+            <div className={styles.filterGroup}>
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="부스명 또는 설명 검색"
+                className={styles.input}
+              />
+              <FiSearch className={styles.searchIcon} />
+            </div>
+
+            <div className={styles.filterGroup}>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className={styles.select}
+              >
+                <option value="desc">우선순위 높은순</option>
+                <option value="asc">우선순위 낮은순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <BoothTable
           data={pagedData}
           onUpdate={handleUpdate}
@@ -115,9 +153,7 @@ function Booths() {
       {/* 부스 등록 폼 */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>부스 등록</h4>
-        <BoothSettingForm
-          onSubmit={handleAdd}
-        />
+        <BoothSettingForm onSubmit={handleAdd} />
       </div>
     </div>
   );

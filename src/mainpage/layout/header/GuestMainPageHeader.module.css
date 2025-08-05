@@ -1,0 +1,130 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 80px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logoImage {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.authBtn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginBtn {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.loginBtn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.joinBtn {
+  background: #000000;
+  color: white;
+}
+
+.joinBtn:hover {
+  background: #1f2937;
+}
+
+.studyBtn {
+  background: #000000;
+  color: white;
+}
+
+.studyBtn:hover {
+  background: #1f2937;
+}
+
+/* Focus styles */
+.authBtn:focus {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 20px;
+    height: 70px;
+  }
+
+  .logoImage {
+    height: 35px;
+  }
+
+  .rightSection {
+    gap: 12px;
+  }
+
+  .authBtn {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .rightSection {
+    gap: 8px;
+  }
+
+  .authBtn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .loginBtn {
+    display: none;
+  }
+}

@@ -1,0 +1,99 @@
+.wrapper {
+  background: #f9fafb;
+  min-height: 600px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  padding: 24px;
+  display: flex;
+  gap: 20px;
+  width: calc(50% - 10px);
+  box-sizing: border-box;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info h3 {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.detailRow {
+  display: flex;
+  gap: 40px;
+  margin-top: 12px;
+}
+
+.detailRow > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailRow strong {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.buttons {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.primaryBtn {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryBtn:hover {
+  background-color: #222;
+}
+
+.secondaryBtn {
+  background-color: white;
+  border: 1px solid #ccc;
+  color: #333;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.secondaryBtn:hover {
+  background-color: #eee;
+}
+
+.poster {
+  width: 160px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}

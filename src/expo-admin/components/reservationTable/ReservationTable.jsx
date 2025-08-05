@@ -5,8 +5,8 @@ const fieldLabelMap = {
   no: '번호',
   reservationNumber: '예약 번호',
   name: '이름',
-  ismember : '회원 여부',
-  id : '아이디',
+  ismember: '회원 여부',
+  id: '아이디',
   gender: '성별',
   phone: '전화번호',
   email: '이메일',
@@ -16,9 +16,20 @@ const fieldLabelMap = {
   checkinStatus: '입장 상태',
 };
 
-function ReservationTable({ columns, data }) {
+function ReservationTable({ data }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [expandedRow, setExpandedRow] = useState(null);
+
+  const columns = [
+    { key: 'reservationNumber', header: '예약 번호' },
+    { key: 'name', header: '이름' },
+    { key: 'gender', header: '성별' },
+    { key: 'phone', header: '전화번호' },
+    { key: 'email', header: '이메일' },
+    { key: 'ticketName', header: '티켓 이름' },
+    { key: 'checkinDateTime', header: '입장 일시' },
+    { key: 'checkinStatus', header: '입장 상태' },
+  ];
 
   const toggleRow = (index) => {
     setSelectedRows((prev) =>
@@ -41,8 +52,11 @@ function ReservationTable({ columns, data }) {
   const renderCell = (key, value) => {
     if (key === 'checkinStatus') {
       const statusClass =
-        value === '입장 완료' ? styles.badgeChecked :
-        value === '입장 전' ? styles.badgeNotChecked : '';
+        value === '입장 완료'
+          ? styles.badgeChecked
+          : value === '입장 전'
+          ? styles.badgeNotChecked
+          : '';
       return <span className={`${styles.badge} ${statusClass}`}>{value}</span>;
     }
 

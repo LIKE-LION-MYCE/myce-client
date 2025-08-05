@@ -1,0 +1,108 @@
+.centerBox {
+  margin: 64px auto 0 auto;
+  width: 400px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.08);
+  padding: 38px 30px 32px 30px;
+}
+.tabRow {
+  display: flex;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 32px;
+}
+.tabRow button {
+  flex: 1;
+  font-size: 22px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding-bottom: 12px;
+  color: #444;
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+.tabRow .active {
+  border-bottom: 3px solid #222;
+  color: #111;
+}
+.formSection {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 각 입력 영역(라벨+입력창) 간 간격 */
+}
+.label {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 12px;
+  display: block;
+}
+.input {
+  width: 100%;
+  padding: 13px 12px;
+  border: 1.4px solid #e0e0e0;
+  border-radius: 7px;
+  margin-bottom: 0px; /* 각 입력창 아래 기본 마진 제거 */
+  font-size: 15px;
+}
+.btnRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;    /* ★ 버튼 위 간격을 최소화 */
+}
+.cancelBtn, .confirmBtn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cancelBtn {
+  background: #fff;
+  color: #888;
+  border: 1.2px solid #e0e0e0;
+}
+.confirmBtn {
+  background: #222;
+  color: #fff;
+  border: none;
+}
+
+.sendCodeBtn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 18px;
+  height: 43px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.16s;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.sendCodeBtn:hover {
+  background: #111;
+}
+
+.codeInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2px;
+}
+
+/* 유효시간 스타일 */
+.codeExpire {
+  font-size: 13px;
+  color: #999;
+  margin-top: 3px;
+  margin-left: 2px;
+}
+

@@ -1,0 +1,9 @@
+/* ExpoApply.module.css */
+/* ExpoForm 컴포넌트를 감싸는 컨테이너의 스타일을 정의할 수 있습니다. */
+.expo-apply-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}

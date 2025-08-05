@@ -1,13 +1,36 @@
 import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
+import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
 
 function TicketSettingForm() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([
+    {
+      name: '화장품 박람회 1일권',
+      type: '얼리버드',
+      description: '1일권 - 할인 혜택 포함',
+      price: '10000',
+      quantity: '200',
+      saleStart: '2025-08-01',
+      saleEnd: '2025-08-10',
+    },
+    {
+      name: '화장품 박람회 1일권',
+      type: '얼리버드',
+      description: '1일권 - 할인 혜택 포함',
+      price: '10000',
+      quantity: '200',
+      saleStart: '2025-08-01',
+      saleEnd: '2025-08-10',
+    },
+  ]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [newTicket, setNewTicket] = useState(initTicket());
   const [editTicket, setEditTicket] = useState(initTicket());
+
+  // 토스트 상태
+  const [showToast, setShowToast] = useState(false);
 
   function initTicket() {
     return {
@@ -40,6 +63,7 @@ function TicketSettingForm() {
     setData([...data, newTicket]);
     setNewTicket(initTicket());
     setIsAdding(false);
+    triggerToast();
   };
 
   const handleCancel = () => {
@@ -58,6 +82,7 @@ function TicketSettingForm() {
     updated[editingIndex] = editTicket;
     setData(updated);
     setEditingIndex(null);
+    triggerToast();
   };
 
   const handleCancelEdit = () => {
@@ -69,6 +94,11 @@ function TicketSettingForm() {
     const filtered = data.filter((_, i) => i !== index);
     setData(filtered);
     if (editingIndex === index) setEditingIndex(null);
+  };
+
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
@@ -165,6 +195,8 @@ function TicketSettingForm() {
           </tbody>
         </table>
       </div>
+
+      {showToast && <ToastSuccess />}
     </div>
   );
 }
