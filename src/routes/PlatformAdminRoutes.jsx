@@ -22,6 +22,7 @@ import AmountSettingDetail from '../platform-admin/pages/settingAmountDetail/Amo
 import BannerLocation from '../platform-admin/pages/bannerLocations/BannerLocation';
 import BannerLocationDetail from '../platform-admin/pages/bannerLocationsDetail/BannerLocationDetail';
 import BannerLocationNew from '../platform-admin/pages/bannerLocationsDetail/BannerLocationNew';
+import PlatformAdminLogin from '../platform-admin/pages/login/PlatformAdminLogin';
 
 function PlatformAdminRoutes() {
   return (
@@ -50,6 +51,7 @@ function PlatformAdminRoutes() {
             <Route path="bannerLocations/:id" element={<BannerLocationDetail />} />
             <Route path="bannerLocations/new" element={<BannerLocationNew />} />
         </Route>
+        <Route path="/platform/admin/login" element={<PlatformAdminLogin/>} />
       </Routes>
   );s
 }
