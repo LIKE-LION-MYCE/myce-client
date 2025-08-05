@@ -156,3 +156,72 @@
   font-size: 0.875rem;
   color: #888;
 }
+
+.time-select-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* select + icon 함께 묶는 wrapper */
+.select-button-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+/* 버튼처럼 생긴 select */
+.select-button {
+  width: 100%;
+  padding: 12px 40px 12px 12px; /* 아이콘 공간 확보 (오른쪽) */
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* 아이콘 위치 및 스타일 */
+.icon-inside {
+  position: absolute;
+  right: 12px; /* select 오른쪽 내부에 위치 */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+  font-size: 20px;
+}
+
+/* 숨겨진 파일 input */
+.hidden-file-input {
+  display: none;
+}
+
+/* 커스텀 파일 선택 버튼 스타일 */
+.custom-file-label {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #888;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-label:hover {
+  background-color: #666;
+}
+
+/* ExpoForm.module.css */
+.error-text {
+  color: #e74c3c;   /* 예쁜 빨간색, 필요하면 color: red;도 가능 */
+  font-size: 14px;
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
