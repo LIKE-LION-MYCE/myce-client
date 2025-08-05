@@ -1,4 +1,4 @@
-import styles from './CancelDetailModal.module.css';
+import styles from './cancelDetailModal.module.css';
 
 function CancelDetailModal({ isOpen, onClose }) {
   if (!isOpen) return null;

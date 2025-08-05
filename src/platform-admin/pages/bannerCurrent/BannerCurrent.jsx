@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './BannerCurrent.module.css';
 
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import CurrentBannerTable from '../../components/currentBannerTable/CurrentBannerTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 const bannerStatusMap = {
   PENDING: '취소 대기',

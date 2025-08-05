@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './UsageDashboard.module.css';
 import { FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi';
 import { FaFileExcel } from 'react-icons/fa';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function UsageDashboard() {
   const [showToast, setShowToast] = useState(false);

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './BannerApplications.module.css';
 
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import BannerApplicationTable from '../../components/bannerApplicationTable/BannerApplicationTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 const bannerStatusMap = {
   PENDING_APPROVAL: '승인 대기',

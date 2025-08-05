@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './ExpoApplications.module.css';
 
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import ExpoApplicationTable from '../../components/expoApplicationTable/ExpoApplicationTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 function ExpoApplications() {
   const [currentTab, setCurrentTab] = useState('결제 완료');

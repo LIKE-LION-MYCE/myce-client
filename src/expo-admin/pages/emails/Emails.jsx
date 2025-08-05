@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './Emails.module.css';
 import EmailTable from '../../components/emailTable/EmailTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 function Emails() {
   const [searchText, setSearchText] = useState('');
