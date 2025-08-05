@@ -3,8 +3,7 @@ name: Deploy Frontend to S3
 on:
   push:
     branches:
-      - feat/deploy  # Testing on current branch
-      # - develop    # Will re-enable after testing
+      - develop
   pull_request:
     branches:
       - develop
