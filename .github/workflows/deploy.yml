@@ -71,7 +71,7 @@ jobs:
             --include "service-worker.js"
 
       - name: ♻️ Invalidate CloudFront cache
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
         run: |
           echo "Invalidating CloudFront distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
           aws cloudfront create-invalidation \
