@@ -3,7 +3,8 @@ name: Deploy Frontend to S3
 on:
   push:
     branches:
-      - develop
+      - feat/deploy  # Testing on current branch
+      # - develop    # Will re-enable after testing
   pull_request:
     branches:
       - develop
@@ -13,6 +14,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION || 'ap-northeast-2' }}
   S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME || 'myce-frontend-bucket' }}
   VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://api.myce.live/api' }}
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
 jobs:
   deploy:
@@ -49,7 +51,7 @@ jobs:
           du -sh dist/
 
       - name: ⚙️ Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -71,11 +73,11 @@ jobs:
             --include "service-worker.js"
 
       - name: ♻️ Invalidate CloudFront cache
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
         run: |
-          echo "Invalidating CloudFront distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+          echo "Invalidating CloudFront distribution: ${{ env.CLOUDFRONT_DISTRIBUTION_ID }}"
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*" \
             --query 'Invalidation.Id' \
             --output text
