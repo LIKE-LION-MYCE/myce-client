@@ -14,7 +14,7 @@ export const fetchFilteredApplyBanners = async ({ page, latestFirst, keyword, st
   return res.data;
 };
 
-export const fetchDetailApplyBanner = async (bannerId) => {
-  const res = await instance.get(`/platform/ads/${bannerId}`);
+export const fetchDetailApplyBanner = async ( bannerId ) => {
+  const res = await instance.get(`/platform/ads/list/detail/${bannerId}`);
   return res.data;
 }

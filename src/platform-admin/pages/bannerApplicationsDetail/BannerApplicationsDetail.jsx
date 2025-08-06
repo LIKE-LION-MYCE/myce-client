@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './BannerApplicationsDetail.module.css';
 import BannerApplicationForm from '../../components/bannerApplicationForm/BannerApplicationForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
@@ -8,11 +9,13 @@ import RejectReasonViewModal from '../../components/rejectReasonViewModal/Reject
 import PaymentSummaryModal from '../../components/paymentSummaryModal/PaymentSummaryModal';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import {fetchDetailApplyBanner} from '../../../api/service/platform-admin/banner/ApplyBannerService';
 
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
-  WAITING_PAYMENT: '결제_대기',
-  ENDED: '게시_종료',
+  PENDING_PAYMENT: '결제_대기',
+  COMPLETED: '게시_종료',
   REJECTED: '승인_거절',
 };
 
@@ -26,18 +29,49 @@ const statusTextMap = {
 function BannerApplicationsDetail() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
   const [showRejectViewModal, setShowRejectViewModal] = useState(false);
   const [showSettlementDetail, setShowSettlementDetail] = useState(false);
+  
+  const [bannerData, setBannerData] = useState(null);
+  const [operatorData, setOperatorData] = useState(null);   
 
   const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
   const statusText = statusTextMap[statusClass];
 
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
   const rejectReason = '심사 기준 미달로 인해 반려되었습니다.';
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchDetailApplyBanner(id);
+        
+        console.log('배너 상세 데이터:', response);
+        // 배너와 운영자 데이터 설정
+        setBannerData(response);
+        setOperatorData({
+          companyName: response.businessCompany,
+          ceoName: response.representName,
+          email: response.businessEmail,
+          phone: response.businessPhone,
+          address: response.address,
+          businessNumber: response.businessNumber,
+        });
+      } catch (error) {
+        triggerToastFail('데이터를 불러오는 데 실패했습니다.');
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleBack = () => {
     navigate(-1);
@@ -61,6 +95,13 @@ function BannerApplicationsDetail() {
     setShowPaymentModal(false);
   };
 
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    console.log('setFailMessage');
+    setTimeout(() => setShowFailToast(false), 3000);
+  }
+
   let buttonGroup = null;
 
   if (rawStatus === 'PENDING_APPROVAL') {
@@ -70,7 +111,7 @@ function BannerApplicationsDetail() {
         <button className={styles.approveBtn} onClick={handleApprove}>승인</button>
       </div>
     );
-  } else if (rawStatus === 'WAITING_PAYMENT') {
+  } else if (rawStatus === 'PENDING_PAYMENT') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
@@ -82,7 +123,7 @@ function BannerApplicationsDetail() {
         <button className={styles.approveBtn} onClick={() => setShowRejectViewModal(true)}>거절 사유</button>
       </div>
     );
-  } else if (rawStatus === 'ENDED') {
+  } else if (rawStatus === 'COMPLETED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
@@ -104,12 +145,12 @@ function BannerApplicationsDetail() {
             </span>
           )}
         </div>
-        <BannerApplicationForm />
+        <BannerApplicationForm bannerData={bannerData}/>
       </div>
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm />
+        <OperatorApplicationForm operatorData={operatorData}/>
       </div>
 
       {/* 버튼 그룹 */}
@@ -143,6 +184,8 @@ function BannerApplicationsDetail() {
         isOpen={showSettlementDetail}
         onClose={() => setShowSettlementDetail(false)}
       />
+
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }
