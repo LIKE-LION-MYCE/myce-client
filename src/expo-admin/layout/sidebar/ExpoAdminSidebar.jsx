@@ -6,7 +6,7 @@ import {
   sidebarClasses,
   menuClasses,
 } from 'react-pro-sidebar';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AiOutlineBarChart } from 'react-icons/ai';
 import { MdEventNote } from 'react-icons/md';
@@ -18,13 +18,16 @@ import ExpoAdminInfoBox from '../../components/InfoBox/ExpoAdminInfoBox';
 
 function ExpoAdminSideBar() {
   const location = useLocation();
+  const { expoId } = useParams(); // ✅ 현재 expoId 추출
   const currentPath = location.pathname;
 
   const [selectedMenu, setSelectedMenu] = useState('');
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
-  const expoPaths = ['/expo/admin/setting', '/expo/admin/booths', '/expo/admin/events'];
-  const reservationPaths = ['/expo/admin/payments', '/expo/admin/reservations', '/expo/admin/emails'];
+  const basePath = `/expos/${expoId}/admin`;
+
+  const expoPaths = [`${basePath}/setting`, `${basePath}/booths`, `${basePath}/events`];
+  const reservationPaths = [`${basePath}/payments`, `${basePath}/reservations`, `${basePath}/emails`];
 
   useEffect(() => {
     setSelectedMenu(currentPath);
@@ -35,7 +38,7 @@ function ExpoAdminSideBar() {
     } else {
       setOpenSubMenus([]);
     }
-  }, [currentPath]);
+  }, [currentPath, basePath]);
 
   const toggleSubMenu = (menuKey) => {
     setOpenSubMenus((prev) =>
@@ -89,8 +92,8 @@ function ExpoAdminSideBar() {
 
         <MenuItem
           icon={<AiOutlineBarChart />}
-          component={<Link to="/expo/admin" />}
-          active={selectedMenu === '/expo/admin'}
+          component={<Link to={`${basePath}`} />}
+          active={selectedMenu === `${basePath}`}
         >
           대시 보드
         </MenuItem>
@@ -106,20 +109,20 @@ function ExpoAdminSideBar() {
           onOpenChange={() => toggleSubMenu('expo')}
         >
           <MenuItem
-            component={<Link to="/expo/admin/setting" />}
-            active={selectedMenu === '/expo/admin/setting'}
+            component={<Link to={`${basePath}/setting`} />}
+            active={selectedMenu === `${basePath}/setting`}
           >
             박람회 상세
           </MenuItem>
           <MenuItem
-            component={<Link to="/expo/admin/booths" />}
-            active={selectedMenu === '/expo/admin/booths'}
+            component={<Link to={`${basePath}/booths`} />}
+            active={selectedMenu === `${basePath}/booths`}
           >
             참가 부스
           </MenuItem>
           <MenuItem
-            component={<Link to="/expo/admin/events" />}
-            active={selectedMenu === '/expo/admin/events'}
+            component={<Link to={`${basePath}/events`} />}
+            active={selectedMenu === `${basePath}/events`}
           >
             행사 일정
           </MenuItem>
@@ -132,20 +135,20 @@ function ExpoAdminSideBar() {
           onOpenChange={() => toggleSubMenu('reservation')}
         >
           <MenuItem
-            component={<Link to="/expo/admin/payments" />}
-            active={selectedMenu === '/expo/admin/payments'}
+            component={<Link to={`${basePath}/payments`} />}
+            active={selectedMenu === `${basePath}/payments`}
           >
             결제 내역
           </MenuItem>
           <MenuItem
-            component={<Link to="/expo/admin/reservations" />}
-            active={selectedMenu === '/expo/admin/reservations'}
+            component={<Link to={`${basePath}/reservations`} />}
+            active={selectedMenu === `${basePath}/reservations`}
           >
             예약자 리스트
           </MenuItem>
           <MenuItem
-            component={<Link to="/expo/admin/emails" />}
-            active={selectedMenu === '/expo/admin/emails'}
+            component={<Link to={`${basePath}/emails`} />}
+            active={selectedMenu === `${basePath}/emails`}
           >
             이메일 전송 이력
           </MenuItem>
@@ -153,24 +156,24 @@ function ExpoAdminSideBar() {
 
         <MenuItem
           icon={<FiSettings />}
-          component={<Link to="/expo/admin/operation" />}
-          active={selectedMenu === '/expo/admin/operation'}
+          component={<Link to={`${basePath}/operation`} />}
+          active={selectedMenu === `${basePath}/operation`}
         >
           운영 설정
         </MenuItem>
 
         <MenuItem
           icon={<BiMoneyWithdraw />}
-          component={<Link to="/expo/admin/settlement" />}
-          active={selectedMenu === '/expo/admin/settlement'}
+          component={<Link to={`${basePath}/settlement`} />}
+          active={selectedMenu === `${basePath}/settlement`}
         >
           정산
         </MenuItem>
 
         <MenuItem
           icon={<FiMessageSquare />}
-          component={<Link to="/expo/admin/inquiry" />}
-          active={selectedMenu === '/expo/admin/inquiry'}
+          component={<Link to={`${basePath}/inquiry`} />}
+          active={selectedMenu === `${basePath}/inquiry`}
         >
           문의
         </MenuItem>
