@@ -1,13 +1,8 @@
-import { useState } from "react";
-import styles from "./ImageUpload.module.css";
-import instance from "../../../api/lib/axios";
+import { useState } from 'react';
+import styles from './ImageUpload.module.css';
+import instance from '../../../api/lib/axios';
 
-const ImageUpload = ({
-  onUploadSuccess,
-  onUploadError,
-  accept = "image/*",
-  maxSize = 10 * 1024 * 1024,
-}) => {
+const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSize = 10 * 1024 * 1024 }) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -41,8 +36,8 @@ const ImageUpload = ({
 
     try {
       // 1. Presigned URL 요청
-      const response = await instance.get("/images/presign", {
-        params: { filename: file.name },
+      const response = await instance.get('/images/presign', {
+        params: { filename: file.name }
       });
 
       const { uploadUrl, cdnUrl } = response.data;
