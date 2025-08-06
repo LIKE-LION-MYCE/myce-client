@@ -257,3 +257,83 @@
 .toggleInput:checked + .toggleSlider::before {
   transform: translateX(24px);
 }
+
+
+/* 주소검색 버튼 (ExpoForm과 100% 동일) */
+.address-search-btn, .search-button {
+  min-width: 100px;
+  padding: 8px 18px;
+  height: 40px;
+  background: #f5f5f5;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  font-size: 15px;
+  color: #444;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+  align-items: center;
+}
+.address-search-btn:hover, .search-button:hover {
+  background: #e2e2e2;
+  border-color: #888;
+  color: #000;
+}
+
+/* 팝업 오버레이 (ExpoForm과 동일) */
+.address-popup-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.25);
+  z-index: 9998;
+}
+
+/* 팝업 컨테이너 (ExpoForm과 동일) */
+.address-popup-container, .postcode-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  width: 400px;
+  height: 520px;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 8px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+}
+
+/* 닫기 버튼 (우측 하단, ExpoForm과 동일) */
+.address-popup-close-bottom, .close-modal {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  padding: 8px 24px;
+  cursor: pointer;
+  z-index: 10001;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+}
+.address-popup-close-bottom:hover, .close-modal:hover {
+  background: #f9f9f9;
+  border-color: #666;
+  color: #666;
+}
+
+/* ExpoForm.module.css */
+.error-text {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
