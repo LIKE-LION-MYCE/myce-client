@@ -5,7 +5,7 @@ import Tab from '../../../common/components/tab/Tab';
 import BannerApplicationTable from '../../components/bannerApplicationTable/BannerApplicationTable';
 import Pagination from '../../../common/components/pagination/Pagination';
 import ToastFail from "../../../common/components/toastFail/ToastFail";
-import { fetchAllApplyBanners, fetchFilteredApplyBanners } from '../../../api/service/platform-admin/banner/ApplyBannerService';
+import { fetchAllBanners, fetchFilteredBanners } from '../../../api/service/platform-admin/banner/BannerService';
 
 const bannerStatusMap = {
   ALL: '전체',
@@ -34,16 +34,18 @@ function BannerApplications() {
       let resData;
 
       if (isFilterMode) {
-        resData = await fetchFilteredApplyBanners({
+        resData = await fetchFilteredBanners({
           page: currentPage,
           latestFirst: sortOrder === 'desc',
           keyword: searchText || '',
           status: convertTabToStatus(currentTab),
+          isApply: true
         });
       } else {
-        resData = await fetchAllApplyBanners({
+        resData = await fetchAllBanners({
           page: currentPage,
           latestFirst: sortOrder === 'desc',
+          isApply: true
         });
       }
 
