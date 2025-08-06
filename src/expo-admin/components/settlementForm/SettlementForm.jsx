@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './SettlementForm.module.css';
 import { FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 const bankOptions = ['토스뱅크', '카카오뱅크', '신한은행', '국민은행', '우리은행'];
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./ChangePasswordModal.module.css";
+import styles from "./changePasswordModal.module.css";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const ChangePasswordModal = ({ onClose }) => {

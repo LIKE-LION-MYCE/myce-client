@@ -3,7 +3,7 @@ import styles from './RevenueDashboard.module.css';
 import ChartImage from './SettlementChart.png';
 import { FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi';
 import { FaFileExport } from 'react-icons/fa';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function RevenueDashboard() {
   const [showToast, setShowToast] = useState(false);

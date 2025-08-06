@@ -1,5 +1,5 @@
 import React from 'react';
-import BasicTable from '../../../common/commponents/basicTable/BasicTable';
+import BasicTable from '../../../common/components/basicTable/BasicTable';
 
 export default function CancelFeeTable() {
   // 테이블 헤더 정의

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './MessageTemplateList.module.css';
 import { Link } from 'react-router-dom';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 import { FiSearch } from 'react-icons/fi';
 import { MdAddCircle } from 'react-icons/md';
 

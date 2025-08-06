@@ -2,6 +2,8 @@ import { useState } from "react";
 import styles from "./LoginPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { login } from "../../../api/service/auth/AuthService";
+import { HttpStatusCode } from "axios";
 
 const LoginPage = () => {
   const [activeTab, setActiveTab] = useState("user");
@@ -11,8 +13,35 @@ const LoginPage = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // TODO: 로그인 처리 로직
+    if(!userId) {
+        alert('아이디를 입력해주세요.');
+        return;
+    }
+    if(!password) {
+      activeTab === "user" ? 
+        alert("비밀번호를 입력해주세요.") 
+      : alert("사용자 코드를 입력해주세요.");
+      return;
+    }
+
+    if(activeTab === "user") {
+      userLogin();
+    } else if(activeTab === "admin") {
+
+    }
   };
+
+  const userLogin = () => {
+    login(userId, password).then((res) => {
+      if(res.status === HttpStatusCode.Ok) {
+        alert('로그인이 완료되었습니다.');
+        window.location.href = '/';
+      }
+    }).catch((err) => {
+      alert('로그인에 실패했습니다.');
+      console.log(`로그인에 실패했습니다. ${err}`)
+    })
+  }
 
   return (
     <AuthLayout>

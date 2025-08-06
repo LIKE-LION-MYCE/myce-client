@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function TicketSettingForm() {
   const [data, setData] = useState([

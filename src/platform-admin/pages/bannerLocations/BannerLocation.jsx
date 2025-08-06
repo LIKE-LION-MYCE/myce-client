@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Pagination from '../../../common/commponents/pagination/Pagination'; // 페이지네이션 컴포넌트
+import Pagination from '../../../common/components/pagination/Pagination'; // 페이지네이션 컴포넌트
 import styles from './BannerLocation.module.css'; // CSS 모듈
 import { Link } from 'react-router-dom'; // 라우팅을 위한 Link 컴포넌트
 import BannerLocationTable from '../../components/bannerLocationTable/BannerLocationTable';
