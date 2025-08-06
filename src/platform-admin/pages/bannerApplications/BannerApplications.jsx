@@ -10,12 +10,11 @@ import { fetchAllApplyBanners, fetchFilteredApplyBanners } from '../../../api/se
 const bannerStatusMap = {
   PENDING_APPROVAL: '승인 대기',
   WAITING_PAYMENT: '결제 대기',
-  ENDED: '게시 종료',
+  COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
 };
 
 function BannerApplications() {
-  const [data, setData] = useState([]);
   const [pageInfo, setPageInfo] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -27,7 +26,6 @@ function BannerApplications() {
   const [isFilterMode, setIsFilterMode] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
-  const pageSize = 10;
 
 
   const fetchBannerData = async () => {
@@ -48,7 +46,10 @@ function BannerApplications() {
         });
       }
 
-      setPageInfo(resData); // ✅ API 응답 그대로 저장
+      setPageInfo({
+        ...resData,
+        number: currentPage,
+      });
     } catch (err) {
       console.error(err);
       triggerToastFail('데이터를 불러오지 못했습니다.');
@@ -71,12 +72,28 @@ function BannerApplications() {
     setTimeout(() => setShowFailToast(false), 3000);
   }
 
+  const convertTabToStatus = (tab) => {
+    console.log(`convertTabToStatus: ${tab}`);
+    switch (tab) {
+      case 0:
+        return 'PENDING_APPROVAL';
+      case 1:
+        return 'PENDING_PAYMENT';
+      case 2:
+        return 'COMPLETED';
+      case 3:
+        return 'REJECTED';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['전체', '승인 대기', '결제 대기', '승인 거절', '게시 종료']}
+        tabs={Object.values(bannerStatusMap)}
         currentTab={currentTab}
-        onChange={(tab) => {
+        onTabChange={(tab) => {
           setCurrentTab(tab);
           setCurrentPage(0);
           if (tab === '전체') {
@@ -128,7 +145,7 @@ function BannerApplications() {
           <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
         </>
       )}
-      {showFailToast && <ToastFail message={failMessage}/>}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

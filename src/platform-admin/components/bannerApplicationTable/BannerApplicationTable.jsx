@@ -4,10 +4,9 @@ import styles from './BannerApplicationTable.module.css';
 // 상태값 매핑: 화면에 보여줄 한글
 const statusMap = {
   PENDING_APPROVAL: '승인 대기',
-  WAITING_PAYMENT: '결제 대기',
-  ENDED: '게시 종료',
+  PENDING_PAYMENT: '결제 대기',
+  COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
-  COMPLETED: '결제 완료',
 };
 
 function BannerApplicationTable({ data }) {
@@ -53,7 +52,7 @@ function BannerApplicationTable({ data }) {
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
                   {col.key === 'statusMessage' ? (
-                    statusMap[row[col.key]] || row[col.key]
+                    row[col.key]
                   ) : col.key === 'action' ? (
                     <button
                       className={styles.detailBtn}
