@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   FaUserTie,
   FaUserFriends,
@@ -8,39 +7,20 @@ import {
   FaBuilding,
 } from 'react-icons/fa';
 import styles from './OperatorApplicationForm.module.css';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
-const mockOperatorData = {
-  companyName: '토스트 컴퍼니',
-  ceoName: '김지현',
-  email: 'toast@example.com',
-  phone: '010-1234-5678',
-  address: '서울특별시 강남구 강남대로 123',
-  businessNumber: '123-45-67890',
-};
+function OperatorApplicationForm({ operatorData }) {
 
-function OperatorApplicationForm() {
-  const [form, setForm] = useState(initForm());
-  const [showToast, setShowToast] = useState(false);
-
-  function initForm() {
-    return {
-      companyName: '',
-      ceoName: '',
-      email: '',
-      phone: '',
-      address: '',
-      businessNumber: '',
-    };
-  }
-
-  useEffect(() => {
-    setForm({ ...mockOperatorData });
-  }, []);
+  const form = operatorData || {
+    title: '',
+    bannerLocationName: '',
+    bannerImageUrl: '',
+    startAt: '',
+    endAt: '',
+    description: '',
+  };
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess />}
 
       <div className={styles.formGrid}>
         {/* 1행 */}

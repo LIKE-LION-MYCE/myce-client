@@ -8,6 +8,7 @@ import ToastFail from "../../../common/components/toastFail/ToastFail";
 import { fetchAllApplyBanners, fetchFilteredApplyBanners } from '../../../api/service/platform-admin/banner/ApplyBannerService';
 
 const bannerStatusMap = {
+  ALL: '전체',
   PENDING_APPROVAL: '승인 대기',
   WAITING_PAYMENT: '결제 대기',
   COMPLETED: '게시 종료',
@@ -75,13 +76,13 @@ function BannerApplications() {
   const convertTabToStatus = (tab) => {
     console.log(`convertTabToStatus: ${tab}`);
     switch (tab) {
-      case 0:
-        return 'PENDING_APPROVAL';
       case 1:
-        return 'PENDING_PAYMENT';
+        return 'PENDING_APPROVAL';
       case 2:
-        return 'COMPLETED';
+        return 'PENDING_PAYMENT';
       case 3:
+        return 'COMPLETED';
+      case 4:
         return 'REJECTED';
       default:
         return '';
