@@ -47,6 +47,10 @@
   outline: none;
 }
 
+.inputField:focus {
+  border-color: #1e2a38;
+}
+
 .icon {
   position: absolute;
   right: 0;
