@@ -5,4 +5,4 @@ const signup = async ({name, loginId, email, password, birth, phone, gender}) =>
         {name, loginId, email, password, birth, phone, gender});
 }
 
-export {signup};
+export {signup, login};

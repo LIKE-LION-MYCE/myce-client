@@ -1,9 +1,8 @@
-// src/pages/signup/SignUpPage.jsx
 import { useState } from "react";
 import styles from "./SignUpPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { signup } from "../../../api/service/member/AuthService";
+import { signup } from "../../../api/service/auth/AuthService";
 import { HttpStatusCode } from "axios";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
 
