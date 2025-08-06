@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { FaPlus } from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
@@ -6,6 +7,7 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import { getMyExpoTickets, saveMyExpoTicket, deleteMyExpoTicket, updateMyExpoTicket} from '../../../api/service/expo-admin/setting/ticketService';
 
 function TicketSettingForm() {
+  const {expoId} = useParams();
   const [data, setData] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -19,7 +21,7 @@ function TicketSettingForm() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const ticketData = await getMyExpoTickets();
+        const ticketData = await getMyExpoTickets(expoId);
         setData(ticketData);
       } catch (error) {
         console.log(error.message);
@@ -78,7 +80,7 @@ function TicketSettingForm() {
     }
 
     try {
-      const created = await saveMyExpoTicket(newTicket);
+      const created = await saveMyExpoTicket(expoId,newTicket);
       triggerSuccessToast();
       setData([...data, created]);
       setNewTicket(initTicket());
@@ -100,7 +102,7 @@ function TicketSettingForm() {
     if (!confirmed) return;
 
     try {
-      await deleteMyExpoTicket(ticketId);
+      await deleteMyExpoTicket(expoId,ticketId);
       setData((prev) => prev.filter((_, i) => i !== index));
       triggerSuccessToast();
       if (editingIndex === index) setEditingIndex(null);
@@ -118,7 +120,7 @@ function TicketSettingForm() {
     }
 
     try {
-      const updated = await updateMyExpoTicket(editTicket.ticketId, editTicket);
+      const updated = await updateMyExpoTicket(expoId, editTicket.ticketId, editTicket);
       const newData = [...data];
       newData[editingIndex] = updated;
       setData(newData);
