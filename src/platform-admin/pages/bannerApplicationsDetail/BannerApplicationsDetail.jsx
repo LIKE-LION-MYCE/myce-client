@@ -10,7 +10,7 @@ import PaymentSummaryModal from '../../components/paymentSummaryModal/PaymentSum
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {fetchDetailApplyBanner} from '../../../api/service/platform-admin/banner/ApplyBannerService';
+import {fetchDetailBanner} from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
@@ -52,7 +52,7 @@ function BannerApplicationsDetail() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchDetailApplyBanner(id);
+        const response = await fetchDetailBanner(id);
         
         console.log('배너 상세 데이터:', response);
         // 배너와 운영자 데이터 설정

@@ -52,7 +52,7 @@ function BannerApplicationTable({ data }) {
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
                   {col.key === 'statusMessage' ? (
-                    row[col.key]
+                    statusMap[row[col.key]] || row[col.key]
                   ) : col.key === 'action' ? (
                     <button
                       className={styles.detailBtn}
