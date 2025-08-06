@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './ImageUpload.module.css';
-import axios from 'axios';
+import instance from '../../../api/lib/axios';
 
 const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSize = 10 * 1024 * 1024 }) => {
   const [uploading, setUploading] = useState(false);
@@ -36,7 +36,7 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
     
     try {
       // 1. Presigned URL 요청
-      const response = await axios.get('/api/images/presign', {
+      const response = await instance.get('/images/presign', {
         params: { filename: file.name }
       });
 
