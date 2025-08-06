@@ -1,91 +1,107 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './BannerApplications.module.css';
-
 import Tab from '../../../common/components/tab/Tab';
 import BannerApplicationTable from '../../components/bannerApplicationTable/BannerApplicationTable';
 import Pagination from '../../../common/components/pagination/Pagination';
+import ToastFail from "../../../common/components/toastFail/ToastFail";
+import { fetchAllApplyBanners, fetchFilteredApplyBanners } from '../../../api/service/platform-admin/banner/ApplyBannerService';
 
 const bannerStatusMap = {
   PENDING_APPROVAL: '승인 대기',
   WAITING_PAYMENT: '결제 대기',
-  ENDED: '게시 종료',
+  COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
 };
 
 function BannerApplications() {
-  const [currentTab, setCurrentTab] = useState('결제 완료');
+  const [pageInfo, setPageInfo] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(0);
   const [sortOrder, setSortOrder] = useState('desc');
+
   const [searchText, setSearchText] = useState('');
+  const [currentTab, setCurrentTab] = useState('전체');
 
-  const pageSize = 10;
+  const [isFilterMode, setIsFilterMode] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
-  const allData = [
-    {
-      id: 1,
-      username: 'hj1234',
-      name: '황지현',
-      bannerName: '2025 귀농귀촌 박람회',
-      bannerType: '사이드 배너',
-      email: 'hj1234@naver.com',
-      phone: '010-1234-5678',
-      createdAt: '2025-08-01',
-      status: 'PENDING_APPROVAL',
-    },
-    {
-      id: 2,
-      username: 'jiwoo',
-      name: '김지우',
-      bannerName: '전국 촌캉스 박람회',
-      bannerType: '상단 배너',
-      email: 'jiwoo@naver.com',
-      phone: '010-3333-4444',
-      createdAt: '2025-07-25',
-      status: 'WAITING_PAYMENT',
-    },
-    {
-      id: 3,
-      username: 'minsoo',
-      name: '최민수',
-      bannerName: '2025 로컬 청년 페스타',
-      bannerType: '하단 배너',
-      email: 'minsoo@naver.com',
-      phone: '010-7777-8888',
-      createdAt: '2025-07-20',
-      status: 'REJECTED',
-    },
-    {
-      id: 4,
-      username: 'junho',
-      name: '박준호',
-      bannerName: '청년창업 박람회',
-      bannerType: '상단 배너',
-      email: 'junho@naver.com',
-      phone: '010-5555-6666',
-      createdAt: '2025-07-15',
-      status: 'ENDED',
-    },
-  ];
 
-  const pageInfo = {
-    content: allData,
-    totalPages: 1,
-    number: currentPage,
-    size: pageSize,
-    totalElements: allData.length,
+  const fetchBannerData = async () => {
+    try {
+      let resData;
+
+      if (isFilterMode) {
+        resData = await fetchFilteredApplyBanners({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+          keyword: searchText || '',
+          status: convertTabToStatus(currentTab),
+        });
+      } else {
+        resData = await fetchAllApplyBanners({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+        });
+      }
+
+      setPageInfo({
+        ...resData,
+        number: currentPage,
+      });
+    } catch (err) {
+      console.error(err);
+      triggerToastFail('데이터를 불러오지 못했습니다.');
+    }
   };
+
+
+  useEffect(() => {
+    fetchBannerData();
+  }, [isFilterMode, currentPage, sortOrder, searchText, currentTab]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    console.log('setFailMessage');
+    setTimeout(() => setShowFailToast(false), 3000);
+  }
+
+  const convertTabToStatus = (tab) => {
+    console.log(`convertTabToStatus: ${tab}`);
+    switch (tab) {
+      case 0:
+        return 'PENDING_APPROVAL';
+      case 1:
+        return 'PENDING_PAYMENT';
+      case 2:
+        return 'COMPLETED';
+      case 3:
+        return 'REJECTED';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['승인 대기', '결제 대기', '승인 거절', '게시 종료']}
+        tabs={Object.values(bannerStatusMap)}
         currentTab={currentTab}
-        onChange={(tab) => setCurrentTab(tab)}
+        onTabChange={(tab) => {
+          setCurrentTab(tab);
+          setCurrentPage(0);
+          if (tab === '전체') {
+            setIsFilterMode(false);
+          } else {
+            setIsFilterMode(true);
+          }
+        }}
       />
 
       <div className={styles.topControls}>
@@ -120,8 +136,16 @@ function BannerApplications() {
         </div>
       </div>
 
-      <BannerApplicationTable data={pageInfo.content} statusMap={bannerStatusMap} />
-      <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+      {pageInfo && (
+        <>
+          <BannerApplicationTable
+            data={pageInfo.content}
+            statusMap={bannerStatusMap}
+          />
+          <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+        </>
+      )}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }
