@@ -3,8 +3,13 @@ import React, { useState } from "react";
 import styles from "./ExpoForm.module.css";
 import { MdAccessTime } from "react-icons/md";
 import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
+import DaumPostcode from "react-daum-postcode";
+
+// .env 환경변수에서 구글맵 API 키 불러오기
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const ExpoForm = ({ onNextPage, initialData }) => {
+  // 폼에 입력되는 모든 값(상태)을 한 번에 관리 (useState)
   const [formData, setFormData] = useState(
     initialData || {
       posterUrl: "",
@@ -17,24 +22,44 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       locationDetail: "",
       startTime: "",
       endTime: "",
+      latitude: "",
+      longitude: "",
     }
   );
+  // 각 입력 항목별 에러 메시지 (유효성 검사 결과)
   const [formErrors, setFormErrors] = useState({});
+  // 업로드 중 여부 (이미지 업로드 버튼 비활성화용)
   const [uploading, setUploading] = useState(false);
+  // 주소 검색 팝업 표시 여부
+  const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
 
-  // ImageUpload -> 업로드 성공 시 CDN URL 저장
+  // 주소 선택 시 실행됨
+  const handleAddressComplete = (data) => {
+    console.log("[주소 선택 완료]", data.address);
+    // data.address에 선택된 도로명 주소가 담겨있음
+    setFormData((prev) => ({
+      ...prev,
+      location: data.address,
+    }));
+    setIsPostcodeOpen(false);
+
+    // 주소 선택 후 위도/경도 자동 변환
+    geocodeAddress(data.address);
+  };
+
+  // 이미지 업로드 성공 시 CDN URL 저장
   const handlePosterSuccess = (cdnUrl) => {
     setFormData((prev) => ({
       ...prev,
-      posterUrl: cdnUrl,
+      posterUrl: cdnUrl, // cdn 주소 저장
     }));
     setFormErrors((prev) => ({
       ...prev,
-      posterUrl: "", // 에러 제거
+      posterUrl: "", // 이미지 에러 제거
     }));
   };
 
-  // 업로드 실패
+  // 이미지 업로드 실패
   const handlePosterError = (error) => {
     setFormErrors((prev) => ({
       ...prev,
@@ -42,7 +67,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     }));
   };
 
-  // **전체 폼 검증 함수**
+  // 전체 입력값 유효성 검사
+  // 제출 직전 + 각 입력 시 호출
   const validateAll = (data = formData) => {
     const errors = {};
 
@@ -61,14 +87,14 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     if (!data.startTime) errors.startTime = "운영 시작시간을 선택해주세요.";
     if (!data.endTime) errors.endTime = "운영 종료시간을 선택해주세요.";
 
-    // 2. 날짜/시간 논리
-    // 개최기간 논리
+    // 2. 날짜/시간 체크
+    // 개최기간: 시작 > 종료 불가
     if (data.startDate && data.endDate && data.startDate > data.endDate) {
       errors.startDate = "시작일은 종료일보다 이전이어야 합니다.";
       errors.endDate = "종료일은 시작일보다 이후여야 합니다.";
     }
 
-    // 게시기간 논리 (게시 시작 <= 게시 종료)
+    // 게시기간: 시작 > 종료 불가
     if (
       data.displayStartDate &&
       data.displayEndDate &&
@@ -88,7 +114,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       errors.displayEndDate = "게시 종료일은 개최 종료일보다 늦을 수 없습니다.";
     }
 
-    // 운영시간 논리
+    // 운영시간: 시작 >= 종료 불가
     if (data.startTime && data.endTime && data.startTime >= data.endTime) {
       errors.startTime = "운영 시작 시간은 종료 시간보다 이전이어야 합니다.";
       errors.endTime = "운영 종료 시간은 시작 시간보다 이후여야 합니다.";
@@ -96,7 +122,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     return errors;
   };
 
-  // **단일 필드 검증**
+  // 단일 필드 유효성 검사
+  // 각 인풋에 입력할 때마다 실시간 검증용
   const validateField = (name, value) => {
     const data = { ...formData, [name]: value };
     const errors = validateAll(data);
@@ -106,7 +133,43 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     }));
   };
 
-  // **input 변경 처리**
+  // 도로명 주소를 통해 위도/경도 변환
+  const geocodeAddress = async (address) => {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        address
+      )}&key=${GOOGLE_API_KEY}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        const location = data.results[0].geometry.location;
+        console.log("[좌표 변환] 위도:", location.lat, "경도:", location.lng);
+        setFormData((prev) => ({
+          ...prev,
+          latitude: location.lat,
+          longitude: location.lng,
+        }));
+      } else {
+        console.warn("[좌표 변환 실패]", data.status, data.error_message);
+        setFormData((prev) => ({
+          ...prev,
+          latitude: "",
+          longitude: "",
+        }));
+      }
+    } catch (e) {
+      console.error("[좌표 변환 예외]", e);
+      setFormData((prev) => ({
+        ...prev,
+        latitude: "",
+        longitude: "",
+      }));
+    }
+  };
+
+  // 모든 input에 공통 적용: 값 변경 => 상태 반영 + 실시간 유효성 검사
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -114,9 +177,22 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       [name]: value,
     }));
     validateField(name, value);
+
+    // 주소 변경 시 위도/경도 자동 변환
+    if (name === "location") {
+      if (value.trim()) {
+        geocodeAddress(value);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          latitude: "",
+          longitude: "",
+        }));
+      }
+    }
   };
 
-  // **파일 변경 처리**
+  // 파일 변경 처리
   const handlePosterFileChange = (e) => {
     const file = e.target.files[0];
     setFormData((prev) => ({
@@ -126,7 +202,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     validateField("posterFile", file);
   };
 
-  // **제출 처리**
+  // 제출 버튼 클릭 시
   const handleSubmit = (e) => {
     e.preventDefault();
     const errors = validateAll();
@@ -140,10 +216,10 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     onNextPage && onNextPage(formData);
   };
 
-  // 시간 옵션 생성
+  // 운영 시간 드롭다운용 시간 옵션
   const generateTimeOptions = () => {
     const times = [];
-    for (let hour = 8; hour <= 21; hour++) {
+    for (let hour = 8; hour <= 22; hour++) {
       const time = hour.toString().padStart(2, "0") + ":00";
       times.push(time);
     }
@@ -184,7 +260,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             />
           )}
         </div>
-        {/* 이름 */}
+
+        {/* ========== 박람회 이름 입력 ========== */}
         <div className={styles["form-group"]}>
           <label htmlFor="expoName">박람회 이름</label>
           <input
@@ -200,7 +277,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             <p className={styles["error-text"]}>{formErrors.expoName}</p>
           )}
         </div>
-        {/* 개최기간 */}
+
+        {/* ========== 개최기간(시작/종료) ========== */}
         <div className={styles["form-group"]}>
           <label>박람회 개최기간</label>
           <div className={styles["date-range-group"]}>
@@ -226,7 +304,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             </p>
           )}
         </div>
-        {/* 게시기간 */}
+
+        {/* ========== 게시기간(시작/종료) ========== */}
         <div className={styles["form-group"]}>
           <label>박람회 게시기간</label>
           <div className={styles["date-range-group"]}>
@@ -252,23 +331,67 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             </p>
           )}
         </div>
-        {/* 장소 */}
+
+        {/* ========== 박람회 장소 ========== */}
         <div className={styles["form-group"]}>
           <label htmlFor="location">박람회 장소</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className={styles["input-field"]}
-            placeholder="박람회 장소를 입력해주세요."
-          />
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              readOnly
+              className={styles["input-field"]}
+              placeholder="주소 검색 버튼을 클릭하세요."
+            />
+            <button
+              type="button"
+              onClick={() => setIsPostcodeOpen(true)}
+              className={styles["address-search-btn"]}
+            >
+              주소 검색
+            </button>
+          </div>
           {formErrors.location && (
             <p className={styles["error-text"]}>{formErrors.location}</p>
           )}
+          {/* 주소 검색 팝업 오픈 시 */}
+          {isPostcodeOpen && (
+            <>
+              {/* 오버레이 */}
+              <div
+                className={styles["address-popup-overlay"]}
+                onClick={() => setIsPostcodeOpen(false)}
+              />
+              {/* 팝업 컨테이너 */}
+              <div
+                className={styles["address-popup-container"]}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* 닫기 버튼을 우측 하단에 */}
+                <button
+                  type="button"
+                  className={styles["address-popup-close-bottom"]}
+                  onClick={() => setIsPostcodeOpen(false)}
+                >
+                  검색창 닫기
+                </button>
+                <DaumPostcode
+                  onComplete={handleAddressComplete}
+                  autoClose
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
-        {/* 세부 장소 */}
+
+        {/* ========== 세부 장소 입력 ========== */}
         <div className={styles["form-group"]}>
           <label htmlFor="locationDetail">세부 장소</label>
           <input
@@ -284,7 +407,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             <p className={styles["error-text"]}>{formErrors.locationDetail}</p>
           )}
         </div>
-        {/* 운영시간 */}
+
+        {/* ========== 운영시간(시작/종료) ========== */}
         <div className={styles["form-group"]}>
           <label>박람회 운영시간</label>
           <div className={styles["time-select-group"]}>
@@ -332,7 +456,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
             </p>
           )}
         </div>
-        {/* 제출 버튼 */}
+
+        {/* ========== 제출 버튼 ========== */}
         <div className={styles["submit-button-group"]}>
           <button type="submit" className={styles["submit-button"]}>
             다음 페이지
