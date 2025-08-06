@@ -2,29 +2,37 @@ import { useLocation } from "react-router-dom";
 import styles from './ExpoAdminHeader.module.css';
 
 const pathMap = {
-  '/expo/admin': ['대시보드'],
-  '/expo/admin/setting': ['박람회 관리', '박람회 상세'],
-  '/expo/admin/booths': ['박람회 관리', '참가 부스'],
-  '/expo/admin/events': ['박람회 관리', '행사 일정'],
-  '/expo/admin/payments': ['예약 관리', '결제 내역'],
-  '/expo/admin/reservations': ['예약 관리', '예약자 리스트'],
-  '/expo/admin/emails': ['예약 관리', '이메일 전송 이력'],
-  '/expo/admin/entry': ['입장 관리'],
-  '/expo/admin/operation': ['운영 설정'],
-  '/expo/admin/settlement': ['정산'],
-  '/expo/admin/inquiry': ['문의'],
+  '/expos/:expoId/admin': ['대시보드'],
+  '/expos/:expoId/admin/setting': ['박람회 관리', '박람회 상세'],
+  '/expos/:expoId/admin/booths': ['박람회 관리', '참가 부스'],
+  '/expos/:expoId/admin/events': ['박람회 관리', '행사 일정'],
+  '/expos/:expoId/admin/payments': ['예약 관리', '결제 내역'],
+  '/expos/:expoId/admin/reservations': ['예약 관리', '예약자 리스트'],
+  '/expos/:expoId/admin/emails': ['예약 관리', '이메일 전송 이력'],
+  '/expos/:expoId/admin/operation': ['운영 설정'],
+  '/expos/:expoId/admin/settlement': ['정산'],
+  '/expos/:expoId/admin/inquiry': ['문의'],
 };
+
+// 경로 내 :expoId를 무시하고 매칭하기 위한 헬퍼 함수
+function normalizePath(pathname) {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length >= 3 && segments[0] === 'expos' && segments[2] === 'admin') {
+    segments[1] = ':expoId'; // expoId 자리에 변수로 대체
+  }
+  return '/' + segments.join('/');
+}
 
 function ExpoAdminHeader() {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const currentPath = normalizePath(location.pathname); // 경로 정규화
 
   const matchedKey = Object.keys(pathMap)
     .sort((a, b) => b.length - a.length)
     .find((key) => currentPath.startsWith(key));
 
   const crumbs = matchedKey ? pathMap[matchedKey] : [];
-  const isDashboard = matchedKey === '/expo/admin';
+  const isDashboard = matchedKey === '/expos/:expoId/admin';
 
   return (
     <nav className={styles.breadcrumb}>
