@@ -115,8 +115,7 @@ function Booths() {
   };
 
   const handleFormSuccess = () => {
-    fetchBooths();
-    setSelectedBooth(null);
+    fetchBooths(); // 목록만 새로고침하고 폼 내용은 유지
   };
 
   return (

@@ -59,7 +59,49 @@ function BoothSettingForm({ initialData, onSuccess }) {
   };
 
   const validateForm = () => {
-    // (유효성 검사 로직은 동일하므로 생략)
+    const {
+      boothNumber,
+      name,
+      description,
+      contactName,
+      contactPhone,
+      contactEmail,
+    } = form;
+
+    if (!boothNumber.trim()) {
+      showFailToast('부스 번호를 입력해주세요.');
+      return false;
+    }
+    if (!name.trim()) {
+      showFailToast('부스명을 입력해주세요.');
+      return false;
+    }
+    if (!description.trim()) {
+      showFailToast('부스 소개를 입력해주세요.');
+      return false;
+    }
+    if (!contactName.trim()) {
+      showFailToast('담당자명을 입력해주세요.');
+      return false;
+    }
+    if (!contactPhone.trim()) {
+      showFailToast('담당자 연락처를 입력해주세요.');
+      return false;
+    }
+    const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
+    if (!phoneRegex.test(contactPhone)) {
+      showFailToast('올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
+      return false;
+    }
+    if (!contactEmail.trim()) {
+      showFailToast('담당자 이메일을 입력해주세요.');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactEmail)) {
+      showFailToast('올바른 이메일 형식이 아닙니다.');
+      return false;
+    }
     return true;
   };
 
@@ -74,26 +116,20 @@ function BoothSettingForm({ initialData, onSuccess }) {
     };
 
     try {
-      let result;
       if (isEditMode) {
-        result = await updateBooth(expoId, form.id, payload);
+        await updateBooth(expoId, form.id, payload);
       } else {
-        result = await registerBooth(expoId, payload);
+        await registerBooth(expoId, payload);
       }
 
-      if (result) {
-        setShowSuccessToast(true);
-        setTimeout(() => setShowSuccessToast(false), 2000);
-        if (onSuccess) {
-          onSuccess();
-        }
-      } else {
-        showFailToast(
-          `${isEditMode ? '수정' : '등록'}에 실패했습니다. 서버 응답을 확인해주세요.`
-        );
+      // 예외가 발생하지 않으면 성공으로 간주
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 2000);
+      if (onSuccess) {
+        onSuccess();
       }
     } catch (error) {
-      // 백엔드에서 제공하는 커스텀 에러 메시지를 우선적으로 사용
+      // 모든 실패는 여기서 처리하며, 백엔드의 커스텀 에러 메시지를 우선적으로 사용
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
