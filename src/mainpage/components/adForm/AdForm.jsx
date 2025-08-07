@@ -2,27 +2,30 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./AdForm.module.css";
 import { getAdPositions } from "../../../api/service/user/adPositionApi";
+import { saveAdvertisement } from "../../../api/service/user/advertisementApi";
+import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
+  // 서버에 보낼 정보만 유지
   const [formData, setFormData] = useState({
-    adName: "",
-    adLocation: "",
-    bannerFile: null, // 이미지 파일 자체를 저장할 상태
-    redirectUrl: "",
-    adDescription: "",
-    startDate: "",
-    endDate: "",
+    adPositionId: "", // 광고 위치 id (select)
+    title: "", // 광고명
+    imageUrl: "", // 광고 이미지 URL (업로드 결과)
+    linkUrl: "", // 광고 클릭 시 이동 URL
+    description: "", // 광고 소개
+    displayStartDate: "", // 광고 게시 시작일
+    displayEndDate: "", // 광고 게시 종료일
+    // 회사 정보
     companyName: "",
-    businessNumber: "",
-    companyAddress: "",
-    representativeName: "",
-    representativeContact: "",
-    representativeEmail: "",
+    businessRegistrationNumber: "",
+    address: "",
+    ceoName: "",
+    contactPhone: "",
+    contactEmail: "",
   });
 
-  // 파일 input에 접근하기 위한 ref
-  const fileInputRef = useRef(null);
   const [adPositions, setAdPositions] = useState([]); // 광고 위치 리스트 추가
+  const [submitting, setSubmitting] = useState(false);
 
   // 광고 위치 리스트 불러오기
   useEffect(() => {
@@ -45,26 +48,54 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({
-        ...formData,
-        bannerFile: file,
-      });
-      console.log("선택된 파일:", file.name);
-    }
+  // 이미지 업로드 성공 시 imageUrl에 저장
+  const handleImageUploadSuccess = (cdnUrl) => {
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: cdnUrl,
+    }));
   };
 
-  // 이미지 업로드 버튼 클릭 시 숨겨진 input을 클릭하도록 하는 함수
-  const handleFileUploadClick = () => {
-    fileInputRef.current.click();
+  // 이미지 업로드 실패 시
+  const handleImageUploadError = (error) => {
+    alert("이미지 업로드에 실패했습니다.");
   };
 
-  const handleSubmit = (e) => {
+  // 폼 제출 핸들러
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onFormSubmit) {
-      onFormSubmit(formData);
+
+    // 서버 요구에 맞게 변환
+    const adData = {
+      adPositionId: Number(formData.adPositionId),
+      title: formData.title,
+      imageUrl: formData.imageUrl,
+      linkUrl: formData.linkUrl,
+      description: formData.description,
+      displayStartDate: formData.displayStartDate,
+      displayEndDate: formData.displayEndDate,
+      registrationCompanyRequest: {
+        companyName: formData.companyName,
+        businessRegistrationNumber: formData.businessRegistrationNumber,
+        address: formData.address,
+        ceoName: formData.ceoName,
+        contactPhone: formData.contactPhone,
+        contactEmail: formData.contactEmail,
+      },
+    };
+
+    // 중복 제출 방지
+    if (submitting) return;
+
+    setSubmitting(true);
+    try {
+      await saveAdvertisement(adData);
+      alert("광고가 성공적으로 등록되었습니다.");
+    } catch (error) {
+      alert("광고 등록에 실패했습니다. 입력값을 확인해 주세요.");
+      console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -76,27 +107,29 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 광고명 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="adName">광고명</label>
+          <label htmlFor="title">광고명</label>
           <input
             type="text"
-            id="adName"
-            name="adName"
-            value={formData.adName}
+            id="title"
+            name="title"
+            value={formData.title}
             onChange={handleChange}
             className={styles["input-field"]}
             placeholder="광고명을 입력해주세요"
+            required
           />
         </div>
 
         {/* 광고 배너 위치 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="adLocation">광고 배너 위치</label>
+          <label htmlFor="adPositionId">광고 배너 위치</label>
           <select
-            id="adLocation"
-            name="adLocation"
-            value={formData.adLocation}
+            id="adPositionId"
+            name="adPositionId"
+            value={formData.adPositionId}
             onChange={handleChange}
             className={styles["select-field"]}
+            required
           >
             <option value="" disabled>
               광고 배너 위치를 선택해주세요
@@ -109,59 +142,52 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           </select>
         </div>
 
-        {/* 광고 배너 */}
+        {/* 광고 이미지 (S3 업로드) */}
         <div className={styles["form-group"]}>
-          <label htmlFor="adBanner">광고 배너</label>
-          <div className={styles["ad-banner-upload"]}>
-            <button
-              type="button"
-              className={styles["upload-button"]}
-              onClick={handleFileUploadClick}
-            >
-              {/* 파일이 선택되면 파일명 표시 */}
-              {formData.bannerFile ? formData.bannerFile.name : "이미지 업로드"}
-            </button>
-            <p className={styles["upload-info"]}>
-              JPG, PNG 파일들을 업로드해주세요 (최대 10MB)
-            </p>
-
-            {/* 숨겨진 파일 input */}
-            <input
-              type="file"
-              id="adBannerFile"
-              name="adBannerFile"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: "none" }}
+          <label>광고 배너 이미지</label>
+          <ImageUpload
+            onUploadSuccess={handleImageUploadSuccess}
+            onUploadError={handleImageUploadError}
+          />
+          {formData.imageUrl && (
+            <img
+              src={formData.imageUrl}
+              alt="광고 미리보기"
+              style={{
+                maxWidth: "200px",
+                maxHeight: "100px",
+                marginTop: "10px",
+                borderRadius: "8px",
+              }}
             />
-          </div>
+          )}
         </div>
 
         {/* 광고 배너 클릭 시 이동할 페이지 URL */}
         <div className={styles["form-group"]}>
-          <label htmlFor="redirectUrl">
-            광고 배너 클릭 시 이동할 페이지 URL
-          </label>
+          <label htmlFor="linkUrl">광고 배너 클릭 시 이동할 페이지 URL</label>
           <input
             type="text"
-            id="redirectUrl"
-            name="redirectUrl"
-            value={formData.redirectUrl}
+            id="linkUrl"
+            name="linkUrl"
+            value={formData.linkUrl}
             onChange={handleChange}
             className={styles["input-field"]}
             placeholder="예: https://www.myce.link"
+            required
           />
         </div>
 
         {/* 광고 소개 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="adDescription">광고 소개</label>
+          <label htmlFor="description">광고 소개</label>
           <textarea
-            id="adDescription"
-            name="adDescription"
-            value={formData.adDescription}
+            id="description"
+            name="description"
+            value={formData.description}
             onChange={handleChange}
             className={styles["textarea-field"]}
+            required
           ></textarea>
         </div>
 
@@ -171,17 +197,19 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           <div className={styles["date-range-group"]}>
             <input
               type="date"
-              name="startDate"
-              value={formData.startDate}
+              name="displayStartDate"
+              value={formData.displayStartDate}
               onChange={handleChange}
               className={styles["input-field"]}
+              required
             />
             <input
               type="date"
-              name="endDate"
-              value={formData.endDate}
+              name="displayEndDate"
+              value={formData.displayEndDate}
               onChange={handleChange}
               className={styles["input-field"]}
+              required
             />
           </div>
         </div>
@@ -199,17 +227,19 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
                 value={formData.companyName}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                required
               />
             </div>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="businessNumber">사업자 번호</label>
+              <label htmlFor="businessRegistrationNumber">사업자 번호</label>
               <input
                 type="text"
-                id="businessNumber"
-                name="businessNumber"
-                value={formData.businessNumber}
+                id="businessRegistrationNumber"
+                name="businessRegistrationNumber"
+                value={formData.businessRegistrationNumber}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                required
               />
             </div>
           </div>
@@ -217,14 +247,15 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 회사 주소 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="companyAddress">회사 주소</label>
+          <label htmlFor="address">회사 주소</label>
           <input
             type="text"
-            id="companyAddress"
-            name="companyAddress"
-            value={formData.companyAddress}
+            id="address"
+            name="address"
+            value={formData.address}
             onChange={handleChange}
             className={styles["input-field"]}
+            required
           />
         </div>
 
@@ -232,25 +263,27 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         <div className={styles["form-group"]}>
           <div className={styles["inline-input-group"]}>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="representativeName">대표자명</label>
+              <label htmlFor="ceoName">대표자명</label>
               <input
                 type="text"
-                id="representativeName"
-                name="representativeName"
-                value={formData.representativeName}
+                id="ceoName"
+                name="ceoName"
+                value={formData.ceoName}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                required
               />
             </div>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="representativeContact">대표자 연락처</label>
+              <label htmlFor="contactPhone">대표자 연락처</label>
               <input
                 type="text"
-                id="representativeContact"
-                name="representativeContact"
-                value={formData.representativeContact}
+                id="contactPhone"
+                name="contactPhone"
+                value={formData.contactPhone}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                required
               />
             </div>
           </div>
@@ -258,14 +291,15 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 대표자 이메일 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="representativeEmail">대표자 이메일</label>
+          <label htmlFor="contactEmail">대표자 이메일</label>
           <input
             type="email"
-            id="representativeEmail"
-            name="representativeEmail"
-            value={formData.representativeEmail}
+            id="contactEmail"
+            name="contactEmail"
+            value={formData.contactEmail}
             onChange={handleChange}
             className={styles["input-field"]}
+            required
           />
         </div>
 
