@@ -1,9 +1,11 @@
 // src/mainpage/components/adForm/AdForm.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./AdForm.module.css";
 import { getAdPositions } from "../../../api/service/user/adPositionApi";
 import { saveAdvertisement } from "../../../api/service/user/advertisementApi";
 import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
+import DaumPostcode from "react-daum-postcode";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   // 서버에 보낼 정보만 유지
@@ -26,6 +28,17 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
   const [adPositions, setAdPositions] = useState([]); // 광고 위치 리스트 추가
   const [submitting, setSubmitting] = useState(false);
+  const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업
+  const navigate = useNavigate();
+
+  // 주소 선택 시 호출
+  const handleAddressComplete = (data) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: data.address, // 도로명 주소로 저장
+    }));
+    setIsPostcodeOpen(false);
+  };
 
   // 광고 위치 리스트 불러오기
   useEffect(() => {
@@ -91,6 +104,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     try {
       await saveAdvertisement(adData);
       alert("광고가 성공적으로 등록되었습니다.");
+      navigate("/mypage/ads-status");
     } catch (error) {
       alert("광고 등록에 실패했습니다. 입력값을 확인해 주세요.");
       console.error(error);
@@ -239,6 +253,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
                 value={formData.businessRegistrationNumber}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                placeholder="숫자만 입력하세요"
                 required
               />
             </div>
@@ -248,15 +263,40 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         {/* 회사 주소 */}
         <div className={styles["form-group"]}>
           <label htmlFor="address">회사 주소</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className={styles["input-field"]}
-            required
-          />
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={formData.address}
+              readOnly
+              className={styles["input-field"]}
+              placeholder="주소 검색 버튼을 눌러주세요"
+            />
+            <button
+              type="button"
+              className={styles["search-button"]}
+              onClick={() => setIsPostcodeOpen(true)}
+            >
+              주소 검색
+            </button>
+          </div>
+          {isPostcodeOpen && (
+            <div className={styles["postcode-modal"]}>
+              <DaumPostcode
+                onComplete={handleAddressComplete}
+                autoClose={false}
+                animation
+              />
+              <button
+                type="button"
+                onClick={() => setIsPostcodeOpen(false)}
+                className={styles["close-modal"]}
+              >
+                닫기
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 대표자 정보 */}
@@ -283,6 +323,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
                 value={formData.contactPhone}
                 onChange={handleChange}
                 className={styles["input-field"]}
+                placeholder="숫자만 입력하세요"
                 required
               />
             </div>
@@ -299,6 +340,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             value={formData.contactEmail}
             onChange={handleChange}
             className={styles["input-field"]}
+            placeholder="예: hello@myce.com"
             required
           />
         </div>
@@ -308,7 +350,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           <button
             type="button"
             className={styles["cancel-button"]}
-            onClick={onCancel}
+            onClick={() => navigate("/")}
           >
             취소
           </button>
