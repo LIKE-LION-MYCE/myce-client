@@ -6,7 +6,7 @@ const pathMap = {
   '/expos/:expoId/admin/setting': ['박람회 관리', '박람회 상세'],
   '/expos/:expoId/admin/booths': ['박람회 관리', '참가 부스'],
   '/expos/:expoId/admin/events': ['박람회 관리', '행사 일정'],
-  '/expos/:expoId/admin/payments': ['예약 관리', '결제 내역'],
+  '/expos/:expoId/admin/payments': ['예약 관리', '예약 내역'],
   '/expos/:expoId/admin/reservations': ['예약 관리', '예약자 리스트'],
   '/expos/:expoId/admin/emails': ['예약 관리', '이메일 전송 이력'],
   '/expos/:expoId/admin/operation': ['운영 설정'],
