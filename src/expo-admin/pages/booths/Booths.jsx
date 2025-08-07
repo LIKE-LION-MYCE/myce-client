@@ -5,7 +5,7 @@ import styles from './Booths.module.css';
 import BoothTable from '../../components/boothTable/BoothTable';
 import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm';
 import Pagination from '../../../common/components/pagination/Pagination';
-import { getBooths, deleteBooth } from '../../../api/service/expo-admin/boothService';
+import { getBooths, deleteBooth } from '../../../api/service/expo-admin/BoothService';
 
 function Booths() {
   const [searchText, setSearchText] = useState('');
