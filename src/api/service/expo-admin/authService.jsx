@@ -1,5 +1,6 @@
 import instance from "../../lib/axios";
 
+//로그인 유저 기반 현재 관람중인 박람회 리스트 조회
 export const getMyExpos = async () => {
   try {
     const response = await instance.get("/expos/my");
