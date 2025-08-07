@@ -2,27 +2,38 @@ import styles from './PaymentTable.module.css';
 
 function PaymentTable({ data }) {
   const columns = [
-    { key: 'reservationNumber', header: '예약 번호' },
+    { key: 'reservationCode', header: '예약코드' },
     { key: 'name', header: '이름' },
-    { key: 'id', header: '아이디' },
-    { key: 'gender', header: '성별' },
+    { key: 'userType', header: '회원/비회원' },
+    { key: 'loginId', header: '아이디' },
     { key: 'phone', header: '전화번호' },
     { key: 'email', header: '이메일' },
     { key: 'quantity', header: '수량' },
-    { key: 'totalPrice', header: '총 결제 금액' },
-    { key: 'paymentStatus', header: '결제 상태' },
-    { key: 'createdAt', header: '결제 일시' },
+    { key: 'totalAmount', header: '결제 금액' },
+    { key: 'reservationStatus', header: '결제 상태' },
+    { key: 'createdAt', header: '결제일' },
   ];
 
+  const getBadgeClass = (status) => {
+    switch (status) {
+      case '예약 확정':
+        return styles.badgePaid;
+      case '결제 대기':
+        return styles.badgePending;
+      case '예약 취소':
+        return styles.badgeCanceled;
+      default:
+        return '';
+    }
+  };
+
   const renderCell = (key, value) => {
-    if (key === 'paymentStatus') {
-      const statusClass =
-        value === '결제 완료'
-          ? styles.badgePaid
-          : value === '결제 취소'
-          ? styles.badgeCanceled
-          : '';
-      return <span className={`${styles.badge} ${statusClass}`}>{value}</span>;
+    if (key === 'reservationStatus') {
+      return (
+        <span className={`${styles.badge} ${getBadgeClass(value)}`}>
+          {value}
+        </span>
+      );
     }
 
     if (key === 'createdAt') {
@@ -34,7 +45,7 @@ function PaymentTable({ data }) {
           ).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     }
 
-    return value || '-';
+    return value ?? '-';
   };
 
   return (
