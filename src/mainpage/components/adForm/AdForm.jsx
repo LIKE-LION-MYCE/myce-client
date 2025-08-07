@@ -1,9 +1,8 @@
-// src/mainpage/components/adForm/AdForm.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdForm.module.css";
 import { getAdPositions } from "../../../api/service/user/adPositionApi";
-import { saveAdvertisement } from "../../../api/service/user/advertisementApi";
+import { saveAdvertisement, validatePeriod } from "../../../api/service/user/advertisementApi";
 import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 import DaumPostcode from "react-daum-postcode";
 
@@ -29,6 +28,8 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   const [adPositions, setAdPositions] = useState([]); // 광고 위치 리스트 추가
   const [submitting, setSubmitting] = useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업
+  const [isFormValid, setIsFormValid] = useState(false); // 폼 유효성 상태
+  const [errorMessage, setErrorMessage] = useState(""); // 유효성 검사 오류 메시지 상태
   const navigate = useNavigate();
 
   // 주소 선택 시 호출
@@ -40,11 +41,54 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     setIsPostcodeOpen(false);
   };
 
+  const checkPeriodValidity = async () => {
+    try {
+      const today = new Date();
+      const localeDate = today.toLocaleDateString("en-CA");
+      if(formData.displayStartDate > formData.displayEndDate) {
+        setIsFormValid(false);
+        setErrorMessage("시작일은 종료일보다 이전이어야 합니다.");
+        return;
+      }else if(formData.displayEndDate < localeDate) {
+        setIsFormValid(false);
+        setErrorMessage("예약일은 오늘 이후여야 합니다.");
+        return;
+      }
+
+      const response = await validatePeriod({
+        displayStartDate: formData.displayStartDate,
+        displayEndDate: formData.displayEndDate,
+        adPositionId: formData.adPositionId,
+      });
+
+      if (response.status === 200) {
+        setIsFormValid(true);
+        setErrorMessage(""); // 유효성 검사 성공 시 오류 메시지 초기화
+      } else {
+        setIsFormValid(false);
+        setErrorMessage("유효하지 않은 날짜입니다."); // 유효하지 않은 날짜일 때 오류 메시지 표시
+      }
+    } catch (error) {
+      if (error.status === 409) {
+        const { errorCode, message } = error.response.data;
+        console.error(`Error Code: ${errorCode}, Message: ${message}`);
+        setIsFormValid(false);
+        setErrorMessage(message); // 409 에러에서 받은 메시지로 설정
+      } else {
+        console.error("기간 유효성 검사 실패:", error);
+        setIsFormValid(false);
+        setErrorMessage("유효하지 않은 날짜입니다."); // 다른 오류 발생 시 기본 오류 메시지 설정
+      }
+    }
+  };
+
+
   // 광고 위치 리스트 불러오기
   useEffect(() => {
     async function fetchAdPositions() {
       try {
         const positions = await getAdPositions();
+        console.log("광고 위치 리스트:", positions);
         setAdPositions(positions);
       } catch (error) {
         console.error("광고 위치 불러오기 실패:", error);
@@ -52,6 +96,16 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     }
     fetchAdPositions();
   }, []);
+
+  // formData 값이 바뀔 때마다 유효성 검사 실행
+  useEffect(() => {
+    console.log("adPositionId = ", formData.adPositionId);
+    validateForm();
+  }, [formData]);
+
+  useEffect(() => {
+    checkPeriodValidity();
+  }, [formData.displayStartDate, formData.displayEndDate, formData.adPositionId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,6 +126,43 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   // 이미지 업로드 실패 시
   const handleImageUploadError = (error) => {
     alert("이미지 업로드에 실패했습니다.");
+  };
+
+  // 유효성 검사
+  const validateForm = () => {
+    const {
+      adPositionId,
+      title,
+      imageUrl,
+      linkUrl,
+      description,
+      displayStartDate,
+      displayEndDate,
+      companyName,
+      businessRegistrationNumber,
+      address,
+      ceoName,
+      contactPhone,
+      contactEmail,
+    } = formData;
+
+    const isValid =
+      adPositionId &&
+      title &&
+      imageUrl &&
+      linkUrl &&
+      description &&
+      displayStartDate &&
+      displayEndDate &&
+      companyName &&
+      businessRegistrationNumber &&
+      address &&
+      ceoName &&
+      contactPhone &&
+      contactEmail &&
+      displayStartDate < displayEndDate; // 시작일이 종료일보다 이전이어야 함
+
+    setIsFormValid(isValid);
   };
 
   // 폼 제출 핸들러
@@ -112,6 +203,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className={styles["form-container"]}>
@@ -226,6 +318,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               required
             />
           </div>
+          {errorMessage && <p className={styles["error-message"]}>{errorMessage}</p>}
         </div>
 
         {/* 회사 정보 */}
@@ -354,7 +447,11 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           >
             취소
           </button>
-          <button type="submit" className={styles["submit-button"]}>
+          <button
+            type="submit"
+            className={`${styles["submit-button"]} ${!isFormValid ? styles["disabled"] : ""}`}
+            disabled={!isFormValid}
+          >
             등록
           </button>
         </div>
