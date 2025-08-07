@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { FaEnvelope, FaDownload } from 'react-icons/fa';
+import { FaEnvelope, FaDownload, FaQrcode} from 'react-icons/fa';
 import styles from './Reservations.module.css';
 import Tab from '../../../common/components/tab/Tab';
 import ReservationTable from '../../components/reservationTable/ReservationTable';
@@ -68,6 +68,11 @@ function Reservations() {
     setTimeout(() => setShowToast(false), 2500);
   };
 
+  const handleReissueQR = () => {
+    console.log('QR 재발급');
+    triggerToast();
+  };
+
   return (
     <div className={styles.reservationsWrapper}>
       {/* 탭 */}
@@ -128,6 +133,13 @@ function Reservations() {
           >
             <FaDownload className={styles.icon} />
             엑셀 추출
+          </button>
+          <button
+            className={`${styles.actionBtn} ${styles.qrBtn}`}
+            onClick={handleReissueQR}
+          >
+            <FaQrcode className={styles.icon} />
+            QR 재발급
           </button>
         </div>
       </div>
