@@ -5,8 +5,13 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { login } from "../../../api/service/auth/AuthService";
 import { HttpStatusCode } from "axios";
 
+const LOGIN_TYPE = {
+  MEMBER: 'MEMBER',
+  ADMIN_CODE: 'ADMIN_CODE'
+};
+
 const LoginPage = () => {
-  const [activeTab, setActiveTab] = useState("user");
+  const [activeTab, setActiveTab] = useState(LOGIN_TYPE.MEMBER);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,24 +23,23 @@ const LoginPage = () => {
         return;
     }
     if(!password) {
-      activeTab === "user" ? 
+      activeTab === LOGIN_TYPE.MEMBER ? 
         alert("비밀번호를 입력해주세요.") 
       : alert("사용자 코드를 입력해주세요.");
       return;
     }
 
-    if(activeTab === "user") {
-      userLogin();
-    } else if(activeTab === "admin") {
-
-    }
+    userLogin();
   };
 
   const userLogin = () => {
-    login(userId, password).then((res) => {
+    login(activeTab, userId, password).then((res) => {
       if(res.status === HttpStatusCode.Ok) {
         alert('로그인이 완료되었습니다.');
         window.location.href = '/';
+
+        // TODO 관리자 로그인 시 해당 박람회의 관리페이지로 바로 이동
+        // 관리자의 박람회 id 조회하기
       }
     }).catch((err) => {
       alert('로그인에 실패했습니다.');
@@ -49,23 +53,23 @@ const LoginPage = () => {
       <div className={styles.tab}>
         <button
           className={`${styles.tabButton} ${
-            activeTab === "user" ? styles.active : ""
+            activeTab === LOGIN_TYPE.MEMBER ? styles.active : ""
           }`}
-          onClick={() => setActiveTab("user")}
+          onClick={() => setActiveTab(LOGIN_TYPE.MEMBER)}
         >
           일반 회원
         </button>
         <button
           className={`${styles.tabButton} ${
-            activeTab === "admin" ? styles.active : ""
+            activeTab === LOGIN_TYPE.ADMIN_CODE ? styles.active : ""
           }`}
-          onClick={() => setActiveTab("admin")}
+          onClick={() => setActiveTab(LOGIN_TYPE.ADMIN_CODE)}
         >
           관리자
         </button>
       </div>
 
-      {activeTab === "user" && (
+      {activeTab === LOGIN_TYPE.MEMBER && (
         <>
           <form onSubmit={handleLogin} className={styles.loginForm}>
             <label>
@@ -146,7 +150,7 @@ const LoginPage = () => {
         </>
       )}
 
-      {activeTab === "admin" && (
+      {activeTab === LOGIN_TYPE.ADMIN_CODE && (
         <form onSubmit={handleLogin} className={styles.loginForm}>
           <label>
             관리자 아이디
