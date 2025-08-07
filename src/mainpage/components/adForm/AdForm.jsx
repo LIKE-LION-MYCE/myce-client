@@ -1,6 +1,7 @@
 // src/mainpage/components/adForm/AdForm.jsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./AdForm.module.css";
+import { getAdPositions } from "../../../api/service/user/adPositionApi";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,20 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
   // 파일 input에 접근하기 위한 ref
   const fileInputRef = useRef(null);
+  const [adPositions, setAdPositions] = useState([]); // 광고 위치 리스트 추가
+
+  // 광고 위치 리스트 불러오기
+  useEffect(() => {
+    async function fetchAdPositions() {
+      try {
+        const positions = await getAdPositions();
+        setAdPositions(positions);
+      } catch (error) {
+        console.error("광고 위치 불러오기 실패:", error);
+      }
+    }
+    fetchAdPositions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,8 +101,11 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             <option value="" disabled>
               광고 배너 위치를 선택해주세요
             </option>
-            <option value="main-top">메인 페이지 상단</option>
-            <option value="main-middle">메인 페이지 중간</option>
+            {adPositions.map((pos) => (
+              <option key={pos.id} value={pos.id}>
+                {pos.name}
+              </option>
+            ))}
           </select>
         </div>
 
