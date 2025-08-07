@@ -32,6 +32,7 @@ jobs:
       - name: 🔧 Build project
         env:
           VITE_API_BASE_URL: ${{ env.VITE_API_BASE_URL }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
           # Add other VITE_ environment variables here as needed
           # VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
           # VITE_KAKAO_CLIENT_ID: ${{ vars.VITE_KAKAO_CLIENT_ID }}
