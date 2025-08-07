@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './ImageUpload.module.css';
 import instance from '../../../api/lib/axios';
 
-const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSize = 10 * 1024 * 1024 }) => {
+const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSize = 10 * 1024 * 1024, initialImageUrl }) => {
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState(initialImageUrl);
   const [dragOver, setDragOver] = useState(false);
+
+  useEffect(() => {
+    if (initialImageUrl) {
+      setPreview(initialImageUrl);
+    }
+  }, [initialImageUrl]);
 
   const handleFileSelect = (file) => {
     if (!file) return;
