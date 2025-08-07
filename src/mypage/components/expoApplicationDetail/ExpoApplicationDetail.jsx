@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ExpoApplicationDetail.module.css';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
 // ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick을 받도록 변경
 function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick }) {

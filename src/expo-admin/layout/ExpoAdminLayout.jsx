@@ -1,18 +1,41 @@
-import { Outlet } from "react-router-dom";
-import styles from './ExpoAdminLayout.module.css'
+import { useEffect, useState } from "react";
+import { Outlet, useParams } from "react-router-dom";
+import styles from './ExpoAdminLayout.module.css';
 import ExpoAdminHeader from "./header/ExpoAdminHeader";
 import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
+import { getMyExpos } from "../../api/service/expo-admin/authService";
 
 function ExpoAdminLayout() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const { expoId } = useParams();
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const expos = await getMyExpos(); //현재 로그인 한 사용자 기반으로 활성화된 exopId 반환
+        const expoIdNumber = Number(expoId);
+        setHasPermission(expos.includes(expoIdNumber));
+      } catch (error) {
+        console.error("권한 확인 실패:", error.message);
+        setHasPermission(false);
+      }
+    };
+    checkPermission();
+  }, [expoId]);
+
+  if (hasPermission === null) return null;
+
+  if (!hasPermission) return <NoAccessPage />; //권한 없음 페이지 렌더링
+
   return (
     <div className={styles.layout}>
       <div className={styles.contentWrapper}>
         <div className={styles.sidebar}>
-          <ExpoAdminSideBar></ExpoAdminSideBar>
+          <ExpoAdminSideBar />
         </div>
         <div className={styles.main}>
           <div className={styles.header}>
-            <ExpoAdminHeader></ExpoAdminHeader>
+            <ExpoAdminHeader />
           </div>
           <div className={styles.content}>
             <Outlet />
@@ -24,3 +47,24 @@ function ExpoAdminLayout() {
 }
 
 export default ExpoAdminLayout;
+
+function NoAccessPage() {
+  return (
+    <div style={{
+      minHeight: "60vh",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "center",
+      padding: "2rem"
+    }}>
+      <h2 style={{ fontSize: "1.75rem", color: "#d32f2f", marginBottom: "1rem" }}>
+        [403 Forbidden] 접근 권한이 없습니다
+      </h2>
+      <p style={{ fontSize: "1rem", color: "#555" }}>
+        이 박람회에 대한 관리 권한이 없습니다.
+      </p>
+    </div>
+  );
+}

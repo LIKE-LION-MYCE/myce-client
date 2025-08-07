@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import styles from './BannerLocationNew.module.css';
 
-function BannerLocationDetail() {
+function BannerLocationNew() {
   const [formData, setFormData] = useState({
     bannerName: '',
     imageWidth: '',
     imageHeight: '',
     maxBannerCount: '',
     isActive: false,
-    creationDate: '',
-    modificationDate: '',
   });
 
   const handleChange = (e) => {
@@ -34,7 +32,7 @@ function BannerLocationDetail() {
         <div className={styles.formGroup}>
           <label className={styles.label}>광고 위치 이름</label>
           <input
-            className={styles.input}
+            className={`${styles.input} ${styles.inputText}`}
             type="text"
             name="bannerName"
             value={formData.bannerName}
@@ -45,7 +43,7 @@ function BannerLocationDetail() {
         <div className={styles.formGroup}>
           <label className={styles.label}>이미지 너비</label>
           <input
-            className={styles.input}
+            className={`${styles.input} ${styles.inputNumber}`}
             type="text"
             name="imageWidth"
             value={formData.imageWidth}
@@ -57,7 +55,7 @@ function BannerLocationDetail() {
         <div className={styles.formGroup}>
           <label className={styles.label}>이미지 높이</label>
           <input
-            className={styles.input}
+            className={`${styles.input} ${styles.inputNumber}`}
             type="text"
             name="imageHeight"
             value={formData.imageHeight}
@@ -69,7 +67,7 @@ function BannerLocationDetail() {
         <div className={styles.formGroup}>
           <label className={styles.label}>최대 광고 개수</label>
           <input
-            className={styles.input}
+            className={`${styles.input} ${styles.inputNumber}`}
             type="text"
             name="maxBannerCount"
             value={formData.maxBannerCount}
@@ -78,16 +76,16 @@ function BannerLocationDetail() {
         </div>
 
         <div className={styles.formGroup}>
-            <label className={styles.label}>활성화 여부</label>
-            <label className={styles.toggleWrapper}>
+          <label className={styles.label}>활성화 여부</label>
+          <label className={styles.toggleWrapper}>
             <input
-                type="checkbox"
-                checked={formData.isActive}
-                className={styles.toggleInput}
-                onChange={() => handleToggle()}
+              type="checkbox"
+              checked={formData.isActive}
+              className={styles.toggleInput}
+              onChange={handleToggle}
             />
-          <span className={styles.toggleSlider}></span>
-        </label>
+            <span className={styles.toggleSlider}></span>
+          </label>
         </div>
 
         <div className={styles.formActions}>
@@ -99,4 +97,4 @@ function BannerLocationDetail() {
   );
 }
 
-export default BannerLocationDetail;
+export default BannerLocationNew;

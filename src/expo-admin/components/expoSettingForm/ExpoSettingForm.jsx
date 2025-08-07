@@ -1,51 +1,72 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './ExpoSettingForm.module.css';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
-
-const mockExpoData = {
-  name: '2025 AI 박람회',
-  location: '서울 삼성 코엑스',
-  capacity: 1000,
-  startDate: '2025-09-01',
-  endDate: '2025-09-03',
-  startTime: '09:00',
-  endTime: '18:00',
-  postStartDate: '2025-08-01',
-  postEndDate: '2025-09-05',
-  isPremium: true,
-  isPublic: true,
-  category: 'IT',
-  description: 'AI 기술을 주제로 한 대규모 박람회입니다.',
-};
+import { FaCheckCircle, FaTimesCircle, FaEdit } from 'react-icons/fa';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import {
+  getMyExpoInfo,
+  updateMyExpoInfo,
+} from '../../../api/service/expo-admin/setting/expoInfoService';
 
 function ExpoSettingForm() {
+  const { expoId } = useParams();
   const [form, setForm] = useState(initForm());
-  const [isPremium, setIsPremium] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   function initForm() {
     return {
-      name: '',
+      title: '',
       location: '',
-      capacity: '',
+      locationDetail: '',
+      maxReserverCount: '',
       startDate: '',
       endDate: '',
       startTime: '',
       endTime: '',
-      postStartDate: '',
-      postEndDate: '',
-      isPublic: true,
-      category: '',
+      displayStartDate: '',
+      displayEndDate: '',
+      status: '',
+      categoryIds: [],
       description: '',
+      isPremium: false,
+      thumbnailUrl:
+        'https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg',
     };
   }
 
+  const fetchExpoInfo = async () => {
+    if (!expoId) return;
+    try {
+      const data = await getMyExpoInfo(expoId);
+      setForm({
+        title: data.title || '',
+        location: data.location || '',
+        locationDetail: data.locationDetail || '',
+        maxReserverCount: data.maxReserverCount || '',
+        startDate: data.startDate?.split('T')[0] || '',
+        endDate: data.endDate?.split('T')[0] || '',
+        startTime: data.startTime || '',
+        endTime: data.endTime || '',
+        displayStartDate: data.displayStartDate?.split('T')[0] || '',
+        displayEndDate: data.displayEndDate?.split('T')[0] || '',
+        status: data.status || '',
+        categoryIds: data.categoryIds || [],
+        description: data.description || '',
+        isPremium: data.isPremium || false,
+        thumbnailUrl:
+          data.thumbnailUrl ||
+          'https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg',
+      });
+    } catch (error) {
+      console.error('Failed to fetch expo info:', error);
+    }
+  };
+
   useEffect(() => {
-    setForm({ ...mockExpoData });
-    setIsPremium(mockExpoData.isPremium);
-  }, []);
+    fetchExpoInfo();
+  }, [expoId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,15 +78,24 @@ function ExpoSettingForm() {
     setTimeout(() => setShowToast(false), 2000);
   };
 
-  const handleSubmit = () => {
-    const payload = { ...form, isPremium };
-    console.log('[제출할 데이터]', payload);
-    triggerToast();
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await updateMyExpoInfo(expoId, form);
+      setIsEditing(false);
+      triggerToast();
+    } catch (error) {
+      console.error('Failed to update expo info:', error);
+      // You might want to show an error toast here
+    }
   };
 
   const handleCancel = () => {
-    setForm(initForm());
-    setIsPremium(false);
+    fetchExpoInfo(); // Re-fetch original data
+    setIsEditing(false);
     triggerToast();
   };
 
@@ -76,7 +106,7 @@ function ExpoSettingForm() {
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src="https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"
+            src={form.thumbnailUrl}
             alt="포스터"
             className={styles.profileImage}
           />
@@ -88,9 +118,10 @@ function ExpoSettingForm() {
             <input
               className={styles.inputField}
               placeholder="박람회 이름 입력"
-              name="name"
-              value={form.name}
+              name="title"
+              value={form.title}
               onChange={handleChange}
+              disabled={!isEditing}
             />
           </div>
 
@@ -102,6 +133,19 @@ function ExpoSettingForm() {
               name="location"
               value={form.location}
               onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </div>
+
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>상세 위치</label>
+            <input
+              className={styles.inputField}
+              placeholder="상세 위치 입력"
+              name="locationDetail"
+              value={form.locationDetail}
+              onChange={handleChange}
+              disabled={!isEditing}
             />
           </div>
 
@@ -111,48 +155,95 @@ function ExpoSettingForm() {
               className={styles.inputField}
               type="number"
               placeholder="최대 인원 입력"
-              name="capacity"
-              value={form.capacity}
+              name="maxReserverCount"
+              value={form.maxReserverCount}
               onChange={handleChange}
+              disabled={!isEditing}
             />
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>개최 기간</label>
             <div className={styles.dateGroup}>
-              <input type="date" className={styles.inputField} name="startDate" value={form.startDate} onChange={handleChange} />
-              <input type="date" className={styles.inputField} name="endDate" value={form.endDate} onChange={handleChange} />
+              <input
+                type="date"
+                className={styles.inputField}
+                name="startDate"
+                value={form.startDate}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <input
+                type="date"
+                className={styles.inputField}
+                name="endDate"
+                value={form.endDate}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>운영 시간</label>
             <div className={styles.dateGroup}>
-              <input type="time" className={styles.inputField} name="startTime" value={form.startTime} onChange={handleChange} />
-              <input type="time" className={styles.inputField} name="endTime" value={form.endTime} onChange={handleChange} />
+              <input
+                type="time"
+                className={styles.inputField}
+                name="startTime"
+                value={form.startTime}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <input
+                type="time"
+                className={styles.inputField}
+                name="endTime"
+                value={form.endTime}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>게시 기간</label>
             <div className={styles.dateGroup}>
-              <input type="date" className={styles.inputField} name="postStartDate" value={form.postStartDate} onChange={handleChange} />
-              <input type="date" className={styles.inputField} name="postEndDate" value={form.postEndDate} onChange={handleChange} />
+              <input
+                type="date"
+                className={styles.inputField}
+                name="displayStartDate"
+                value={form.displayStartDate}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <input
+                type="date"
+                className={styles.inputField}
+                name="displayEndDate"
+                value={form.displayEndDate}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
             <div className={styles.toggleWrapper}>
-              <ToggleSwitch checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} />
+              <ToggleSwitch checked={form.isPremium} disabled />
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>공개 상태 및 카테고리</label>
+            <label className={styles.label}>상태 및 카테고리</label>
             <div className={styles.badgeRow}>
-              <div className={`${styles.badge} ${styles.red}`}>{form.isPublic ? '공개' : '비공개'}</div>
-              <div className={styles.badge}>{form.category || '카테고리 없음'}</div>
+              <div className={`${styles.badge} ${styles.red}`}>
+                {form.status || '상태 없음'}
+              </div>
+              <div className={styles.badge}>
+                {form.categoryIds.join(', ') || '카테고리 없음'}
+              </div>
             </div>
           </div>
         </div>
@@ -166,16 +257,34 @@ function ExpoSettingForm() {
           value={form.description}
           onChange={handleChange}
           placeholder="박람회 설명 입력"
+          disabled={!isEditing}
         />
       </div>
 
       <div className={styles.buttonGroup}>
-        <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleSubmit}>
-          <FaCheckCircle className={styles.iconBtn} /> 수정
-        </button>
-        <button className={`${styles.actionBtn} ${styles.cancelBtn}`} onClick={handleCancel}>
-          <FaTimesCircle className={styles.iconBtn} /> 취소
-        </button>
+        {isEditing ? (
+          <>
+            <button
+              className={`${styles.actionBtn} ${styles.submitBtn}`}
+              onClick={handleSubmit}
+            >
+              <FaCheckCircle className={styles.iconBtn} /> 저장
+            </button>
+            <button
+              className={`${styles.actionBtn} ${styles.cancelBtn}`}
+              onClick={handleCancel}
+            >
+              <FaTimesCircle className={styles.iconBtn} /> 취소
+            </button>
+          </>
+        ) : (
+          <button
+            className={`${styles.actionBtn} ${styles.submitBtn}`}
+            onClick={handleEditClick}
+          >
+            <FaEdit className={styles.iconBtn} /> 수정
+          </button>
+        )}
       </div>
     </div>
   );

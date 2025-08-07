@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { FaEnvelope, FaDownload } from 'react-icons/fa';
 import styles from './Reservations.module.css';
-import Tab from '../../../common/commponents/tab/Tab';
+import Tab from '../../../common/components/tab/Tab';
 import ReservationTable from '../../components/reservationTable/ReservationTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 import EmailModal from '../../components/emailModal/EmailModal'; 
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function Reservations() {
   const [searchType, setSearchType] = useState('phone');

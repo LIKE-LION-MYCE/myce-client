@@ -1,8 +1,8 @@
 import { useState} from 'react';
 import styles from './BoothSettingForm.module.css';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 function BoothSettingForm({ onSubmit }) {
   const [form, setForm] = useState(initForm());

@@ -1,6 +1,6 @@
 /* ExpoForm.module.css */
 .form-container {
-  width: 50%; /* 추가 */
+  width: 50%;
   margin: 40px auto;
   padding: 40px;
   background-color: #fff;
@@ -44,7 +44,7 @@
 .input-field,
 .textarea-field {
   width: 100%;
-  padding: 12px;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
@@ -120,4 +120,177 @@
 
 .submit-button:hover {
   background-color: #333;
+}
+
+/* 포스터 업로드 관련 스타일 */
+.poster-upload-group {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 1.5rem;
+}
+
+.upload-button {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #555;
+}
+
+.upload-info {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
+.upload-button:hover {
+  background-color: #f0f0f0;
+}
+
+.upload-info {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.time-select-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* select + icon 함께 묶는 wrapper */
+.select-button-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+/* 버튼처럼 생긴 select */
+.select-button {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* 아이콘 위치 및 스타일 */
+.icon-inside {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+  font-size: 20px;
+}
+
+/* 숨겨진 파일 input */
+.hidden-file-input {
+  display: none;
+}
+
+/* 커스텀 파일 선택 버튼 스타일 */
+.custom-file-label {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #888;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-label:hover {
+  background-color: #666;
+}
+
+/* ExpoForm.module.css */
+.error-text {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* 주소검색 버튼 */
+.address-search-btn {
+   min-width: 100px;
+  padding: 8px 18px;
+  height: 40px;
+  background: #f5f5f5;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  font-size: 15px;
+  color: #444;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+  align-items: center;
+}
+.address-search-btn:hover {
+  background: #e2e2e2;
+  border-color: #888;
+  color: #000;
+}
+
+/* 팝업 오버레이 */
+.address-popup-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.25);
+  z-index: 9998;
+}
+
+/* 팝업 컨테이너 */
+.address-popup-container {
+  position: fixed;
+  top: 50%; left: 50%;
+  width: 400px;
+  height: 520px;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 8px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+}
+
+.address-popup-close-bottom {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  padding: 8px 24px;
+  cursor: pointer;
+  z-index: 10001;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+}
+.address-popup-close-bottom:hover {
+  background: #f9f9f9;
+  border-color: #666;
+  color: #666;
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './AmountSettingDetail.module.css';
 import AmountSettingDetailTable from '../../components/amountSettingDetailTable/AmountSettingDetailTable';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 const cardData = [
   {

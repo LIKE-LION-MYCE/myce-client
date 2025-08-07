@@ -3,7 +3,7 @@ import { FiSearch } from 'react-icons/fi';
 import styles from './Booths.module.css';
 import BoothTable from '../../components/boothTable/BoothTable';
 import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm';
-import Pagination from '../../../common/commponents/pagination/Pagination';
+import Pagination from '../../../common/components/pagination/Pagination';
 
 function Booths() {
   const [searchText, setSearchText] = useState('');

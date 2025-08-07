@@ -3,13 +3,17 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: "dist",
+  },
   server: {
-    port: 5173, // 프론트 포트
-    // proxy: {
-    //   "/api": {
-    //     target: "http://localhost:8080", // 스프링 서버
-    //     changeOrigin: true,
-    //   },
-    // },
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

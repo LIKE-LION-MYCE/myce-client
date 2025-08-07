@@ -1,22 +1,27 @@
-// src/pages/signup/SignUpPage.jsx
 import { useState } from "react";
 import styles from "./SignUpPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { signup } from "../../../api/service/auth/AuthService";
+import { HttpStatusCode } from "axios";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const SignUpPage = () => {
   const [form, setForm] = useState({
     name: "",
-    username: "",
+    loginId: "",
     password: "",
     confirmPassword: "",
     email: "",
     emailCode: "",
-    birthdate: "",
+    birth: "",
     phone: "",
+    gender: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,8 +30,79 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: 회원가입 처리 로직
+
+    if(!validateInput()) {
+      return;
+    };
+      
+    signup({...form}).then((res) => {
+      if (res.status === HttpStatusCode.Ok) {
+        alert('회원가입이 완료되었습니다.');
+        window.location.href = '/login';
+      } else {
+        onsole.log(`회원가입에 실패했습니다. ${res.status}`)
+      }
+    }).catch((err) => {
+      if(err.response.data.message) {
+        const message = err.response.data.message;
+        triggerToastFail(message);
+      }
+      console.log(`회원가입에 실패했습니다. ${err}`)
+    });
   };
+
+  const validateInput = () => {
+    if (form.name.length < 2 || form.name.length > 10) {
+      triggerToastFail('이름은 2자 이상 10자 이하로 입력해주세요.');
+      return;
+    }
+
+    const regLoginId = /^[a-zA-Z0-9]*$/;
+    const loginId = form.loginId;
+    if (loginId.length < 5 || loginId.length > 20 || !regLoginId.test(loginId)) {
+      triggerToastFail('로그인 아이디는 5자 이상 20자 이하의 영어와 숫자로만 입력해주세요.');
+      return;
+    }
+
+    const password = form.password;
+    if(password.length < 6 || password.length > 12) {
+      triggerToastFail('비밀번호는 6자 이상 12자 이하로 입력해주세요.');
+      return;
+    }
+
+    if (password !== form.confirmPassword) {
+      triggerToastFail('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
+    if(!form.email || regEmail.test(form.email)) {
+      triggerToastFail('이메일 형식이 올바르지 않습니다.');
+      return;
+    }
+
+    var phone = /^\d{2,3}-\d{3,4}-\d{4}$/;
+    if(!form.phone || !phone.test(form.phone)) {
+      triggerToastFail('전화번호 형식이 올바르지 않습니다.');
+      return;
+    }
+
+    const dateRegex = /^\d{4}\d{2}\d{2}$/;
+    var birth = form.birth;
+    if(!birth || !dateRegex.test(birth)) {
+      triggerToastFail('생년월일 형식이 올바르지 않습니다.(YYYYMMDD)');
+      return;
+    }
+
+    return true;
+  }
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    console.log('setFailMessage');
+    setTimeout(() => setShowFailToast(false), 3000);
+  }
 
   return (
     <AuthLayout>
@@ -44,9 +120,9 @@ const SignUpPage = () => {
         <label>
           아이디
           <input
-            name="username"
+            name="loginId"
             placeholder="아이디를 입력하세요"
-            value={form.username}
+            value={form.loginId}
             onChange={handleChange}
           />
         </label>
@@ -120,12 +196,36 @@ const SignUpPage = () => {
         <label>
           생년월일
           <input
-            name="birthdate"
+            name="birth"
             placeholder="예: 20011231"
-            value={form.birthdate}
+            value={form.birth}
             onChange={handleChange}
           />
         </label>
+        <div className={styles.genderGroup}>
+          <label>성별</label>
+          <div className={styles.genderToggle}>
+            <button
+              name="gender"
+              type="button"
+              value="MALE"
+              className={`${styles.genderBtn} ${styles.left} ${form.gender === 'MALE' ? styles.selected : ''}`}
+              onClick={handleChange}
+            >
+              남자
+            </button>
+            <div className={styles.divider}></div>
+            <button
+              name="gender"
+              type="button"
+              value="FEMALE"
+              className={`${styles.genderBtn} ${styles.right} ${form.gender === 'FEMALE' ? styles.selected : ''}`}
+              onClick={handleChange}
+            >
+              여자
+            </button>
+          </div>
+        </div>
         <label>
           핸드폰번호
           <input
@@ -142,6 +242,8 @@ const SignUpPage = () => {
       <p className={styles.loginLink}>
         이미 계정이 있으신가요? <a href="/login">로그인</a>
       </p>
+      
+      {showFailToast && <ToastFail message={failMessage}/>}
     </AuthLayout>
   );
 };

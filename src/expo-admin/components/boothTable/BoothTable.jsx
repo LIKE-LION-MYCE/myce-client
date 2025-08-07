@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './BoothTable.module.css';
-import ToggleSwitch from '../../../common/commponents/toggleSwitch/ToggleSwitch';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 
 const fieldLabelMap = {
   boothLocation: '부스 위치',

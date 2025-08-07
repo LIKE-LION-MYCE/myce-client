@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ToastSuccess from '../../../common/commponents/toastSuccess/ToastSuccess';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import styles from './EventTable.module.css';
 
 const fieldLabelMap = {

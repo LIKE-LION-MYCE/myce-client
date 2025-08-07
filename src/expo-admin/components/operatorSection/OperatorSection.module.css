@@ -7,17 +7,6 @@
   flex-direction: column;
 }
 
-.profileWrapper {
-  margin-bottom: 40px;
-}
-
-.profileImage {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .formGrid {
   display: flex;
   flex-wrap: wrap;
@@ -45,6 +34,10 @@
   border: none;
   border-bottom: 1px solid #ccc;
   outline: none;
+}
+
+.inputField:focus {
+  border-color: #1e2a38;
 }
 
 .icon {

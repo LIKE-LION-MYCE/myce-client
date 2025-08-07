@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './CurrentBannerTable.module.css';
 
 const statusMap = {
-  PENDING: '취소 대기',
-  POSTING: '게시중',
+  PENDING_CANCEL: '취소 대기',
+  PUBLISHED: '게시중',
 };
 
 function CurrentBannerTable({ data }) {
@@ -11,22 +11,22 @@ function CurrentBannerTable({ data }) {
 
   const columns = [
     { key: 'id', header: 'ID' },
-    { key: 'username', header: '아이디' },
-    { key: 'name', header: '신청자' },
-    { key: 'bannerName', header: '배너명' },
-    { key: 'bannerType', header: '배너 타입' },
-    { key: 'email', header: '이메일' },
-    { key: 'phone', header: '전화번호' },
+    { key: 'memberUsername', header: '아이디' },
+    { key: 'memberNickname', header: '신청자' },
+    { key: 'title', header: '배너명' },
+    { key: 'bannerLocationName', header: '배너 위치' },
+    { key: 'memberEmail', header: '이메일' },
+    { key: 'memberPhone', header: '전화번호' },
     { key: 'createdAt', header: '신청일자' },
-    { key: 'status', header: '상태' },
+    { key: 'statusMessage', header: '상태' },
     { key: 'action', header: '상세보기' },
   ];
 
   const goToDetail = (row) => {
     navigate(`/platform/admin/bannerCurrent/${row.id}`, {
       state: {
-        bannerStatus: row.status,
-        bannerId: row.id,
+        expoStatus: row.statusMessage,
+        expoId: row.id,
       },
     });
   };
@@ -48,12 +48,17 @@ function CurrentBannerTable({ data }) {
             <tr key={rowIndex} className={styles.row}>
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
-                  {col.key === 'status' ? (
+                  {col.key === 'statusMessage' ? (
                     statusMap[row[col.key]] || row[col.key]
                   ) : col.key === 'action' ? (
-                    <button className={styles.detailBtn} onClick={() => goToDetail(row)}>
+                    <button
+                      className={styles.detailBtn}
+                      onClick={() => goToDetail(row)}
+                    >
                       상세보기
                     </button>
+                  ) : col.key === 'createdAt' ? (
+                    row[col.key]?.split('T')[0] || '-'
                   ) : (
                     row[col.key] || '-'
                   )}
