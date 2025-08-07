@@ -67,3 +67,29 @@
   font-size: 16px;
   cursor: pointer;
 }
+
+/* --- 폼 헤더 --- */
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.registerNewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #1e2a38;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.registerNewBtn:hover {
+  background-color: #1e2a38;
+}
