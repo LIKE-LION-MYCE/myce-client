@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './BannerCurrentDetail.module.css';
 import BannerApplicationForm from '../../components/bannerApplicationForm/BannerApplicationForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import SettlementSummaryModal from '../../components/settlementSummaryModal/SettlementSummaryModal';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import {fetchDetailBanner} from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
-  PENDING: '취소_대기',
-  POSTING: '게시중',
+  PENDING_CANCEL: '취소_대기',
+  PUBLISHED: '게시중',
 };
 
 const statusTextMap = {
@@ -20,14 +23,46 @@ const statusTextMap = {
 function BannerCurrentDetail() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
   const [showSettlementSummary, setShowSettlementSummary] = useState(false);
   const [showSettlementDetail, setShowSettlementDetail] = useState(false);
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
 
-  const rawStatus = location.state?.bannerStatus;
+  const [bannerData, setBannerData] = useState(null);
+  const [operatorData, setOperatorData] = useState(null);   
+
+
+  const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
   const statusText = statusTextMap[statusClass];
+
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchDetailBanner(id);
+        
+        console.log('배너 상세 데이터:', response);
+        // 배너와 운영자 데이터 설정
+        setBannerData(response);
+        setOperatorData({
+          companyName: response.businessCompany,
+          ceoName: response.representName,
+          email: response.businessEmail,
+          phone: response.businessPhone,
+          address: response.address,
+          businessNumber: response.businessNumber,
+        });
+      } catch (error) {
+        triggerToastFail('데이터를 불러오는 데 실패했습니다.');
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleBack = () => {
     navigate(-1);
@@ -38,9 +73,16 @@ function BannerCurrentDetail() {
     setShowSettlementSummary(false);
   };
 
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    console.log('setFailMessage');
+    setTimeout(() => setShowFailToast(false), 3000);
+  }
+
   let buttonGroup = null;
 
-  if (rawStatus === 'PENDING') {
+  if (rawStatus === 'PENDING_CANCEL') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button
@@ -59,19 +101,19 @@ function BannerCurrentDetail() {
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <button className={styles.backArrow} onClick={handleBack}>←</button>
-          <h4 className={styles.sectionTitle}>박람회 신청 상세</h4>
+          <h4 className={styles.sectionTitle}>현재 배너 상세</h4>
           {statusClass && (
             <span className={`${styles.statusBadge} ${styles[statusClass]}`}>
               {statusText}
             </span>
           )}
         </div>
-        <BannerApplicationForm />
+        <BannerApplicationForm bannerData={bannerData}/>
       </div>
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm />
+        <OperatorApplicationForm operatorData={operatorData}/>
       </div>
 
       {/* 버튼 그룹 */}
@@ -93,6 +135,8 @@ function BannerCurrentDetail() {
         isOpen={showPaymentDetail}
         onClose={() => setShowPaymentDetail(false)}
       />
+
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

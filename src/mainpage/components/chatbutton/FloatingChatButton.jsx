@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Next.js라면 next/link 사용
+import { Link } from 'react-router-dom'; 
 
 import styles from './FloatingChatButton.module.css';
 

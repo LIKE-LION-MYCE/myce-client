@@ -31,10 +31,31 @@
   padding: 0.5rem;
   cursor: pointer;
   border-radius: 8px;
+  position: relative;
 }
 
 .chatRoom:hover {
   background-color: #f5f5f5;
+}
+
+.chatRoom.selected {
+  background-color: #e3f2fd;
+}
+
+.unreadBadge {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background-color: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .chatRoom img {

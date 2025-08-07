@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './ImageUpload.module.css';
-import axios from 'axios';
+import instance from '../../../api/lib/axios';
 
 const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSize = 10 * 1024 * 1024 }) => {
   const [uploading, setUploading] = useState(false);
@@ -12,13 +12,13 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
 
     // 파일 크기 검증
     if (file.size > maxSize) {
-      onUploadError && onUploadError('파일 크기는 10MB를 초과할 수 없습니다.');
+      onUploadError && onUploadError("파일 크기는 10MB를 초과할 수 없습니다.");
       return;
     }
 
     // 파일 타입 검증
-    if (!file.type.startsWith('image/')) {
-      onUploadError && onUploadError('이미지 파일만 업로드 가능합니다.');
+    if (!file.type.startsWith("image/")) {
+      onUploadError && onUploadError("이미지 파일만 업로드 가능합니다.");
       return;
     }
 
@@ -33,10 +33,10 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
 
   const uploadImage = async (file) => {
     setUploading(true);
-    
+
     try {
       // 1. Presigned URL 요청
-      const response = await axios.get('/api/images/presign', {
+      const response = await instance.get('/images/presign', {
         params: { filename: file.name }
       });
 
@@ -44,19 +44,18 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
 
       // 2. S3에 직접 업로드
       await fetch(uploadUrl, {
-        method: 'PUT',
+        method: "PUT",
         body: file,
         headers: {
-          'Content-Type': file.type,
+          "Content-Type": file.type,
         },
       });
 
       // 3. 성공 콜백 호출
       onUploadSuccess && onUploadSuccess(cdnUrl);
-      
     } catch (error) {
-      console.error('업로드 실패:', error);
-      onUploadError && onUploadError('이미지 업로드에 실패했습니다.');
+      console.error("업로드 실패:", error);
+      onUploadError && onUploadError("이미지 업로드에 실패했습니다.");
       setPreview(null);
     } finally {
       setUploading(false);
@@ -66,7 +65,7 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileSelect(files[0]);
@@ -96,21 +95,25 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
   return (
     <div className={styles.imageUpload}>
       <div
-        className={`${styles.uploadArea} ${dragOver ? styles.dragOver : ''} ${uploading ? styles.uploading : ''}`}
+        className={`${styles.uploadArea} ${dragOver ? styles.dragOver : ""} ${
+          uploading ? styles.uploading : ""
+        }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => !uploading && document.getElementById('fileInput').click()}
+        onClick={() =>
+          !uploading && document.getElementById("fileInput").click()
+        }
       >
         <input
           id="fileInput"
           type="file"
           accept={accept}
           onChange={handleFileInputChange}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           disabled={uploading}
         />
-        
+
         {preview ? (
           <div className={styles.previewContainer}>
             <img src={preview} alt="미리보기" className={styles.preview} />

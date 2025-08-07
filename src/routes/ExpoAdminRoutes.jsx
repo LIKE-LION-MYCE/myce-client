@@ -14,7 +14,7 @@ import Inquiry from '../expo-admin/pages/inquiry/Inquiry';
 function ExpoAdminRoutes() {
   return (
       <Routes>
-        <Route path="/expo/admin" element={<ExpoAdminLayout />}>
+        <Route path="/expos/:expoId/admin" element={<ExpoAdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="setting" element={<Settings />} />
           <Route path="booths" element={<Booths/>}/>
