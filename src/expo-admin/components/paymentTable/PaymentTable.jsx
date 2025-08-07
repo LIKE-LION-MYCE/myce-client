@@ -48,7 +48,6 @@ function PaymentTable({ data }) {
     if (key === 'totalAmount') {
       return typeof value === 'number' ? `${value.toLocaleString()}` : '-';
     }
-
     return value ?? '-';
   };
 

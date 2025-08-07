@@ -121,6 +121,7 @@ function Payments() {
             >
               <option value="desc">최신순</option>
               <option value="asc">오래된순</option>
+              <option value="today">오늘</option>
             </select>
           </div>
         </div>
@@ -132,7 +133,6 @@ function Payments() {
         pageInfo={pageInfo}
         onPageChange={handlePageChange}
       />
-
       {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
