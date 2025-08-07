@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { HttpStatusCode } from 'axios';
+import { reissue, setAccessTokenToStorage } from '../service/auth/AuthService';
 
 const baseURL = `${import.meta.env.VITE_API_BASE_URL}`;
 
@@ -20,5 +21,32 @@ instance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+instance.interceptors.response.use(
+  (res) => {
+    return res;
+  },
+  async (err) => {
+    const originalRequest = err.config.url;
+    const res = err.response;
+    if(err.status === HttpStatusCode.Unauthorized && res.data?.code === "EXPIRED_TOKEN") {
+      try {
+        const reissueResult = await reissue();
+        if(reissueResult.status === HttpStatusCode.Ok) {
+          console.log("Success to update token.");
+          setAccessTokenToStorage(reissueResult);
+          return instance(originalRequest);
+        } 
+      }catch(e) {
+          console.log('Fail to update token.');
+          localStorage.removeItem("access_token");
+          cookieStore.delete("refresh_token");
+          return Promise.reject(e);
+        };
+    }
+
+    return err;
+  }
+)
 
 export default instance;
