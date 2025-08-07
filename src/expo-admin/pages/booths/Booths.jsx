@@ -82,8 +82,8 @@ function Booths() {
 
   const filtered = boothList
     .filter((b) =>
-      b.companyName.includes(searchText) ||
-      b.description.includes(searchText)
+      (b.companyName && b.companyName.includes(searchText)) ||
+      (b.description && b.description.includes(searchText))
     )
     .sort((a, b) =>
       sortOrder === 'asc' ? a.priority - b.priority : b.priority - a.priority
