@@ -25,3 +25,23 @@ dist-ssr
 
 .env
 .env.*
+
+# AI Assistant configurations - keep out of version control
+# Claude Code
+CLAUDE.md
+.claude/
+.claude-config/
+claude-context.md
+claude-session.md
+
+# Gemini CLI
+.gemini/
+.gemini-config/
+GEMINI.md
+gemini-context.md
+gemini-session.md
+
+# Generic AI assistant files
+AI_CONTEXT.md
+ai-session.md
+.ai-config/

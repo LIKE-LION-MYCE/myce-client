@@ -1,93 +1,82 @@
-import { useState } from 'react';
-import { FiSearch } from 'react-icons/fi';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { FiSearch, FiXCircle, FiPlusCircle } from 'react-icons/fi';
 import styles from './Booths.module.css';
 import BoothTable from '../../components/boothTable/BoothTable';
 import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm';
 import Pagination from '../../../common/components/pagination/Pagination';
+import { getBooths, deleteBooth } from '../../../api/service/expo-admin/boothService';
 
 function Booths() {
   const [searchText, setSearchText] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortOrder, setSortOrder] = useState('latest');
+  const [boothList, setBoothList] = useState([]);
+  const [selectedBooth, setSelectedBooth] = useState(null);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const { expoId } = useParams();
 
-  const [boothList, setBoothList] = useState([
-    {
-      no: 1,
-      companyName: '슬로우잇',
-      boothLocation: 'A-01',
-      priority: 1,
-      phone: '010-1234-5678',
-      email: 'slow@eat.com',
-      ceo: '홍길동',
-      address: '서울특별시 강남구 논현로 123',
-      website: 'https://sloweat.com',
-      description: '저속노화를 위한 식단 솔루션을 제공합니다.',
-      imageUrl: 'https://i0.wp.com/data.infowos.com/wp-content/uploads/2023/10/image-173.png?resize=379%2C280&ssl=1',
-    },
-    {
-      no: 2,
-      companyName: '넥스트비전',
-      boothLocation: 'B-12',
-      priority: 2,
-      phone: '010-2233-4455',
-      email: 'contact@nextvision.kr',
-      ceo: '이서준',
-      address: '부산광역시 해운대구 센텀서로 45',
-      website: 'https://nextvision.kr',
-      description: '미래형 영상 처리 솔루션을 개발하는 회사입니다.',
-      imageUrl: 'https://i0.wp.com/data.infowos.com/wp-content/uploads/2023/10/image-173.png?resize=379%2C280&ssl=1',
-    },
-    {
-      no: 3,
-      companyName: '헬로파밍',
-      boothLocation: 'C-03',
-      priority: 5,
-      phone: '010-9876-5432',
-      email: 'hello@farming.com',
-      ceo: '김하늘',
-      address: '경기도 고양시 덕양구 화정동 22',
-      website: 'https://hellofarming.com',
-      description: '스마트팜 기술로 농업의 미래를 이끕니다.',
-      imageUrl: 'https://i0.wp.com/data.infowos.com/wp-content/uploads/2023/10/image-173.png?resize=379%2C280&ssl=1',
-    },
-    {
-      no: 4,
-      companyName: '그린이노베이션',
-      boothLocation: 'D-07',
-      priority: 3,
-      phone: '010-7654-3210',
-      email: 'green@innovation.org',
-      ceo: '정다은',
-      address: '대전광역시 유성구 대덕대로 155',
-      website: 'https://greeninnovation.org',
-      description: '친환경 에너지 혁신 기술을 선도합니다.',
-      imageUrl: 'https://i0.wp.com/data.infowos.com/wp-content/uploads/2023/10/image-173.png?resize=379%2C280&ssl=1',
-    },
-    {
-      no: 5,
-      companyName: '테크스튜디오',
-      boothLocation: 'E-21',
-      priority: 4,
-      phone: '010-1111-2222',
-      email: 'tech@studio.io',
-      ceo: '박지성',
-      address: '광주광역시 북구 첨단과기로 77',
-      website: 'https://techstudio.io',
-      description: '개발자를 위한 최고의 툴을 만듭니다.',
-      imageUrl: 'https://i0.wp.com/data.infowos.com/wp-content/uploads/2023/10/image-173.png?resize=379%2C280&ssl=1',
-    },
-  ]);
+  const fetchBooths = useCallback(async () => {
+    if (!expoId) return;
+    try {
+      const response = await getBooths(expoId);
+
+      // API 응답 구조에 유연하게 대처하기 위해 배열을 찾는 로직 추가
+      let boothArray = [];
+      if (response && Array.isArray(response.content)) {
+        boothArray = response.content;
+      } else if (response && Array.isArray(response)) {
+        boothArray = response;
+      } else if (response && response.result && Array.isArray(response.result.content)) {
+        boothArray = response.result.content;
+      }
+
+      const formattedData = boothArray.map((booth) => ({
+        ...booth,
+        no: booth.id,
+        // displayRank가 0이면 null로 처리하여 '순위 없음'으로 간주
+        displayRank: booth.displayRank === 0 ? null : booth.displayRank,
+      }));
+
+      setBoothList(formattedData);
+    } catch (error) {
+      console.error('Failed to fetch booths:', error);
+      setBoothList([]);
+    }
+  }, [expoId]);
+
+  useEffect(() => {
+    fetchBooths();
+  }, [fetchBooths]);
 
   const [page, setPage] = useState(0);
-  const size = 4;
+  const size = 5;
 
+  // DTO 필드(name, description)에 맞게 검색 로직 수정
   const filtered = boothList
-    .filter((b) =>
-      b.companyName.includes(searchText) ||
-      b.description.includes(searchText)
+    .filter(
+      (b) =>
+        (b.name && b.name.toLowerCase().includes(searchText.toLowerCase())) ||
+        (b.description && b.description.toLowerCase().includes(searchText.toLowerCase()))
     )
-    .sort((a, b) =>
-      sortOrder === 'asc' ? a.priority - b.priority : b.priority - a.priority
-    );
+    // 정렬 로직 수정
+    .sort((a, b) => {
+      if (sortOrder === 'rank') {
+        const rankA = a.displayRank;
+        const rankB = b.displayRank;
+
+        // 둘 다 순위가 없는 경우 (null)
+        if (rankA === null && rankB === null) return b.id - a.id; // 최신순으로 정렬
+        // A만 순위가 없는 경우
+        if (rankA === null) return 1; // A를 뒤로
+        // B만 순위가 없는 경우
+        if (rankB === null) return -1; // B를 뒤로
+
+        // 둘 다 순위가 있는 경우, 순위(숫자) 오름차순
+        return rankA - rankB;
+      }
+      // 기본값 'latest'
+      return b.id - a.id; // 최신순 (id 내림차순)
+    });
 
   const pagedData = filtered.slice(page * size, (page + 1) * size);
   const pageInfo = {
@@ -95,19 +84,38 @@ function Booths() {
     number: page,
   };
 
-  const handleAdd = (booth) => {
-    const newNo = boothList.length ? Math.max(...boothList.map((b) => b.no)) + 1 : 1;
-    setBoothList((prev) => [...prev, { ...booth, no: newNo }]);
+  const handleRowClick = (booth) => {
+    setSelectedBooth(booth);
+    // 폼이 있는 곳으로 스크롤
+    const formElement = document.getElementById('booth-form-section');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handleUpdate = (updatedBooth) => {
-    setBoothList((prev) =>
-      prev.map((b) => (b.no === updatedBooth.no ? updatedBooth : b))
-    );
+  const handleCancelEdit = () => {
+    setSelectedBooth(null);
   };
 
-  const handleDelete = (no) => {
-    setBoothList((prev) => prev.filter((b) => b.no !== no));
+  const handleDelete = async (boothId) => {
+    if (window.confirm('정말로 이 부스를 삭제하시겠습니까?')) {
+      try {
+        await deleteBooth(expoId, boothId);
+        setShowDeleteToast(true);
+        setTimeout(() => setShowDeleteToast(false), 5000);
+        fetchBooths(); // 목록 새로고침
+        if (selectedBooth && selectedBooth.id === boothId) {
+          setSelectedBooth(null);
+        }
+      } catch (error) {
+        console.error('Failed to delete booth:', error);
+        alert(`부스 삭제 중 오류가 발생했습니다: ${error.message}`);
+      }
+    }
+  };
+
+  const handleFormSuccess = () => {
+    fetchBooths(); // 목록만 새로고침하고 폼 내용은 유지
   };
 
   return (
@@ -135,8 +143,8 @@ function Booths() {
                 onChange={(e) => setSortOrder(e.target.value)}
                 className={styles.select}
               >
-                <option value="desc">우선순위 높은순</option>
-                <option value="asc">우선순위 낮은순</option>
+                <option value="latest">최신순</option>
+                <option value="rank">노출 순위 높은순</option>
               </select>
             </div>
           </div>
@@ -144,19 +152,36 @@ function Booths() {
 
         <BoothTable
           data={pagedData}
-          onUpdate={handleUpdate}
           onDelete={handleDelete}
+          onRowClick={handleRowClick}
+          showToast={showDeleteToast}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
 
-      {/* 부스 등록 폼 */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>부스 등록</h4>
-        <BoothSettingForm onSubmit={handleAdd} />
+      {/* 부스 등록/수정 폼 */}
+      <div id="booth-form-section" className={styles.section}>
+        <div className={styles.formHeader}>
+          <h4 className={styles.sectionTitle}>
+            {selectedBooth ? '부스 수정' : '부스 등록'}
+          </h4>
+          {selectedBooth && (
+            <button className={styles.registerNewBtn} onClick={handleCancelEdit}>
+              <FiPlusCircle />
+              <span>부스 등록</span>
+            </button>
+          )}
+        </div>
+        <BoothSettingForm
+          key={selectedBooth ? selectedBooth.id : 'new'}
+          initialData={selectedBooth}
+          onSuccess={handleFormSuccess}
+        />
       </div>
     </div>
   );
 }
 
 export default Booths;
+
+
