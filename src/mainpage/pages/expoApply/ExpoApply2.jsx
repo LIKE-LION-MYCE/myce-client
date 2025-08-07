@@ -167,7 +167,7 @@ const ExpoApply2 = () => {
       description: formData.description,
       categoryIds: selectedCategories,
       isPremium: isPremiumChecked,
-      expoRegistrationCompanyRequest: {
+      registrationCompanyRequest: {
         companyName: formData.companyName,
         businessRegistrationNumber: formData.businessNumber,
         address: formData.companyAddress,
