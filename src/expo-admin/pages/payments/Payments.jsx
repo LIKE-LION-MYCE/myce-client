@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { FaQrcode } from 'react-icons/fa';
 import styles from './Payments.module.css';
 
 import Tab from '../../../common/components/tab/Tab';
@@ -18,11 +17,6 @@ function Payments() {
   const triggerToast = () => {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2500);
-  };
-
-  const handleReissueQR = () => {
-    console.log('QR 재발급');
-    triggerToast();
   };
 
   const pageSize = 10;
@@ -115,16 +109,6 @@ function Payments() {
               <option value="asc">오래된순</option>
             </select>
           </div>
-        </div>
-
-        <div className={styles.buttons}>
-          <button
-            className={`${styles.actionBtn} ${styles.qrBtn}`}
-            onClick={handleReissueQR}
-          >
-            <FaQrcode className={styles.icon} />
-            QR 재발급
-          </button>
         </div>
       </div>
 

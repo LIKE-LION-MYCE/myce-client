@@ -52,39 +52,3 @@
   font-size: 16px;
   cursor: pointer;
 }
-
-.buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.actionBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
-}
-
-/* QR 재발급 버튼 */
-.qrBtn {
-  background-color: #ececec;
-  color: #1e2a38;
-  font-size: 12px;
-  font-weight: 400;
-}
-.qrBtn:hover {
-  background-color: #d9d9d9;
-  color: #1e2a38;
-}
-
-.icon {
-  font-size: 14px;
-  margin-right: 4px;
-}
