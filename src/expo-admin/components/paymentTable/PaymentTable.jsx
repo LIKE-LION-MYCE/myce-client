@@ -2,6 +2,7 @@ import styles from './PaymentTable.module.css';
 
 function PaymentTable({ data }) {
   const columns = [
+    { key: 'no', header: '번호' },
     { key: 'reservationCode', header: '예약코드' },
     { key: 'name', header: '이름' },
     { key: 'userType', header: '회원/비회원' },
@@ -27,7 +28,11 @@ function PaymentTable({ data }) {
     }
   };
 
-  const renderCell = (key, value) => {
+  const renderCell = (key, value, rowIndex) => {
+    if (key === 'no') {
+      return rowIndex + 1;
+    }
+
     if (key === 'reservationStatus') {
       return (
         <span className={`${styles.badge} ${getBadgeClass(value)}`}>
@@ -48,6 +53,7 @@ function PaymentTable({ data }) {
     if (key === 'totalAmount') {
       return typeof value === 'number' ? `${value.toLocaleString()}` : '-';
     }
+
     return value ?? '-';
   };
 
@@ -68,7 +74,7 @@ function PaymentTable({ data }) {
             <tr key={`row-${rowIndex}`} className={styles.row}>
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
-                  {renderCell(col.key, row[col.key])}
+                  {renderCell(col.key, row[col.key], rowIndex)}
                 </td>
               ))}
             </tr>
