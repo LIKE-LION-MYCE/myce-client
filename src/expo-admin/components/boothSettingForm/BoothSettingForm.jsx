@@ -4,7 +4,7 @@ import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {registerBooth,updateBooth,} from '../../../api/service/expo-admin/boothService';
+import {registerBooth,updateBooth,} from '../../../api/service/expo-admin/BoothService';
 import { useParams } from 'react-router-dom';
 
 function BoothSettingForm({ initialData, onSuccess }) {
