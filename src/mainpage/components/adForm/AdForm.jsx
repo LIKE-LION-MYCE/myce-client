@@ -45,7 +45,11 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     try {
       const today = new Date();
       const localeDate = today.toLocaleDateString("en-CA");
-      if(formData.displayStartDate > formData.displayEndDate) {
+      if(!formData.displayStartDate || !formData.displayEndDate){
+        setIsFormValid(false)
+        setErrorMessage("");
+        return;
+      }else if(formData.displayStartDate > formData.displayEndDate) {
         setIsFormValid(false);
         setErrorMessage("시작일은 종료일보다 이전이어야 합니다.");
         return;
