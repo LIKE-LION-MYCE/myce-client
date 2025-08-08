@@ -3,20 +3,6 @@ import { Link } from 'react-router-dom';
 import styles from './FooterBanner.module.css';
 
 
-const banners = [
-  {
-    "bannerId": 13,
-    "locationId": 3,
-    "bannerImageUrl": "https://www.viewzines.com/sapi/IMG_GET/487/mi_advertisements/M/jpg",
-    "linkUrl": "https://naver.com"
-  },
-  {
-    "bannerId": 17,
-    "locationId": 3,
-    "bannerImageUrl": "https://example.com/image7.jpg",
-    "linkUrl": "https://naver.com"
-  },
-]
 export default function FooterBanner({ banners }) {
   const [selected, setSelected] = useState(null);
 

@@ -2,20 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AdBannerD.module.css';
 
-const banners = [
-  {
-    "bannerId": 14,
-    "locationId": 4,
-    "bannerImageUrl": "https://placehold.co/160x40",
-    "linkUrl": "https://naver.com"
-  },
-  {
-    "bannerId": 18,
-    "locationId": 4,
-    "bannerImageUrl": "https://placehold.co/160x40/000000/FFFFFF.png",
-    "linkUrl": "https://naver.com"
-  }
-];
 export default function AdBannerD({ banners }) {
   const [selected, setSelected] = useState(null);
 
