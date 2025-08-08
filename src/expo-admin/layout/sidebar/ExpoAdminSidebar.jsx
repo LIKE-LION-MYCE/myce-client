@@ -138,7 +138,7 @@ function ExpoAdminSideBar() {
             component={<Link to={`${basePath}/payments`} />}
             active={selectedMenu === `${basePath}/payments`}
           >
-            결제 내역
+            예약 내역
           </MenuItem>
           <MenuItem
             component={<Link to={`${basePath}/reservations`} />}
