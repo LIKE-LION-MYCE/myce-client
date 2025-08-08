@@ -94,8 +94,8 @@ function Payments() {
               onChange={(e) => setSearchType(e.target.value)}
               className={styles.select}
             >
-              <option value="name">이름</option>
               <option value="phone">전화번호</option>
+              <option value="name">이름</option>
             </select>
             <input
               type="text"
