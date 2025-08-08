@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './FooterBanner.module.css';
 
-export default function FooterBanner() {
+
+export default function FooterBanner({ banners }) {
+  const [selected, setSelected] = useState(null);
+
+  // 상위에서 banners가 새로 들어올 때만 랜덤으로 선택
+  useEffect(() => {
+    if (Array.isArray(banners) && banners.length > 0) {
+      const idx = Math.floor(Math.random() * banners.length);
+      setSelected(banners[idx]);
+    } else {
+      setSelected(null);
+    }
+  }, [banners]);
+
+  if (!selected) {
+    // 배너 없을 때는 아무것도 안 보이게 하거나 placeholder 이미지
+    return null;
+  }
+
+  const img = (
+    <img
+      src={selected.bannerImageUrl}
+      alt={`배너 ${selected.bannerId}`}
+      className={styles.image}
+      loading="lazy"
+    />
+  );
+
   return (
     <div className={styles.banner}>
-      <img
-        src="https://cdn.imweb.me/upload/S20211122cdb0adf5a68c6/aff244a40eeb0.png"
-        alt="하단 배너 C"
-        className={styles.image}
-      />
+      {selected.linkUrl ? (
+        (
+          <Link to={selected.linkUrl} className={styles.linkReset}>
+            {img}
+          </Link>
+        )
+      ) : (
+        img
+      )}
     </div>
   );
 }

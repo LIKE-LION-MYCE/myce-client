@@ -1,21 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './SubBanners.module.css';
 
-const bannerItems = [
-  { text: '배너 광고 B-1', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-  { text: '배너 광고 B-2', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-  { text: '배너 광고 B-3', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-  { text: '배너 광고 B-4', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-  { text: '배너 광고 B-5', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-  { text: '배너 광고 B-6', image: 'https://cdn.imweb.me/upload/S201701025869fcb41ae40/ff12458f715e9.png' },
-];
 
-export default function SubBanners() {
+export default function SubBanners({ banners }) {
   return (
     <div className={styles.grid}>
-      {bannerItems.map((item, idx) => (
+      {banners.map((banner, idx) => (
         <div key={idx} className={styles.item}>
-          <img src={item.image} alt={item.text} className={styles.image} />
+          <Link key={banner.bannerId} to={banner.linkUrl} className={styles.link}>
+            <img src={banner.bannerImageUrl} alt={banner.bannerId} className={styles.image} />
+          </Link>
         </div>
       ))}
     </div>
