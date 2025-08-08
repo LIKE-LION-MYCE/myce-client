@@ -4,7 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { getMyExpoTickets, saveMyExpoTicket, deleteMyExpoTicket, updateMyExpoTicket} from '../../../api/service/expo-admin/setting/ticketService';
+import { getMyExpoTickets, saveMyExpoTicket, deleteMyExpoTicket, updateMyExpoTicket} from '../../../api/service/expo-admin/setting/TicketService';
 
 function TicketSettingForm() {
   const {expoId} = useParams();
