@@ -3,7 +3,7 @@ import { Outlet, useParams } from "react-router-dom";
 import styles from './ExpoAdminLayout.module.css';
 import ExpoAdminHeader from "./header/ExpoAdminHeader";
 import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
-import { getMyExpos } from "../../api/service/expo-admin/authService";
+import { getMyExpos } from "../../api/service/expo-admin/AuthService";
 
 function ExpoAdminLayout() {
   const [hasPermission, setHasPermission] = useState(null);

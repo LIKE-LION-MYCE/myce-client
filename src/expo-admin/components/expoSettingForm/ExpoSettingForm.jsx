@@ -8,7 +8,7 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import {
   getMyExpoInfo,
   updateMyExpoInfo,
-} from '../../../api/service/expo-admin/setting/expoInfoService';
+} from '../../../api/service/expo-admin/setting/ExpoInfoService';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function ExpoSettingForm() {
