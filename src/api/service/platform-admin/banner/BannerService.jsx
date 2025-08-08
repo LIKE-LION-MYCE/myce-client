@@ -20,6 +20,6 @@ export const fetchDetailBanner = async ( bannerId ) => {
 };
 
 export const getCurrentBanner = async () => {
-  const res = await instance.get(`/ads/get`);
+  const res = await instance.get(`/ads`);
   return res.data;
 };
