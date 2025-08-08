@@ -9,7 +9,7 @@ function PaymentTable({ data }) {
     { key: 'phone', header: '전화번호' },
     { key: 'email', header: '이메일' },
     { key: 'quantity', header: '수량' },
-    { key: 'totalAmount', header: '결제 금액' },
+    { key: 'totalAmount', header: '결제 금액(원)' },
     { key: 'reservationStatus', header: '결제 상태' },
     { key: 'createdAt', header: '결제일' },
   ];
@@ -43,6 +43,10 @@ function PaymentTable({ data }) {
         : `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()} ${String(
             date.getHours()
           ).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    }
+
+    if (key === 'totalAmount') {
+      return typeof value === 'number' ? `${value.toLocaleString()}` : '-';
     }
 
     return value ?? '-';
