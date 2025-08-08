@@ -25,7 +25,7 @@ function Payments() {
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentTab, setCurrentTab] = useState('전체');
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(10); // 고정이라면 굳이 setPageSize 필요 없음
+  const [pageSize] = useState(10);
 
   const [pageInfo, setPageInfo] = useState({
     content: [],
@@ -48,12 +48,17 @@ function Payments() {
     const fetchPaymentData = async () => {
       try {
         const statusParam = tabToEnumMap[currentTab];
+        const nameParam = searchType === 'name' ? searchText : null;
+        const phoneParam = searchType === 'phone' ? searchText : null;
+
         const res = await getExpoAdminPayment(
           expoId,
           currentPage,
           pageSize,
           sortOrder,
-          statusParam ?? undefined
+          statusParam ?? undefined,
+          nameParam,
+          phoneParam
         );
         setPageInfo(res);
       } catch (error) {
@@ -62,24 +67,17 @@ function Payments() {
     };
 
     fetchPaymentData();
-  }, [expoId, currentPage, pageSize, sortOrder, currentTab]);
+  }, [expoId, currentPage, pageSize, sortOrder, currentTab, searchText, searchType]);
 
   const handleTabChange = (index) => {
     const selectedTab = tabLabels[index];
     setCurrentTab(selectedTab);
-    setCurrentPage(0); // 탭 바꾸면 첫 페이지로 초기화
+    setCurrentPage(0);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  const filteredData = pageInfo.content.filter((item) => {
-    return (
-      searchText.trim() === '' ||
-      item[searchType]?.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
 
   return (
     <div className={styles.paymentContainer}>
@@ -128,7 +126,7 @@ function Payments() {
         </div>
       </div>
 
-      <PaymentTable data={filteredData} />
+      <PaymentTable data={pageInfo.content} />
 
       <Pagination
         pageInfo={pageInfo}

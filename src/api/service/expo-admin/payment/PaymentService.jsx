@@ -1,14 +1,16 @@
 import instance from "../../../lib/axios";
 
 // 결제 내역 조회
-export const getExpoAdminPayment = async (expoId, page, size, sort, status) => {
+export const getExpoAdminPayment = async (expoId, page, size, sort, status, name, phone) => {
   try {
     const response = await instance.get(`/expos/${expoId}/payments`, {
       params: {
         page,
         size,
         sort,
-        status: status ?? undefined
+        status: status ?? undefined,
+        name: name ?? undefined,
+        phone: phone ?? undefined,
       },
     });
     return response.data;
