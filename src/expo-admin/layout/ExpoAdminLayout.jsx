@@ -3,25 +3,18 @@ import { Outlet, useParams } from "react-router-dom";
 import styles from './ExpoAdminLayout.module.css';
 import ExpoAdminHeader from "./header/ExpoAdminHeader";
 import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
-import { getMyExpos } from "../../api/service/expo-admin/AuthService";
+import { usePermission } from "../permission/PermissionContext";
 
 function ExpoAdminLayout() {
-  const [hasPermission, setHasPermission] = useState(null);
   const { expoId } = useParams();
+  const { perm } = usePermission();
+  const [hasPermission, setHasPermission] = useState(null);
 
   useEffect(() => {
-    const checkPermission = async () => {
-      try {
-        const expos = await getMyExpos(); //현재 로그인 한 사용자 기반으로 활성화된 exopId 반환
-        const expoIdNumber = Number(expoId);
-        setHasPermission(expos.includes(expoIdNumber));
-      } catch (error) {
-        console.error("권한 확인 실패:", error.message);
-        setHasPermission(false);
-      }
-    };
-    checkPermission();
-  }, [expoId]);
+    if (!perm) return;
+    const expoIdNumber = Number(expoId);
+    setHasPermission(perm.expoIds.includes(expoIdNumber));
+  }, [perm, expoId]);
 
   if (hasPermission === null) return null;
 
