@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import styles from './BannerApplicationsDetail.module.css';
@@ -10,7 +10,8 @@ import PaymentSummaryModal from '../../components/paymentSummaryModal/PaymentSum
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {fetchDetailBanner} from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner } from '../../../api/service/platform-admin/banner/BannerService';
+import { rejectBanner, fetchRejectInfo } from '../../../api/service/platform-admin/common/RejectInfoService';
 
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
@@ -36,9 +37,9 @@ function BannerApplicationsDetail() {
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
   const [showRejectViewModal, setShowRejectViewModal] = useState(false);
   const [showSettlementDetail, setShowSettlementDetail] = useState(false);
-  
+
   const [bannerData, setBannerData] = useState(null);
-  const [operatorData, setOperatorData] = useState(null);   
+  const [operatorData, setOperatorData] = useState(null);
 
   const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
@@ -46,30 +47,42 @@ function BannerApplicationsDetail() {
 
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [rejectReason, setRejectReason] = useState(null);
 
-  const rejectReason = '심사 기준 미달로 인해 반려되었습니다.';
+  const getRejectReason = async () => {
+    try {
+      const res = await fetchRejectInfo(id);
+      setRejectReason(res.description);
+      console.log(res);
+    } catch (err) {
+      console.log('거절 사유를 가져오지 못했습니다 : ', err);
+    }
+  }
+
+  const fetchData = async () => {
+    try {
+      const response = await fetchDetailBanner(id);
+      getRejectReason();
+      console.log('배너 상세 데이터:', response);
+      // 배너와 운영자 데이터 설정
+      if (rawStatus == 'REJECTED') {
+
+      }
+      setBannerData(response);
+      setOperatorData({
+        companyName: response.businessCompany,
+        ceoName: response.representName,
+        email: response.businessEmail,
+        phone: response.businessPhone,
+        address: response.address,
+        businessNumber: response.businessNumber,
+      });
+    } catch (error) {
+      triggerToastFail('데이터를 불러오는 데 실패했습니다.');
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchDetailBanner(id);
-        
-        console.log('배너 상세 데이터:', response);
-        // 배너와 운영자 데이터 설정
-        setBannerData(response);
-        setOperatorData({
-          companyName: response.businessCompany,
-          ceoName: response.representName,
-          email: response.businessEmail,
-          phone: response.businessPhone,
-          address: response.address,
-          businessNumber: response.businessNumber,
-        });
-      } catch (error) {
-        triggerToastFail('데이터를 불러오는 데 실패했습니다.');
-      }
-    };
-
     fetchData();
   }, [id]);
 
@@ -81,8 +94,19 @@ function BannerApplicationsDetail() {
     setShowRejectModal(true);
   };
 
-  const handleRejectSubmit = (reason) => {
-    console.log('거절 사유:', reason);
+  const handleRejectSubmit = async (reason) => {
+    try {
+      await rejectBanner({ id, reason });
+      await getRejectReason();
+      await fetchData();
+
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...location.state, expoStatus: 'REJECTED' },
+      });
+    } catch (error) {
+      console.log("거절 사유 전송 실패 : ", error);
+    }
     setShowRejectModal(false);
   };
 
@@ -145,12 +169,12 @@ function BannerApplicationsDetail() {
             </span>
           )}
         </div>
-        <BannerApplicationForm bannerData={bannerData}/>
+        <BannerApplicationForm bannerData={bannerData} />
       </div>
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={operatorData}/>
+        <OperatorApplicationForm operatorData={operatorData} />
       </div>
 
       {/* 버튼 그룹 */}
@@ -165,8 +189,8 @@ function BannerApplicationsDetail() {
 
       <RejectReasonViewModal
         isOpen={showRejectViewModal}
+        rejectReason={rejectReason}
         onClose={() => setShowRejectViewModal(false)}
-        reason={rejectReason}
       />
 
       <PaymentSummaryModal

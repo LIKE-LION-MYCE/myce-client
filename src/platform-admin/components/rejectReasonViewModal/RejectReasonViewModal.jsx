@@ -1,6 +1,7 @@
 import styles from './RejectReasonViewModal.module.css';
 
-function RejectReasonViewModal({ isOpen, onClose, reason }) {
+function RejectReasonViewModal({ isOpen, onClose, rejectReason }) {
+
   if (!isOpen) return null;
 
   return (
@@ -9,7 +10,7 @@ function RejectReasonViewModal({ isOpen, onClose, reason }) {
         <h2 className={styles.title}>거절 사유</h2>
 
         <div className={styles.reasonBox}>
-          {reason || '사유 없음'}
+          {rejectReason}
         </div>
 
         <div className={styles.actions}>
