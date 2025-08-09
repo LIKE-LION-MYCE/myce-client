@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useParams, useLocation } from "react-router-dom";
 import styles from './ExpoAdminLayout.module.css';
 import ExpoAdminHeader from "./header/ExpoAdminHeader";
 import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
@@ -7,18 +7,28 @@ import { usePermission } from "../permission/PermissionContext";
 
 function ExpoAdminLayout() {
   const { expoId } = useParams();
+  const location = useLocation();
   const { perm } = usePermission();
-  const [hasPermission, setHasPermission] = useState(null);
 
+  const [hasExpoAccess, setHasExpoAccess] = useState(null);
+
+  // 1) expoId 접근 권한(해당 박람회 소속 여부) 체크 및 직입 방지
   useEffect(() => {
     if (!perm) return;
     const expoIdNumber = Number(expoId);
-    setHasPermission(perm.expoIds.includes(expoIdNumber));
+    setHasExpoAccess(perm.expoIds.includes(expoIdNumber));
   }, [perm, expoId]);
 
-  if (hasPermission === null) return null;
+  if (hasExpoAccess === null) return null;
+  if (!hasExpoAccess) return <NoAccessPage />;
 
-  if (!hasPermission) return <NoAccessPage />; //권한 없음 페이지 렌더링
+  // 2) 페이지별 권한 체크 (주소창 직입 방지)
+  const basePath = `/expos/${expoId}/admin`;
+  const path = location.pathname;
+
+  const pageAllowed = hasPagePermission(path, basePath, perm);
+
+  if (!pageAllowed) return <NoAccessPage />;
 
   return (
     <div className={styles.layout}>
@@ -41,6 +51,28 @@ function ExpoAdminLayout() {
 
 export default ExpoAdminLayout;
 
+
+function hasPagePermission(path, basePath, perm) {
+  if (path === basePath || path === `${basePath}/`) return true;
+
+  const rules = [
+    { match: `${basePath}/setting`,      allow: !!perm?.isExpoDetailUpdate },
+    { match: `${basePath}/booths`,       allow: !!perm?.isBoothInfoUpdate },
+    { match: `${basePath}/events`,       allow: !!perm?.isScheduleUpdate },
+    { match: `${basePath}/payments`,     allow: !!perm?.isPaymentView },
+    { match: `${basePath}/reservations`, allow: !!perm?.isReserverListView },
+    { match: `${basePath}/emails`,       allow: !!perm?.isEmailLogView },
+    { match: `${basePath}/operation`,    allow: !!perm?.isOperationsConfigUpdate },
+    { match: `${basePath}/settlement`,   allow: !!perm?.isSettlementView },
+    { match: `${basePath}/inquiry`,      allow: !!perm?.isInquiryView },
+  ];
+
+  for (const r of rules) {
+    if (path.startsWith(r.match)) return r.allow;
+  }
+  return true;
+}
+
 function NoAccessPage() {
   return (
     <div style={{
@@ -52,12 +84,9 @@ function NoAccessPage() {
       textAlign: "center",
       padding: "2rem"
     }}>
-      <h2 style={{ fontSize: "1.75rem", color: "#d32f2f", marginBottom: "1rem" }}>
-        [403 Forbidden] 접근 권한이 없습니다
+      <h2 style={{ fontSize: "1.5rem", color: "#d32f2f", marginBottom: "1rem" }}>
+        [403 Forbidden] 접근 권한이 없습니다.
       </h2>
-      <p style={{ fontSize: "1rem", color: "#555" }}>
-        이 박람회에 대한 관리 권한이 없습니다.
-      </p>
     </div>
   );
 }
