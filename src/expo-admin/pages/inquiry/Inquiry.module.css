@@ -149,6 +149,14 @@
   align-items: flex-start;
 }
 
+/* 관리자 정보 */
+.adminInfo {
+  font-size: 11px;
+  color: #666;
+  margin-right: 5px;
+  font-weight: 500;
+}
+
 /* 메시지 시간 */
 .time {
   font-size: 11px;
@@ -310,4 +318,14 @@
   background-color: white !important; /* 사용자 메시지 - 흰색 배경 */
   border: 1px solid #ddd;
   color: #333;
+}
+
+/* 관리자 정보 (말풍선 위) */
+.adminInfoAbove {
+  font-size: 11px;
+  color: #666;
+  font-weight: 500;
+  text-align: right;
+  margin-bottom: 2px;
+  margin-right: 8px;
 }

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import styles from './Inquiry.module.css';
 import { getExpoChatRooms, getExpoChatMessages, markExpoChatAsRead } from '../../../api/service/expo-admin/expoChatService';
-import { connect, joinRoom, onMessage, sendAdminMessage, disconnect, isConnected, subscribeToUnreadUpdates, subscribeToExpoAdminUpdates, subscribeToUserErrors } from '../../../api/service/chat/ChatWebSocketService';
+import { connect, joinRoom, leaveRoom, onMessage, sendAdminMessage, disconnect, isConnected, subscribeToUnreadUpdates, subscribeToExpoAdminUpdates, subscribeToExpoChatRoomUpdates, subscribeToUserErrors } from '../../../api/service/chat/ChatWebSocketService';
 
 
 function Inquiry() {
@@ -89,6 +89,7 @@ function Inquiry() {
         setTimeout(() => {
           subscribeToExpoAdminUpdatesFunc();
           subscribeToUserErrorsFunc();
+          subscribeToExpoChatRoomUpdatesFunc(); // 실시간 채팅방 목록 업데이트 구독 추가
         }, 100);
       }
     } catch (err) {
@@ -166,6 +167,36 @@ function Inquiry() {
   };
 
   /**
+   * 박람회 전체 채팅방 목록 업데이트 구독 (실시간 unread count 업데이트)
+   */
+  const subscribeToExpoChatRoomUpdatesFunc = () => {
+    if (!isConnected()) {
+      return;
+    }
+
+    try {
+      subscribeToExpoChatRoomUpdates(expoId, (updateData) => {
+        // 새 메시지로 인한 unread count 업데이트 처리
+        if (updateData.type === 'unread_count_update' || updateData.type === 'new_message') {
+          const payload = updateData.payload || updateData;
+          const { roomCode, unreadCount } = payload;
+          
+          // 해당 채팅방의 unread count 실시간 업데이트
+          setChatRooms(prev => prev.map(room => 
+            room.roomCode === roomCode 
+              ? { ...room, unreadCount: unreadCount || 0 }
+              : room
+          ));
+          
+        }
+      });
+      
+    } catch (err) {
+      console.error('채팅방 목록 업데이트 구독 실패:', err);
+    }
+  };
+
+  /**
    * 특정 채팅방의 메시지 히스토리 로드
    */
   const loadMessages = async (roomCode) => {
@@ -192,29 +223,38 @@ function Inquiry() {
         onMessage(roomCode, (newMessage) => {
           // 일반 메시지 처리
           if (newMessage.type === 'MESSAGE' || newMessage.type === 'ADMIN_MESSAGE' || !newMessage.type) {
-            const messageData = {
-              id: newMessage.payload?.messageId || newMessage.messageId,
-              content: newMessage.payload?.content || newMessage.content,
-              senderId: newMessage.payload?.senderId || newMessage.senderId,
-              senderType: newMessage.payload?.senderType || newMessage.senderType || 'USER',
-              sentAt: newMessage.payload?.sentAt || newMessage.sentAt,
-              unreadCount: newMessage.payload?.unreadCount !== undefined ? newMessage.payload?.unreadCount : 
-                          (newMessage.unreadCount !== undefined ? newMessage.unreadCount : 1)
-            };
+            // roomCode 검증: 현재 채팅방의 메시지인지 확인
+            const messageRoomCode = newMessage.payload?.roomCode || newMessage.payload?.roomId || 
+                                  newMessage.roomCode || newMessage.roomId;
             
-            setMessages(prev => [...prev, messageData]);
-            
-            // 사용자 메시지가 오면 자동으로 읽음 처리
-            if (messageData.senderType === 'USER') {
-              markExpoChatAsRead(expoId, roomCode, null)
-                .then(() => {
-                  // 읽음 처리 후 기존 USER 메시지들의 unreadCount를 0으로 업데이트
-                  setMessages(prev => prev.map(msg => ({
-                    ...msg,
-                    unreadCount: msg.senderType === 'USER' ? 0 : msg.unreadCount
-                  })));
-                })
-                .catch(err => console.error('읽음 처리 실패:', err));
+            // 현재 선택된 채팅방과 메시지의 roomCode가 일치하는 경우에만 처리
+            if (messageRoomCode === roomCode) {
+              const messageData = {
+                id: newMessage.payload?.messageId || newMessage.messageId,
+                content: newMessage.payload?.content || newMessage.content,
+                senderId: newMessage.payload?.senderId || newMessage.senderId,
+                senderType: newMessage.payload?.senderType || newMessage.senderType || 'USER',
+                adminCode: newMessage.payload?.adminCode || newMessage.adminCode,
+                adminDisplayName: newMessage.payload?.adminDisplayName || newMessage.adminDisplayName,
+                sentAt: newMessage.payload?.sentAt || newMessage.sentAt,
+                unreadCount: newMessage.payload?.unreadCount !== undefined ? newMessage.payload?.unreadCount : 
+                            (newMessage.unreadCount !== undefined ? newMessage.unreadCount : 1)
+              };
+              
+              setMessages(prev => [...prev, messageData]);
+              
+              // 사용자 메시지가 오면 자동으로 읽음 처리
+              if (messageData.senderType === 'USER') {
+                markExpoChatAsRead(expoId, roomCode, null)
+                  .then(() => {
+                    // 읽음 처리 후 기존 USER 메시지들의 unreadCount를 0으로 업데이트
+                    setMessages(prev => prev.map(msg => ({
+                      ...msg,
+                      unreadCount: msg.senderType === 'USER' ? 0 : msg.unreadCount
+                    })));
+                  })
+                  .catch(err => console.error('읽음 처리 실패:', err));
+              }
             }
           }
           
@@ -274,6 +314,16 @@ function Inquiry() {
    */
   const handleRoomSelect = async (index) => {
     if (index === selectedRoomIndex) return;
+    
+    // 이전 채팅방 구독 해제
+    const previousRoom = selectedRoom;
+    if (previousRoom?.roomCode && wsConnected && isConnected()) {
+      try {
+        leaveRoom(previousRoom.roomCode);
+      } catch (err) {
+        console.error('이전 채팅방 구독 해제 실패:', err);
+      }
+    }
     
     setSelectedRoomIndex(index);
     setMessages([]);
@@ -358,6 +408,9 @@ function Inquiry() {
 
     return (
       <div key={msg.id || index} className={styles.messageRow}>
+        {isAdminMessage && msg.adminDisplayName && (
+          <div className={styles.adminInfoAbove}>{msg.adminDisplayName}</div>
+        )}
         <div className={isMyMessage ? styles.messageRight : styles.messageLeft}>
           <div className={`${styles.messageBubble} ${isAdminMessage ? styles.adminMessage : styles.userMessage}`}>
             {msg.content}

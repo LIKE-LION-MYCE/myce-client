@@ -31,9 +31,7 @@ const connect = async (token, userId) => {
       if (import.meta.env.DEV) {
         return 'http://localhost:8080/ws/chat';
       } else {
-        const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
-        const host = window.location.host;
-        return `${protocol}//${host}/ws/chat`;
+        return 'wss://api.myce.live/ws/chat';
       }
     };
     
@@ -372,6 +370,39 @@ const subscribeToUserErrors = (callback) => {
   }
 };
 
+/**
+ * 박람회별 전체 채팅방 목록 업데이트 구독 (unread count 실시간 업데이트용)
+ * @param {number} expoId - 박람회 ID
+ * @param {function} handler - 채팅방 목록 업데이트 핸들러
+ */
+const subscribeToExpoChatRoomUpdates = (expoId, handler) => {
+  if (!connected || !stompClient) {
+    return null;
+  }
+
+  const chatRoomUpdatesChannel = `/topic/expo/${expoId}/chat-room-updates`;
+  
+  try {
+    const subscription = stompClient.subscribe(chatRoomUpdatesChannel, (message) => {
+      try {
+        const data = JSON.parse(message.body);
+        // 새 메시지로 인한 unread count 업데이트 처리
+        if (data.type === 'unread_count_update' || data.type === 'new_message') {
+          handler(data);
+        }
+      } catch (parseError) {
+        console.error('채팅방 업데이트 메시지 파싱 에러:', parseError);
+      }
+    });
+    
+    subscriptions.set(`expo-chat-rooms-${expoId}`, subscription);
+    return subscription;
+  } catch (subscribeError) {
+    console.error('채팅방 업데이트 구독 실패:', subscribeError);
+    return null;
+  }
+};
+
 // ChatWebSocketService API 내보내기
 export { 
   connect, 
@@ -385,6 +416,7 @@ export {
   markAsReadViaWebSocket,
   subscribeToUnreadUpdates,
   subscribeToExpoAdminUpdates,
+  subscribeToExpoChatRoomUpdates,
   requestUnreadCount,
   sendAdminMessage,
   sendReadStatusNotification,
