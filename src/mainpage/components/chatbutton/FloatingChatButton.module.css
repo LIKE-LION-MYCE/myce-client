@@ -27,12 +27,21 @@
 
 .badge {
   position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 16px;
-  height: 16px;
-  background-color: red;
-  border-radius: 50%;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  background-color: #ff4757;
+  border-radius: 10px;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 
 /* 태블릿 이하 */
@@ -63,8 +72,9 @@
   }
 
   .badge {
-    width: 10px;
-    height: 10px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 8px;
     top: -4px;
     right: -4px;
   }

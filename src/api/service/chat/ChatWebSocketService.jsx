@@ -11,7 +11,9 @@ import { Stomp } from '@stomp/stompjs';
 let stompClient = null;
 let subscriptions = new Map(); // 채팅방별 구독 관리
 let messageHandlers = new Map(); // 메시지 핸들러 관리
+let unreadCountHandlers = new Map(); // unread count 핸들러 관리
 let connected = false;
+let currentSessionId = null; // 현재 세션 ID 저장
 
 /**
  * WebSocket 연결 수립
@@ -21,42 +23,30 @@ let connected = false;
  */
 const connect = async (token, userId) => {
   try {
-    // 기존 연결이 있으면 해제
     if (connected) {
       disconnect();
     }
 
-    // SockJS 연결 URL 각 환경별 설정
     const getWebSocketURL = () => {
       if (import.meta.env.DEV) {
-        // 개발 환경: localhost:8080 직접 연결
         return 'http://localhost:8080/ws/chat';
       } else {
-        // 운영 환경: 현재 도메인 사용
-        const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
-        const host = window.location.host;
-        return `${protocol}//${host}/ws/chat`;
+        return 'wss://api.myce.live/ws/chat';
       }
     };
     
     const sockJSUrl = getWebSocketURL();
-    console.log('SockJS 연결 시작:', sockJSUrl);
-    
-    // STOMP over SockJS 클라이언트 생성
     const socket = new SockJS(sockJSUrl);
     stompClient = Stomp.over(socket);
 
-    // 디버그 모드 설정 (개발환경만)
     stompClient.debug = import.meta.env.DEV ? console.log : () => {};
 
     return new Promise((resolve, reject) => {
       stompClient.connect(
         {},
         (frame) => {
-          console.log('WebSocket 연결 성공:', frame);
           connected = true;
           
-          // STOMP 연결 완료 후 약간의 지연을 두고 인증 처리
           setTimeout(() => {
             authenticate(token)
               .then(() => resolve())
@@ -91,25 +81,21 @@ const authenticate = (token) => {
 
     let authResolved = false;
 
-    // 인증 응답 구독 - 토픽 기반 응답
     const authSubscription = stompClient.subscribe('/topic/auth-test', (message) => {
       try {
         const response = JSON.parse(message.body);
-        console.log('인증 응답:', response);
         
         if ((response.type === 'AUTH_ACK' || response.type === 'AUTH_TEST') && !authResolved) {
-          console.log('WebSocket 인증 성공');
+          currentSessionId = response.sessionId;
           authResolved = true;
           authSubscription.unsubscribe();
           resolve();
         } else if (response.type === 'ERROR' && !authResolved) {
-          console.error('WebSocket 인증 실패:', response);
           authResolved = true;
           authSubscription.unsubscribe();
           reject(new Error(response.payload || '인증 실패'));
         }
       } catch (error) {
-        console.error('인증 응답 파싱 에러:', error);
         if (!authResolved) {
           authResolved = true;
           authSubscription.unsubscribe();
@@ -118,23 +104,18 @@ const authenticate = (token) => {
       }
     });
 
-    // 인증 타임아웃 설정 (10초)
     const timeoutId = setTimeout(() => {
       if (!authResolved) {
-        console.warn('인증 타임아웃');
         authResolved = true;
         authSubscription.unsubscribe();
         reject(new Error('인증 타임아웃'));
       }
     }, 10000);
 
-    // 인증 요청 전송
     try {
       const payload = { token: token };
       stompClient.send('/app/auth', {}, JSON.stringify(payload));
-      console.log('인증 요청 전송됨');
     } catch (sendError) {
-      console.error('인증 요청 전송 실패:', sendError);
       clearTimeout(timeoutId);
       if (!authResolved) {
         authResolved = true;
@@ -155,25 +136,24 @@ const joinRoom = async (roomId) => {
     throw new Error('WebSocket이 연결되지 않음');
   }
 
-  console.log('채팅방 입장:', roomId);
-
-  // 채팅방 메시지 구독
   if (!subscriptions.has(roomId)) {
     const subscription = stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
       const data = JSON.parse(message.body);
-      console.log('새 메시지 수신:', data);
       
-      // 메시지 핸들러 호출
       const handler = messageHandlers.get(roomId);
-      if (handler && data.type === 'MESSAGE') {
-        handler(data.payload);
+      if (handler && (data.type === 'MESSAGE' || data.type === 'ADMIN_MESSAGE')) {
+        handler(data.payload || data);
+      }
+      
+      const unreadHandler = unreadCountHandlers.get(roomId);
+      if (unreadHandler && data.type === 'read_status_update') {
+        unreadHandler(data);
       }
     });
     
     subscriptions.set(roomId, subscription);
   }
 
-  // 방 입장 요청
   stompClient.send('/app/join', {}, JSON.stringify({
     roomId: roomId
   }));
@@ -191,9 +171,6 @@ const sendMessage = (roomId, content) => {
     return;
   }
 
-  console.log('메시지 전송:', { roomId, content });
-
-  // 문서 명세에 따른 메시지 페이로드 구성
   const messagePayload = {
     roomId: roomId,
     message: content,
@@ -226,23 +203,130 @@ const leaveRoom = (roomId) => {
 };
 
 /**
+ * 읽음 상태 WebSocket으로 업데이트
+ * @param {string} roomId - 채팅방 ID
+ * @param {string} messageId - 읽은 메시지 ID (선택적)
+ */
+const markAsReadViaWebSocket = (roomId, messageId = null) => {
+  if (!connected) {
+    return;
+  }
+
+  const payload = {
+    roomId: roomId,
+    messageId: messageId
+  };
+
+  stompClient.send('/app/read', {}, JSON.stringify(payload));
+};
+
+/**
+ * Unread count 업데이트 구독
+ * @param {string} roomId - 채팅방 ID
+ * @param {function} handler - unread count 업데이트 핸들러
+ */
+const subscribeToUnreadUpdates = (roomId, handler) => {
+  unreadCountHandlers.set(roomId, handler);
+};
+
+/**
+ * 박람회 전체 관리자 업데이트 구독
+ * @param {number} expoId - 박람회 ID
+ * @param {function} handler - 업데이트 핸들러
+ */
+const subscribeToExpoAdminUpdates = (expoId, handler) => {
+  if (!connected || !stompClient) {
+    return null;
+  }
+
+  const expoChannel = `/topic/expo/${expoId}/admin-updates`;
+  
+  try {
+    const subscription = stompClient.subscribe(expoChannel, (message) => {
+      try {
+        const data = JSON.parse(message.body);
+        handler(data);
+      } catch (parseError) {
+        console.error('메시지 파싱 에러:', parseError);
+      }
+    });
+    
+    subscriptions.set(`expo-${expoId}`, subscription);
+    return subscription;
+  } catch (subscribeError) {
+    console.error('구독 실패:', subscribeError);
+    return null;
+  }
+};
+
+/**
+ * WebSocket으로 unread count 요청
+ * @param {string} roomId - 채팅방 ID
+ */
+const requestUnreadCount = (roomId) => {
+  if (!connected) {
+    return;
+  }
+
+  stompClient.send('/app/unread-count', {}, JSON.stringify({
+    roomId: roomId
+  }));
+};
+
+/**
+ * 읽음 상태 WebSocket 알림 전송
+ * @param {string} roomId - 채팅방 ID
+ */
+const sendReadStatusNotification = (roomId) => {
+  if (!connected) {
+    return;
+  }
+
+  stompClient.send('/app/read-status-notify', {}, JSON.stringify({
+    roomId: roomId,
+    readerType: "USER",
+    unreadCount: 0
+  }));
+};
+
+/**
  * WebSocket 연결 완전 해제
  * @description 모든 구독 해제 후 연결 종료
  */
 const disconnect = () => {
   if (stompClient && connected) {
-    // 모든 구독 해제
     subscriptions.forEach(subscription => subscription.unsubscribe());
     subscriptions.clear();
     messageHandlers.clear();
+    unreadCountHandlers.clear();
     
-    stompClient.disconnect(() => {
-      console.log('WebSocket 연결 해제');
-    });
-    
+    stompClient.disconnect();
     connected = false;
     stompClient = null;
   }
+};
+
+/**
+ * 관리자 채팅 메시지 전송 (담당자 배정 포함)
+ * @param {string} roomCode - 채팅방 코드 (admin-{expoId}-{userId})
+ * @param {string} content - 메시지 내용
+ * @param {number} expoId - 박람회 ID
+ * @description 백엔드의 /app/admin/chat.send 엔드포인트 사용
+ */
+const sendAdminMessage = (roomCode, content, expoId) => {
+  if (!connected) {
+    console.error('WebSocket이 연결되지 않음');
+    return;
+  }
+
+  const messagePayload = {
+    roomCode: roomCode,
+    message: content,
+    expoId: expoId,
+    sentAt: new Date().toISOString()
+  };
+
+  stompClient.send('/app/admin/chat.send', {}, JSON.stringify(messagePayload));
 };
 
 /**
@@ -251,6 +335,72 @@ const disconnect = () => {
  */
 const isConnected = () => {
   return connected;
+};
+
+/**
+ * 개별 사용자 에러 메시지 구독
+ * @param {function} callback - 에러 메시지 콜백 함수
+ */
+const subscribeToUserErrors = (callback) => {
+  if (!stompClient || !connected) {
+    return;
+  }
+
+  if (!currentSessionId) {
+    return;
+  }
+
+  const errorChannel = `/topic/user/${currentSessionId}/errors`;
+  
+  try {
+    const subscription = stompClient.subscribe(errorChannel, (message) => {
+      try {
+        const errorData = JSON.parse(message.body);
+        callback(errorData);
+      } catch (parseError) {
+        console.error('에러 메시지 파싱 실패:', parseError);
+      }
+    });
+    
+    subscriptions.set('user-errors', subscription);
+    return subscription;
+  } catch (subscribeError) {
+    console.error('구독 과정 중 에러:', subscribeError);
+    return null;
+  }
+};
+
+/**
+ * 박람회별 전체 채팅방 목록 업데이트 구독 (unread count 실시간 업데이트용)
+ * @param {number} expoId - 박람회 ID
+ * @param {function} handler - 채팅방 목록 업데이트 핸들러
+ */
+const subscribeToExpoChatRoomUpdates = (expoId, handler) => {
+  if (!connected || !stompClient) {
+    return null;
+  }
+
+  const chatRoomUpdatesChannel = `/topic/expo/${expoId}/chat-room-updates`;
+  
+  try {
+    const subscription = stompClient.subscribe(chatRoomUpdatesChannel, (message) => {
+      try {
+        const data = JSON.parse(message.body);
+        // 새 메시지로 인한 unread count 업데이트 처리
+        if (data.type === 'unread_count_update' || data.type === 'new_message') {
+          handler(data);
+        }
+      } catch (parseError) {
+        console.error('채팅방 업데이트 메시지 파싱 에러:', parseError);
+      }
+    });
+    
+    subscriptions.set(`expo-chat-rooms-${expoId}`, subscription);
+    return subscription;
+  } catch (subscribeError) {
+    console.error('채팅방 업데이트 구독 실패:', subscribeError);
+    return null;
+  }
 };
 
 // ChatWebSocketService API 내보내기
@@ -262,5 +412,13 @@ export {
   onMessage, 
   leaveRoom, 
   disconnect, 
-  isConnected 
+  isConnected,
+  markAsReadViaWebSocket,
+  subscribeToUnreadUpdates,
+  subscribeToExpoAdminUpdates,
+  subscribeToExpoChatRoomUpdates,
+  requestUnreadCount,
+  sendAdminMessage,
+  sendReadStatusNotification,
+  subscribeToUserErrors
 };
