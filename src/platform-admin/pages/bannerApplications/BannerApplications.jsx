@@ -11,6 +11,7 @@ const bannerStatusMap = {
   ALL: '전체',
   PENDING_APPROVAL: '승인 대기',
   WAITING_PAYMENT: '결제 대기',
+  CANCELLED: '취소됨',
   COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
 };
@@ -83,8 +84,10 @@ function BannerApplications() {
       case 2:
         return 'PENDING_PAYMENT';
       case 3:
-        return 'COMPLETED';
+        return 'CANCELLED';
       case 4:
+        return 'COMPLETED';
+      case 5:
         return 'REJECTED';
       default:
         return '';
