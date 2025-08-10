@@ -66,6 +66,14 @@
   background-color: #f0ad4e;
 }
 
+.게시_대기 {
+  background-color: #5cb85c;
+}
+
+.취소됨 {
+  background-color: #d9534f;
+}
+
 .승인_거절 {
   background-color: #d9534f;
 }

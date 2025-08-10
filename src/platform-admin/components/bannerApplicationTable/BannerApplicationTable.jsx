@@ -5,6 +5,8 @@ import styles from './BannerApplicationTable.module.css';
 const statusMap = {
   PENDING_APPROVAL: '승인 대기',
   PENDING_PAYMENT: '결제 대기',
+  PENDING_PUBLISH: '게시 대기',
+  CANCELLED: '취소됨',
   COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import styles from './BannerApplicationsDetail.module.css';
@@ -16,6 +16,8 @@ import { rejectBanner, fetchRejectInfo } from '../../../api/service/platform-adm
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
   PENDING_PAYMENT: '결제_대기',
+  PENDING_PUBLISH: '게시_대기',
+  CANCELLED: '취소됨',
   COMPLETED: '게시_종료',
   REJECTED: '승인_거절',
 };
@@ -23,6 +25,8 @@ const statusClassMap = {
 const statusTextMap = {
   승인_대기: '승인 대기',
   결제_대기: '결제 대기',
+  게시_대기: '게시 대기',
+  취소됨: '취소됨',
   게시_종료: '게시 종료',
   승인_거절: '승인 거절',
 };
@@ -62,11 +66,10 @@ function BannerApplicationsDetail() {
   const fetchData = async () => {
     try {
       const response = await fetchDetailBanner(id);
-      getRejectReason();
       console.log('배너 상세 데이터:', response);
       // 배너와 운영자 데이터 설정
       if (rawStatus == 'REJECTED') {
-
+        getRejectReason();
       }
       setBannerData(response);
       setOperatorData({
@@ -94,6 +97,14 @@ function BannerApplicationsDetail() {
     setShowRejectModal(true);
   };
 
+  const handleApproveSubmit = () => {
+    navigate(location.pathname, {
+      replace: true,
+      state: { ...location.state, expoStatus: 'PENDING_PUBLISH' },
+    });
+    setShowPaymentModal(false);
+  }
+
   const handleRejectSubmit = async (reason) => {
     try {
       await rejectBanner({ id, reason });
@@ -114,11 +125,6 @@ function BannerApplicationsDetail() {
     setShowPaymentModal(true);
   };
 
-  const handlePaymentConfirm = () => {
-    console.log('결제 요청 처리 로직 실행');
-    setShowPaymentModal(false);
-  };
-
   const triggerToastFail = (message) => {
     setFailMessage(message);
     setShowFailToast(true);
@@ -136,15 +142,18 @@ function BannerApplicationsDetail() {
       </div>
     );
   } else if (rawStatus === 'PENDING_PAYMENT') {
-    buttonGroup = (
-      <div className={styles.buttonGroup}>
-        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
-      </div>
-    );
+
   } else if (rawStatus === 'REJECTED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowRejectViewModal(true)}>거절 사유</button>
+      </div>
+    );
+  } else if (rawStatus === 'CANCELLED') {
+    buttonGroup = (
+      <div className={styles.buttonGroup}>
+        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
+        <button className={styles.approveBtn} onClick={() => setShowSettlementDetail(true)}>정산 내역</button>
       </div>
     );
   } else if (rawStatus === 'COMPLETED') {
@@ -196,7 +205,7 @@ function BannerApplicationsDetail() {
       <PaymentSummaryModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onConfirm={handlePaymentConfirm}
+        onSubmit={handleApproveSubmit}
       />
 
       <PaymentDetailModal
