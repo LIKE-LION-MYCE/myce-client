@@ -14,7 +14,7 @@ export const fetchFilteredBanners = async ({ page, latestFirst, keyword, status,
   return res.data;
 };
 
-export const fetchDetailBanner = async ( bannerId ) => {
+export const fetchDetailBanner = async (bannerId) => {
   const res = await instance.get(`/platform/ads/list/detail/${bannerId}`);
   return res.data;
 };
@@ -24,6 +24,15 @@ export const getCurrentBanner = async () => {
   return res.data;
 };
 
+export const getPaymentInfo = async ( bannerId ) => {
+  const res = await instance.get(`/platform/ads/list/detail/${bannerId}/payment-check`);
+  return res.data;
+};
+
+export const approveBanner = async (bannerId, paymentInfo) => {
+    const res = await instance.post(`/platform/ads/list/detail/${bannerId}/approve`, {paymentInfo});
+}
+ 
 export const fetchRejectInfo = async (bannerId) => {
     const res = await instance.get(`/platform/ads/list/detail/${bannerId}/reject`);
     return res.data;
