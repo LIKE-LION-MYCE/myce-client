@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus , FaInfoCircle} from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
@@ -308,6 +308,15 @@ function TicketSettingForm() {
 
   return (
     <div className={styles.container}>
+      {/* 안내 박스 */}
+      <div className={styles.alertBox}>
+        <FaInfoCircle className={styles.alertIcon} />
+        <span className={styles.alertText}>
+          <strong>안내 :</strong>&nbsp;
+          사용자들의 예매가 완료된 이후로는 티켓 정보를 변경할 수 없습니다.
+        </span>
+      </div>
+
       <div className={styles.header}>
         <button className={styles.addBtn} onClick={handleAddClick}>
           <FaPlus className={styles.iconBtn} /> 티켓 등록
