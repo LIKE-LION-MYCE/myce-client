@@ -31,7 +31,7 @@ const connect = async (token, userId) => {
       if (import.meta.env.DEV) {
         return 'http://localhost:8080/ws/chat';
       } else {
-        return 'wss://api.myce.live/ws/chat';
+        return 'https://api.myce.live/ws/chat';  // SockJS는 https:// 사용
       }
     };
     
