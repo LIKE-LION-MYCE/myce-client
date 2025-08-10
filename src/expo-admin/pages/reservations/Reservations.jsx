@@ -10,6 +10,7 @@ import EmailModal from '../../components/emailModal/EmailModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
+import { getExpoTicketNames } from '../../../api/service/expo-admin/reservation/ReservationService';
 
 const tabLabels = ['전체', '입장 전', '입장 완료'];
 
@@ -23,6 +24,7 @@ function Reservations() {
   const [searchType, setSearchType] = useState('phone');
   const [searchText, setSearchText] = useState('');
   const [ticketName, setTicketName] = useState('');
+  const [ticketOptions, setTicketOptions] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
   const [pageInfo, setPageInfo] = useState({
@@ -32,6 +34,19 @@ function Reservations() {
     size: 0,
     totalElements: 0,
   });
+
+  useEffect(() => {
+    const fetchTicketNames = async () => {
+      try {
+      const names = await getExpoTicketNames(expoId);
+      const sorted = (names ?? []).slice().sort((a, b) => a.localeCompare(b, 'ko-KR', { sensitivity: 'base' }));
+      setTicketOptions(sorted);
+      } catch (error) {
+        triggerToastFail(error.message);
+      }
+    };
+    fetchTicketNames();
+  }, [expoId]);
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -167,13 +182,9 @@ function Reservations() {
               className={styles.select}
             >
               <option value="">티켓 분류</option>
-              <option value="2025 서울 스마트 모빌리티 엑스포 1일권">
-                2025 서울 스마트 모빌리티 엑스포 1일권
-              </option>
-              <option value="2025 서울 스마트 모빌리티 엑스포 2일권">
-                2025 서울 스마트 모빌리티 엑스포 2일권
-              </option>
-              <option value="티켓 5번 수정">티켓 5번 수정</option>
+              {ticketOptions.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
             </select>
           </div>
         </div>
