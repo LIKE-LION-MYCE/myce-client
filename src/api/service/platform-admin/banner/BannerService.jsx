@@ -32,3 +32,22 @@ export const getPaymentInfo = async ( bannerId ) => {
 export const approveBanner = async (bannerId, paymentInfo) => {
     const res = await instance.post(`/platform/ads/list/detail/${bannerId}/approve`, {paymentInfo});
 }
+ 
+export const fetchRejectInfo = async (bannerId) => {
+    const res = await instance.get(`/platform/ads/list/detail/${bannerId}/reject`);
+    return res.data;
+}
+
+export const rejectBanner = async ({ id, reason }) => {
+    const res = await instance.post(`/platform/ads/list/detail/${id}/reject`, {reason});
+}
+
+export const fetchPaymentDetail = async (bannerId) => {
+    const res = await instance.get(`/platform/ads/list/detail/${bannerId}/payment-history`);
+    return res.data;
+}
+
+export const fetchCancelDetail = async (bannerId) => {
+    const res = await instance.get(`/platform/ads/list/detail/${bannerId}/cancel-history`);
+    return res.data;
+}
