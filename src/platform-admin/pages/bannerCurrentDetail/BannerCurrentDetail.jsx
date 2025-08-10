@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import styles from './BannerCurrentDetail.module.css';
@@ -8,7 +8,7 @@ import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetai
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import SettlementSummaryModal from '../../components/settlementSummaryModal/SettlementSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {fetchDetailBanner} from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, fetchCancelInfo, cancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
@@ -30,21 +30,49 @@ function BannerCurrentDetail() {
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
 
   const [bannerData, setBannerData] = useState(null);
-  const [operatorData, setOperatorData] = useState(null);   
-
+  const [operatorData, setOperatorData] = useState(null);
 
   const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
   const statusText = statusTextMap[statusClass];
 
+  const [cancelForm, setCancelForm] = useState(null);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+
+  const fetchCancelForm = async () => {
+    try {
+      const res = await fetchCancelInfo(id);
+      setCancelForm(res);
+      console.log("fetch cancel info", res);
+    } catch (err) {
+      console.log("취소 정보를 불러오지 못했습니다:", err);
+    }
+  }
+
+  const handleSettlementSubmit = async () => {
+    try {
+      await cancelBanner(id, cancelForm);
+      alert("취소 처리에 성공했습니다.");
+      navigate(-1, {
+        replace: true,
+        state: { ...location.state, expoStatus: 'CANCELLED' },
+      });
+    } catch (err) {
+      console.log("취소 처리 실패 : ", err);
+    }
+    setShowSettlementSummary(false);
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchDetailBanner(id);
-        
+
+        fetchCancelForm();
+        console.log("cancelForm : ", cancelForm);
+
         console.log('배너 상세 데이터:', response);
         // 배너와 운영자 데이터 설정
         setBannerData(response);
@@ -66,11 +94,6 @@ function BannerCurrentDetail() {
 
   const handleBack = () => {
     navigate(-1);
-  };
-
-  const handleSettlementSubmit = () => {
-    console.log('✅ 정산 요청 처리 완료');
-    setShowSettlementSummary(false);
   };
 
   const triggerToastFail = (message) => {
@@ -108,12 +131,12 @@ function BannerCurrentDetail() {
             </span>
           )}
         </div>
-        <BannerApplicationForm bannerData={bannerData}/>
+        <BannerApplicationForm bannerData={bannerData} />
       </div>
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={operatorData}/>
+        <OperatorApplicationForm operatorData={operatorData} />
       </div>
 
       {/* 버튼 그룹 */}
@@ -123,6 +146,7 @@ function BannerCurrentDetail() {
       <SettlementSummaryModal
         isOpen={showSettlementSummary}
         onClose={() => setShowSettlementSummary(false)}
+        cancelForm={cancelForm}
         onSubmit={handleSettlementSubmit}
       />
 
