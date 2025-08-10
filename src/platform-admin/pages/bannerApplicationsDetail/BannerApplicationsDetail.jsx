@@ -18,7 +18,6 @@ const statusClassMap = {
   PENDING_PUBLISH: '게시_대기',
   CANCELLED: '취소됨',
   COMPLETED: '게시_종료',
-  CANCELLED: '취소됨',
   REJECTED: '승인_거절',
 };
 
@@ -28,7 +27,6 @@ const statusTextMap = {
   게시_대기: '게시 대기',
   취소됨: '취소됨',
   게시_종료: '게시 종료',
-  취소됨: '취소됨',
   승인_거절: '승인 거절',
 };
 
@@ -172,13 +170,6 @@ function BannerApplicationsDetail() {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowRejectViewModal(true)}>거절 사유</button>
-      </div>
-    );
-  } else if (rawStatus === 'CANCELLED') {
-    buttonGroup = (
-      <div className={styles.buttonGroup}>
-        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
-        <button className={styles.approveBtn} onClick={() => setShowSettlementDetail(true)}>정산 내역</button>
       </div>
     );
   } else if (rawStatus === 'CANCELLED') {
