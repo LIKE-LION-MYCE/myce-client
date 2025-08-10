@@ -1,70 +1,147 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './ManagerSection.module.css';
-import { FaSave } from 'react-icons/fa';
+import { FaSave, FaSpinner } from 'react-icons/fa';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import { getMyExpoManagers, updateMyExpoManagers } from '../../../api/service/expo-admin/operation/ManagerService';
 
 const permissionTabs = {
-  '박람회 관리': ['박람회 상세', '참가 부스', '행사 일정'],
-  '예약 관리': ['예약자 리스트', '결제 내역', '이메일 전송 이력'],
-  '운영 설정': ['운영 설정'],
-  '기타': ['정산', '문의'],
+  '박람회 관리': ['isExpoDetailUpdate', 'isBoothInfoUpdate', 'isScheduleUpdate'],
+  '예약 관리': ['isReserverListView', 'isPaymentView', 'isEmailLogView'],
+  '운영 설정': ['isOperationsConfigUpdate'],
+  '기타': ['isSettlementView', 'isInquiryView'],
 };
 
-const codes = ['로그인계정', 'AB12CD', 'ZX98MN', 'JK34PO', 'YM77XZ', 'KT22LM'];
+const permissionLabels = {
+  isExpoDetailUpdate: '박람회 상세',
+  isBoothInfoUpdate: '참가 부스',
+  isScheduleUpdate: '행사 일정',
+  isReserverListView: '예약자 리스트',
+  isPaymentView: '결제 내역',
+  isEmailLogView: '이메일 전송 이력',
+  isOperationsConfigUpdate: '운영 설정',
+  isSettlementView: '정산',
+  isInquiryView: '문의',
+};
 
-const initialPermissions = {
-  로그인계정: new Set(Object.values(permissionTabs).flat()),
-  AB12CD: new Set(['박람회 관리', '참가 부스', '행사 일정', '정산']),
-  ZX98MN: new Set(['예약자 리스트', '이메일 전송 이력']),
-  JK34PO: new Set(['운영사 정보 수정', '담당자 관리']),
-  YM77XZ: new Set(['기본 설정', '이메일 전송 이력', '문의']),
-  KT22LM: new Set(['참가 부스', '정산', '문의']),
+const permissionLabelsFlat = Object.values(permissionLabels);
+const permissionKeysFlat = Object.keys(permissionLabels);
+const loginAccountCode = '로그인계정';
+
+const processApiData = (apiData) => {
+  const processedData = {};
+  apiData.forEach(item => {
+    const permissions = new Set();
+    permissionKeysFlat.forEach(key => {
+      if (item[key] === true) {
+        permissions.add(permissionLabels[key]);
+      }
+    });
+    processedData[item.adminCode] = {
+      id: item.id,
+      permissions,
+    };
+  });
+  processedData[loginAccountCode] = {
+    id: null,
+    permissions: new Set(Object.values(permissionLabels)),
+  };
+  return processedData;
 };
 
 function ManagerSection() {
-  const [permissionsByCode, setPermissionsByCode] = useState(initialPermissions);
-  const [showToast, setShowToast] = useState(false);
+  const { expoId } = useParams();
+  const [permissionsByCode, setPermissionsByCode] = useState({});
+  const [apiCodes, setApiCodes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+  const triggerSuccessToast = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 5000);
   };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 5000);
+  };
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getMyExpoManagers(expoId);
+      const processedData = processApiData(data);
+      const fetchedCodes = data.map(item => item.adminCode);
+      const finalCodes = [loginAccountCode, ...fetchedCodes];
+      setPermissionsByCode(processedData);
+      setApiCodes(finalCodes);
+    } catch (err) {
+      triggerToastFail(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [expoId]);
 
   const togglePermission = (code, permission) => {
-    if (code === '로그인계정') return;
+    if (code === loginAccountCode) return;
     setPermissionsByCode((prev) => {
-      const newSet = new Set(prev[code]);
+      const newSet = new Set(prev[code].permissions);
       newSet.has(permission) ? newSet.delete(permission) : newSet.add(permission);
-      return { ...prev, [code]: newSet };
+      return {
+        ...prev,
+        [code]: {
+          ...prev[code],
+          permissions: newSet,
+        },
+      };
     });
   };
 
-  const saveAll = () => {
-    codes.forEach((code) => {
-      if (code === '로그인계정') return;
-      const selected = Array.from(permissionsByCode[code]);
-      console.log(`📝 저장 - 코드 ${code}:`, selected);
-    });
+  const saveAll = async () => {
+    const dataToSend = apiCodes
+      .filter(code => code !== loginAccountCode)
+      .map(code => {
+        const { id, permissions } = permissionsByCode[code];
+        const payload = { id, adminCode: code };
+        permissionKeysFlat.forEach(key => {
+          payload[key] = permissions?.has(permissionLabels[key]) || false;
+        });
+        return payload;
+      });
 
-    triggerToast(); 
+    try {
+      const updatedData = await updateMyExpoManagers(expoId, dataToSend);
+      const processedData = processApiData(updatedData);
+      const fetchedCodes = updatedData.map(item => item.adminCode);
+      const finalCodes = [loginAccountCode, ...fetchedCodes];
+      setPermissionsByCode(processedData);
+      setApiCodes(finalCodes);
+      triggerSuccessToast();
+    } catch (error) {
+      triggerToastFail(error.message);
+    }
   };
-
-  const permissionLabels = Object.values(permissionTabs).flat();
-  const groupBoundaries = Object.values(permissionTabs).map((arr) => arr.length);
 
   const getGroupClass = (index) => {
     const groupStarts = [0];
-    groupBoundaries.reduce((sum, len) => {
-      groupStarts.push(sum + len);
-      return sum + len;
+    Object.values(permissionTabs).reduce((sum, arr) => {
+      const nextSum = sum + arr.length;
+      groupStarts.push(nextSum);
+      return nextSum;
     }, 0);
     return groupStarts.includes(index) ? styles.groupStart : '';
   };
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess />}
-
       <div className={styles.headerControls}>
         <button className={`${styles.actionBtn} ${styles.saveBtn}`} onClick={saveAll}>
           <FaSave className={styles.icon} />
@@ -88,7 +165,7 @@ function ManagerSection() {
               ))}
             </tr>
             <tr>
-              {permissionLabels.map((label, idx) => (
+              {permissionLabelsFlat.map((label, idx) => (
                 <th key={label} className={`${styles.th} ${getGroupClass(idx)}`}>
                   {label}
                 </th>
@@ -96,24 +173,35 @@ function ManagerSection() {
             </tr>
           </thead>
           <tbody>
-            {codes.map((code) => (
-              <tr key={code}>
-                <td className={`${styles.td} ${styles.codeCell}`}>{code}</td>
-                {permissionLabels.map((label, idx) => (
-                  <td key={label} className={`${styles.td} ${getGroupClass(idx)}`}>
-                    <input
-                      type="checkbox"
-                      checked={permissionsByCode[code]?.has(label) || false}
-                      onChange={() => togglePermission(code, label)}
-                      disabled={code === '로그인계정'}
-                    />
-                  </td>
-                ))}
+            {isLoading ? (
+              <tr>
+                <td colSpan={permissionLabelsFlat.length + 1} className={styles.loadingRow}>
+                  <FaSpinner className={styles.spinner} /> 불러오는 중...
+                </td>
               </tr>
-            ))}
+            ) : (
+              apiCodes.map((code) => (
+                <tr key={code}>
+                  <td className={`${styles.td} ${styles.codeCell}`}>{code}</td>
+                  {permissionLabelsFlat.map((label, idx) => (
+                    <td key={label} className={`${styles.td} ${getGroupClass(idx)}`}>
+                      <input
+                        type="checkbox"
+                        checked={permissionsByCode[code]?.permissions?.has(label) || false}
+                        onChange={() => togglePermission(code, label)}
+                        disabled={code === loginAccountCode}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {showSuccessToast && <ToastSuccess />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }
