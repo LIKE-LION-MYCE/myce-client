@@ -60,7 +60,15 @@ function Payments() {
           nameParam,
           phoneParam
         );
-        setPageInfo(res);
+
+        setPageInfo({
+        content: res.content ?? [],
+        totalPages: res.page?.totalPages ?? 0,
+        number: res.page?.number ?? 0,
+        size: res.page?.size ?? pageSize,
+        totalElements: res.page?.totalElements ?? 0,
+        });
+        
       } catch (error) {
         triggerToastFail(error.message);
       }
