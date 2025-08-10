@@ -1,45 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./MyReservationPage.module.css";
-
-const reservations = [
-  {
-    id: "B0014561892370",
-    expoName: "2024 서울 모터쇼",
-    date: "2024-02-15",
-    ticketCount: 2,
-    visitTime: "10:00",
-    posterUrl:
-      "https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjFfMTU5/MDAxNzExMDA1ODI4MTQw.psQX0d6NIIndrBZEQG5hYpU7lEzdUL7MKTi26EN0VdAg.nCl1urMS90FJqqYkUYhTn1udIBHVy5gSi6dfgvne2vUg.JPEG/NMF2024_4.jpg?type=w800",
-  },
-  {
-    id: "B00145613451370",
-    expoName: "디지털 헬스케어 박람회",
-    date: "2024-02-15",
-    ticketCount: 2,
-    visitTime: "10:00",
-    posterUrl:
-      "https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjFfMTU5/MDAxNzExMDA1ODI4MTQw.psQX0d6NIIndrBZEQG5hYpU7lEzdUL7MKTi26EN0VdAg.nCl1urMS90FJqqYkUYhTn1udIBHVy5gSi6dfgvne2vUg.JPEG/NMF2024_4.jpg?type=w800",
-  },
-  {
-    id: "B00145613451371",
-    expoName: "디지털 헬스케어 박람회",
-    date: "2024-02-15",
-    ticketCount: 2,
-    visitTime: "10:00",
-    posterUrl:
-      "https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjFfMTU5/MDAxNzExMDA1ODI4MTQw.psQX0d6NIIndrBZEQG5hYpU7lEzdUL7MKTi26EN0VdAg.nCl1urMS90FJqqYkUYhTn1udIBHVy5gSi6dfgvne2vUg.JPEG/NMF2024_4.jpg?type=w800",
-  },
-  {
-    id: "B00145613451371",
-    expoName: "디지털 헬스케어 박람회",
-    date: "2024-02-15",
-    ticketCount: 2,
-    visitTime: "10:00",
-    posterUrl:
-      "https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjFfMTU5/MDAxNzExMDA1ODI4MTQw.psQX0d6NIIndrBZEQG5hYpU7lEzdUL7MKTi26EN0VdAg.nCl1urMS90FJqqYkUYhTn1udIBHVy5gSi6dfgvne2vUg.JPEG/NMF2024_4.jpg?type=w800",
-  },
-];
+import { getReservedExpos } from "../../../api/service/user/memberApi";
 
 function ReservationCard({ reservation }) {
   const navigate = useNavigate();
@@ -47,23 +9,22 @@ function ReservationCard({ reservation }) {
   return (
     <div className={styles.card}>
       <div className={styles.info}>
-        <h3>{reservation.expoName}</h3>
-        <p>예매번호: {reservation.id}</p>
-        <p>관람일: {reservation.date}</p>
+        <h3>{reservation.title}</h3>
+        <p>예매번호: {reservation.reservationCode}</p>
         <div className={styles.detailRow}>
           <div>
             <strong>티켓수</strong>
             <p>{reservation.ticketCount}매</p>
           </div>
           <div>
-            <strong>관람시간</strong>
-            <p>{reservation.visitTime}</p>
+            <strong>티켓가격</strong>
+            <p>{reservation.ticketPrice?.toLocaleString()}원</p>
           </div>
         </div>
         <div className={styles.buttons}>
           <button
             className={styles.primaryBtn}
-            onClick={() => navigate(`./${reservation.id}`)}
+            onClick={() => navigate(`./${reservation.reservationCode}`)}
           >
             예매 상세
           </button>
@@ -71,8 +32,8 @@ function ReservationCard({ reservation }) {
         </div>
       </div>
       <img
-        src={reservation.posterUrl}
-        alt={reservation.expoName + " 포스터"}
+        src={reservation.thumbnailUrl || '/default-expo-image.jpg'}
+        alt={reservation.title + " 포스터"}
         className={styles.poster}
       />
     </div>
@@ -80,14 +41,59 @@ function ReservationCard({ reservation }) {
 }
 
 const MyReservationPage = () => {
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchReservedExpos();
+  }, []);
+
+  const fetchReservedExpos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getReservedExpos();
+      setReservations(response.data || []);
+    } catch (err) {
+      console.error('예매 내역 조회 실패:', err);
+      setError('예매 내역을 불러오는데 실패했습니다.');
+      setReservations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <h2 className={styles.pageTitle}>예매 내역</h2>
+        <div className={styles.loading}>로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.wrapper}>
+        <h2 className={styles.pageTitle}>예매 내역</h2>
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.pageTitle}>예매 내역</h2>
-      <div className={styles.list}>
-        {reservations.map((reservation) => (
-          <ReservationCard key={reservation.id} reservation={reservation} />
-        ))}
-      </div>
+      {reservations.length > 0 ? (
+        <div className={styles.list}>
+          {reservations.map((reservation) => (
+            <ReservationCard key={reservation.reservationCode} reservation={reservation} />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.noData}>예매 내역이 없습니다.</div>
+      )}
     </div>
   );
 };

@@ -1,83 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
-
-const dummyDetail = {
-  expo: {
-    title: "2024 IT 박람회",
-    dateRange: "2024년 12월 15일 ~ ????년 ??월 ??일",
-    place: "서울 코엑스",
-    posterUrl:
-      "https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjFfMTU5/MDAxNzExMDA1ODI4MTQw.psQX0d6NIIndrBZEQG5hYpU7lEzdUL7MKTi26EN0VdAg.nCl1urMS90FJqqYkUYhTn1udIBHVy5gSi6dfgvne2vUg.JPEG/NMF2024_4.jpg?type=w800",
-  },
-  reservation: {
-    date: "2024년 11월 28일",
-    ticketCount: 4,
-    reservationId: "B0014561892370",
-    totalAmount: 150000,
-  },
-  members: [
-    {
-      name: "김한수",
-      reservationId: "B0014561892370",
-      birth: "00.00.00",
-      gender: "남자",
-      phone: "090-1234-1234",
-      email: "abc@abc.abc",
-      qrUrl:
-        "https://cdn.pixabay.com/photo/2015/03/21/09/34/qr-683354_1280.png",
-    },
-    {
-      name: "박지민",
-      reservationId: "B0014561892371",
-      birth: "99.05.12",
-      gender: "여자",
-      phone: "010-5678-5678",
-      email: "jimin@abc.com",
-      qrUrl:
-        "https://cdn.pixabay.com/photo/2015/03/21/09/34/qr-683354_1280.png",
-    },
-    {
-      name: "최은영",
-      reservationId: "B0014561892372",
-      birth: "98.11.23",
-      gender: "여자",
-      phone: "010-3333-4444",
-      email: "eychoi@abc.com",
-      qrUrl:
-        "https://cdn.pixabay.com/photo/2015/03/21/09/34/qr-683354_1280.png",
-    },
-    {
-      name: "이성준",
-      reservationId: "B0014561892373",
-      birth: "00.03.08",
-      gender: "남자",
-      phone: "010-2222-8888",
-      email: "sjlee@abc.com",
-      qrUrl:
-        "https://cdn.pixabay.com/photo/2015/03/21/09/34/qr-683354_1280.png",
-    },
-  ],
-};
+import { getReservationDetail } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
   const { id } = useParams();
 
-  const { expo, reservation, members } = dummyDetail;
-
+  const [reservationData, setReservationData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editMembers, setEditMembers] = useState(dummyDetail.members);
+  const [editMembers, setEditMembers] = useState([]);
 
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrImgUrl, setQrImgUrl] = useState("");
+
+  useEffect(() => {
+    if (id) {
+      fetchReservationDetail();
+    }
+  }, [id]);
+
+  const fetchReservationDetail = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getReservationDetail(id);
+      const data = response.data;
+      
+      setReservationData(data);
+      setEditMembers(data.reserverInfos || []);
+    } catch (err) {
+      console.error('예약 상세 조회 실패:', err);
+      setError('예약 정보를 불러오는데 실패했습니다.');
+      setReservationData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 편집 시작
   const handleEdit = () => setIsEditMode(true);
 
   // 편집 취소
   const handleCancel = () => {
-    setEditMembers(dummyDetail.members);
+    setEditMembers(reservationData?.reserverInfos || []);
     setIsEditMode(false);
   };
 
@@ -97,9 +65,51 @@ const ReservationDetailPage = () => {
 
   // 상세보기 버튼 클릭 시
   const handleQrOpen = (qrUrl) => {
-    setQrImgUrl(qrUrl); // 멤버별 qrUrl 사용
+    setQrImgUrl(qrUrl);
     setQrModalOpen(true);
   };
+
+  // 날짜 포맷 함수
+  const formatDate = (date) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('ko-KR');
+  };
+
+  const formatDateRange = (startDate, endDate) => {
+    if (!startDate || !endDate) return 'N/A';
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+    return `${start} ~ ${end}`;
+  };
+
+  const formatTimeRange = (startTime, endTime) => {
+    if (!startTime || !endTime) return 'N/A';
+    return `${startTime} ~ ${endTime}`;
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.mainBox}>
+          <h2 className={styles.pageTitle}>예약 확인</h2>
+          <div className={styles.loading}>로딩 중...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !reservationData) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.mainBox}>
+          <h2 className={styles.pageTitle}>예약 확인</h2>
+          <div className={styles.error}>{error || '예약 정보를 찾을 수 없습니다.'}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const { expoInfo, reservationInfo, reserverInfos } = reservationData;
 
   return (
     <div className={styles.wrapper}>
@@ -109,13 +119,24 @@ const ReservationDetailPage = () => {
         <section className={styles.section}>
           <h3 className={styles.subTitle}>참여 행사 정보</h3>
           <div className={styles.expoBox}>
-            <img src={expo.posterUrl} alt="포스터" className={styles.poster} />
+            <img 
+              src={expoInfo.thumbnailUrl || '/default-expo-image.jpg'} 
+              alt="포스터" 
+              className={styles.poster} 
+            />
             <div>
-              <div className={styles.expoTitle}>{expo.title}</div>
+              <div className={styles.expoTitle}>{expoInfo.title}</div>
               <div className={styles.grayDotList}>
                 <div>
-                  <div className={styles.eventDate}>● {expo.dateRange}</div>
-                  <div className={styles.eventPlace}>● {expo.place}</div>
+                  <div className={styles.eventDate}>
+                    ● {formatDateRange(expoInfo.displayStartDate, expoInfo.displayEndDate)}
+                  </div>
+                  <div className={styles.eventPlace}>
+                    ● {expoInfo.location} {expoInfo.locationDetail && `(${expoInfo.locationDetail})`}
+                  </div>
+                  <div className={styles.eventTime}>
+                    ● {formatTimeRange(expoInfo.startTime, expoInfo.endTime)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,15 +148,15 @@ const ReservationDetailPage = () => {
           <div className={styles.reservationGrid}>
             <div>
               <div className={styles.label}>예매일</div>
-              <div>{reservation.date}</div>
+              <div>{formatDate(reservationInfo.createdAt)}</div>
             </div>
             <div>
               <div className={styles.label}>티켓 장수</div>
-              <div>{reservation.ticketCount}매</div>
+              <div>{reservationInfo.quantity}매</div>
             </div>
             <div>
               <div className={styles.label}>총 결제금액</div>
-              <div>{reservation.totalAmount.toLocaleString()}원</div>
+              <div>{(reservationInfo.ticketPrice * reservationInfo.quantity).toLocaleString()}원</div>
             </div>
           </div>
         </section>
@@ -171,39 +192,40 @@ const ReservationDetailPage = () => {
               </tr>
             </thead>
             <tbody>
-              {editMembers.map((m, idx) => (
-                <tr key={idx}>
+              {editMembers.map((member, idx) => (
+                <tr key={member.reserverId || idx}>
                   <td>
                     {isEditMode ? (
                       <input
-                        value={m.name}
+                        value={member.name || ''}
                         onChange={(e) =>
                           handleChange(idx, "name", e.target.value)
                         }
                         className={styles.input}
                       />
                     ) : (
-                      m.name
+                      member.name || 'N/A'
                     )}
                   </td>
-                  <td>{m.reservationId}</td>
+                  <td>{reservationInfo.reservationCode}</td>
                   <td>
                     {isEditMode ? (
                       <input
-                        value={m.birth}
+                        value={member.birth || ''}
                         onChange={(e) =>
                           handleChange(idx, "birth", e.target.value)
                         }
                         className={styles.input}
+                        placeholder="생년월일"
                       />
                     ) : (
-                      m.birth
+                      member.birth || 'N/A'
                     )}
                   </td>
                   <td>
                     {isEditMode ? (
                       <select
-                        value={m.gender || ""}
+                        value={member.gender || ""}
                         onChange={(e) =>
                           handleChange(idx, "gender", e.target.value)
                         }
@@ -211,44 +233,43 @@ const ReservationDetailPage = () => {
                         style={{ width: "70px" }}
                       >
                         <option value="">선택</option>
-                        <option value="남자">남자</option>
-                        <option value="여자">여자</option>
-                        <option value="기타">기타</option>
+                        <option value="MALE">남자</option>
+                        <option value="FEMALE">여자</option>
                       </select>
                     ) : (
-                      m.gender || "-"
+                      member.gender === 'MALE' ? '남자' : member.gender === 'FEMALE' ? '여자' : 'N/A'
                     )}
                   </td>
                   <td>
                     {isEditMode ? (
                       <input
-                        value={m.phone}
+                        value={member.phone || ''}
                         onChange={(e) =>
                           handleChange(idx, "phone", e.target.value)
                         }
                         className={styles.input}
                       />
                     ) : (
-                      m.phone
+                      member.phone || 'N/A'
                     )}
                   </td>
                   <td>
                     {isEditMode ? (
                       <input
-                        value={m.email}
+                        value={member.email || ''}
                         onChange={(e) =>
                           handleChange(idx, "email", e.target.value)
                         }
                         className={styles.input}
                       />
                     ) : (
-                      m.email
+                      member.email || 'N/A'
                     )}
                   </td>
                   <td>
                     <button
                       className={styles.qrBtn}
-                      onClick={() => handleQrOpen(m.qrUrl)}
+                      onClick={() => handleQrOpen(member.qrCodeUrl)}
                     >
                       상세보기
                     </button>
