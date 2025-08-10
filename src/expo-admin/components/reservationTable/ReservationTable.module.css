@@ -58,29 +58,15 @@
   color: #888;
 }
 
+.badgeExpired{
+  background-color: #ffecec;
+  color: #e74c3c;
+}
+
 .paymentStatusWrapper {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dotPaid {
-  background-color: #13ec13;
-}
-
-.dotPending {
-  background-color: #ffbb00;
-}
-
-.dotCanceled {
-  background-color: #ff0000ea;
 }
 
 .detailRow {

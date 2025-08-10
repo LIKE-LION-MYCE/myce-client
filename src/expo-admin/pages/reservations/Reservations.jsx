@@ -12,7 +12,7 @@ import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
 import { getExpoTicketNames } from '../../../api/service/expo-admin/reservation/ReservationService';
 
-const tabLabels = ['전체', '입장 전', '입장 완료'];
+const tabLabels = ['전체', '입장 전', '입장 완료', '티켓 만료'];
 
 function Reservations() {
   const { expoId } = useParams();
