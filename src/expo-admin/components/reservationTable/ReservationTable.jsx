@@ -1,7 +1,7 @@
 import styles from './ReservationTable.module.css';
 import { useState } from 'react';
 
-//응답과 맞춤
+//응답 매핑
 const fieldLabelMap = {
   reservationCode: '예약 코드',
   name: '이름',
@@ -32,7 +32,7 @@ function ReservationTable({ data = [] }) {
   //선택 행 관리
   const [selectedKeys, setSelectedKeys] = useState([]); // [reserverId...]
 
-  //컬럼
+  //
   const columns = [
     { key: 'reservationCode', header: '예약 코드' },
     { key: 'name', header: '이름' },
@@ -66,6 +66,8 @@ function ReservationTable({ data = [] }) {
           ? styles.badgeChecked
           : text === '입장 전'
           ? styles.badgeNotChecked
+          : text === '티켓 만료'
+          ? styles.badgeExpired
           : '';
       return <span className={`${styles.badge} ${statusClass}`}>{text}</span>;
     }
