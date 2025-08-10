@@ -1,120 +1,179 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
-import { FaEnvelope, FaDownload, FaQrcode} from 'react-icons/fa';
+import { FaEnvelope, FaDownload, FaQrcode } from 'react-icons/fa';
 import styles from './Reservations.module.css';
 import Tab from '../../../common/components/tab/Tab';
 import ReservationTable from '../../components/reservationTable/ReservationTable';
 import Pagination from '../../../common/components/pagination/Pagination';
-import EmailModal from '../../components/emailModal/EmailModal'; 
+import EmailModal from '../../components/emailModal/EmailModal';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
+
+const tabLabels = ['전체', '입장 전', '입장 완료'];
 
 function Reservations() {
+  const { expoId } = useParams();
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+  const [currentTab, setCurrentTab] = useState('전체');
   const [searchType, setSearchType] = useState('phone');
   const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [showEmailModal, setShowEmailModal] = useState(false); 
-  const [currentTab, setCurrentTab] = useState('입장 전');
-  const [showToast, setShowToast] = useState(false);
-
+  const [ticketName, setTicketName] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
   const [pageInfo, setPageInfo] = useState({
-    content: [
-      {
-        reservationNumber: '59217342',
-        name: '황지현',
-        gender: '여',
-        ismember : '아니오',
-        id : null,
-        phone: '010-1234-5678',
-        email: 'hj1234@naver.com',
-        ticketName: '2025 서울 스마트 모빌리티 엑스포 2일권',
-        checkinDateTime: '2025-09-10 10:23:14',
-        checkinStatus: '입장 완료',
-      },
-      {
-        reservationNumber: '59217343',
-        name: '김지우',
-        gender: '여',
-        ismember : '예',
-        id : 'jiwoopokectmonjjoa@gmail.com',
-        phone: '010-3333-4444',
-        email: 'kimjiwoo@gmail.com',
-        ticketName: '2025 서울 스마트 모빌리티 엑스포 1일권',
-        checkinDateTime: '',
-        checkinStatus: '입장 전',
-      }
-    ],
-    totalPages: 2,
-    totalElements: 12,
-    size: 10,
+    content: [],
+    totalPages: 0,
     number: 0,
+    size: 0,
+    totalElements: 0,
   });
 
-  const handlePageChange = (page) => {
-    console.log(`${page + 1} 페이지 요청`);
-    setPageInfo((prev) => ({
-      ...prev,
-      number: page,
-      content: prev.content,
-    }));
-  };
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const entranceStatusParam = currentTab === '전체' ? undefined : currentTab;
+        const trimmed = searchText.trim();
+        const nameParam =
+          searchType === 'name' ? (trimmed || undefined) : undefined;
+        const phoneParam =
+          searchType === 'phone' ? (trimmed || undefined) : undefined;
+        const codeParam =
+          searchType === 'reservationCode' ? (trimmed || undefined) : undefined;
+        const ticketParam = ticketName || undefined;
 
+        const res = await getMyExpoReservation(
+          expoId,
+          currentPage,
+          pageSize,
+          entranceStatusParam,
+          nameParam,
+          phoneParam,
+          codeParam,
+          ticketParam
+        );
+
+      setPageInfo({
+      content: res.content ?? [],
+      totalPages: res.page?.totalPages ?? 0,
+      number: res.page?.number ?? 0,
+      size: res.page?.size ?? pageSize,
+      totalElements: res.page?.totalElements ?? 0,
+      });
+
+      } catch (error) {
+        triggerToastFail(error.message);
+      }
+    };
+
+    fetchReservations();
+  }, [expoId, currentPage, pageSize, currentTab, searchText, searchType, ticketName]);
+
+  //이메일 전송
   const handleSendEmail = (formData) => {
-    console.log('전송할 폼 데이터:', formData.get('subject'), formData.get('body'), formData.get('attachment'));
+    console.log(
+      '전송할 폼 데이터:',
+      formData.get('subject'),
+      formData.get('body'),
+      formData.get('attachment')
+    );
     setShowEmailModal(false);
+    triggerSuccessToast();
   };
 
+  //엑셀 다운로드
   const handleExcelDownload = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
+    triggerSuccessToast();
   };
 
+  //QR 재발급
   const handleReissueQR = () => {
-    console.log('QR 재발급');
-    triggerToast();
+    triggerSuccessToast();
+  };
+
+  //페이지 핸들링
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  //탭 핸들링
+  const handleTabChange = (index) => {
+    const selectedTab = tabLabels[index];
+    setCurrentTab(selectedTab);
+    setCurrentPage(0);
+  };
+
+  //성공 토스트 팝업
+  const triggerSuccessToast = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  //실패 토스트 팝업
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   return (
     <div className={styles.reservationsWrapper}>
-      {/* 탭 */}
       <Tab
-        tabs={['입장 전', '입장 완료']}
-        currentTab={currentTab}
-        onChange={setCurrentTab}
+        tabs={tabLabels}
+        onTabChange={handleTabChange}
       />
 
-      {/* 상단 검색 및 필터링 & 이메일/엑셀 추출 버튼*/}
       <div className={styles.topControls}>
         <div className={styles.filters}>
           <div className={styles.filterGroup}>
             <select
               value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
+              onChange={(e) => {
+                setSearchType(e.target.value);
+                setSearchText('');
+                setCurrentPage(0);
+              }}
               className={styles.select}
             >
               <option value="phone">전화번호</option>
-              <option value="reservationNumber">예매번호</option>
-              {/* <option value={styles.dropdownMenu} value="name">이름</option> */}
+              <option value="reservationCode">예매번호</option>
               <option value="name">이름</option>
-              
             </select>
+
             <input
               type="text"
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setCurrentPage(0);
+              }}
               className={styles.input}
+              placeholder="검색어 입력"
             />
             <FiSearch className={styles.searchIcon} />
           </div>
 
           <div className={styles.filterGroup}>
             <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              value={ticketName}
+              onChange={(e) => {
+                setTicketName(e.target.value);
+                setCurrentPage(0);
+              }}
               className={styles.select}
             >
               <option value="">티켓 분류</option>
-              <option value="1">2025 서울 스마트 모빌리티 엑스포 1일권</option>
-              <option value="2">2025 서울 스마트 모빌리티 엑스포 2일권</option>
+              <option value="2025 서울 스마트 모빌리티 엑스포 1일권">
+                2025 서울 스마트 모빌리티 엑스포 1일권
+              </option>
+              <option value="2025 서울 스마트 모빌리티 엑스포 2일권">
+                2025 서울 스마트 모빌리티 엑스포 2일권
+              </option>
+              <option value="티켓 5번 수정">티켓 5번 수정</option>
             </select>
           </div>
         </div>
@@ -144,21 +203,22 @@ function Reservations() {
         </div>
       </div>
 
-      {/* 테이블 */}
       <ReservationTable data={pageInfo.content} />
 
-      {/*페이징 */}
-      <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+      <Pagination
+        pageInfo={pageInfo}
+        onPageChange={handlePageChange}
+      />
 
-      {/* 이메일 전송 모달 */}
       <EmailModal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        selectedCount={3} // 실제 선택된 사용자 수로 변경 할 것
+        selectedCount={3}
         onSend={handleSendEmail}
       />
 
-      {showToast && <ToastSuccess/>}
+      {showSuccessToast && <ToastSuccess />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }
