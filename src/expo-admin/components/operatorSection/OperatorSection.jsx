@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   FaUserTie, FaUserFriends, FaEnvelope, FaPhone,
-  FaMapMarkerAlt, FaBuilding, FaCheckCircle
+  FaMapMarkerAlt, FaBuilding, FaEdit
 } from 'react-icons/fa';
 import styles from './OperatorSection.module.css';
 import {
@@ -180,7 +180,7 @@ function OperatorSection() {
 
       <div className={styles.buttonGroup}>
         <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleSubmit}>
-          <FaCheckCircle className={styles.iconBtn} /> 수정
+          <FaEdit className={styles.iconBtn} /> 수정
         </button>
       </div>
 

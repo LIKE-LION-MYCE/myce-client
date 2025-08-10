@@ -10,7 +10,9 @@ import { fetchAllBanners, fetchFilteredBanners } from '../../../api/service/plat
 const bannerStatusMap = {
   ALL: '전체',
   PENDING_APPROVAL: '승인 대기',
-  WAITING_PAYMENT: '결제 대기',
+  PENDING_PAYMENT: '결제 대기',
+  PENDING_PUBLISH: '게시 대기',
+  CANCELLED: '취소됨',
   COMPLETED: '게시 종료',
   REJECTED: '승인 거절',
 };
@@ -83,8 +85,12 @@ function BannerApplications() {
       case 2:
         return 'PENDING_PAYMENT';
       case 3:
-        return 'COMPLETED';
+        return 'PENDING_PUBLISH';
       case 4:
+        return 'CANCELLED';
+      case 5:
+        return 'COMPLETED';
+      case 6:
         return 'REJECTED';
       default:
         return '';
