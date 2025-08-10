@@ -51,7 +51,7 @@ function PlatformAdminRoutes() {
             <Route path="bannerLocations/new" element={<BannerLocationNew />} />
         </Route>
       </Routes>
-  );s
+  );
 }
 
 export default PlatformAdminRoutes;
