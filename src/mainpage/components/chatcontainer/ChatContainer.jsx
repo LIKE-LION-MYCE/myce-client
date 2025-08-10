@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './ChatContainer.module.css';
 import instance from '../../../api/lib/axios';
 import * as ChatWebSocketService from '../../../api/service/chat/ChatWebSocketService';
+import { getAllUnreadCounts, markAsRead } from '../../../api/service/chat/chatService';
 import { jwtDecode } from 'jwt-decode';
 
 export default function ChatContainer() {
@@ -11,6 +12,7 @@ export default function ChatContainer() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({});
   const messagesEndRef = useRef(null);
 
   // WebSocket 연결 및 초기화
@@ -49,18 +51,33 @@ export default function ChatContainer() {
       }
     };
 
+    const fetchUnreadCounts = async () => {
+      try {
+        const response = await getAllUnreadCounts();
+        const counts = {};
+        response.data.unreadCounts.forEach(item => {
+          counts[item.roomCode] = item.unreadCount;
+        });
+        setUnreadCounts(counts);
+      } catch (error) {
+        console.error('읽지 않은 메시지 개수 조회 실패:', error);
+      }
+    };
+
     initializeWebSocket();
     fetchChatRooms();
+    fetchUnreadCounts();
 
     return () => {
       ChatWebSocketService.disconnect();
     };
   }, []);
 
-  // 선택된 채팅방 변경 시 메시지 로드 및 WebSocket 구독
+  // 선택된 채팅방 변경 시 메시지 로드
   useEffect(() => {
     if (!selectedRoom) {
       console.log('선택된 채팅방이 없음');
+      setMessages([]);
       return;
     }
 
@@ -69,19 +86,31 @@ export default function ChatContainer() {
         console.log('메시지 히스토리 로딩 시도:', selectedRoom.roomCode);
         const response = await instance.get(`/chats/rooms/${selectedRoom.roomCode}/messages`);
         console.log('메시지 히스토리 응답:', response.data);
-        setMessages(response.data.content || response.data.messages || []);
+        const messages = response.data.content || response.data.messages || [];
+        // 메시지를 시간순으로 정렬 (오래된 메시지가 위로)
+        const sortedMessages = messages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+        setMessages(sortedMessages);
+        
+        // 메시지 로드 후 자동으로 읽음 처리
+        if (sortedMessages.length > 0) {
+          await handleMarkAsRead(selectedRoom.roomCode);
+        }
       } catch (error) {
         console.error('메시지 로드 실패:', error);
         setMessages([]);
       }
     };
 
-    const joinRoomAndSubscribe = async () => {
-      if (!wsConnected) {
-        console.log('WebSocket 연결 대기 중...');
-        return;
-      }
+    loadMessages();
+  }, [selectedRoom]);
 
+  // WebSocket 구독 관리 (selectedRoom과 wsConnected 모두 준비된 후)
+  useEffect(() => {
+    if (!selectedRoom || !wsConnected) {
+      return;
+    }
+
+    const joinRoomAndSubscribe = async () => {
       try {
         console.log('WebSocket 채팅방 입장 시도:', selectedRoom.roomCode);
         
@@ -91,7 +120,93 @@ export default function ChatContainer() {
         // 메시지 수신 핸들러 등록
         ChatWebSocketService.onMessage(selectedRoom.roomCode, (message) => {
           console.log('새 메시지 수신:', message);
-          setMessages(prev => [...prev, message]);
+          
+          // 메시지에 unreadCount가 있으면 그대로 사용, 없으면 1로 설정 (새 메시지)
+          const newMessage = {
+            ...message,
+            unreadCount: message.unreadCount !== undefined ? message.unreadCount : 1
+          };
+          
+          setMessages(prev => [...prev, newMessage]);
+          
+          // 현재 선택된 채팅방의 메시지면 자동으로 읽음 처리 (자신의 메시지가 아닌 경우만)
+          const token = localStorage.getItem('access_token');
+          const messageRoomCode = message.roomId || message.roomCode;  // roomId 또는 roomCode 사용
+          
+          console.log('메시지 roomCode 체크:', {
+            messageRoomCode,
+            selectedRoomCode: selectedRoom?.roomCode,
+            isMatch: selectedRoom && selectedRoom.roomCode === messageRoomCode
+          });
+          
+          if (token && selectedRoom && selectedRoom.roomCode === messageRoomCode) {
+            try {
+              const decodedToken = jwtDecode(token);
+              const currentUserId = decodedToken.memberId;
+              
+              console.log('메시지 수신 - senderId:', message.senderId, 'currentUserId:', currentUserId, 'senderType:', message.senderType);
+              
+              // 자신이 보낸 메시지가 아닌 경우만 읽음 처리
+              if (message.senderId !== currentUserId) {
+                console.log('관리자 메시지 자동 읽음 처리 시작');
+                
+                // 읽음 처리 API 호출 (비동기로 처리)
+                setTimeout(async () => {
+                  await handleMarkAsRead(selectedRoom.roomCode);
+                  // 읽음 처리 후 unreadCount를 0으로 업데이트
+                  setMessages(prev => prev.map(msg => ({
+                    ...msg,
+                    unreadCount: msg.senderType === 'ADMIN' ? 0 : msg.unreadCount
+                  })));
+                }, 100); // 100ms 지연으로 "1"이 잠깐 보이게
+              } else {
+                console.log('내가 보낸 메시지이므로 읽음 처리 안함');
+              }
+            } catch (error) {
+              console.error('토큰 디코딩 실패:', error);
+            }
+          }
+        });
+
+        // unread count 업데이트 핸들러 등록 (읽음 상태 실시간 업데이트)
+        ChatWebSocketService.subscribeToUnreadUpdates(selectedRoom.roomCode, (unreadData) => {
+          console.log('Unread count 업데이트:', unreadData);
+          
+          // read_status_update 메시지 처리
+          if (unreadData.type === 'read_status_update') {
+            const payload = unreadData.payload || unreadData;
+            const readerType = payload.readerType;
+            
+            console.log('읽음 상태 업데이트 처리:', { readerType, payload });
+            
+            // 관리자가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
+            if (readerType === 'ADMIN') {
+              setMessages(prev => prev.map(msg => {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                  try {
+                    const decodedToken = jwtDecode(token);
+                    // 내가 보낸 메시지의 unreadCount를 0으로
+                    if (msg.senderId === decodedToken.memberId) {
+                      return { ...msg, unreadCount: 0 };
+                    }
+                  } catch (error) {
+                    console.error('토큰 디코딩 실패:', error);
+                  }
+                }
+                return msg;
+              }));
+            }
+            return; // read_status_update는 여기서 처리 완료
+          }
+          
+          // 기존 unreadCounts 업데이트 (다른 타입의 메시지들)
+          if (unreadData.roomCode && unreadData.unreadCount !== undefined) {
+            setUnreadCounts(prev => ({
+              ...prev,
+              [unreadData.roomCode]: unreadData.unreadCount
+            }));
+          }
         });
         
         console.log('채팅방 구독 완료:', selectedRoom.roomCode);
@@ -100,10 +215,6 @@ export default function ChatContainer() {
       }
     };
 
-    // 메시지 히스토리는 WebSocket 연결 상관없이 로드
-    loadMessages();
-    
-    // WebSocket 구독은 연결된 후에만
     joinRoomAndSubscribe();
 
     return () => {
@@ -125,6 +236,57 @@ export default function ChatContainer() {
     console.log('메시지 전송:', newMessage);
     ChatWebSocketService.sendMessage(selectedRoom.roomCode, newMessage.trim());
     setNewMessage('');
+  };
+
+  // 읽음 처리 함수
+  const handleMarkAsRead = async (roomCode) => {
+    try {
+      console.log('읽음 처리 시작:', roomCode);
+      const response = await markAsRead(roomCode);
+      console.log('읽음 처리 API 응답:', response);
+      
+      // 로컬 상태에서 unread count를 0으로 설정
+      setUnreadCounts(prev => ({
+        ...prev,
+        [roomCode]: 0
+      }));
+      
+      // 내가 보낸 메시지들은 상대가 읽을 때까지 1 유지
+      // 상대가 보낸 메시지들은 내가 읽었으므로 0으로 변경
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        setMessages(prev => prev.map(msg => {
+          // 상대방(관리자)이 보낸 메시지는 읽음 처리
+          if (msg.senderId !== decodedToken.memberId) {
+            return { ...msg, unreadCount: 0 };
+          }
+          return msg; // 내 메시지는 그대로 유지
+        }));
+      }
+      
+      // 관리자에게 읽음 상태 알림 전송
+      if (ChatWebSocketService.isConnected()) {
+        console.log('WebSocket 읽음 알림 전송 시도:', roomCode);
+        ChatWebSocketService.sendReadStatusNotification(roomCode);
+      } else {
+        console.log('WebSocket 연결되지 않아 읽음 알림 전송 못함');
+      }
+      
+      console.log('읽음 처리 완료:', roomCode);
+    } catch (error) {
+      console.error('읽음 처리 실패:', error);
+    }
+  };
+
+  // 채팅방 선택 핸들러
+  const handleRoomSelect = async (room) => {
+    setSelectedRoom(room);
+    
+    // 채팅방 선택 시 자동으로 읽음 처리
+    if (unreadCounts[room.roomCode] > 0) {
+      await handleMarkAsRead(room.roomCode);
+    }
   };
 
   // Enter 키로 메시지 전송
@@ -174,15 +336,15 @@ export default function ChatContainer() {
               <li 
                 key={room.roomCode} 
                 className={`${styles.chatRoom} ${selectedRoom?.roomCode === room.roomCode ? styles.selected : ''}`}
-                onClick={() => setSelectedRoom(room)}
+                onClick={() => handleRoomSelect(room)}
               >
                 <img src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx" alt="avatar" />
                 <div className={styles.chatRoomText}>
                   <div>{room.expoTitle || '박람회명 없음'}</div>
                   <span>{formatTime(room.lastMessageAt)}</span>
                 </div>
-                {room.unreadCount > 0 && (
-                  <span className={styles.unreadBadge}>{room.unreadCount}</span>
+                {unreadCounts[room.roomCode] > 0 && (
+                  <span className={styles.unreadBadge}>{unreadCounts[room.roomCode]}</span>
                 )}
               </li>
             ))}
@@ -205,17 +367,46 @@ export default function ChatContainer() {
                 </div>
               ) : (
                 <>
-                  {messages.map((message, index) => (
-                    <div key={index} className={styles.messageRow}>
-                      <img src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx" alt="avatar" />
-                      <div className={styles.messageBubble}>
-                        <div className={styles.messageContent}>{message.content || message.message}</div>
-                        <div className={styles.messageTime}>
-                          {formatTime(message.sentAt)}
+                  {messages.map((message, index) => {
+                    // 현재 로그인한 사용자인지 확인
+                    const token = localStorage.getItem('access_token');
+                    let isMyMessage = false;
+                    
+                    if (token) {
+                      try {
+                        const decodedToken = jwtDecode(token);
+                        isMyMessage = message.senderId === decodedToken.memberId;
+                      } catch (error) {
+                        console.error('토큰 디코딩 실패:', error);
+                      }
+                    }
+                    
+                    // senderType 기반으로 메시지 타입 결정
+                    const isAdminMessage = message.senderType === 'ADMIN';
+                    
+                    return (
+                      <div key={index} className={`${styles.messageRow} ${isMyMessage ? styles.messageRight : styles.messageLeft}`}>
+                        {isAdminMessage && (
+                          <img src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx" alt="avatar" />
+                        )}
+                        <div className={styles.messageWrapper}>
+                          <div className={`${styles.messageBubble} ${isAdminMessage ? styles.adminMessage : styles.userMessage} ${isMyMessage ? styles.myMessage : styles.otherMessage}`}>
+                            {message.content || message.message}
+                          </div>
+                          <div className={styles.messageInfo}>
+                            {message.unreadCount > 0 && (
+                              <span className={`${styles.unreadIndicator} ${
+                                isMyMessage ? styles.unreadIndicatorBlue : styles.unreadIndicatorGray
+                              }`}>{message.unreadCount}</span>
+                            )}
+                            <div className={styles.messageTime}>
+                              {formatTime(message.sentAt)}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   <div ref={messagesEndRef} />
                 </>
               )}

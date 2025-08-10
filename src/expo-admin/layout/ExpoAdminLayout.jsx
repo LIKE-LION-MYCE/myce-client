@@ -4,6 +4,8 @@ import styles from './ExpoAdminLayout.module.css';
 import ExpoAdminHeader from "./header/ExpoAdminHeader";
 import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
 import { getMyExpos } from "../../api/service/expo-admin/AuthService";
+import { jwtDecode } from 'jwt-decode';
+import instance from "../../api/lib/axios";
 
 function ExpoAdminLayout() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -12,9 +14,29 @@ function ExpoAdminLayout() {
   useEffect(() => {
     const checkPermission = async () => {
       try {
-        const expos = await getMyExpos(); //현재 로그인 한 사용자 기반으로 활성화된 exopId 반환
-        const expoIdNumber = Number(expoId);
-        setHasPermission(expos.includes(expoIdNumber));
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          setHasPermission(false);
+          return;
+        }
+
+        const decodedToken = jwtDecode(token);
+        
+        if (decodedToken.loginType === 'ADMIN_CODE') {
+          // AdminCode 로그인: 채팅 API로 권한 체크
+          try {
+            await instance.get(`/expos/${expoId}/chats/rooms`);
+            setHasPermission(true);
+          } catch (error) {
+            console.error("AdminCode 권한 확인 실패:", error.message);
+            setHasPermission(false);
+          }
+        } else {
+          // MEMBER 로그인: 기존 로직
+          const expos = await getMyExpos();
+          const expoIdNumber = Number(expoId);
+          setHasPermission(expos.includes(expoIdNumber));
+        }
       } catch (error) {
         console.error("권한 확인 실패:", error.message);
         setHasPermission(false);
