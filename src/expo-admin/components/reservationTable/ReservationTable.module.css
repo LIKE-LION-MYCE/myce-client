@@ -68,14 +68,6 @@
   transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
 
-/* 입장 완료 */
-.badgeChecked:hover,
-.badgeChecked:focus-visible {
-  background-color: #e3f4e6; /* 조금 더 선명한 초록톤 */
-  color: #2f7f39;
-  box-shadow: 0 0 0 2px rgba(52, 151, 66, .15) inset;
-}
-
 /* 입장 전 */
 .badgeNotChecked:hover,
 .badgeNotChecked:focus-visible {
