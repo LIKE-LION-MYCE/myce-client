@@ -27,8 +27,7 @@ const MyPageRoutes = () => {
         <Route path="ads-status" element={<AdsStatusPage />} />
         <Route path="ads-status/:id" element={<AdsStatusDetail />} />
         <Route path="expo-status" element={<ExpoStatusPage />} />
-        <Route path="expo-status/:id" element={<ExpoStatusDetail />} />        
-        <Route path="expo-status" element={<ExpoStatusPage />} />
+        <Route path="expo-status/:id" element={<ExpoStatusDetail />} />
         <Route path="payment-selection" element={<PaymentSelection />} />
       </Route>
     </Routes>

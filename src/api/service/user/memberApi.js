@@ -76,22 +76,25 @@ export const getExpoRefundReceipt = async (expoId) => {
 };
 
 // Advertisement related APIs
-export const getMyAdvertisements = async () => {
-  return await instance.get(`${AD_PREFIX}`);
+export const getMyAdvertisements = async (page = 0, size = 10) => {
+  return await instance.get(`${AD_PREFIX}`, {
+    params: { page, size }
+  });
 };
 
 export const getAdvertisementDetail = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}`);
 };
 
-export const deleteAdvertisement = async (advertisementId) => {
-  return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
-};
-
-export const getAdvertisementPaymentDetail = async (advertisementId) => {
+export const getAdvertisementPayment = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/payment`);
 };
 
 export const getAdvertisementRefundReceipt = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/refund-receipt`);
 };
+
+export const deleteAdvertisement = async (advertisementId) => {
+  return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
+};
+
