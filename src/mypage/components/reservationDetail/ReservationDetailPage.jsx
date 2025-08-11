@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
+import CongestionModal from "../../../components/modal/CongestionModal/CongestionModal";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
+import { getCongestionData } from "../../../api/service/user/expoApi";
 
 const ReservationDetailPage = () => {
   const { id } = useParams();
@@ -15,6 +17,7 @@ const ReservationDetailPage = () => {
 
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrImgUrl, setQrImgUrl] = useState("");
+  const [congestionModalOpen, setCongestionModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -98,6 +101,11 @@ const ReservationDetailPage = () => {
     setQrModalOpen(true);
   };
 
+  // 혼잡도 조회 버튼 클릭 시
+  const handleCongestionOpen = () => {
+    setCongestionModalOpen(true);
+  };
+
   // 날짜 포맷 함수
   const formatDate = (date) => {
     if (!date) return 'N/A';
@@ -155,7 +163,15 @@ const ReservationDetailPage = () => {
         <h2 className={styles.pageTitle}>예약 확인</h2>
 
         <section className={styles.section}>
-          <h3 className={styles.subTitle}>참여 행사 정보</h3>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.subTitle}>참여 행사 정보</h3>
+            <button 
+              className={styles.congestionBtn} 
+              onClick={handleCongestionOpen}
+            >
+              실시간 혼잡도 조회
+            </button>
+          </div>
           <div className={styles.expoBox}>
             <img 
               src={expoInfo.thumbnailUrl || '/default-expo-image.jpg'} 
@@ -325,6 +341,13 @@ const ReservationDetailPage = () => {
           open={qrModalOpen}
           onClose={() => setQrModalOpen(false)}
           qrImgUrl={qrImgUrl}
+        />
+        
+        <CongestionModal
+          isOpen={congestionModalOpen}
+          onClose={() => setCongestionModalOpen(false)}
+          expoId={expoInfo?.expoId}
+          getCongestionData={getCongestionData}
         />
       </div>
     </div>
