@@ -11,8 +11,9 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
 import { getExpoTicketNames } from '../../../api/service/expo-admin/reservation/ReservationService';
+import { updateReserverQrCodeForManualCheckIn } from '../../../api/service/expo-admin/reservation/ReservationService';
 
-const tabLabels = ['전체', '입장 전', '입장 완료', '티켓 만료'];
+const tabLabels = ['전체', '발급 대기', '입장 전', '입장 완료', '티켓 만료'];
 
 function Reservations() {
   const { expoId } = useParams();
@@ -35,6 +36,7 @@ function Reservations() {
     totalElements: 0,
   });
 
+  //티켓 목록 조회
   useEffect(() => {
     const fetchTicketNames = async () => {
       try {
@@ -48,6 +50,7 @@ function Reservations() {
     fetchTicketNames();
   }, [expoId]);
 
+  //예약자 목록 조회
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -87,6 +90,30 @@ function Reservations() {
 
     fetchReservations();
   }, [expoId, currentPage, pageSize, currentTab, searchText, searchType, ticketName]);
+
+  //수기 입장 처리
+  const handleEntranceBadgeClick = async (row) => {
+  const msg = '수기 입장 처리를 진행하시겠습니까?';
+  if (!window.confirm(msg)) return;
+
+  try {
+      const updated = await updateReserverQrCodeForManualCheckIn(expoId, row.reserverId);
+
+      if (updated && updated.reserverId) {
+        setPageInfo((prev) => ({
+          ...prev,
+          content: prev.content.map((it) =>
+            it.reserverId === updated.reserverId ? updated : it
+          ),
+        }));
+      } else {
+        await fetchReservations();
+      }
+      triggerSuccessToast();
+    } catch (e) {
+      triggerToastFail(e.message);
+    }
+  };
 
   //이메일 전송
   const handleSendEmail = (formData) => {
@@ -214,7 +241,9 @@ function Reservations() {
         </div>
       </div>
 
-      <ReservationTable data={pageInfo.content} />
+      <ReservationTable 
+        data={pageInfo.content}
+        onEntranceClick={handleEntranceBadgeClick}/>
 
       <Pagination
         pageInfo={pageInfo}
