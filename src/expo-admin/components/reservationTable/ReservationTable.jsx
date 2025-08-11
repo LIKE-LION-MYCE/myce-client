@@ -32,7 +32,6 @@ function ReservationTable({ data = [] }) {
   //선택 행 관리
   const [selectedKeys, setSelectedKeys] = useState([]); // [reserverId...]
 
-  //
   const columns = [
     { key: 'reservationCode', header: '예약 코드' },
     { key: 'name', header: '이름' },
