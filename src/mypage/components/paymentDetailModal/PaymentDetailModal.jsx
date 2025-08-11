@@ -6,8 +6,13 @@ function PaymentDetailModal({
   expoName,
   applicant,
   period,
-  amount,
+  totalDays,
+  dailyUsageFee,
+  usageFeeAmount,
+  depositAmount,
   totalAmount,
+  isPremium,
+  commissionRate,
   children,
   onClose,
 }) {
@@ -32,12 +37,30 @@ function PaymentDetailModal({
           </div>
           <div className={styles.feeBox}>
             <div className={styles.row}>
-              <span>총 이용료</span>
-              <span>{amount.toLocaleString()}원</span>
+              <span>총 게시 일수</span>
+              <span>{totalDays}일</span>
             </div>
+            <div className={styles.row}>
+              <span>일일 사용료</span>
+              <span>{dailyUsageFee?.toLocaleString()}원</span>
+            </div>
+            <div className={styles.row}>
+              <span>사용료 총액</span>
+              <span>{usageFeeAmount?.toLocaleString()}원</span>
+            </div>
+            <div className={styles.row}>
+              <span>{isPremium ? '프리미엄 등록금' : '기본 등록금'}</span>
+              <span>{depositAmount?.toLocaleString()}원</span>
+            </div>
+            {commissionRate && (
+              <div className={styles.row}>
+                <span>수수료율</span>
+                <span>{commissionRate}%</span>
+              </div>
+            )}
             <div className={styles.totalRow}>
               <span>총 결제 금액</span>
-              <span>{totalAmount.toLocaleString()}원</span>
+              <span>{totalAmount?.toLocaleString()}원</span>
             </div>
           </div>
         </div>

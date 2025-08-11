@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
-import { getReservationDetail } from "../../../api/service/reservation/reservationApi";
+import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
   const { id } = useParams();
@@ -50,9 +50,38 @@ const ReservationDetailPage = () => {
   };
 
   // 편집 저장
-  const handleSave = () => {
-    // 실제로는 저장 처리 필요
-    setIsEditMode(false);
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // API에 맞게 데이터 변환
+      const updateData = editMembers.map(member => ({
+        reserverId: member.reserverId,
+        name: member.name,
+        gender: member.gender,
+        phone: member.phone,
+        email: member.email
+      }));
+      
+      await updateReservers(id, updateData);
+      
+      // 저장 성공 시 원본 데이터 업데이트
+      setReservationData(prev => ({
+        ...prev,
+        reserverInfos: [...editMembers]
+      }));
+      
+      setIsEditMode(false);
+      alert('참여 인원 정보가 성공적으로 업데이트되었습니다.');
+      
+    } catch (err) {
+      console.error('참여 인원 업데이트 실패:', err);
+      setError('참여 인원 정보 업데이트에 실패했습니다.');
+      alert('업데이트에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 인풋 변경
@@ -85,6 +114,15 @@ const ReservationDetailPage = () => {
   const formatTimeRange = (startTime, endTime) => {
     if (!startTime || !endTime) return 'N/A';
     return `${startTime} ~ ${endTime}`;
+  };
+
+  // 티켓 타입 한글 변환
+  const formatTicketType = (ticketType) => {
+    const typeMap = {
+      'GENERAL': '일반',
+      'EARLY_BIRD': '얼리버드'
+    };
+    return typeMap[ticketType] || ticketType;
   };
 
   if (loading) {
@@ -151,8 +189,20 @@ const ReservationDetailPage = () => {
               <div>{formatDate(reservationInfo.createdAt)}</div>
             </div>
             <div>
+              <div className={styles.label}>티켓 이름</div>
+              <div>{reservationInfo.ticketName || 'N/A'}</div>
+            </div>
+            <div>
+              <div className={styles.label}>티켓 타입</div>
+              <div>{formatTicketType(reservationInfo.ticketType) || 'N/A'}</div>
+            </div>
+            <div>
               <div className={styles.label}>티켓 장수</div>
               <div>{reservationInfo.quantity}매</div>
+            </div>
+            <div>
+              <div className={styles.label}>단가</div>
+              <div>{reservationInfo.ticketPrice?.toLocaleString()}원</div>
             </div>
             <div>
               <div className={styles.label}>총 결제금액</div>
@@ -184,7 +234,6 @@ const ReservationDetailPage = () => {
               <tr>
                 <th>이름</th>
                 <th>예매번호</th>
-                <th>생년월일</th>
                 <th>성별</th>
                 <th>전화번호</th>
                 <th>이메일</th>
@@ -208,20 +257,6 @@ const ReservationDetailPage = () => {
                     )}
                   </td>
                   <td>{reservationInfo.reservationCode}</td>
-                  <td>
-                    {isEditMode ? (
-                      <input
-                        value={member.birth || ''}
-                        onChange={(e) =>
-                          handleChange(idx, "birth", e.target.value)
-                        }
-                        className={styles.input}
-                        placeholder="생년월일"
-                      />
-                    ) : (
-                      member.birth || 'N/A'
-                    )}
-                  </td>
                   <td>
                     {isEditMode ? (
                       <select

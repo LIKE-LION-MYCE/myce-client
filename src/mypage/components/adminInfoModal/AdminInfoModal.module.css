@@ -127,6 +127,16 @@
   background: #e7f3ff;
 }
 
+.noCodeMessage {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
 .navigateButton {
   background: #1a1a1a;
   color: white;
