@@ -60,7 +60,7 @@ function ReservationTable({ data = [], onEntranceClick }) {
           ? styles.badgePending
           : '';
 
-      const clickable =  text === '입장 전';
+      const clickable =  text === '입장 전' || text === '발급 대기';
 
       return (
         <span
