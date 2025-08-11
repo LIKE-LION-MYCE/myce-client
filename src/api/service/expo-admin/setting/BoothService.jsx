@@ -1,4 +1,4 @@
-import instance from "../../lib/axios";
+import instance from "../../../lib/axios";
 
 // 부스 목록 조회
 export const getBooths = async (expoId) => {
