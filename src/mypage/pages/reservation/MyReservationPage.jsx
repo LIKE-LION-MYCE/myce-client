@@ -13,6 +13,10 @@ function ReservationCard({ reservation }) {
         <p>예매번호: {reservation.reservationCode}</p>
         <div className={styles.detailRow}>
           <div>
+            <strong>티켓 이름</strong>
+            <p>{reservation.ticketName}</p>
+          </div>
+          <div>
             <strong>티켓수</strong>
             <p>{reservation.ticketCount}매</p>
           </div>
