@@ -42,3 +42,16 @@ export const updateReserverQrCodeForManualCheckIn = async (expoId, reserverId) =
     throw new Error(message);
   }
 };
+
+//예약자 엑셀 추출
+export const downloadMyReservationExcelFile = async (expoId) => {
+  try {
+    const response = await instance.get(`/expos/${expoId}/reservations/excel-download`, {
+      responseType: 'blob', 
+    });
+    return response;
+  } catch (error) {
+    const message = error.response?.data?.message || "엑셀 파일 다운로드 중 오류 발생";
+    throw new Error(message);
+  }
+};
