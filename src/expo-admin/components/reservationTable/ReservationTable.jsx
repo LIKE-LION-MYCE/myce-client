@@ -1,18 +1,6 @@
 import styles from './ReservationTable.module.css';
 import { useState } from 'react';
 
-//응답 매핑
-const fieldLabelMap = {
-  reservationCode: '예약 코드',
-  name: '이름',
-  gender: '성별',
-  phone: '전화번호',
-  email: '이메일',
-  ticketName: '티켓 이름',
-  entranceAt: '입장 일시',
-  entranceStatus: '입장 상태',
-};
-
 //날짜 포맷
 function formatDateTime(iso) {
   if (!iso) return '-';
@@ -28,7 +16,7 @@ function formatDateTime(iso) {
   return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
 }
 
-function ReservationTable({ data = [] }) {
+function ReservationTable({ data = [], onEntranceClick }) {
   //선택 행 관리
   const [selectedKeys, setSelectedKeys] = useState([]); // [reserverId...]
 
@@ -43,7 +31,8 @@ function ReservationTable({ data = [] }) {
     { key: 'entranceStatus', header: '입장 상태' },
   ];
 
-  const getRowKey = (row, index) => row?.reserverId ?? `${row?.reservationCode || 'row'}-${index}`;
+  const getRowKey = (row, index) =>
+    row?.reserverId ?? `${row?.reservationCode || 'row'}-${index}`;
 
   const toggleRow = (rowKey) => {
     setSelectedKeys((prev) =>
@@ -57,7 +46,7 @@ function ReservationTable({ data = [] }) {
     setSelectedKeys(allSelected ? [] : allKeys);
   };
 
-  const renderCell = (key, value) => {
+  const renderCell = (key, value, row) => {
     if (key === 'entranceStatus') {
       const text = value || '-';
       const statusClass =
@@ -67,12 +56,33 @@ function ReservationTable({ data = [] }) {
           ? styles.badgeNotChecked
           : text === '티켓 만료'
           ? styles.badgeExpired
+          : text === '발급 대기'
+          ? styles.badgePending
           : '';
-      return <span className={`${styles.badge} ${statusClass}`}>{text}</span>;
+
+      const clickable =  text === '입장 전';
+
+      return (
+        <span
+          className={`${styles.badge} ${statusClass}`}
+          onClick={(e) => {
+            if (!clickable) return;
+            e.stopPropagation();
+            onEntranceClick && onEntranceClick(row);
+          }}
+          role="button"
+          aria-disabled={!clickable}
+          title={clickable ? '수기 입장 처리' : '상태 변경 불가'}
+        >
+          {text}
+        </span>
+      );
     }
+
     if (key === 'entranceAt') {
       return formatDateTime(value);
     }
+
     return value || '-';
   };
 
@@ -94,7 +104,9 @@ function ReservationTable({ data = [] }) {
               />
             </th>
             {columns.map((col) => (
-              <th key={col.key} className={styles.th}>{col.header}</th>
+              <th key={col.key} className={styles.th}>
+                {col.header}
+              </th>
             ))}
           </tr>
         </thead>
@@ -120,7 +132,7 @@ function ReservationTable({ data = [] }) {
 
                 {columns.map((col) => (
                   <td key={col.key} className={styles.td}>
-                    {renderCell(col.key, row[col.key])}
+                    {renderCell(col.key, row[col.key], row)}
                   </td>
                 ))}
               </tr>

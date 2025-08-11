@@ -53,7 +53,7 @@
   color: #349742;
 }
 
-.badgeNotChecked {
+.badgeNotChecked, .badgePending {
   background-color: #f3f3f3;
   color: #888;
 }
@@ -74,14 +74,6 @@
   background-color: #ededed; /* 살짝 진한 회색 배경 */
   color: #666;
   box-shadow: 0 0 0 2px rgba(136, 136, 136, .15) inset;
-}
-
-/* 티켓 만료 */
-.badgeExpired:hover,
-.badgeExpired:focus-visible {
-  background-color: #ffe0e0; /* 더 짙은 연분홍 */
-  color: #c0392b;
-  box-shadow: 0 0 0 2px rgba(231, 76, 60, .15) inset;
 }
 
 .paymentStatusWrapper {
