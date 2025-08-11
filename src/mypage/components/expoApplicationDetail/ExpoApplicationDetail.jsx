@@ -2,8 +2,16 @@ import React, { useEffect, useState } from 'react';
 import styles from './ExpoApplicationDetail.module.css';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
-// ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick을 받도록 변경
-function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick }) {
+// ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick, onCancelExpo, onRefundButtonClick을 받도록 변경
+function ExpoApplicationDetail({
+  expoData,
+  onPayButtonClick,
+  onAdminInfoClick,
+  onCancelExpo,
+  onRefundButtonClick,
+  onSettlementRequestClick,
+  onSettlementReceiptClick,
+}) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState('');
@@ -11,6 +19,8 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
   useEffect(() => {
     // props로 받은 expoData를 상태에 설정
     if (expoData) {
+      console.log('ExpoApplicationDetail - 받은 expoData:', expoData);
+      console.log('ExpoApplicationDetail - isPremium 값:', expoData.isPremium);
       setForm({ ...expoData });
       setIsPremium(expoData.isPremium);
       setStatus(expoData.status);
@@ -21,49 +31,57 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
     switch (status) {
       case '승인대기':
         return <span className={`${styles.statusTag} ${styles.pending}`}>승인 대기</span>;
-      case '진행중':
-        return <span className={`${styles.statusTag} ${styles.inProgress}`}>진행중</span>;
-      case '종료됨':
-        return <span className={`${styles.statusTag} ${styles.completed}`}>종료됨</span>;
-      case '정산완료':
-        return <span className={`${styles.statusTag} ${styles.settled}`}>정산 완료</span>;
       case '결제대기':
         return <span className={`${styles.statusTag} ${styles.paymentPending}`}>결제 대기</span>;
-      case '진행':
-        return <span className={`${styles.statusTag} ${styles.inProgress}`}>진행</span>;
+      case '게시대기':
+        return <span className={`${styles.statusTag} ${styles.pending}`}>게시 대기</span>;
+      case '취소대기':
+        return <span className={`${styles.statusTag} ${styles.pending}`}>취소 대기</span>;
+      case '게시중':
+        return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 중</span>;
+      case '게시종료':
+        return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 종료</span>;
+      case '정산요청':
+        return <span className={`${styles.statusTag} ${styles.settled}`}>정산 요청</span>;
+      case '종료됨':
+        return <span className={`${styles.statusTag} ${styles.completed}`}>종료됨</span>;
+      case '거절됨':
+        return <span className={`${styles.statusTag} ${styles.rejected}`}>거절됨</span>;
+      case '취소됨':
+        return <span className={`${styles.statusTag} ${styles.cancelled}`}>취소됨</span>;
       default:
         return null;
     }
   };
 
   const renderButtons = () => {
-    switch (status) {
-      case '승인대기':
-        return (
-          <div className={styles.buttonGroup}>
-            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('신청 취소 클릭')}>신청 취소</button>
-          </div>
-        );
-      case '진행중':
-        return (
-          <div className={styles.buttonGroup}>
-            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('취소 신청 클릭')}>취소 신청</button>
-          </div>
-        );
-      case '결제대기':
-        return (
-          <div className={`${styles.buttonGroup} ${styles.inlineButtons}`}>
-            <button className={`${styles.button} ${styles.cancelButton}`} onClick={() => console.log('신청 취소 클릭')}>신청 취소</button>
-            <button className={`${styles.button} ${styles.paymentButton}`} onClick={onPayButtonClick}>결제</button>
-          </div>
-        );
-      default:
-        return null;
-    }
+    return (
+      <div className={styles.buttonGroup}>
+        {/* 모든 영수증 버튼 항상 표시 */}
+        <div className={styles.receiptButtons}>
+          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 영수증</button>
+          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 영수증</button>
+          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 영수증</button>
+        </div>
+        
+        {/* 상태별 주요 액션 버튼 */}
+        <div className={styles.actionButtons}>
+          {(status === '승인대기' || status === '결제대기') && (
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>취소 신청</button>
+          )}
+          {(status === '게시대기' || status === '게시중') && (
+            <button className={`${styles.button} ${styles.refundButton}`} onClick={onRefundButtonClick}>환불 신청</button>
+          )}
+          {status === '게시종료' && (
+            <button className={`${styles.button} ${styles.settlementButton}`} onClick={onSettlementRequestClick}>정산 요청</button>
+          )}
+        </div>
+      </div>
+    );
   };
   
   const renderAdminButton = () => {
-    if (status === '종료됨' || status === '정산완료') {
+    if (status === '게시대기' || status === '게시중' || status === '종료됨' || status === '정산요청') {
       return (
         // 관리자 정보 버튼 클릭 시 onAdminInfoClick prop 호출
         <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
@@ -76,7 +94,7 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.pageTitle}>신청 상세</h2>
+          <h2 className={styles.pageTitle}>{form.name || '신청 상세'}</h2>
           {renderStatusTag()}
           {renderAdminButton()}
         </div>
@@ -86,8 +104,8 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src="https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"
-            alt="포스터"
+            src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
+            alt="박람회 포스터"
             className={styles.profileImage}
           />
         </div>
@@ -111,24 +129,27 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
           </div>
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>개최 기간</label>
-            <div className={styles.dateGroup}>
-              <input type="date" className={styles.inputField} value={form.startDate || ''} readOnly />
-              <input type="date" className={styles.inputField} value={form.endDate || ''} readOnly />
-            </div>
+            <input 
+              className={styles.inputField} 
+              value={`${form.startDate || ''} ~ ${form.endDate || ''}`} 
+              readOnly 
+            />
           </div>
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>운영 시간</label>
-            <div className={styles.dateGroup}>
-              <input type="time" className={styles.inputField} value={form.startTime || ''} readOnly />
-              <input type="time" className={styles.inputField} value={form.endTime || ''} readOnly />
-            </div>
+            <input 
+              className={styles.inputField} 
+              value={`${form.startTime || ''} ~ ${form.endTime || ''}`} 
+              readOnly 
+            />
           </div>
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>게시 기간</label>
-            <div className={styles.dateGroup}>
-              <input type="date" className={styles.inputField} value={form.postStartDate || ''} readOnly />
-              <input type="date" className={styles.inputField} value={form.postEndDate || ''} readOnly />
-            </div>
+            <input 
+              className={styles.inputField} 
+              value={`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`} 
+              readOnly 
+            />
           </div>
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
@@ -177,57 +198,96 @@ function ExpoApplicationDetail({ expoData, onPayButtonClick, onAdminInfoClick })
         </div>
       </div>
 
-      {/* 신청자 정보 추가 */}
-      <div className={`${styles.infoGrid} ${styles.full}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>신청자명</label>
-          <input className={styles.inputField} value={form.applicantName || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>신청자 연락처</label>
-          <input className={styles.inputField} value={form.applicantContact || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>신청자 이메일</label>
-          <input className={styles.inputField} value={form.applicantEmail || ''} readOnly />
-        </div>
-      </div>
 
       <div className={`${styles.formGroup} ${styles.full}`}>
         <label className={styles.label}>설명</label>
-        <textarea className={styles.textarea} value={form.description || ''} readOnly />
+        <div className={styles.descriptionText}>
+          {form.description || '상세 설명이 없습니다.'}
+        </div>
       </div>
-      <div className={`${styles.infoGrid}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>등록금</label>
-          <input className={styles.inputField} value={form.registrationFee || ''} readOnly />
+      
+      {/* 예상 결제 정보 섹션 */}
+      <div className={`${styles.formGroup} ${styles.full}`}>
+        <label className={styles.label}>예상 결제 정보</label>
+        <div className={styles.paymentContainer}>
+          {form.paymentInfo ? (
+            <div className={styles.paymentGrid}>
+              {/* 프리미엄 여부에 따라 해당 등록금만 표시 */}
+              {isPremium ? (
+                <div className={styles.paymentItem}>
+                  <span className={styles.paymentLabel}>프리미엄 등록금</span>
+                  <span className={styles.paymentValue}>{form.paymentInfo.premiumDeposit?.toLocaleString()}원</span>
+                </div>
+              ) : (
+                <div className={styles.paymentItem}>
+                  <span className={styles.paymentLabel}>기본 등록금</span>
+                  <span className={styles.paymentValue}>{form.paymentInfo.deposit?.toLocaleString()}원</span>
+                </div>
+              )}
+              <div className={styles.paymentItem}>
+                <span className={styles.paymentLabel}>일일 사용료</span>
+                <span className={styles.paymentValue}>{form.paymentInfo.dailyUsageFee?.toLocaleString()}원</span>
+              </div>
+              <div className={styles.paymentItem}>
+                <span className={styles.paymentLabel}>총 게시 기간</span>
+                <span className={styles.paymentValue}>{form.paymentInfo.totalDay}일</span>
+              </div>
+              <div className={`${styles.paymentItem} ${styles.totalAmount}`}>
+                <span className={styles.paymentLabel}>총 결제 금액</span>
+                <span className={styles.paymentValue}>{form.paymentInfo.totalAmount?.toLocaleString()}원</span>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.noPaymentInfo}>결제 정보가 없습니다.</div>
+          )}
         </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>모집 티켓 수</label>
-          <input className={styles.inputField} value={form.recruitedTickets || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>예상 총 매출</label>
-          <input className={styles.inputField} value={form.expectedRevenue || ''} readOnly />
+      </div>
+      
+      {/* 티켓 정보 섹션 */}
+      <div className={`${styles.formGroup} ${styles.full}`}>
+        <label className={styles.label}>티켓 정보</label>
+        <div className={styles.ticketContainer}>
+          {form.tickets && form.tickets.length > 0 ? (
+            <>
+              {/* 티켓 헤더 */}
+              <div className={styles.ticketHeader}>
+                <div className={styles.ticketHeaderInfo}>
+                  <span className={styles.headerLabel}>티켓명</span>
+                  <span className={styles.headerLabel}>가격</span>
+                  <span className={styles.headerLabel}>판매개수</span>
+                  <span className={styles.headerLabel}>종류</span>
+                </div>
+              </div>
+              {/* 티켓 목록 */}
+              {form.tickets.map((ticket, index) => (
+                <div key={index} className={styles.ticketRow}>
+                  <div className={styles.ticketInfo}>
+                    <span className={styles.ticketName}>{ticket.name}</span>
+                    <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
+                    <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
+                    <span className={styles.ticketType}>
+                      {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
+          )}
         </div>
       </div>
       <div className={`${styles.formGroup} ${styles.full}`}>
           <label className={styles.label}>첨부파일</label>
           <div className={styles.fileBox}>
-              {form.attachments && form.attachments.length > 0 ? (
-                  form.attachments.map((file, index) => (
-                      <a key={index} href={file.url} className={styles.attachmentName} download>
-                          {file.name}
-                      </a>
-                  ))
-              ) : (
-                  <span className={styles.noAttachment}>첨부된 파일이 없습니다.</span>
-              )}
+              <span className={styles.noAttachment}>첨부된 파일이 없습니다.</span>
           </div>
       </div>
       
-      {/* 상태에 따른 버튼 렌더링 */}
-      {renderButtons()}
+      {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}
+      <div className={styles.bottomButtonArea}>
+        {renderButtons()}
+      </div>
       
     </div>
   );

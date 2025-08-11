@@ -6,8 +6,13 @@ function PaymentWaitingModal(props) {
     expoName,
     applicant,
     period,
-    amount,
+    totalDays,
+    dailyUsageFee,
+    usageFeeAmount,
+    depositAmount,
     totalAmount,
+    isPremium,
+    commissionRate,
     onPay,
     onCancel,
     onClose,
@@ -17,8 +22,13 @@ function PaymentWaitingModal(props) {
       expoName={expoName}
       applicant={applicant}
       period={period}
-      amount={amount}
+      totalDays={totalDays}
+      dailyUsageFee={dailyUsageFee}
+      usageFeeAmount={usageFeeAmount}
+      depositAmount={depositAmount}
       totalAmount={totalAmount}
+      isPremium={isPremium}
+      commissionRate={commissionRate}
       onClose={onClose}
     >
       <button className={styles.whiteBtn} onClick={onCancel}>

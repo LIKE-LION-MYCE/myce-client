@@ -2,17 +2,20 @@ import React from 'react';
 import styles from './AdminInfoModal.module.css';
 
 const AdminInfoModal = ({ 
-  adminId = "ab12bc123A53", 
-  subordinateCodes = [
-    { code: "bba24a53ww351", action: "복사" },
-    { code: "h135g35h5a53h", action: "복사" },
-    { code: "twtu153aa55532", action: "복사" },
-    { code: "fawuieoi23al5j", action: "복사" },
-    { code: "3523u980wra5a", action: "복사" }
-  ],
+  adminName,
+  codesData,
   onClose,
   onNavigateToAdminPage
 }) => {
+  // Use the passed adminName, with a fallback
+  const adminId = adminName || "관리자 ID 없음";
+  
+  // Map over the codesData array to extract the code property
+  const subordinateCodes = codesData?.map(item => ({
+    code: item.code,
+    action: "복사"
+  })) || [];
+
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code).then(() => {
       alert('코드가 복사되었습니다.');
@@ -42,17 +45,21 @@ const AdminInfoModal = ({
           <div className={styles.section}>
             <div className={styles.label}>하위 관리자 코드</div>
             <div className={styles.codeList}>
-              {subordinateCodes.map((item, index) => (
-                <div key={index} className={styles.codeItem}>
-                  <span className={styles.code}>{item.code}</span>
-                  <button 
-                    className={styles.copyButton}
-                    onClick={() => handleCopyCode(item.code)}
-                  >
-                    {item.action}
-                  </button>
-                </div>
-              ))}
+              {subordinateCodes.length > 0 ? (
+                subordinateCodes.map((item, index) => (
+                  <div key={index} className={styles.codeItem}>
+                    <span className={styles.code}>{item.code}</span>
+                    <button 
+                      className={styles.copyButton}
+                      onClick={() => handleCopyCode(item.code)}
+                    >
+                      {item.action}
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.noCodeMessage}>하위 관리자 코드가 없습니다.</div>
+              )}
             </div>
           </div>
         </div>

@@ -75,3 +75,31 @@
 }
 .whiteBtn:hover { background: #f3f3f3; }
 .blackBtn:hover { background: #222; }
+
+/* 환불 관련 스타일 */
+.refundRow {
+  border-top: 2px solid #e9ecef;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.refundAmount {
+  color: #dc3545 !important;
+  font-weight: bold;
+}
+
+.refundBtn {
+  background: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.refundBtn:hover {
+  background: #e0a800 !important;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 16px 0;
+}
