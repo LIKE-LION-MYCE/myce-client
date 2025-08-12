@@ -95,6 +95,24 @@
   margin-top: 6px;
 }
 
+.activeButton {
+  width: 80px; /* 버튼 너비 동일하게 고정 */
+  height: 42px;
+  padding: 0 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
 .submitButton {
   width: 100%;
   background: #000;
