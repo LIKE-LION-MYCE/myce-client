@@ -18,9 +18,10 @@ import {
 function Events() {
   const { expoId } = useParams();
   const [eventList, setEventList] = useState([]);
+  const [filteredEventList, setFilteredEventList] = useState([]);
   const [page, setPage] = useState(0);
   const [sortOrder, setSortOrder] = useState('desc');
-  const [totalElements, setTotalElements] = useState(0);
+  const [selectedDate, setSelectedDate] = useState('');
   const [toast, setToast] = useState(null);
   const size = 4;
 
@@ -30,24 +31,39 @@ function Events() {
   };
 
   const pageInfo = {
-    totalPages: Math.ceil(totalElements / size),
+    totalPages: Math.ceil(filteredEventList.length / size),
     number: page,
   };
 
   useEffect(() => {
-    fetchEvents(page);
-  }, [page, sortOrder]);
+    fetchEvents();
+  }, [expoId]);
+
+  useEffect(() => {
+    let processedList = [...eventList];
+
+    // 날짜 필터링
+    if (selectedDate) {
+      processedList = processedList.filter(
+        (event) => event.eventDate === selectedDate
+      );
+    }
+
+    // 정렬
+    processedList.sort((a, b) => {
+      const dateA = new Date(a.eventDate);
+      const dateB = new Date(b.eventDate);
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    setFilteredEventList(processedList);
+    setPage(0); // 필터링이나 정렬 시 첫 페이지로 이동
+  }, [eventList, sortOrder, selectedDate]);
 
   const fetchEvents = async () => {
     try {
       const data = await getEvents(expoId);
-      const sorted = [...data].sort((a, b) => {
-        const dateA = new Date(a.eventDate);
-        const dateB = new Date(b.eventDate);
-        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-      });
-      setEventList(sorted);
-      setTotalElements(sorted.length);
+      setEventList(data);
     } catch (error) {
       showToast('fail', error.message);
     }
@@ -62,8 +78,7 @@ function Events() {
       };
       await addEvent(expoId, payload);
       showToast('success', '행사가 성공적으로 등록되었습니다.');
-      setPage(0);
-      fetchEvents(0);
+      fetchEvents();
       return true; // 성공 시 true 반환
     } catch (error) {
       showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
@@ -80,7 +95,7 @@ function Events() {
       };
       await updateEvent(expoId, updatedEvent.id, payload);
       showToast('success', '행사가 성공적으로 수정되었습니다.');
-      fetchEvents(page);
+      fetchEvents();
     } catch (error) {
       showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
     }
@@ -90,7 +105,7 @@ function Events() {
     try {
       await deleteEvent(expoId, id);
       showToast('success', '행사가 성공적으로 삭제되었습니다.');
-      fetchEvents(page);
+      fetchEvents();
     } catch (error) {
       showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
     }
@@ -115,12 +130,24 @@ function Events() {
         <h4 className={styles.sectionTitle}>행사 목록</h4>
 
         <div className={styles.topControls}>
+          <button
+              onClick={() => setSelectedDate('')}
+              className={styles.button}
+            >
+              전체 보기
+            </button>
           <div className={styles.filterGroup}>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className={styles.dateInput}
+            />
+          
             <select
               value={sortOrder}
               onChange={(e) => {
                 setSortOrder(e.target.value);
-                setPage(0);
               }}
               className={styles.select}
             >
@@ -131,7 +158,7 @@ function Events() {
         </div>
 
         <EventTable
-          data={eventList.slice(page * size, page * size + size)}
+          data={filteredEventList.slice(page * size, page * size + size)}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
         />
