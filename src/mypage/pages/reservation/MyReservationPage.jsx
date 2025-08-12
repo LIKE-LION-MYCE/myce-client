@@ -28,7 +28,7 @@ function ReservationCard({ reservation }) {
         <div className={styles.buttons}>
           <button
             className={styles.primaryBtn}
-            onClick={() => navigate(`./${reservation.reservationCode}`)}
+            onClick={() => navigate(`./${reservation.reservationId}`)}
           >
             예매 상세
           </button>
