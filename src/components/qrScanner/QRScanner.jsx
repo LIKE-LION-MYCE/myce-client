@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import QrScanner from 'qr-scanner';
 import styles from './QRScanner.module.css';
-import axios from 'axios';
+import axios from '../../api/lib/axios';
 
 const QRScannerComponent = ({ onClose }) => {
   const videoRef = useRef(null);
@@ -53,7 +53,7 @@ const QRScannerComponent = ({ onClose }) => {
       const token = qrData.trim();
       
       // 먼저 QR 코드 검증
-      const verifyResponse = await axios.post('/api/qrcodes/verify', {
+      const verifyResponse = await axios.post('/qrcodes/verify', {
         token: token
       });
       
@@ -106,7 +106,7 @@ const QRScannerComponent = ({ onClose }) => {
 
     try {
       // QR 코드 사용 처리
-      const useResponse = await axios.post('/api/qrcodes/use', {
+      const useResponse = await axios.post('/qrcodes/use', {
         token: verifyData.token
       });
 
@@ -114,6 +114,8 @@ const QRScannerComponent = ({ onClose }) => {
         setResult({
           success: true,
           message: useResponse.data.message,
+          ticketName: useResponse.data.ticketName,
+          usedAt: useResponse.data.usedAt,
           reserverName: verifyData.reserverName,
           expoTitle: verifyData.expoTitle,
           ticketTitle: verifyData.ticketTitle
@@ -257,20 +259,32 @@ const QRScannerComponent = ({ onClose }) => {
                 {result.message}
               </div>
               
-              {result.success && result.reserverName && (
+              {result.success && result.ticketName && (
                 <div className={styles.reservationInfo}>
                   <div className={styles.infoRow}>
-                    <span className={styles.label}>예약자:</span>
-                    <span className={styles.value}>{result.reserverName}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>전시회:</span>
-                    <span className={styles.value}>{result.expoTitle}</span>
-                  </div>
-                  <div className={styles.infoRow}>
                     <span className={styles.label}>티켓:</span>
-                    <span className={styles.value}>{result.ticketTitle}</span>
+                    <span className={styles.value}>{result.ticketName}</span>
                   </div>
+                  {result.usedAt && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>처리 시간:</span>
+                      <span className={styles.value}>
+                        {new Date(result.usedAt).toLocaleString('ko-KR')}
+                      </span>
+                    </div>
+                  )}
+                  {result.reserverName && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>예약자:</span>
+                      <span className={styles.value}>{result.reserverName}</span>
+                    </div>
+                  )}
+                  {result.expoTitle && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>전시회:</span>
+                      <span className={styles.value}>{result.expoTitle}</span>
+                    </div>
+                  )}
                 </div>
               )}
 
