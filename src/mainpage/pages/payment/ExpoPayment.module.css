@@ -35,29 +35,7 @@
   border-radius: 8px;
 }
 
-.radioGroup {
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.genderGroup {
-  display: flex;
-  gap: 1rem;
-}
-
-.radioItem {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #333;
-  position: relative;
-}
-
-.radioItem input[type="radio"] {
+.radioOption input[type="radio"] {
   appearance: none;
   width: 25px;
   height: 25px;
@@ -68,9 +46,10 @@
   position: relative;
   transition: border-color 0.2s ease;
   box-sizing: border-box;
+  vertical-align: middle;
 }
 
-.radioItem input[type="radio"]::before {
+.radioOption input[type="radio"]::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -85,52 +64,16 @@
   box-sizing: border-box;
 }
 
-.radioItem input[type="radio"]:checked {
+.radioOption input[type="radio"]:checked {
   border-color: #000;
 }
 
-.radioItem input[type="radio"]:checked::before {
+.radioOption input[type="radio"]:checked::before {
   opacity: 1;
 }
 
-.radioItem input[type="radio"]:focus {
+.radioOption input[type="radio"]:focus {
     box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.2);
-}
-
-.inputGroup {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.inputGroup label {
-  min-width: 100px;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.inputGroup input {
-  flex: 1;
-  padding: 0 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  line-height: 2.5rem;
-  border: 1px solid #ccc;
-  outline: none; 
-  box-sizing: border-box;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.formGroup label {
-  min-width: 80px; /* Adjust as needed to accommodate longest label */
-  text-align: right; /* Align label text to the right */
 }
 
 .checkbox {
@@ -330,7 +273,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #014083;
+  color: #007aff;
   cursor: pointer;
   font-weight: bold;
   padding: 0.5rem;
@@ -365,4 +308,82 @@
   font-size: 1.1rem;
   color: #000;
   margin-left: 0.5rem;
+}
+
+.personInfoCard {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #fafafa;
+  margin-bottom: 1.5rem; /* Space between multiple cards */
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.cardBody {
+  /* No specific styles needed here, acts as a container */
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 1rem; /* Space between grid items */
+  margin-bottom: 1.5rem;
+}
+
+.inputField {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputField label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.4rem;
+}
+
+.inputField input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.genderSelection {
+  margin-top: 1rem;
+}
+
+.genderSelection label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.4rem;
+  display: block; /* Make label take full width */
+}
+
+.genderOptions {
+  display: flex;
+  gap: 1.5rem; /* Space between radio options */
+  margin-top: 0.5rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
 }
