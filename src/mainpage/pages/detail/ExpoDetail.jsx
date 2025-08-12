@@ -1,8 +1,9 @@
 // src/pages/expo/ExpoDetail.jsx
-import React, { useEffect, useMemo, useState } from "react"; // [추가] useEffect, useMemo
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import styles from "./ExpoDetail.module.css";
 import BoothModal from "../../components/modal/BoothModal";
+import EmailVerifyModal from "../../components/modal/EmailVerifyModal";
 import CancelFeeTable from "../../components/cancelfeetable/CancelFeeTable";
 import { getTicketsForReservation } from "../../../api/service/user/TicketService";
 
@@ -38,6 +39,12 @@ const tabs = ["상세 정보", "관람 후기", "장소 정보", "취소 수수�
 export default function ExpoDetail() {
   const [selectedBooth, setSelectedBooth] = useState(null);
   const [activeTab, setActiveTab] = useState("관람 후기");
+  const [showEmailVerifyModal, setShowEmailVerifyModal] = useState(false); // New state for modal
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  useEffect(() => {
+    console.log("showEmailVerifyModal state changed:", showEmailVerifyModal);
+  }, [showEmailVerifyModal]);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
   const { expoId } = useParams();
@@ -74,6 +81,10 @@ export default function ExpoDetail() {
     return !!token; // 토큰 있는지에 따라 다름
   }, []);
 
+  useEffect(() => {
+    console.log("isMember state changed:", isMember);
+  }, [isMember]);
+
   const selected = tickets[selectedIndex];
   const maxQty = useMemo(() => {
     let quantityLimit = selected?.remainingQuantity ?? 1;
@@ -98,6 +109,34 @@ export default function ExpoDetail() {
     `[${t.type}] ${t.name} (${t.remainingQuantity}장 남음)`;
   const dec = () => setQty((q) => Math.max(1, q - 1));
   const inc = () => setQty((q) => Math.min(maxQty, ABSOLUTE_MAX_QTY, q + 1));
+
+  const handlePaymentClick = () => {
+    console.log("handlePaymentClick called. isMember:", isMember); // Debug log
+    if (isMember) {
+      navigate(`/detail/${expoId}/payment`, {
+        state: {
+          ticketId: selected?.ticketId,
+          quantity: qty,
+          unitPrice: selected?.price,
+        },
+      });
+    } else {
+      console.log("Non-member. Setting showEmailVerifyModal to true."); // Debug log
+      setShowEmailVerifyModal(true);
+    }
+  };
+
+  const handleEmailVerifySuccess = () => {
+    setShowEmailVerifyModal(false);
+    // After successful email verification, proceed to payment page
+    navigate(`/detail/${expoId}/payment`, {
+      state: {
+        ticketId: selected?.ticketId,
+        quantity: qty,
+        unitPrice: selected?.price,
+      },
+    });
+  };
 
   // 기존 리뷰 페이징 계산
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -259,21 +298,13 @@ export default function ExpoDetail() {
                 <p className={styles.price}>판매 가격: {priceText}</p>
 
                 {/* 결제 페이지로 선택값 전달 */}
-                <Link
-                  to={`/detail/${expoId}/payment`}
-                  state={{
-                    ticketId: selected?.ticketId,
-                    quantity: qty,
-                    unitPrice: selected?.price,
-                  }}
+                <button
+                  className={styles.pay}
+                  disabled={!selected || selected.remainingQuantity <= 0}
+                  onClick={handlePaymentClick}
                 >
-                  <button
-                    className={styles.pay}
-                    disabled={!selected || selected.remainingQuantity <= 0}
-                  >
-                    티켓 결제
-                  </button>
-                </Link>
+                  티켓 결제
+                </button>
               </>
             )}
           </div>
@@ -300,6 +331,22 @@ export default function ExpoDetail() {
         booth={selectedBooth}
         onClose={() => setSelectedBooth(null)}
       />
+
+      {showEmailVerifyModal && (
+        <EmailVerifyModal
+          open={showEmailVerifyModal} // Pass the open prop
+          onClose={() => setShowEmailVerifyModal(false)}
+          onVerifySuccess={handleEmailVerifySuccess}
+          onSendCode={async (email) => {
+            console.log(`Mock: Sending code to ${email}`);
+            return new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+          }}
+          onVerify={async ({ email, code }) => {
+            console.log(`Mock: Verifying code ${code} for ${email}`);
+            return new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+          }}
+        />
+      )}
     </div>
   );
 }
