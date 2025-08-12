@@ -7,7 +7,7 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import {
   registerBooth,
   updateBooth,
-} from '../../../api/service/expo-admin/BoothService';
+} from '../../../api/service/expo-admin/setting/BoothService';
 import { useParams } from 'react-router-dom';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 

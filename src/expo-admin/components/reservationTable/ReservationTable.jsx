@@ -16,6 +16,18 @@ function formatDateTime(iso) {
   return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
 }
 
+// 생년월일 포맷 (LocalDate → yyyy-MM-dd)
+function formatBirth(date) {
+  if (!date) return '-';
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return '-';
+  const pad = (n) => String(n).padStart(2, '0');
+  const y = d.getFullYear();
+  const m = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  return `${y}-${m}-${day}`;
+}
+
 function ReservationTable({ data = [], onEntranceClick }) {
   //선택 행 관리
   const [selectedKeys, setSelectedKeys] = useState([]); // [reserverId...]
@@ -24,6 +36,7 @@ function ReservationTable({ data = [], onEntranceClick }) {
     { key: 'reservationCode', header: '예약 코드' },
     { key: 'name', header: '이름' },
     { key: 'gender', header: '성별' },
+    { key: 'birth', header : '생년월일'},
     { key: 'phone', header: '전화번호' },
     { key: 'email', header: '이메일' },
     { key: 'ticketName', header: '티켓 이름' },
@@ -81,6 +94,10 @@ function ReservationTable({ data = [], onEntranceClick }) {
 
     if (key === 'entranceAt') {
       return formatDateTime(value);
+    }
+
+    if (key === 'birth') {
+      return formatBirth(value);
     }
 
     return value || '-';

@@ -12,12 +12,14 @@ import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
 import { getExpoTicketNames } from '../../../api/service/expo-admin/reservation/ReservationService';
 import { updateReserverQrCodeForManualCheckIn } from '../../../api/service/expo-admin/reservation/ReservationService';
+import { downloadMyReservationExcelFile } from '../../../api/service/expo-admin/reservation/ReservationService';
 
 const tabLabels = ['전체', '발급 대기', '입장 전', '입장 완료', '티켓 만료'];
 
 function Reservations() {
   const { expoId } = useParams();
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
@@ -128,8 +130,38 @@ function Reservations() {
   };
 
   //엑셀 다운로드
-  const handleExcelDownload = () => {
-    triggerSuccessToast();
+  const handleExcelDownload = async () => {
+    if (isDownloading) return; // 중복 클릭 방지
+
+    setIsDownloading(true);
+    try {
+      const response = await downloadMyReservationExcelFile(expoId);
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = '예약자_명단.xlsx'; 
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (fileNameMatch && fileNameMatch.length === 2) {
+          fileName = decodeURIComponent(fileNameMatch[1]);
+        }
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      triggerSuccessToast();
+
+    } catch (e) {
+      triggerToastFail(e.message || '다운로드에 실패했습니다.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   //QR 재발급
