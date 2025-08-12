@@ -53,7 +53,9 @@ const QRScannerComponent = ({ onClose }) => {
       const token = qrData.trim();
       
       // 먼저 QR 코드 검증
-      const verifyResponse = await axios.post(`/api/qrcodes/token/${token}/verify`);
+      const verifyResponse = await axios.post('/api/qrcodes/verify', {
+        token: token
+      });
       
       if (!verifyResponse.data.valid) {
         setResult({
@@ -104,7 +106,9 @@ const QRScannerComponent = ({ onClose }) => {
 
     try {
       // QR 코드 사용 처리
-      const useResponse = await axios.post(`/api/qrcodes/token/${verifyData.token}/use`);
+      const useResponse = await axios.post('/api/qrcodes/use', {
+        token: verifyData.token
+      });
 
       if (useResponse.data.success) {
         setResult({
