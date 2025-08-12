@@ -5,6 +5,7 @@ import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWait
 import PaymentRefundModal from '../../components/paymentDetailModal/PaymentRefundModal';
 import SettlementReceiptModal from '../../components/paymentDetailModal/SettlementReceiptModal';
 import AdminInfoModal from '../../components/adminInfoModal/AdminInfoModal';
+import QRScannerComponent from '../../../components/qrScanner/QRScanner';
 import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
 import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail } from '../../../api/service/user/memberApi';
@@ -59,6 +60,7 @@ const safeNumber = (num, defaultValue = 0) => {
   return num;
 };
 
+
 const ExpoStatusDetail = () => {
   const { id } = useParams();
   const [expoData, setExpoData] = useState(null);
@@ -73,6 +75,7 @@ const ExpoStatusDetail = () => {
   const [paymentDetailData, setPaymentDetailData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showQRScanner, setShowQRScanner] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -276,6 +279,16 @@ const ExpoStatusDetail = () => {
     setSettlementReceiptData(null);
   };
 
+  // QR 스캔 모달 열기 핸들러
+  const handleOpenQRScanner = () => {
+    setShowQRScanner(true);
+  };
+
+  // QR 스캔 모달 닫기 핸들러
+  const handleCloseQRScanner = () => {
+    setShowQRScanner(false);
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -307,6 +320,19 @@ const ExpoStatusDetail = () => {
 
   return (
     <div className={styles.container}>
+      {/* QR 스캔 테스트 버튼 추가 */}
+      <div className={styles.qrScanSection}>
+        <button 
+          className={styles.qrScanButton} 
+          onClick={handleOpenQRScanner}
+        >
+          📱 QR 스캔 테스트
+        </button>
+        <p className={styles.qrScanNote}>
+          * 관리자 전용: 입장 QR 코드를 스캔하여 체크인 처리
+        </p>
+      </div>
+
       <ExpoApplicationDetail
         expoData={expoData}
         onPayButtonClick={handleOpenModal}
@@ -372,6 +398,13 @@ const ExpoStatusDetail = () => {
         <SettlementReceiptModal
           receiptData={settlementReceiptData}
           onClose={handleCloseSettlementReceiptModal}
+        />
+      )}
+
+      {/* QR 스캐너 모달 조건부 렌더링 */}
+      {showQRScanner && (
+        <QRScannerComponent
+          onClose={handleCloseQRScanner}
         />
       )}
     </div>
