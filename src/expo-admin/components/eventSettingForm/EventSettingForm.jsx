@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import styles from './EventSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
   const [form, setForm] = useState(initForm());
-  const [toastMessage, setToastMessage] = useState('');
 
   function initForm() {
     return {
-      eventName: '',
-      eventLocation: '',
+      name: '',
+      location: '',
       eventDate: '',
-      eventTimeStart: '',
-      eventTimeEnd: '',
-      eventDescription: '',
-      managerName: '',
-      managerPhone: '',
-      managerEmail: '',
+      startTime: '',
+      endTime: '',
+      description: '',
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
     };
   }
 
@@ -34,11 +32,11 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    onSubmit(form);
-    setForm(initForm());
-    setToastMessage(editingEvent ? '행사 정보가 수정되었습니다.' : '행사 정보가 등록되었습니다.');
-    setTimeout(() => setToastMessage(''), 2500);
+  const handleSubmit = async () => {
+    const success = await onSubmit(form);
+    if (success) {
+      setForm(initForm());
+    }
   };
 
   const handleCancel = () => {
@@ -48,18 +46,16 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
 
   return (
     <div className={styles.container}>
-      {toastMessage && <ToastSuccess message={toastMessage} />}
-
       <div className={styles.formGrid}>
         {/* 왼쪽 컬럼 */}
         <div className={styles.column}>
           <div className={styles.formGroup}>
             <label className={styles.label}>행사 이름</label>
             <input
-              name="eventName"
+              name="name"
               className={styles.inputField}
               placeholder="행사 이름 입력"
-              value={form.eventName}
+              value={form.name}
               onChange={handleChange}
             />
           </div>
@@ -67,10 +63,10 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           <div className={styles.formGroup}>
             <label className={styles.label}>행사 위치</label>
             <input
-              name="eventLocation"
+              name="location"
               className={styles.inputField}
               placeholder="행사 위치 입력"
-              value={form.eventLocation}
+              value={form.location}
               onChange={handleChange}
             />
           </div>
@@ -91,17 +87,17 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
             <div className={styles.timeRange}>
               <input
                 type="time"
-                name="eventTimeStart"
+                name="startTime"
                 className={styles.inputField}
-                value={form.eventTimeStart}
+                value={form.startTime}
                 onChange={handleChange}
               />
               <span className={styles.timeDivider}>~</span>
               <input
                 type="time"
-                name="eventTimeEnd"
+                name="endTime"
                 className={styles.inputField}
-                value={form.eventTimeEnd}
+                value={form.endTime}
                 onChange={handleChange}
               />
             </div>
@@ -110,10 +106,10 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           <div className={styles.formGroup}>
             <label className={styles.label}>행사 소개</label>
             <input
-              name="eventDescription"
+              name="description"
               className={styles.inputField}
               placeholder="행사 소개 입력"
-              value={form.eventDescription}
+              value={form.description}
               onChange={handleChange}
             />
           </div>
@@ -124,10 +120,10 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           <div className={styles.formGroup}>
             <label className={styles.label}>담당자명</label>
             <input
-              name="managerName"
+              name="contactName"
               className={styles.inputField}
               placeholder="담당자명 입력"
-              value={form.managerName}
+              value={form.contactName}
               onChange={handleChange}
             />
           </div>
@@ -135,10 +131,10 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           <div className={styles.formGroup}>
             <label className={styles.label}>담당자 전화번호</label>
             <input
-              name="managerPhone"
+              name="contactPhone"
               className={styles.inputField}
               placeholder="전화번호 입력"
-              value={form.managerPhone}
+              value={form.contactPhone}
               onChange={handleChange}
             />
           </div>
@@ -146,10 +142,10 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           <div className={styles.formGroup}>
             <label className={styles.label}>담당자 이메일</label>
             <input
-              name="managerEmail"
+              name="contactEmail"
               className={styles.inputField}
               placeholder="이메일 입력"
-              value={form.managerEmail}
+              value={form.contactEmail}
               onChange={handleChange}
             />
           </div>
