@@ -5,6 +5,11 @@ on:
     branches:
       - develop
 
+# Prevent concurrent deployments to the same environment
+concurrency:
+  group: deploy-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   AWS_REGION: ${{ vars.AWS_REGION || 'ap-northeast-2' }}
   S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME || 'myce-frontend-bucket' }}
