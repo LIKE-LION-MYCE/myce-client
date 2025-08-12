@@ -6,6 +6,7 @@
   width: 100%;
 }
 
+/* 상단 컨트롤 영역 */
 .topControls {
   display: flex;
   justify-content: space-between;
@@ -14,12 +15,14 @@
   gap: 16px;
 }
 
+/* 필터 영역 */
 .filters {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
+/* 드롭다운 + 검색 input + 아이콘 그룹 */
 .filterGroup {
   display: flex;
   align-items: center;
@@ -29,6 +32,23 @@
   gap: 8px;
 }
 
+/* 검색 input */
+.input {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  width: 140px;
+}
+
+/* 검색 아이콘 */
+.searchIcon {
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 드롭다운 */
 .select {
   border: none;
   background: transparent;
@@ -37,54 +57,4 @@
   outline: none;
   cursor: pointer;
   padding-right: 4px;
-}
-
-.input {
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  outline: none;
-  width: 160px;
-}
-
-.searchIcon {
-  color: #888;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.actionBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
-}
-
-/* QR 재발급 버튼 */
-.qrBtn {
-  background-color: #ececec;
-  color: #1e2a38;
-  font-size: 12px;
-  font-weight: 400;
-}
-.qrBtn:hover {
-  background-color: #d9d9d9;
-  color: #1e2a38;
-}
-
-.icon {
-  font-size: 14px;
-  margin-right: 4px;
 }

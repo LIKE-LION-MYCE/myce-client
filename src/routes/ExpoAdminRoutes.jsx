@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { PermissionProvider } from '../expo-admin/permission/PermissionContext';
 import ExpoAdminLayout from '../expo-admin/layout/ExpoAdminLayout';
 import Dashboard from '../expo-admin/pages/dashboard/Dashboard';
 import Payments from '../expo-admin/pages/payments/Payments';
@@ -13,6 +14,7 @@ import Inquiry from '../expo-admin/pages/inquiry/Inquiry';
 
 function ExpoAdminRoutes() {
   return (
+    <PermissionProvider>
       <Routes>
         <Route path="/expos/:expoId/admin" element={<ExpoAdminLayout />}>
           <Route index element={<Dashboard />} />
@@ -27,6 +29,7 @@ function ExpoAdminRoutes() {
           <Route path="inquiry" element={<Inquiry />} />
         </Route>
       </Routes>
+    </PermissionProvider>
   );
 }
 

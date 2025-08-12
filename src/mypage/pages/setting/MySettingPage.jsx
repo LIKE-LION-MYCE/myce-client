@@ -1,14 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./MySettingPage.module.css";
+import { getSettings, updateSettings } from "../../../api/service/user/memberApi";
 
 const MySettingPage = () => {
   const [language, setLanguage] = useState("ko");
   const [fontSize, setFontSize] = useState("medium");
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await getSettings();
+        const settings = response.data;
+        setLanguage(settings.language || "ko");
+        setFontSize(settings.fontSize || "medium");
+      } catch (error) {
+        console.error('설정 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("설정이 저장되었습니다.");
+    try {
+      await updateSettings({ language, fontSize });
+      alert("설정이 저장되었습니다.");
+    } catch (error) {
+      console.error('설정 저장 실패:', error);
+      alert("설정 저장에 실패했습니다.");
+    }
   };
+
+  if (loading) {
+    return <div className={styles.wrapper}>로딩 중...</div>;
+  }
 
   return (
     <div className={styles.wrapper}>

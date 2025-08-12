@@ -1,101 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MyPaymentPage.module.css";
 import { Link } from "react-router-dom";
-
-// 더미 전체 데이터 (백엔드에서 받아올 형태와 유사)
-const allDummyPayments = [
-  {
-    id: "P001",
-    date: "2024-01-15",
-    expo: "2024 서울 모터쇼",
-    amount: 25000,
-    status: "DONE",
-  },
-  {
-    id: "P002",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P003",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P004",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P005",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P006",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P008",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P009",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P010",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P011",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P012",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P013",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-  {
-    id: "P014",
-    date: "2024-01-10",
-    expo: "디지털 헬스케어 박람회",
-    amount: 15000,
-    status: "CANCELED",
-  },
-];
+import { getPaymentHistory } from "../../../api/service/user/memberApi";
 
 const ITEMS_PER_PAGE = 8; // 한 페이지 당 표시할 개수
 const PAGE_BTN_COUNT = 5; // 페이지네이션에 한 번에 표시할 페이지 버튼 개수
@@ -209,33 +115,93 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 }
 
 const MyPaymentPage = () => {
-  const [payments, setPayments] = useState([]); // 현재 페이지 데이터
+  const [payments, setPayments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(allDummyPayments.length / ITEMS_PER_PAGE);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-    const pageData = allDummyPayments.slice(
-      startIdx,
-      startIdx + ITEMS_PER_PAGE
-    );
-    setPayments(pageData);
+    fetchPaymentHistory();
   }, [currentPage]);
+
+  const fetchPaymentHistory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getPaymentHistory(currentPage - 1, ITEMS_PER_PAGE);
+      const { content, totalPages: total } = response.data;
+      
+      // API 응답 구조에 맞게 데이터 변환
+      const transformedData = content.map(payment => {
+        let formattedDate = 'N/A';
+        if (payment.paymentDate) {
+          try {
+            const date = new Date(payment.paymentDate);
+            formattedDate = isNaN(date.getTime()) ? 'N/A' : date.toISOString().split('T')[0];
+          } catch (error) {
+            console.warn('날짜 변환 실패:', payment.paymentDate, error);
+          }
+        }
+
+        return {
+          id: payment.paymentNumber || payment.id || 'N/A',
+          date: formattedDate,
+          expo: payment.expoTitle || payment.title || 'N/A',
+          amount: payment.totalAmount || payment.amount || 0,
+          status: payment.status === 'SUCCESS' ? 'DONE' : 'CANCELED'
+        };
+      });
+      
+      setPayments(transformedData);
+      setTotalPages(total);
+    } catch (err) {
+      console.error('결제 내역 조회 실패:', err);
+      setError('결제 내역을 불러오는데 실패했습니다.');
+      setPayments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageChange = (pageNum) => {
     if (pageNum < 1 || pageNum > totalPages) return;
     setCurrentPage(pageNum);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <h2 className={styles.pageTitle}>결제 내역</h2>
+        <div className={styles.loading}>로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.wrapper}>
+        <h2 className={styles.pageTitle}>결제 내역</h2>
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.pageTitle}>결제 내역</h2>
-      <PaymentHistoryTable data={payments} />
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {payments.length > 0 ? (
+        <>
+          <PaymentHistoryTable data={payments} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      ) : (
+        <div className={styles.noData}>결제 내역이 없습니다.</div>
+      )}
     </div>
   );
 };

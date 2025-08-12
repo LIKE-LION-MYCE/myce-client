@@ -4,16 +4,20 @@ import styles from './ExpoSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle, FaEdit } from 'react-icons/fa';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import {
   getMyExpoInfo,
   updateMyExpoInfo,
-} from '../../../api/service/expo-admin/setting/expoInfoService';
+} from '../../../api/service/expo-admin/setting/ExpoInfoService';
+import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function ExpoSettingForm() {
   const { expoId } = useParams();
   const [form, setForm] = useState(initForm());
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   function initForm() {
     return {
@@ -73,6 +77,21 @@ function ExpoSettingForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePremiumChange = (checked) => {
+    if (!isEditing) return;
+    setForm((prev) => ({ ...prev, isPremium: checked }));
+  };
+
+  const handleImageUploadSuccess = (cdnUrl) => {
+    setForm((prev) => ({ ...prev, thumbnailUrl: cdnUrl }));
+  };
+
+  const handleImageUploadError = (error) => {
+    setErrorMessage(error);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 2000);
+  };
+
   const triggerToast = () => {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
@@ -84,35 +103,66 @@ function ExpoSettingForm() {
 
   const handleSubmit = async () => {
     try {
-      await updateMyExpoInfo(expoId, form);
+      // DTO에 정의된 필드만 포함하여 새로운 객체 생성
+      const dataToSend = {
+        categoryIds: form.categoryIds.map(id => Number(id)),
+        title: form.title,
+        thumbnailUrl: form.thumbnailUrl,
+        description: form.description,
+        location: form.location,
+        locationDetail: form.locationDetail,
+        maxReserverCount: parseInt(form.maxReserverCount, 10) || 0,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        displayStartDate: form.displayStartDate,
+        displayEndDate: form.displayEndDate,
+        startTime: form.startTime,
+        endTime: form.endTime,
+        isPremium: form.isPremium,
+      };
+
+      await updateMyExpoInfo(expoId, dataToSend);
       setIsEditing(false);
       triggerToast();
+      fetchExpoInfo(); // Re-fetch data after successful update
     } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      setErrorMessage(message);
+      setShowFailToast(true);
+      setTimeout(() => setShowFailToast(false), 2000);
       console.error('Failed to update expo info:', error);
-      // You might want to show an error toast here
     }
   };
 
   const handleCancel = () => {
     fetchExpoInfo(); // Re-fetch original data
     setIsEditing(false);
-    triggerToast();
   };
 
   return (
     <div className={styles.container}>
       {showToast && <ToastSuccess />}
+      {showFailToast && <ToastFail message={errorMessage} />}
 
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
-          <img
-            src={form.thumbnailUrl}
-            alt="포스터"
-            className={styles.profileImage}
-          />
+          {isEditing ? (
+            <ImageUpload
+              initialImageUrl={form.thumbnailUrl}
+              onUploadSuccess={handleImageUploadSuccess}
+              onUploadError={handleImageUploadError}
+            />
+          ) : (
+            <img
+              src={form.thumbnailUrl}
+              alt="포스터"
+              className={styles.profileImage}
+            />
+          )}
         </div>
 
         <div className={styles.formGrid}>
+          {/* Input fields... */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
             <input
@@ -231,7 +281,11 @@ function ExpoSettingForm() {
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
             <div className={styles.toggleWrapper}>
-              <ToggleSwitch checked={form.isPremium} disabled />
+              <ToggleSwitch
+                checked={form.isPremium}
+                onChange={handlePremiumChange}
+                disabled={!isEditing}
+              />
             </div>
           </div>
 

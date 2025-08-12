@@ -61,6 +61,28 @@
   margin-bottom: 13px;
 }
 
+.congestionBtn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.congestionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.congestionBtn:active {
+  transform: translateY(0);
+}
+
 /* 편집/저장/취소 버튼들 */
 .editBtn {
   background: #f5f6fa;

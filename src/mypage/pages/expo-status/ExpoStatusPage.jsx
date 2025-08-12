@@ -1,127 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ExpoStatusPage.module.css';
+import { getMyExpos } from '../../../api/service/user/memberApi';
 
 // 한 페이지에 보여줄 항목 수
 const ITEMS_PER_PAGE = 5;
 // 페이지네이션 버튼 그룹에 보여줄 페이지 수
 const PAGE_BTN_COUNT = 5;
 
-// 더미 데이터: 첫 5개 항목이 각각 다른 상태를 가지도록 재배치
-export const mockExpoApplications = [
-  {
-    id: 1,
-    title: "2025 AI 박람회",
-    applyDate: "2024-07-30",
-    postPeriod: "2025.08.01 ~ 2025.09.05",
-    location: "서울 삼성 코엑스",
-    status: "결제대기",
-  },
-  {
-    id: 2,
-    title: "디지털 헬스케어 박람회",
-    applyDate: "2024-08-01",
-    postPeriod: "2025.09.01 ~ 2025.09.12",
-    location: "부산 벡스코",
-    status: "진행중",
-  },
-  {
-    id: 3,
-    title: "2025 로봇산업 박람회",
-    applyDate: "2024-07-28",
-    postPeriod: "2025.08.15 ~ 2025.08.25",
-    location: "일산 킨텍스",
-    status: "승인대기",
-  },
-  {
-    id: 4,
-    title: "2025 뷰티엑스포",
-    applyDate: "2024-06-10",
-    postPeriod: "2025.06.20 ~ 2025.07.05",
-    location: "서울 삼성 코엑스",
-    status: "종료됨",
-  },
-  {
-    id: 5,
-    title: "2025 스마트팜 컨퍼런스",
-    applyDate: "2024-08-15",
-    postPeriod: "2025.10.10 ~ 2025.10.15",
-    location: "대전 컨벤션센터",
-    status: "정산완료",
-  },
-  {
-    id: 6,
-    title: "2025 푸드테크 박람회",
-    applyDate: "2024-08-20",
-    postPeriod: "2025.11.01 ~ 2025.11.05",
-    location: "서울 삼성 코엑스",
-    status: "결제대기",
-  },
-  {
-    id: 7,
-    title: "친환경 건축 박람회",
-    applyDate: "2024-08-22",
-    postPeriod: "2025.10.20 ~ 2025.10.25",
-    location: "부산 벡스코",
-    status: "진행중",
-  },
-  {
-    id: 8,
-    title: "2025 게임쇼",
-    applyDate: "2024-08-18",
-    postPeriod: "2025.12.01 ~ 2025.12.04",
-    location: "일산 킨텍스",
-    status: "승인대기",
-  },
-  {
-    id: 9,
-    title: "2025 전기차 엑스포",
-    applyDate: "2024-08-25",
-    postPeriod: "2025.11.15 ~ 2025.11.18",
-    location: "제주 국제컨벤션센터",
-    status: "종료됨",
-  },
-  {
-    id: 10,
-    title: "2025 에듀테크 박람회",
-    applyDate: "2024-08-05",
-    postPeriod: "2025.09.10 ~ 2025.09.13",
-    location: "서울 삼성 코엑스",
-    status: "정산완료",
-  },
-  {
-    id: 11,
-    title: "2025 메타버스 컨퍼런스",
-    applyDate: "2024-07-29",
-    postPeriod: "2025.08.10 ~ 2025.08.12",
-    location: "서울 삼성 코엑스",
-    status: "결제대기",
-  },
-  {
-    id: 12,
-    title: "2025 핀테크 박람회",
-    applyDate: "2024-08-12",
-    postPeriod: "2025.10.05 ~ 2025.10.08",
-    location: "일산 킨텍스",
-    status: "진행중",
-  },
-];
 
 const ExpoStatusPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [expos, setExpos] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchMyExpos();
+  }, [currentPage]);
+
+  const fetchMyExpos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getMyExpos(currentPage - 1, ITEMS_PER_PAGE);
+      const { content, totalPages: total } = response.data;
+      
+      // 백엔드 데이터를 프론트엔드 형식에 맞게 변환
+      const transformedExpos = content.map(expo => ({
+        id: expo.expoId,
+        title: expo.title,
+        applyDate: new Date(expo.createdAt).toLocaleDateString('ko-KR'),
+        postPeriod: formatDateRange(expo.displayStartDate, expo.displayEndDate),
+        location: expo.locationDetail ? `${expo.location} (${expo.locationDetail})` : expo.location,
+        status: getStatusLabel(expo.status),
+        isPremium: expo.isPremium
+      }));
+      
+      setExpos(transformedExpos);
+      setTotalPages(total);
+    } catch (err) {
+      console.error('신청 박람회 조회 실패:', err);
+      setError('신청 박람회를 불러오는데 실패했습니다.');
+      setExpos([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDateRange = (startDate, endDate) => {
+    if (!startDate || !endDate) return 'N/A';
+    const start = new Date(startDate).toLocaleDateString('ko-KR');
+    const end = new Date(endDate).toLocaleDateString('ko-KR');
+    return `${start} ~ ${end}`;
+  };
+
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      'PENDING_APPROVAL': '승인대기',
+      'PENDING_PAYMENT': '결제대기',
+      'PENDING_PUBLISH': '게시대기',
+      'PENDING_CANCEL': '취소대기',
+      'PUBLISHED': '게시중',
+      'PUBLISH_ENDED': '게시종료',
+      'SETTLEMENT_REQUESTED': '정산요청',
+      'COMPLETED': '종료됨',
+      'REJECTED': '거절됨',
+      'CANCELLED': '취소됨'
+    };
+    return statusMap[status] || status;
+  };
 
   const handleRowClick = (expo) => {
     navigate(`/mypage/expo-status/${expo.id}`);
   };
-
-  // 현재 페이지에 표시할 항목 계산
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = mockExpoApplications.slice(indexOfFirstItem, indexOfLastItem);
-
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(mockExpoApplications.length / ITEMS_PER_PAGE);
 
   // 페이지네이션 버튼 렌더링
   const renderPaginationButtons = () => {
@@ -173,41 +127,68 @@ const ExpoStatusPage = () => {
     return pages;
   };
 
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.title}>신청 박람회 현황</h2>
+        <div className={styles.loading}>로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.title}>신청 박람회 현황</h2>
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>신청 박람회 현황</h2>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>박람회명</th>
-            <th>신청일</th>
-            <th>게시 기간</th>
-            <th>개최 장소</th>
-            <th>상태</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((expo) => (
-            <tr key={expo.id} onClick={() => handleRowClick(expo)} className={styles.tableRow}>
-              <td>{expo.id}</td>
-              <td>{expo.title}</td>
-              <td>{expo.applyDate}</td>
-              <td>{expo.postPeriod}</td>
-              <td>{expo.location}</td>
-              <td>
-                <span className={`${styles.statusBadge} ${styles[expo.status.replace(/\s/g, '')]}`}>
-                  {expo.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* 페이지네이션 버튼 영역 */}
-      <div className={styles.pagination}>
-        {renderPaginationButtons()}
-      </div>
+      {expos.length > 0 ? (
+        <>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>박람회명</th>
+                <th>신청일</th>
+                <th>게시 기간</th>
+                <th>개최 장소</th>
+                <th>상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expos.map((expo, index) => (
+                <tr key={expo.id} onClick={() => handleRowClick(expo)} className={styles.tableRow}>
+                  <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
+                  <td>
+                    {expo.title}
+                    {expo.isPremium && <span className={styles.premiumBadge}>프리미엄</span>}
+                  </td>
+                  <td>{expo.applyDate}</td>
+                  <td>{expo.postPeriod}</td>
+                  <td>{expo.location}</td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${styles[expo.status.replace(/\s/g, '')]}`}>
+                      {expo.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* 페이지네이션 버튼 영역 */}
+          <div className={styles.pagination}>
+            {renderPaginationButtons()}
+          </div>
+        </>
+      ) : (
+        <div className={styles.noData}>신청한 박람회가 없습니다.</div>
+      )}
     </div>
   );
 };

@@ -4,8 +4,12 @@ import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {registerBooth,updateBooth,} from '../../../api/service/expo-admin/boothService';
+import {
+  registerBooth,
+  updateBooth,
+} from '../../../api/service/expo-admin/setting/BoothService';
 import { useParams } from 'react-router-dom';
+import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function BoothSettingForm({ initialData, onSuccess }) {
   const { expoId } = useParams();
@@ -42,13 +46,20 @@ function BoothSettingForm({ initialData, onSuccess }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleToggle = (e) => {
-    const { checked } = e.target;
+  const handleToggle = (checked) => {
     setForm((prev) => ({
       ...prev,
       isPremium: checked,
       displayRank: checked ? prev.displayRank : '',
     }));
+  };
+
+  const handleImageUploadSuccess = (cdnUrl) => {
+    setForm((prev) => ({ ...prev, mainImageUrl: cdnUrl }));
+  };
+
+  const handleImageUploadError = (error) => {
+    showFailToast(error);
   };
 
   const showFailToast = (message) => {
@@ -112,7 +123,9 @@ function BoothSettingForm({ initialData, onSuccess }) {
 
     const payload = {
       ...form,
-      displayRank: form.isPremium ? parseInt(form.displayRank || '0', 10) : null,
+      displayRank: form.isPremium
+        ? parseInt(form.displayRank || '0', 10)
+        : null,
     };
 
     try {
@@ -146,13 +159,10 @@ function BoothSettingForm({ initialData, onSuccess }) {
       {failToast.show && <ToastFail message={failToast.message} />}
 
       <div className={styles.posterWrapper}>
-        <img
-          src={
-            form.mainImageUrl ||
-            'https://designcompass.org/wp-content/uploads/2024/10/logo-naver-1536x1152.png'
-          }
-          alt="부스 이미지"
-          className={styles.posterImage}
+        <ImageUpload
+          initialImageUrl={form.mainImageUrl}
+          onUploadSuccess={handleImageUploadSuccess}
+          onUploadError={handleImageUploadError}
         />
       </div>
 
@@ -241,16 +251,6 @@ function BoothSettingForm({ initialData, onSuccess }) {
               className={styles.inputField}
               placeholder="이메일 입력"
               value={form.contactEmail || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>메인 이미지 URL</label>
-            <input
-              name="mainImageUrl"
-              className={styles.inputField}
-              placeholder="이미지 주소 입력"
-              value={form.mainImageUrl || ''}
               onChange={handleChange}
             />
           </div>

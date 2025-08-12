@@ -19,6 +19,15 @@
   object-fit: cover;
 }
 
+.link {
+  all: unset;  /* 기본 스타일을 모두 초기화 */
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
 .dots {
   position: absolute;
   bottom: 10px;

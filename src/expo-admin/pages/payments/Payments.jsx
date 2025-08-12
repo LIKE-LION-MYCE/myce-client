@@ -1,77 +1,86 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
-import { FaQrcode } from 'react-icons/fa';
 import styles from './Payments.module.css';
-
 import Tab from '../../../common/components/tab/Tab';
 import PaymentTable from '../../components/paymentTable/PaymentTable';
 import Pagination from '../../../common/components/pagination/Pagination';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import { getExpoAdminPayment } from '../../../api/service/expo-admin/payment/PaymentService';
+
+const tabLabels = ['전체', '예약 확정', '결제 대기', '예약 취소'];
+
+const tabToEnumMap = {
+  '전체': null,
+  '예약 확정': 'CONFIRMED',
+  '결제 대기': 'CONFIRMED_PENDING',
+  '예약 취소': 'CANCELLED'
+};
 
 function Payments() {
-  const [currentTab, setCurrentTab] = useState('결제 완료');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [sortOrder, setSortOrder] = useState('desc');
+  const { expoId } = useParams();
+
+  const [searchType, setSearchType] = useState('phone');
   const [searchText, setSearchText] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [currentTab, setCurrentTab] = useState('전체');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
 
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
+  const [pageInfo, setPageInfo] = useState({
+    content: [],
+    totalPages: 0,
+    number: 0,
+    size: 0,
+    totalElements: 0
+  });
+
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 5000);
   };
 
-  const handleReissueQR = () => {
-    console.log('QR 재발급');
-    triggerToast();
-  };
+  useEffect(() => {
+    const fetchPaymentData = async () => {
+      try {
+        const statusParam = tabToEnumMap[currentTab];
+        const nameParam = searchType === 'name' ? searchText : null;
+        const phoneParam = searchType === 'phone' ? searchText : null;
 
-  const pageSize = 10;
+        const res = await getExpoAdminPayment(
+          expoId,
+          currentPage,
+          pageSize,
+          sortOrder,
+          statusParam ?? undefined,
+          nameParam,
+          phoneParam
+        );
 
-  const allData = [
-    {
-      reservationNumber: '59217342',
-      name: '황지현',
-      id: 'hj1234',
-      gender: '여',
-      phone: '010-1234-5678',
-      email: 'hj1234@naver.com',
-      quantity: 5,
-      totalPrice: '150,000원',
-      paymentStatus: '결제 완료',
-      createdAt: '2025-08-01T14:23:45',
-    },
-    {
-      reservationNumber: '59217343',
-      name: '김지우',
-      id: 'jiwoo',
-      gender: '여',
-      phone: '010-3333-4444',
-      email: 'jiwoo@naver.com',
-      quantity: 3,
-      totalPrice: '90,000원',
-      paymentStatus: '결제 완료',
-      createdAt: '2025-07-25T09:12:00',
-    },
-    {
-      reservationNumber: '59217344',
-      name: '최민수',
-      id: 'minsoo',
-      gender: '남',
-      phone: '010-7777-8888',
-      email: 'minsoo@naver.com',
-      quantity: 1,
-      totalPrice: '30,000원',
-      paymentStatus: '결제 취소',
-      createdAt: '2025-07-20T15:00:00',
-    },
-  ];
+        setPageInfo({
+        content: res.content ?? [],
+        totalPages: res.page?.totalPages ?? 0,
+        number: res.page?.number ?? 0,
+        size: res.page?.size ?? pageSize,
+        totalElements: res.page?.totalElements ?? 0,
+        });
+        
+      } catch (error) {
+        triggerToastFail(error.message);
+      }
+    };
 
-  const pageInfo = {
-    content: allData,
-    totalPages: 1,
-    number: currentPage,
-    size: pageSize,
-    totalElements: 0,
+    fetchPaymentData();
+  }, [expoId, currentPage, pageSize, sortOrder, currentTab, searchText, searchType]);
+
+  const handleTabChange = (index) => {
+    const selectedTab = tabLabels[index];
+    setCurrentTab(selectedTab);
+    setCurrentPage(0);
   };
 
   const handlePageChange = (page) => {
@@ -81,14 +90,21 @@ function Payments() {
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['결제 완료', '결제 취소']}
-        currentTab={currentTab}
-        onChange={(tab) => setCurrentTab(tab)}
+        tabs={tabLabels}
+        onTabChange={handleTabChange}
       />
 
       <div className={styles.topControls}>
         <div className={styles.filters}>
           <div className={styles.filterGroup}>
+            <select
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+              className={styles.select}
+            >
+              <option value="phone">전화번호</option>
+              <option value="name">이름</option>
+            </select>
             <input
               type="text"
               value={searchText}
@@ -96,8 +112,8 @@ function Payments() {
                 setSearchText(e.target.value);
                 setCurrentPage(0);
               }}
-              placeholder="예약 번호 검색"
               className={styles.input}
+              placeholder="검색어 입력"
             />
             <FiSearch className={styles.searchIcon} />
           </div>
@@ -116,22 +132,15 @@ function Payments() {
             </select>
           </div>
         </div>
-
-        <div className={styles.buttons}>
-          <button
-            className={`${styles.actionBtn} ${styles.qrBtn}`}
-            onClick={handleReissueQR}
-          >
-            <FaQrcode className={styles.icon} />
-            QR 재발급
-          </button>
-        </div>
       </div>
 
       <PaymentTable data={pageInfo.content} />
-      <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
 
-      {showToast && <ToastSuccess />}
+      <Pagination
+        pageInfo={pageInfo}
+        onPageChange={handlePageChange}
+      />
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

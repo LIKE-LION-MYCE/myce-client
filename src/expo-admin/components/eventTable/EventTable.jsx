@@ -1,32 +1,33 @@
+import React from 'react';
 import { useState } from 'react';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import styles from './EventTable.module.css';
 
 const fieldLabelMap = {
-  eventName: '행사 이름',
-  eventLocation: '행사 위치',
+  name: '행사 이름',
+  location: '행사 위치',
   eventDate: '행사 날짜',
-  eventTimeStart: '시작 시간',
-  eventTimeEnd: '종료 시간',
-  eventDescription: '행사 소개',
-  managerName: '담당자명',
-  managerPhone: '담당자 전화번호',
-  managerEmail: '담당자 이메일',
+  startTime: '시작 시간',
+  endTime: '종료 시간',
+  description: '행사 소개',
+  contactName: '담당자명',
+  contactPhone: '담당자 전화번호',
+  contactEmail: '담당자 이메일',
 };
 
 const eventFields = [
-  'eventName',
-  'eventLocation',
+  'name',
+  'location',
   'eventDate',
-  'eventTimeStart',
-  'eventTimeEnd',
-  'eventDescription',
+  'startTime',
+  'endTime',
+  'description',
 ];
 
 const managerFields = [
-  'managerName',
-  'managerPhone',
-  'managerEmail',
+  'contactName',
+  'contactPhone',
+  'contactEmail',
 ];
 
 function EventTable({ data = [], onUpdate, onDelete }) {
@@ -74,13 +75,13 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   const columns = [
     { header: 'ID', key: 'id' },
-    { header: '행사 이름', key: 'eventName' },
-    { header: '행사 위치', key: 'eventLocation' },
+    { header: '행사 이름', key: 'name' },
+    { header: '행사 위치', key: 'location' },
     { header: '행사 날짜', key: 'eventDate' },
-    { header: '시작 시간', key: 'eventTimeStart' },
-    { header: '종료 시간', key: 'eventTimeEnd' },
-    { header: '담당자명', key: 'managerName' },
-    { header: '전화번호', key: 'managerPhone' },
+    { header: '시작 시간', key: 'startTime' },
+    { header: '종료 시간', key: 'endTime' },
+    { header: '담당자명', key: 'contactName' },
+    { header: '전화번호', key: 'contactPhone' },
   ];
 
   return (
@@ -103,9 +104,8 @@ function EventTable({ data = [], onUpdate, onDelete }) {
             const isExpanded = expandedId === row.id;
 
             return (
-              <>
+              <React.Fragment key={row.id}>
                 <tr
-                  key={`row-${row.id}`}
                   className={styles.row}
                   onClick={() => handleRowClick(row)}
                 >
@@ -134,24 +134,24 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                           {/* 행사 정보 */}
                           <div className={styles.column}>
                             {eventFields.map((key) => {
-                              if (key === 'eventTimeStart') return null;
-                              if (key === 'eventTimeEnd') {
+                              if (key === 'startTime') return null;
+                              if (key === 'endTime') {
                                 return (
                                   <div key="eventTimeGroup" className={styles.detailItem}>
                                     <div className={styles.detailLabel}>행사 시간</div>
                                     <div className={styles.timeGroup}>
                                       <input
                                         type="time"
-                                        name="eventTimeStart"
-                                        value={editForm.eventTimeStart || ''}
+                                        name="startTime"
+                                        value={editForm.startTime || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
                                       />
                                       <span className={styles.tilde}>~</span>
                                       <input
                                         type="time"
-                                        name="eventTimeEnd"
-                                        value={editForm.eventTimeEnd || ''}
+                                        name="endTime"
+                                        value={editForm.endTime || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
                                       />
@@ -207,7 +207,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             );
           })}
         </tbody>

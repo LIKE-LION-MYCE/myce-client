@@ -7,8 +7,8 @@ const signup = async ({name, loginId, email, password, birth, phone, gender}) =>
         {name, loginId, email, password, birth, phone, gender});
 }
 
-const login = async (loginId, password) => {
-    return await instance.post(`${AUTH_PREFIX}/login`, {loginId, password}).then(res => {
+const login = async (loginType, loginId, password) => {
+    return await instance.post(`${AUTH_PREFIX}/login`, {loginType, loginId, password}).then(res => {
         setAccessTokenToStorage(res);
         return res;
     });
