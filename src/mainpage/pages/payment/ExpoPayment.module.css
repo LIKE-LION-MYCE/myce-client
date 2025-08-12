@@ -8,7 +8,7 @@
 }
 
 .leftSection, .rightSection {
-  flex: 1; /* 1:1 비율 유지 */
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -23,7 +23,7 @@
 }
 
 .divider {
-  margin : 1.5rem 0;
+  margin : 1.5rem 0 0.5rem 0;
   border-top: 1px dashed #ccc;
 }
 
@@ -67,23 +67,26 @@
   cursor: pointer;
   position: relative;
   transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
 .radioItem input[type="radio"]::before {
   content: '';
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 14px;
-  height: 14px;
-  background-color: #007aff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background-color: #000;
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s ease;
+  box-sizing: border-box;
 }
 
 .radioItem input[type="radio"]:checked {
-  border-color: #007aff;
+  border-color: #000;
 }
 
 .radioItem input[type="radio"]:checked::before {
@@ -91,37 +94,43 @@
 }
 
 .radioItem input[type="radio"]:focus {
-  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.2);
 }
-
-.applyButton {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
 
 .inputGroup {
-  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.inputGroup label {
+  min-width: 100px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .inputGroup input {
-  width: 100%;
-  padding: 0.5rem;
+  flex: 1;
+  padding: 0 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.95rem;
+  line-height: 2.5rem;
+  border: 1px solid #ccc;
+  outline: none; 
+  box-sizing: border-box;
 }
 
 .formGroup {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   margin-top: 1rem;
+}
+
+.formGroup label {
+  min-width: 80px; /* Adjust as needed to accommodate longest label */
+  text-align: right; /* Align label text to the right */
 }
 
 .checkbox {
@@ -135,7 +144,7 @@
 .checkbox input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #007aff; /* 최신 브라우저에서 체크 색상 지정 */
+  accent-color: #000;
 }
 
 
@@ -204,7 +213,7 @@
 }
 
 .cardButton.active img {
-  filter: brightness(100); /* 아이콘이 흰 배경에서 안 보일 경우 대비 */
+  filter: brightness(100);
 }
 
 
@@ -234,8 +243,126 @@
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  outline: none; /* Remove default outline */
 }
 
 .loadMemberInfoButton:hover {
   background-color: #333; /* Darker shade for hover */
+}
+
+.mileageSection {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #fafafa;
+}
+
+.mileageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mileageHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.currentMileage {
+  text-align: right;
+}
+
+.currentMileage span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.currentMileage strong {
+  font-size: 1.1rem;
+  color: #000;
+  margin-left: 0.5rem;
+}
+
+.mileageControls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mileageInputContainer {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.mileageInput {
+  width: 100%;
+  padding: 0.8rem 6rem 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+
+  /* Firefox / 표준 */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Chrome / Edge / Safari (WebKit) 스핀 버튼 제거 */
+.mileageInput::-webkit-outer-spin-button,
+.mileageInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 일부 Safari에서 필요할 수 있음 */
+.mileageInput[type="number"] {
+  -webkit-appearance: none;
+}
+
+.useAllButton {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #014083;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.applyMileageButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.applyMileageButton:hover {
+  background-color: #0056b3;
+}
+
+.mileageFooter {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.remainingMileage span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.remainingMileage strong {
+  font-size: 1.1rem;
+  color: #000;
+  margin-left: 0.5rem;
 }
