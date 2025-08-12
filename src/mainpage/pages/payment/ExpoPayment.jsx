@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./ExpoPayment.module.css";
 import PaymentCardButton from "../../components/paymentButton/PaymentCardButton"; // 카드 결제 버튼
 import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton"; // 가상계좌 버튼
 import PaymentTransferButton from "../../components/paymentButton/PaymentTransferButton";
-import {
-  getUserInfoFromToken,
-  isTokenExpired,
-} from "../../../api/utils/jwtUtils";
-import { getMyInfo } from "../../../api/service/user/memberApi";
+import { isTokenExpired } from "../../../api/utils/jwtUtils";
+import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
 
 export default function ExpoPayment() {
+  const SERVICE_FEE_PER_TICKET = 1000;
   const location = useLocation();
   const {
     quantity = 1,
@@ -19,7 +17,6 @@ export default function ExpoPayment() {
     ticketId,
   } = location.state || {};
 
-  const [activeMethod, setActiveMethod] = useState("toss");
   const [personalInfo, setPersonalInfo] = useState(
     Array.from({ length: quantity }).map(() => ({
       name: "",
@@ -30,7 +27,33 @@ export default function ExpoPayment() {
       rememberInfo: false,
     }))
   );
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mileage, setMileage] = useState(null); // 보유 마일리지 상태
+  const [mileageError, setMileageError] = useState(null); // 마일리지 에러 표시용
+
+  // 마일리지 적용 관련 상태
+  const [usedMileageInput, setUsedMileageInput] = useState(""); // 입력창 값(문자열 유지)
+  const [appliedMileage, setAppliedMileage] = useState(0);
+
+  // 기본 합계/최대 사용 가능 마일리지/적용 후 금액을 계산
+  const baseTotal = useMemo(() => {
+    const price = Number(unitPrice) || 0;
+    return quantity * price + quantity * SERVICE_FEE_PER_TICKET;
+  }, [quantity, unitPrice]);
+
+  const maxUsableMileage = useMemo(() => {
+    // 결제 금액을 초과해서는 사용 불가
+    return Math.min(mileage ?? 0, baseTotal);
+  }, [mileage, baseTotal]);
+
+  const totalAfterApply = useMemo(() => {
+    return Math.max(0, baseTotal - appliedMileage);
+  }, [baseTotal, appliedMileage]);
+
+  const remainingMileageAfterApply = useMemo(() => {
+    if (mileage === null) return null;
+    return Math.max(0, (mileage || 0) - appliedMileage);
+  }, [mileage, appliedMileage]);
 
   useEffect(() => {
     // 로그인 여부 체크
@@ -61,6 +84,48 @@ export default function ExpoPayment() {
     });
   }, [quantity]);
 
+  // 로그인 시 보유 마일리지 불러오기
+  useEffect(() => {
+    const fetchMileage = async () => {
+      if (!isLoggedIn) {
+        setMileage(null);
+        setAppliedMileage(0);
+        setUsedMileageInput("");
+        return;
+      }
+      try {
+        setMileageError(null);
+        const res = await getMyMileage();
+        const value = typeof res === "number" ? res : res?.data;
+        const parsed = Number(value) || 0;
+        setMileage(parsed);
+
+        // 현재 적용된 마일리지가 보유치/최대 가능치보다 크면 보정
+        const maxUse = Math.min(parsed, baseTotal);
+        if (appliedMileage > maxUse) {
+          setAppliedMileage(maxUse);
+        }
+      } catch (e) {
+        console.error("보유 마일리지 조회 실패:", e);
+        setMileage(0);
+        setAppliedMileage(0);
+        setUsedMileageInput("");
+        setMileageError(
+          e?.response?.data?.message || "보유 마일리지를 불러오지 못했습니다."
+        );
+      }
+    };
+    fetchMileage();
+  }, [isLoggedIn, baseTotal]);
+
+  // 수량/가격/보유마일리지 변경 시, 적용 마일리지가 최대 사용 가능치 초과하지 않도록 보정
+  useEffect(() => {
+    const maxUse = Math.min(mileage ?? 0, baseTotal);
+    if (appliedMileage > maxUse) {
+      setAppliedMileage(maxUse);
+    }
+  }, [mileage, baseTotal, appliedMileage]);
+
   const handlePersonalInfoChange = (index, field, value) => {
     setPersonalInfo((prevInfo) => {
       const newInfo = [...prevInfo];
@@ -71,11 +136,11 @@ export default function ExpoPayment() {
 
   // 개인 정보 입력칸
   const loadMemberInfo = async () => {
-    const token = localStorage.getItem("access_token"); // User confirmed this is correct
+    const token = localStorage.getItem("access_token");
     if (token && !isTokenExpired(token)) {
       try {
-        const response = await getMyInfo(); // Call the API
-        const userInfo = response.data; // Assuming data is in response.data
+        const response = await getMyInfo();
+        const userInfo = response.data;
 
         if (userInfo) {
           setPersonalInfo((prevInfo) => {
@@ -106,16 +171,54 @@ export default function ExpoPayment() {
     }
   };
 
+  // 전액사용 버튼 핸들러
+  const handleUseAllMileage = () => {
+    if (!isLoggedIn || mileage === null) return;
+    const maxUse = Math.min(mileage || 0, baseTotal);
+    setUsedMileageInput(String(maxUse));
+  };
+
+  // 적용 버튼 핸들러
+  const handleApplyMileage = () => {
+    if (!isLoggedIn) {
+      setMileageError("로그인 후 이용 가능합니다.");
+      return;
+    }
+    if (mileage === null) {
+      setMileageError(
+        "보유 마일리지 조회 중입니다. 잠시 후 다시 시도해주세요."
+      );
+      return;
+    }
+    const raw = Number(usedMileageInput);
+    if (!Number.isFinite(raw) || raw < 0) {
+      setMileageError("사용할 마일리지는 0 이상의 숫자여야 합니다.");
+      return;
+    }
+    const rounded = Math.floor(raw);
+    const maxUse = Math.min(mileage, baseTotal);
+    if (rounded > maxUse) {
+      setMileageError(
+        `최대 ${maxUse.toLocaleString()} M 까지 사용할 수 있습니다.`
+      );
+      setAppliedMileage(maxUse);
+      setUsedMileageInput(String(maxUse));
+      return;
+    }
+    setMileageError(null);
+    setAppliedMileage(rounded);
+  };
+
   return (
     <div className={styles.container}>
       {/* 왼쪽 개인 정보 입력 */}
       <section className={styles.leftSection}>
         <form className={styles.form}>
           {Array.from({ length: quantity }).map((_, index) => (
-            <div key={index} className={styles.personInfoGroup}>
-              <h2>개인정보 입력 {quantity > 1 ? `${index + 1}` : ""}</h2>
-              {index === 0 &&
-                isLoggedIn && ( // 로그인한 사람만 보이는 회원 정보 불러오기 버튼
+            <div key={index} className={styles.personInfoCard}>
+              <div className={styles.cardHeader}>
+                <h2>개인정보 입력 {quantity > 1 ? `${index + 1}` : ""}</h2>
+                {index === 0 && isLoggedIn && (
                   <button
                     type="button"
                     onClick={loadMemberInfo}
@@ -124,59 +227,70 @@ export default function ExpoPayment() {
                     회원 정보 불러오기
                   </button>
                 )}
-              <div className={styles.formGroup}>
-                <div className={styles.inputGroup}>
-                  <label>이름</label>
-                  <input
-                    type="text"
-                    value={personalInfo[index].name}
-                    onChange={(e) =>
-                      handlePersonalInfoChange(index, "name", e.target.value)
-                    }
-                  />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>이메일 주소</label>
-                  <input
-                    type="email"
-                    value={personalInfo[index].email}
-                    onChange={(e) =>
-                      handlePersonalInfoChange(index, "email", e.target.value)
-                    }
-                  />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>생년월일</label>
-                  <input
-                    type="text"
-                    value={personalInfo[index].birthdate}
-                    onChange={(e) =>
-                      handlePersonalInfoChange(
-                        index,
-                        "birthdate",
-                        e.target.value
-                      )
-                    }
-                  />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>전화번호</label>
-                  <input
-                    type="tel"
-                    value={personalInfo[index].phone}
-                    onChange={(e) =>
-                      handlePersonalInfoChange(index, "phone", e.target.value)
-                    }
-                  />
+              </div>
+              <div className={styles.cardBody}>
+                <div className={styles.inputGrid}>
+                  <div className={styles.inputField}>
+                    <label htmlFor={`name-${index}`}>이름</label>
+                    <input
+                      type="text"
+                      id={`name-${index}`}
+                      value={personalInfo[index].name}
+                      onChange={(e) =>
+                        handlePersonalInfoChange(index, "name", e.target.value)
+                      }
+                      placeholder="이름을 입력하세요"
+                    />
+                  </div>
+                  <div className={styles.inputField}>
+                    <label htmlFor={`email-${index}`}>이메일 주소</label>
+                    <input
+                      type="email"
+                      id={`email-${index}`}
+                      value={personalInfo[index].email}
+                      onChange={(e) =>
+                        handlePersonalInfoChange(index, "email", e.target.value)
+                      }
+                      placeholder="example@email.com"
+                    />
+                  </div>
+                  <div className={styles.inputField}>
+                    <label htmlFor={`birthdate-${index}`}>생년월일</label>
+                    <input
+                      type="text"
+                      id={`birthdate-${index}`}
+                      value={personalInfo[index].birthdate}
+                      onChange={(e) =>
+                        handlePersonalInfoChange(
+                          index,
+                          "birthdate",
+                          e.target.value
+                        )
+                      }
+                      placeholder="YYYY-MM-DD"
+                    />
+                  </div>
+                  <div className={styles.inputField}>
+                    <label htmlFor={`phone-${index}`}>전화번호</label>
+                    <input
+                      type="tel"
+                      id={`phone-${index}`}
+                      value={personalInfo[index].phone}
+                      onChange={(e) =>
+                        handlePersonalInfoChange(index, "phone", e.target.value)
+                      }
+                      placeholder="010-1234-5678"
+                    />
+                  </div>
                 </div>
 
-                <div className={styles.radioGroup}>
+                <div className={styles.genderSelection}>
                   <label>성별</label>
-                  <div className={styles.genderGroup}>
-                    <label className={styles.radioItem}>
+                  <div className={styles.genderOptions}>
+                    <label className={styles.radioOption}>
                       <input
                         type="radio"
-                        name={`gender-${index}`} // Unique name for each person's gender radio group
+                        name={`gender-${index}`}
                         value="male"
                         checked={personalInfo[index].gender === "male"}
                         onChange={(e) =>
@@ -189,10 +303,10 @@ export default function ExpoPayment() {
                       />
                       남자
                     </label>
-                    <label className={styles.radioItem}>
+                    <label className={styles.radioOption}>
                       <input
                         type="radio"
-                        name={`gender-${index}`} // Unique name for each person's gender radio group
+                        name={`gender-${index}`}
                         value="female"
                         checked={personalInfo[index].gender === "female"}
                         onChange={(e) =>
@@ -211,25 +325,6 @@ export default function ExpoPayment() {
               {index < quantity - 1 && <hr className={styles.divider} />}{" "}
             </div>
           ))}
-
-          <div className={styles.mileageSection}>
-            <h2>마일리지 적용</h2>
-            <div className={styles.formGroup}>
-              <div className={styles.inputGroup}>
-                <label>현재 마일리지</label>
-                <input type="text" readOnly value="10000" />
-              </div>
-              <div className={styles.inputGroup}>
-                <label>사용 마일리지</label>
-                <input type="text" />
-              </div>
-              <button className={styles.applyButton}>적용하기</button>
-              <div className={styles.inputGroup}>
-                <label>남은 마일리지</label>
-                <input type="text" readOnly value="3000" />
-              </div>
-            </div>
-          </div>
         </form>
       </section>
 
@@ -250,16 +345,84 @@ export default function ExpoPayment() {
           />
         </div>
 
+        {isLoggedIn && (
+          <div className={styles.mileageSection}>
+            <div className={styles.mileageHeader}>
+              <h2>마일리지</h2>
+              <div className={styles.currentMileage}>
+                <span>보유 마일리지</span>
+                <strong>
+                  {/* 보유 마일리지 표시 */}
+                  {mileage === null
+                    ? "불러오는 중..."
+                    : `${mileage.toLocaleString()} M`}
+                </strong>
+              </div>
+            </div>
+
+            <div className={styles.mileageControls}>
+              <div className={styles.mileageInputContainer}>
+                {/* 입력 상태와 연결 */}
+                <input
+                  type="number"
+                  placeholder="사용할 마일리지"
+                  className={styles.mileageInput}
+                  value={usedMileageInput}
+                  onChange={(e) => setUsedMileageInput(e.target.value)}
+                  min={0}
+                />
+                {/* 전액사용 핸들러 연결 */}
+                <button
+                  type="button"
+                  className={styles.useAllButton}
+                  onClick={handleUseAllMileage}
+                >
+                  전액사용
+                </button>
+              </div>
+              {/* 적용 버튼 핸들러 연결 */}
+              <button
+                type="button"
+                className={styles.applyMileageButton}
+                onClick={handleApplyMileage}
+                disabled={mileage === null || (mileage || 0) === 0}
+              >
+                마일리지 적용
+              </button>
+            </div>
+
+            <div className={styles.mileageFooter}>
+              {/* 에러 문구 또는 적용 후 마일리지 동적 표시 */}
+              {mileageError ? (
+                <div className={styles.errorText}>{mileageError}</div>
+              ) : (
+                <div className={styles.remainingMileage}>
+                  <span>적용 후 마일리지</span>
+                  <strong>
+                    {remainingMileageAfterApply === null
+                      ? "-"
+                      : `${remainingMileageAfterApply.toLocaleString()} M`}
+                  </strong>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className={styles.summary}>
           <h3>결제 요약</h3>
           <div className={styles.reciept}>
             <div className={styles.row}>
               <span>티켓 매수</span>
-              <span>2 x 입장권</span>
+              <span>
+                {quantity} x {ticketName}
+              </span>
             </div>
             <div className={styles.row}>
               <span>티켓 가격</span>
-              <span>2 x 20,000원</span>
+              <span>
+                {quantity} x {unitPrice?.toLocaleString()}원
+              </span>
             </div>
             <div className={styles.row}>
               <span>행사 가격</span>
@@ -267,15 +430,19 @@ export default function ExpoPayment() {
             </div>
             <div className={styles.row}>
               <span>서비스 수수료</span>
-              <span>-</span>
+              <span>
+                {quantity} x {SERVICE_FEE_PER_TICKET}
+              </span>
             </div>
             <div className={styles.row}>
               <span>마일리지</span>
-              <span>7,000</span>
+              {/* 적용된 마일리지 금액 차감 표시 */}
+              <span>- {appliedMileage.toLocaleString()}원</span>
             </div>
             <div className={`${styles.row} ${styles.total}`}>
               <span>총계</span>
-              <span>33,000원</span>
+              {/* 적용 후 총액 표시 */}
+              <span>{totalAfterApply.toLocaleString()}원</span>
             </div>
           </div>
         </div>
@@ -284,72 +451,29 @@ export default function ExpoPayment() {
           <h3>결제 방법 선택</h3>
 
           <div className={styles.methodGroup}>
-            <label>신용카드</label>
-            <button
-              className={`${styles.cardButton} ${
-                activeMethod === "toss" ? styles.active : ""
-              }`}
-              onClick={() => setActiveMethod("toss")}
-            >
-              <img
-                src="https://i.namu.wiki/i/jL9Lqnp602cit034mt0ujqwaJChigNoIenR1vuFxK6eoov67MvOsWgMIIbbspQfdpRMOL1X5se-P5bHX4mweoA.webp"
-                alt="토스페이"
-              />
-              토스페이로 결제
-            </button>
+            {/* 결제 금액에 적용 후 총액을 전달 */}
             <PaymentCardButton
-              amount={33000}
-              name="박람회 티켓"
+              amount={totalAfterApply}
+              name={ticketName}
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
             />
             <PaymentVirtualBankButton
-              amount={33000}
-              name="박람회 티켓"
+              amount={totalAfterApply}
+              name={ticketName}
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
             />
             <PaymentTransferButton
-              amount={33000}
-              name="박람회 티켓"
+              amount={totalAfterApply}
+              name={ticketName}
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
             />
           </div>
-
-          <div className={styles.methodGroup}>
-            <label>기타 결제수단</label>
-            <button
-              className={`${styles.cardButton} ${
-                activeMethod === "account" ? styles.active : ""
-              }`}
-              onClick={() => setActiveMethod("account")}
-            >
-              계좌이체
-            </button>
-            <button
-              className={`${styles.cardButton} ${
-                activeMethod === "bank" ? styles.active : ""
-              }`}
-              onClick={() => setActiveMethod("bank")}
-            >
-              무통장입금
-            </button>
-            <button
-              className={`${styles.cardButton} ${
-                activeMethod === "simple" ? styles.active : ""
-              }`}
-              onClick={() => setActiveMethod("simple")}
-            >
-              간편 결제
-            </button>
-          </div>
-          <Link to="/reservation-success">
-            <button className={styles.confirmButton}>결제 계속하기</button>
-          </Link>
         </div>
       </section>
     </div>

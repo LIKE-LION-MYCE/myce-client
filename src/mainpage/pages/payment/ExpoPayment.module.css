@@ -315,7 +315,7 @@
   border-radius: 8px;
   padding: 1.5rem;
   background-color: #fafafa;
-  margin-bottom: 1.5rem; /* Space between multiple cards */
+  margin-bottom: 1.5rem;
 }
 
 .cardHeader {
@@ -331,14 +331,10 @@
   color: #333;
 }
 
-.cardBody {
-  /* No specific styles needed here, acts as a container */
-}
-
 .inputGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
-  gap: 1rem; /* Space between grid items */
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -359,7 +355,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  box-sizing: border-box;
 }
 
 .genderSelection {
@@ -370,12 +366,12 @@
   font-size: 0.9rem;
   color: #555;
   margin-bottom: 0.4rem;
-  display: block; /* Make label take full width */
+  display: block;
 }
 
 .genderOptions {
   display: flex;
-  gap: 1.5rem; /* Space between radio options */
+  gap: 1.5rem;
   margin-top: 0.5rem;
 }
 

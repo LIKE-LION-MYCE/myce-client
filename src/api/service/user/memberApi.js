@@ -109,5 +109,9 @@ export const deleteAdvertisement = async (advertisementId) => {
 };
 
 export const getMyInfo = async () => {
-  return await instance.get("/members/me");
+  return await instance.get("/members/my-info");
+};
+
+export const getMyMileage = async () => {
+  return await instance.get("/members/my-mileage");
 };
