@@ -8,15 +8,15 @@ import {
 } from 'react-icons/fa';
 import styles from './OperatorApplicationForm.module.css';
 
-function OperatorApplicationForm({ operatorData }) {
+function OperatorApplicationForm({ operatorData, businessData }) {
 
-  const form = operatorData || {
-    title: '',
-    bannerLocationName: '',
-    bannerImageUrl: '',
-    startAt: '',
-    endAt: '',
-    description: '',
+  const form = {
+    companyName: businessData?.companyName || '',
+    ceoName: businessData?.ceoName || '',
+    email: businessData?.contactEmail || '',
+    phone: businessData?.contactPhone || '',
+    address: businessData?.address || '',
+    businessNumber: businessData?.businessRegistrationNumber || '',
   };
 
   return (
