@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoNotifications } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
+import { createSseInstance } from '../../../api/service/system/sse/SseListener'
 
 const MemberMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
   const navigate = useNavigate(); // useNavigate 훅 사용
+
+  useEffect(() => {
+    const sse = createSseInstance(
+      (event) => {
+        console.log('📩 SSE 메시지:', event.data);
+      },
+      (error) => {
+        console.error('❌ SSE 에러:', error);
+      }
+    );
+
+    return () => {
+      sse.close(); // 컴포넌트 언마운트 시 연결 해제
+    };
+  }, []);
 
   const menuItems = [
     { name: '박람회 목록', path: '/expo-list' },
@@ -55,7 +71,7 @@ const MemberMainPageHeader = () => {
       {/* Right Section */}
       <div className={styles.rightSection}>
         <NotificationButton />
-        
+
         <button className={styles.logoutBtn}>로그아웃</button>
         <button className={styles.mypageBtn} onClick={handleMypageClick}>마이페이지</button>
       </div>
