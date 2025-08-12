@@ -42,9 +42,6 @@ export default function ExpoDetail() {
   const [showEmailVerifyModal, setShowEmailVerifyModal] = useState(false); // New state for modal
   const navigate = useNavigate(); // Initialize useNavigate
 
-  useEffect(() => {
-    console.log("showEmailVerifyModal state changed:", showEmailVerifyModal);
-  }, [showEmailVerifyModal]);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
   const { expoId } = useParams();
@@ -81,10 +78,6 @@ export default function ExpoDetail() {
     return !!token; // 토큰 있는지에 따라 다름
   }, []);
 
-  useEffect(() => {
-    console.log("isMember state changed:", isMember);
-  }, [isMember]);
-
   const selected = tickets[selectedIndex];
   const maxQty = useMemo(() => {
     let quantityLimit = selected?.remainingQuantity ?? 1;
@@ -107,21 +100,23 @@ export default function ExpoDetail() {
 
   const optionLabel = (t) =>
     `[${t.type}] ${t.name} (${t.remainingQuantity}장 남음)`;
+  const ticketLabel = (t) => `[${t.type}] ${t.name}`;
   const dec = () => setQty((q) => Math.max(1, q - 1));
   const inc = () => setQty((q) => Math.min(maxQty, ABSOLUTE_MAX_QTY, q + 1));
 
   const handlePaymentClick = () => {
-    console.log("handlePaymentClick called. isMember:", isMember); // Debug log
+    
     if (isMember) {
       navigate(`/detail/${expoId}/payment`, {
         state: {
           ticketId: selected?.ticketId,
           quantity: qty,
           unitPrice: selected?.price,
+          ticketName: ticketLabel(selected),
         },
       });
     } else {
-      console.log("Non-member. Setting showEmailVerifyModal to true."); // Debug log
+      
       setShowEmailVerifyModal(true);
     }
   };
@@ -134,6 +129,7 @@ export default function ExpoDetail() {
         ticketId: selected?.ticketId,
         quantity: qty,
         unitPrice: selected?.price,
+        ticketName: ticketLabel(selected),
       },
     });
   };
@@ -339,11 +335,11 @@ export default function ExpoDetail() {
           onVerifySuccess={handleEmailVerifySuccess}
           onSendCode={async (email) => {
             console.log(`Mock: Sending code to ${email}`);
-            return new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+            return new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
           }}
           onVerify={async ({ email, code }) => {
             console.log(`Mock: Verifying code ${code} for ${email}`);
-            return new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+            return new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
           }}
         />
       )}

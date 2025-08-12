@@ -223,3 +223,19 @@
   border: none;
   border-radius: 4px;
 }
+
+.loadMemberInfoButton {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #000; /* Changed to black */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.loadMemberInfoButton:hover {
+  background-color: #333; /* Darker shade for hover */
+}

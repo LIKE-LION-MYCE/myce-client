@@ -99,7 +99,9 @@ export default function EmailVerifyModal({
       >
         <div className={styles["modal-header"]}>
           <h2>이메일 인증</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={onClose}>
+            ×
+          </button>
         </div>
         <div className={styles["modal-body"]}>
           <p>예매 후 예매내역 확인을 위한 인증입니다.</p>
