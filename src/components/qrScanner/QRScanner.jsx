@@ -10,6 +10,8 @@ const QRScannerComponent = ({ onClose }) => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [verifyData, setVerifyData] = useState(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     if (videoRef.current && isScanning) {
@@ -62,28 +64,20 @@ const QRScannerComponent = ({ onClose }) => {
         return;
       }
 
-      // 유효한 QR 코드라면 사용 처리 (JWT에서 자동으로 사용자 ID 추출)
-      const useResponse = await axios.post(`/api/qrcodes/token/${token}/use`);
-
-      if (useResponse.data.success) {
-        setResult({
-          success: true,
-          message: useResponse.data.message,
-          reserverName: verifyResponse.data.reserverName,
-          expoTitle: verifyResponse.data.expoTitle,
-          ticketTitle: verifyResponse.data.ticketTitle
-        });
-      } else {
-        setResult({
-          success: false,
-          message: useResponse.data.message
-        });
-      }
+      // 유효한 QR 코드라면 확인 다이얼로그 표시
+      setVerifyData({
+        token: token,
+        reserverName: verifyResponse.data.reserverName,
+        expoTitle: verifyResponse.data.expoTitle,
+        ticketTitle: verifyResponse.data.ticketTitle,
+        status: verifyResponse.data.status
+      });
+      setShowConfirmDialog(true);
 
     } catch (error) {
-      console.error('QR 처리 중 오류:', error);
+      console.error('QR 검증 중 오류:', error);
       
-      let errorMessage = 'QR 코드 처리 중 오류가 발생했습니다.';
+      let errorMessage = 'QR 코드 검증 중 오류가 발생했습니다.';
       
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -102,9 +96,62 @@ const QRScannerComponent = ({ onClose }) => {
     }
   };
 
+  const handleConfirmUse = async () => {
+    if (!verifyData) return;
+    
+    setShowConfirmDialog(false);
+    setLoading(true);
+
+    try {
+      // QR 코드 사용 처리
+      const useResponse = await axios.post(`/api/qrcodes/token/${verifyData.token}/use`);
+
+      if (useResponse.data.success) {
+        setResult({
+          success: true,
+          message: useResponse.data.message,
+          reserverName: verifyData.reserverName,
+          expoTitle: verifyData.expoTitle,
+          ticketTitle: verifyData.ticketTitle
+        });
+      } else {
+        setResult({
+          success: false,
+          message: useResponse.data.message
+        });
+      }
+
+    } catch (error) {
+      console.error('QR 사용 처리 중 오류:', error);
+      
+      let errorMessage = 'QR 코드 사용 처리 중 오류가 발생했습니다.';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 400) {
+        errorMessage = error.response.data?.message || '잘못된 요청입니다.';
+      }
+
+      setResult({
+        success: false,
+        message: errorMessage
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelUse = () => {
+    setShowConfirmDialog(false);
+    setVerifyData(null);
+    setIsScanning(true);
+  };
+
   const handleRetry = () => {
     setResult(null);
     setError(null);
+    setVerifyData(null);
+    setShowConfirmDialog(false);
     setIsScanning(true);
   };
 
@@ -152,6 +199,48 @@ const QRScannerComponent = ({ onClose }) => {
             <div className={styles.loading}>
               <div className={styles.spinner}></div>
               <p>QR 코드 처리 중...</p>
+            </div>
+          )}
+
+          {showConfirmDialog && verifyData && (
+            <div className={styles.confirmDialog}>
+              <div className={styles.confirmIcon}>
+                ℹ️
+              </div>
+              <div className={styles.confirmTitle}>
+                QR 코드 정보 확인
+              </div>
+              <div className={styles.reservationInfo}>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>예약자:</span>
+                  <span className={styles.value}>{verifyData.reserverName}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>전시회:</span>
+                  <span className={styles.value}>{verifyData.expoTitle}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>티켓:</span>
+                  <span className={styles.value}>{verifyData.ticketTitle}</span>
+                </div>
+              </div>
+              <div className={styles.confirmMessage}>
+                이 QR 코드를 사용 처리하시겠습니까?
+              </div>
+              <div className={styles.confirmActions}>
+                <button 
+                  className={styles.cancelBtn} 
+                  onClick={handleCancelUse}
+                >
+                  취소
+                </button>
+                <button 
+                  className={styles.confirmBtn} 
+                  onClick={handleConfirmUse}
+                >
+                  확인
+                </button>
+              </div>
             </div>
           )}
 

@@ -159,6 +159,79 @@
   font-size: 1rem;
 }
 
+/* Confirm Dialog */
+.confirmDialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.confirmIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  background: #3b82f6;
+  color: white;
+}
+
+.confirmTitle {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.confirmMessage {
+  text-align: center;
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.cancelBtn,
+.confirmBtn {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.cancelBtn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.cancelBtn:hover {
+  background: #e5e7eb;
+}
+
+.confirmBtn {
+  background: #10b981;
+  color: white;
+}
+
+.confirmBtn:hover {
+  background: #059669;
+}
+
 /* Result Display */
 .result {
   display: flex;
