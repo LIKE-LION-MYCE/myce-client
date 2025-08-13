@@ -28,3 +28,12 @@ export const saveReservationPending = async (payload) => {
 export const updateReservationStatusConfirm = async (reservationId) => {
   await instance.patch(`/reservations/${reservationId}/confirm`, {});
 };
+
+// 결제 성공 화면 정보
+export const getReservationSuccess = async (reservationId) => {
+  const { data } = await instance.get(
+    `/reservations/${reservationId}/success`,
+    {}
+  );
+  return data;
+};

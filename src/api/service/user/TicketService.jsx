@@ -1,4 +1,4 @@
-import instance from "../../../api/lib/axios";
+import instance from "../../lib/axios";
 
 export const getTicketsForReservation = async (expoId) => {
   try {
@@ -13,5 +13,5 @@ export const getTicketsForReservation = async (expoId) => {
 };
 
 export const updateRemainingQuantity = async (ticketId, quantity) => {
-  instance.patch({ ticketId, quantity });
+  instance.patch("/tickets/quantity", { ticketId, quantity });
 };

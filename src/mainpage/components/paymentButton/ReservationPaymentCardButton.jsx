@@ -91,17 +91,17 @@ function ReservationPaymentCardButton({
 
               if (userType === "MEMBER") {
                 // 사용 마일리지 차감 정보 변경 - PATCH (전체 - 사용 + 적립)
-                updateMileageForReservation(usedMileage, savedMileage);
+                await updateMileageForReservation(usedMileage, savedMileage);
               }
 
               // status를 CONFIRMED로 변경 - PATCH
-              updateReservationStatusConfirm(reservationId);
+              await updateReservationStatusConfirm(reservationId);
 
               // reservationId, reserverInfos 저장 POST
-              saveReservers(reservationId, reserverInfos);
+              await saveReservers(reservationId, reserverInfos);
 
               // 결제 완료되면 티켓 수 빼는 것까지. - PATCH
-              updateRemainingQuantity(ticketId, quantity);
+              await updateRemainingQuantity(ticketId, quantity);
 
               // imp_uid, merchant_uid 콘솔에 출력
               console.log("imp_uid:", rsp.imp_uid);
@@ -109,7 +109,7 @@ function ReservationPaymentCardButton({
               // 백엔드에서 검증 성공하면 status === "paid"
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
-                window.location.href = "/reservation-success";
+                window.location.href = `/reservation-success/${reservationId}`;
               } else {
                 alert("결제 검증 실패! 관리자 문의");
               }
