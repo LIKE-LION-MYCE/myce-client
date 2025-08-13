@@ -2,9 +2,10 @@ import { useState } from "react";
 import styles from "./SignUpPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { signup } from "../../../api/service/auth/AuthService";
+import { checkDuplicateLoginId, sendVerificatiionEmail, signup, verifyVerificationEmail } from "../../../api/service/auth/AuthService";
 import { HttpStatusCode } from "axios";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
 
 const SignUpPage = () => {
   const [form, setForm] = useState({
@@ -22,9 +23,17 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [checkDuplicateId, setCheckDuplicateId] = useState(false);
+  const [checkVerificationEmail, setCheckVerificationEmail] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if(name === 'loginId') setCheckDuplicateId(false);
+    if(name === 'email') setCheckVerificationEmail(false);
+
     setForm({ ...form, [name]: value });
   };
 
@@ -34,6 +43,16 @@ const SignUpPage = () => {
     if(!validateInput()) {
       return;
     };
+
+    if(!checkDuplicateId) {
+      triggerToastFail('아이디 중복 검사를 해주세요.');
+      return;
+    }
+
+    if(!checkVerificationEmail) {
+      triggerToastFail('이메일 검증을 해주세요.');
+      return;
+    }
       
     signup({...form}).then((res) => {
       if (res.status === HttpStatusCode.Ok) {
@@ -57,12 +76,7 @@ const SignUpPage = () => {
       return;
     }
 
-    const regLoginId = /^[a-zA-Z0-9]*$/;
-    const loginId = form.loginId;
-    if (loginId.length < 5 || loginId.length > 20 || !regLoginId.test(loginId)) {
-      triggerToastFail('로그인 아이디는 5자 이상 20자 이하의 영어와 숫자로만 입력해주세요.');
-      return;
-    }
+    if(!validLoginIdFormat()) return;
 
     const password = form.password;
     if(password.length < 6 || password.length > 12) {
@@ -75,11 +89,7 @@ const SignUpPage = () => {
       return;
     }
 
-    var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
-    if(!form.email || regEmail.test(form.email)) {
-      triggerToastFail('이메일 형식이 올바르지 않습니다.');
-      return;
-    }
+    if(!validEmailFormat()) return;
 
     var phone = /^\d{2,3}-\d{3,4}-\d{4}$/;
     if(!form.phone || !phone.test(form.phone)) {
@@ -97,11 +107,91 @@ const SignUpPage = () => {
     return true;
   }
 
+  const checkDuplicateInputLoginId = () => {
+    if(!validLoginIdFormat()) return;
+
+    checkDuplicateLoginId(form.loginId)
+    .then((res) => {
+      if(res.status === HttpStatusCode.Ok) {
+        const isDuplicate = res.data.duplicate;
+        console.log(isDuplicate);
+        if(isDuplicate) {
+          setCheckDuplicateId(false);
+          triggerToastFail('이미 존재하는 아이디입니다.');
+        } else {
+          setCheckDuplicateId(true);
+          triggerToastSuccess('사용 가능한 아이디입니다.');
+        }
+      } else {
+        triggerToastFail('아이디 중복 검증에 실패했습니다.');
+        console.log(`Fail to check duplicate login id. ${err}`);
+      }
+    })
+  }
+
+  const sendEmailForVerification = () => {
+    if(!validEmailFormat()) return;
+
+    sendVerificatiionEmail(form.email)
+    .then(() => triggerToastSuccess('메일이 발송되었습니다.'))
+    .catch((err) => triggerToastFail('메일 발송에 실패했습니다.', err));
+  }
+
+  const verifyEmailForVerification = () => {
+    console.log(`request verification : ${form.email} ==> ${form.emailCode}`);
+    verifyVerificationEmail(form.email, form.emailCode)
+    .then((res) => {
+      if(res.status === HttpStatusCode.Ok) {
+        triggerToastSuccess('인증이 완료되었습니다.');
+        setCheckVerificationEmail(true);
+      } else {
+        triggerToastFail(response.data.message);
+      }
+    })
+    .catch((err) => {
+      const res = err.response;
+      if(res.data?.message) {
+        triggerToastFail(res.data.message);
+      } else {
+        triggerToastFail("인증에 실패했습니다.");
+        console.log(`Fail to verify email verification. ${err}`);
+      }
+    });
+  }
+
+  const validLoginIdFormat = () => {
+    const regLoginId = /^[a-zA-Z0-9]*$/;
+    const loginId = form.loginId;
+    if (loginId.length < 5 || loginId.length > 20 || !regLoginId.test(loginId)) {
+      triggerToastFail('로그인 아이디는 5자 이상 20자 이하의 영어와 숫자로만 입력해주세요.');
+      return false;
+    }
+
+    return true;
+  }
+
+  const validEmailFormat = () => {
+    var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
+    if(!form.email || regEmail.test(form.email)) {
+      triggerToastFail('이메일 형식이 올바르지 않습니다.');
+      return false;
+    }
+
+    return true;
+  }
+
   const triggerToastFail = (message) => {
     setFailMessage(message);
     setShowFailToast(true);
     console.log('setFailMessage');
     setTimeout(() => setShowFailToast(false), 3000);
+  }
+  
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    console.log('setSuccessMessage');
+    setTimeout(() => setShowSuccessToast(false), 3000);
   }
 
   return (
@@ -119,12 +209,21 @@ const SignUpPage = () => {
         </label>
         <label>
           아이디
-          <input
-            name="loginId"
-            placeholder="아이디를 입력하세요"
-            value={form.loginId}
-            onChange={handleChange}
-          />
+          <div className={styles.rowInput}>
+            <input
+              name="loginId"
+              placeholder="아이디를 입력하세요"
+              value={form.loginId}
+              onChange={handleChange}
+            />
+            <button type="button" 
+            className={checkDuplicateId ? styles.grayButton : styles.activeButton} 
+            onClick={checkDuplicateInputLoginId}
+            disabled={checkDuplicateId}
+            >
+              중복확인
+            </button>
+          </div>
         </label>
         <label>
           비밀번호
@@ -175,7 +274,10 @@ const SignUpPage = () => {
               value={form.email}
               onChange={handleChange}
             />
-            <button type="button" className={styles.grayButton}>
+            <button type="button" 
+            className={checkVerificationEmail ? styles.grayButton : styles.activeButton} 
+            onClick={sendEmailForVerification}
+            disabled={checkVerificationEmail}>
               인증발송
             </button>
           </div>
@@ -188,7 +290,10 @@ const SignUpPage = () => {
               value={form.emailCode}
               onChange={handleChange}
             />
-            <button type="button" className={styles.grayButton}>
+            <button type="button" 
+            className={checkVerificationEmail ? styles.grayButton : styles.activeButton} 
+            onClick={verifyEmailForVerification}
+            disabled={checkVerificationEmail}>
               확인
             </button>
           </div>
@@ -244,6 +349,7 @@ const SignUpPage = () => {
       </p>
       
       {showFailToast && <ToastFail message={failMessage}/>}
+      {showSuccessToast && <ToastSuccess message={successMessage}/>}
     </AuthLayout>
   );
 };
