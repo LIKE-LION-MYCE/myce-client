@@ -26,11 +26,15 @@ const AdPositionList = () => {
     setCurrentPage(newPage);
   };
 
+  
   const getList = async () => {
     try {
       const res = await fetchList(currentPage);
-      console.log("fetch res : ", res.data);
-      setPageInfo(res.data);
+      console.log("fetch res : ", res);
+      setPageInfo({
+          ...res.data,
+          number: res.data.page // 'page' 값을 'number'로 할당
+      });
     } catch (err) {
       console.error("fetch failed : ", err);
       setPageInfo({
@@ -44,6 +48,7 @@ const AdPositionList = () => {
 
   useEffect(() => {
     getList();
+    console.log("currentPage : ",currentPage);
   }, [currentPage]);
 
   return (
