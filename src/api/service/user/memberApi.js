@@ -115,3 +115,13 @@ export const getMyInfo = async () => {
 export const getMyMileage = async () => {
   return await instance.get("/members/my-mileage");
 };
+
+export const updateMileageForReservation = async (
+  usedMileage,
+  savedMileage
+) => {
+  const res = instance.patch("/members/my-mileage", {
+    usedMileage: Number(usedMileage) || 0,
+    savedMileage: Number(savedMileage) || 0,
+  });
+};

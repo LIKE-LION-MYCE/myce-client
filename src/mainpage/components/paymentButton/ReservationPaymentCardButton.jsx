@@ -5,8 +5,12 @@ import {
   resolveReservers,
   saveReservationPending,
 } from "../../../api/service/reservation/reservationApi";
+import { updateMileageForReservation } from "../../../api/service/user/memberApi";
+import { saveReservers } from "../../../api/service/reservation/ReserverService";
+import { updateReservationStatusConfirm } from "../../../api/service/reservation/reservationApi";
+import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 
-function PaymentCardButton({
+function ReservationPaymentCardButton({
   targetType,
   expoId,
   ticketId,
@@ -46,6 +50,7 @@ function PaymentCardButton({
         userId = resolvedReserverInfos[0].guestId;
       }
       console.log(userId);
+      console.log(resolvedReserverInfos);
 
       // reservation pending 생성
       const reservationId = await saveReservationPending({
@@ -71,10 +76,6 @@ function PaymentCardButton({
         },
         async function (rsp) {
           if (rsp.success) {
-            // 결제 검증에 RESERVER 저장하는 로직 추가로 있어야 함
-            // status를 CONFIRMED로 변경해야 함.
-            // 결제 완료되면 티케 수 빼는 것까지.
-
             // 결제 검증 요청
             try {
               const res = await instance.post("/payment/verify", {
@@ -85,8 +86,23 @@ function PaymentCardButton({
                 targetId: reservationId,
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
-                reserverInfos,
               });
+              // payment 저장 로직 따로 하는 거 일단(보류)
+
+              if (userType === "MEMBER") {
+                // 사용 마일리지 차감 정보 변경 - PATCH (전체 - 사용 + 적립)
+                updateMileageForReservation(usedMileage, savedMileage);
+              }
+
+              // status를 CONFIRMED로 변경 - PATCH
+              updateReservationStatusConfirm(reservationId);
+
+              // reservationId, reserverInfos 저장 POST
+              saveReservers(reservationId, reserverInfos);
+
+              // 결제 완료되면 티켓 수 빼는 것까지. - PATCH
+              updateRemainingQuantity(ticketId, quantity);
+
               // imp_uid, merchant_uid 콘솔에 출력
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
@@ -124,4 +140,4 @@ function PaymentCardButton({
   );
 }
 
-export default PaymentCardButton;
+export default ReservationPaymentCardButton;

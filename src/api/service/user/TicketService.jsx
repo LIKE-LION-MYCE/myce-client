@@ -11,3 +11,7 @@ export const getTicketsForReservation = async (expoId) => {
     throw new Error(message);
   }
 };
+
+export const updateRemainingQuantity = async (ticketId, quantity) => {
+  instance.patch({ ticketId, quantity });
+};

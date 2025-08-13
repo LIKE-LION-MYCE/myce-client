@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import styles from "./ExpoPayment.module.css";
-import PaymentCardButton from "../../components/paymentButton/PaymentCardButton"; // 카드 결제 버튼
+import ReservationPaymentCardButton from "../../components/paymentButton/ReservationPaymentCardButton"; // 카드 결제 버튼
 import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton"; // 가상계좌 버튼
 import PaymentTransferButton from "../../components/paymentButton/PaymentTransferButton";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
@@ -470,7 +470,7 @@ export default function ExpoPayment() {
 
           <div className={styles.methodGroup}>
             {/* 결제 금액에 적용 후 총액을 전달 */}
-            <PaymentCardButton
+            <ReservationPaymentCardButton
               targetType={TARGET_TYPE}
               expoId={expoId}
               ticketId={ticketId}
@@ -481,7 +481,7 @@ export default function ExpoPayment() {
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
               usedMileage={usedMileageInput}
-              savedMileage={remainingMileageAfterApply}
+              savedMileage={totalAfterApply * 0.03} // 일단 결제 금액의 3퍼로 설정
               reserverInfos={reserverInfos}
             />
             <PaymentVirtualBankButton

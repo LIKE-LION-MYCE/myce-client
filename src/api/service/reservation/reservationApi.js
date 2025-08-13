@@ -23,3 +23,8 @@ export const saveReservationPending = async (payload) => {
   const res = await instance.post("/reservations/pending", payload);
   return res.data;
 };
+
+// confirm으로 상태 변경
+export const updateReservationStatusConfirm = async (reservationId) => {
+  await instance.patch(`/reservations/${reservationId}/confirm`, {});
+};
