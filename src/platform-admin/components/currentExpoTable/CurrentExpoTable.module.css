@@ -79,3 +79,48 @@
   background-color: #d9d9d9;
   color: #1e2a38;
 }
+
+
+/* 상태 뱃지 (상세 페이지와 동일한 스타일) */
+.statusBadge {
+  font-size: 12px;
+  font-weight: 400;
+  padding: 4px 10px 6px 10px;
+  border-radius: 20px;
+  color: white;
+  white-space: nowrap;
+}
+
+/* 상태별 색상 (상세 페이지와 정확히 동일) */
+.pendingPublish {
+  background-color: #f0ad4e; /* 게시 대기 - 주황색 (결제_대기와 같음) */
+}
+
+.published {
+  background-color: #5cb85c; /* 게시중 - 녹색 */
+}
+
+.pendingCancel {
+  background-color: #f0ad4e; /* 취소_대기 - 주황색 */
+}
+
+.publishEnded {
+  background-color: #777; /* 게시_종료 - 회색 */
+}
+
+.settlementRequested {
+  background-color: #5bc0de; /* 정산_요청 - 하늘색 */
+}
+
+.completed {
+  background-color: #777; /* 종료됨 - 회색 */
+}
+
+.cancelled {
+  background-color: #d9534f; /* 취소_완료 - 빨간색 */
+}
+
+.defaultStatus {
+  background-color: #777; /* 기본 - 회색 */
+}
+
