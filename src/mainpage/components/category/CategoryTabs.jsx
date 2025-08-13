@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import styles from './CategoryTabs.module.css';
 
-const categories = ['전체', '디지털', '식음료', '패션', '레저', '기타'];
-
-export default function CategoryTabs({ onCategoryChange }) {
+export default function CategoryTabs({ categories, onCategoryChange }) {
   const [activeTab, setActiveTab] = useState('전체');
 
   const handleClick = (cat) => {

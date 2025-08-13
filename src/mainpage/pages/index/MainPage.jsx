@@ -9,6 +9,7 @@ import TopRightWidgetsSection from "../../components/widget/TopRightWidgetsSecti
 import FloatingChatButton from "../../components/chatbutton/FloatingChatButton";
 import { getCurrentBanner } from "../../../api/service/platform-admin/banner/BannerService";
 import { useExpoData } from "../../../hooks/useExpoData";
+import { useCategories } from "../../../hooks/useCategories"; // Import the custom hook
 
 export default function MainPage() {
   const [mainBanners, setMainBanners] = useState([]);
@@ -16,6 +17,7 @@ export default function MainPage() {
   const [footerBanners, setFooterBanners] = useState([]);
   const [topRightBanners, setTopRightBanners] = useState([]);
   const { expos, setFilters, isLoading, error } = useExpoData();
+  const { categories, isLoading: categoriesLoading, error: categoriesError } = useCategories(); // Use the categories hook
 
   const handleBanner = async () => {
     try {
@@ -35,11 +37,17 @@ export default function MainPage() {
   }, []);
 
   const handleCategoryChange = (category) => {
+    const newCategory = category === "전체" ? undefined : category;
+    console.log("Setting category filter to:", newCategory); // Add this line for debugging
     setFilters((prevFilters) => ({
       ...prevFilters,
-      category: category === "전체" ? undefined : category,
+      category: newCategory,
     }));
   };
+
+  // Render loading/error for categories if needed
+  if (categoriesLoading) return <div>Loading categories...</div>;
+  if (categoriesError) return <div>Error loading categories: {categoriesError.message}</div>;
 
   return (
     <div className="w-full">
@@ -48,7 +56,7 @@ export default function MainPage() {
         <MainBanner banners={mainBanners} />
       </div>
       <SubBanners banners={subBanners} />
-      <CategoryTabs onCategoryChange={handleCategoryChange} />
+      <CategoryTabs onCategoryChange={handleCategoryChange} categories={categories} />
       <ExpoCardList expos={expos} isLoading={isLoading} error={error} />
       <LoadMoreButton />
       <FooterBanner banners={footerBanners} />

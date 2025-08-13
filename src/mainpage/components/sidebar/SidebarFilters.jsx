@@ -2,7 +2,7 @@
 import React from 'react';
 import styles from './SidebarFilters.module.css';
 
-export default function SidebarFilters({ filters, setFilters }) {
+export default function SidebarFilters({ filters, setFilters, categories }) {
   const handleKeywordChange = (e) => {
     setFilters(prevFilters => ({ ...prevFilters, keyword: e.target.value }));
   };
@@ -22,18 +22,6 @@ export default function SidebarFilters({ filters, setFilters }) {
   const handleResetFilters = () => {
     setFilters({});
   };
-
-  const categories = [
-    'Construction / Architecture / Interior',
-    'Medical / Health / Sports',
-    'Textile / Fashion / Apparel',
-    'Machinery / Science / Technology',
-    'Arts / Design',
-    'Education / Publishing',
-    'Tourism / Travel',
-    'Finance / Fintech',
-    'Environment / Energy',
-  ];
 
   return (
     <div className={styles.sidebar}>

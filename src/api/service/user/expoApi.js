@@ -12,7 +12,14 @@ export const getCongestionData = async (expoId) => {
 
 export const getExpos = async (filters) => {
   try {
-    const queryParams = new URLSearchParams(filters).toString();
+    // Filter out undefined or null values from filters
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+
+    const queryParams = new URLSearchParams(cleanedFilters).toString();
     const response = await instance.get(`/expos?${queryParams}`);
     return response.data;
   } catch (error) {
