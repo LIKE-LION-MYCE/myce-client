@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './AdPositionDetail.module.css';
-import { fetchDetail, submitUpdate } from '../../../api/service/platform-admin/setting/AdPositionSettingService';
+import { fetchDetail, submitDelete, submitUpdate } from '../../../api/service/platform-admin/setting/AdPositionSettingService';
 
 function AdPositionDetail() {
   const navigate = useNavigate();
@@ -56,11 +56,25 @@ function AdPositionDetail() {
         formData: formData
       });
       window.alert("배너 타입 수정을 성공했습니다.");
+      navigate(-1);
       console.log('업데이트 성공:', response);
     } catch (error) {
       console.error('업데이트 실패:', error);
     }
   };
+
+  const handleRemove = async () => {
+    try {
+      const response = await submitDelete({
+        bannerId: id,
+      });
+      window.alert("성공적으로 배너 타입을 삭제했습니다.");
+      navigate(-1);
+      console.log('삭제 성공:', response);
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
+  }
 
   return (
     <div className={styles.bannerSettings}>
@@ -135,17 +149,17 @@ function AdPositionDetail() {
 
         <div className={styles.formGroup}>
           <label className={styles.label}>생성일시</label>
-          <div className={styles.staticText}>{formData.createdAt.substring(0,10)}</div>
+          <div className={styles.staticText}>{formData.createdAt.substring(0, 10)}</div>
         </div>
 
         <div className={styles.formGroup}>
           <label className={styles.label}>수정일시</label>
-          <div className={styles.staticText}>{formData.updatedAt.substring(0,10)}</div>
+          <div className={styles.staticText}>{formData.updatedAt.substring(0, 10)}</div>
         </div>
 
         <div className={styles.formActions}>
           <button type="submit" className={styles.btnPrimary}>적용</button>
-          <button type="button" className={styles.btnDanger}>삭제</button>
+          <button type="button" onClick={handleRemove} className={styles.btnDanger}>삭제</button>
         </div>
       </form>
     </div>

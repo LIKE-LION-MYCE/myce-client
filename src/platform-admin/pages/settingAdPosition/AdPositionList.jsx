@@ -55,7 +55,7 @@ const AdPositionList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>배너 타입 설정</h1>
-        <Link to="/new">
+        <Link to="/platform/admin/adPosition/new">
           <button className={styles.addButton}>새 템플릿 생성</button>
         </Link>
       </div>
