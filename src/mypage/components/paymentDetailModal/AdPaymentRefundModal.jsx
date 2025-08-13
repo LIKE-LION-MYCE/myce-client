@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./PaymentDetailModal.module.css";
 
 function AdPaymentRefundModal({
@@ -18,6 +18,17 @@ function AdPaymentRefundModal({
   onCancel,
   onClose,
 }) {
+  const [refundReason, setRefundReason] = useState('');
+
+  const handleRefundSubmit = () => {
+    if (!refundReason.trim()) {
+      alert('환불 사유를 입력해주세요.');
+      return;
+    }
+    if (onRefund) {
+      onRefund(refundReason);
+    }
+  };
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
@@ -77,13 +88,28 @@ function AdPaymentRefundModal({
             </div>
           </div>
         </div>
+        
+        {/* 환불 사유 입력 영역 */}
+        {onRefund && (
+          <div className={styles.refundReasonSection}>
+            <label className={styles.refundReasonLabel}>환불 사유</label>
+            <textarea
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              placeholder="환불 사유를 입력해주세요"
+              className={styles.refundReasonTextarea}
+              rows={3}
+            />
+          </div>
+        )}
+        
         {/* 하단 버튼 영역 */}
         <div className={styles.btnRow}>
           <button className={styles.whiteBtn} onClick={onCancel || onClose}>
             닫기
           </button>
           {onRefund && (
-            <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={onRefund}>
+            <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={handleRefundSubmit}>
               환불 신청
             </button>
           )}

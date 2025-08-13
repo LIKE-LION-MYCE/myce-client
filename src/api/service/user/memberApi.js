@@ -108,6 +108,14 @@ export const deleteAdvertisement = async (advertisementId) => {
   return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
 };
 
+export const cancelAdvertisementByStatus = async (advertisementId) => {
+  return await instance.post(`${AD_PREFIX}/${advertisementId}/cancel-by-status`);
+};
+
+export const requestAdvertisementRefundByStatus = async (advertisementId, refundRequest) => {
+  return await instance.post(`${AD_PREFIX}/${advertisementId}/refund-request-by-status`, refundRequest);
+};
+
 export const getMyInfo = async () => {
   return await instance.get("/members/my-info");
 };
