@@ -66,3 +66,23 @@
   cursor: pointer;
   padding-right: 4px;
 }
+
+.dateInput {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+.button {
+  border: #ddd 1px ridge;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding: 0 8px;
+}

@@ -71,6 +71,26 @@
   background-color: #5cb85c;
 }
 
+.정산_요청 {
+  background-color: #5bc0de;
+}
+
+.종료됨 {
+  background-color: #777;
+}
+
+.취소_완료 {
+  background-color: #d9534f;
+}
+
+.결제_대기 {
+  background-color: #f0ad4e;
+}
+
+.게시_종료 {
+  background-color: #777;
+}
+
 .buttonGroup {
   display: flex;
   gap: 12px;
@@ -107,4 +127,21 @@
 
 .approveBtn:hover {
   background-color: #17212c;
+}
+
+.infoBtn {
+  padding: 10px 81px;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.infoBtn:hover {
+  background-color: #f9f9f9;
+  border-color: #999;
 }

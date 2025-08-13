@@ -2,37 +2,23 @@ import { useEffect, useState } from 'react';
 import styles from './ExpoApplicationForm.module.css';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
-const mockExpoData = {
-  name: '2025 AI 박람회',
-  location: '서울 삼성 코엑스',
-  capacity: 1000,
-  startDate: '2025-09-01',
-  endDate: '2025-09-03',
-  startTime: '09:00',
-  endTime: '18:00',
-  postStartDate: '2025-08-01',
-  postEndDate: '2025-09-05',
-  isPremium: true,
-  isPublic: true,
-  category: 'IT',
-  description: 'AI 기술을 주제로 한 대규모 박람회입니다.',
-};
-
-function ExpoApplicationForm() {
+function ExpoApplicationForm({ expoData }) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
-    setForm({ ...mockExpoData });
-    setIsPremium(mockExpoData.isPremium);
-  }, []);
+    if (expoData) {
+      setForm(expoData);
+      setIsPremium(expoData.isPremium || false);
+    }
+  }, [expoData]);
 
   return (
     <div className={styles.container}>
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src="https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"
+            src={form.mainImageUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
             alt="포스터"
             className={styles.profileImage}
           />
@@ -43,7 +29,7 @@ function ExpoApplicationForm() {
             <label className={styles.label}>박람회 이름</label>
             <input
               className={styles.inputField}
-              value={form.name || ''}
+              value={form.title || ''}
               readOnly
             />
           </div>
@@ -62,7 +48,7 @@ function ExpoApplicationForm() {
             <input
               type="number"
               className={styles.inputField}
-              value={form.capacity || ''}
+              value={form.maxReserverCount || ''}
               readOnly
             />
           </div>
@@ -109,16 +95,25 @@ function ExpoApplicationForm() {
               <input
                 type="date"
                 className={styles.inputField}
-                value={form.postStartDate || ''}
+                value={form.displayStartDate || ''}
                 readOnly
               />
               <input
                 type="date"
                 className={styles.inputField}
-                value={form.postEndDate || ''}
+                value={form.displayEndDate || ''}
                 readOnly
               />
             </div>
+            {form.status === 'PENDING_PUBLISH' && form.displayStartDate && (
+              <div className={styles.autoPublishNotice}>
+                <div className={styles.noticeIcon}>📅</div>
+                <div className={styles.noticeContent}>
+                  <span className={styles.noticeTitle}>자동 게시 예정</span>
+                  <span className={styles.noticeDate}>{form.displayStartDate}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>

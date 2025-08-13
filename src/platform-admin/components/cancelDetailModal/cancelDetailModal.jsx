@@ -1,7 +1,21 @@
 import styles from './cancelDetailModal.module.css';
 
-function CancelDetailModal({ isOpen, onClose }) {
+function CancelDetailModal({ isOpen, onClose, cancelDetail }) {
   if (!isOpen) return null;
+
+  if (!cancelDetail) {
+    return (
+      <div className={styles.modalOverlay}>
+        <div className={styles.modal}>
+          <h2 className={styles.title}>취소 내역</h2>
+          <p>취소 정보를 불러오는 중...</p>
+          <button onClick={onClose} className={styles.closeButton}>
+            닫기
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.modalOverlay}>
@@ -11,45 +25,45 @@ function CancelDetailModal({ isOpen, onClose }) {
         <div className={styles.infoBox}>
           <div className={styles.row}>
             <span className={styles.label}>박람회명</span>
-            <span className={styles.value}>촌캉스 귀촌 체험 박람회</span>
+            <span className={styles.value}>{cancelDetail.expoTitle}</span>
           </div>
           <div className={styles.row}>
             <span className={styles.label}>신청자</span>
-            <span className={styles.value}>인포그램</span>
+            <span className={styles.value}>{cancelDetail.applicantName}</span>
           </div>
           <div className={styles.row}>
             <span className={styles.label}>게시 기간</span>
-            <span className={styles.value}>2025-07-19 ~ 2025-07-19</span>
+            <span className={styles.value}>{cancelDetail.displayStartDate} ~ {cancelDetail.displayEndDate}</span>
           </div>
         </div>
 
         <div className={styles.infoBox}>
           <div className={styles.row}>
-            <span className={styles.label}>은행</span>
-            <span className={styles.value}>우리은행</span>
+            <span className={styles.label}>총 결제 금액</span>
+            <span className={styles.value}>{cancelDetail.totalAmount?.toLocaleString() || 0}원</span>
           </div>
           <div className={styles.row}>
-            <span className={styles.label}>은행 계좌번호</span>
-            <span className={styles.value}>1002-238-3239329</span>
+            <span className={styles.label}>사용한 금액</span>
+            <span className={styles.value}>{cancelDetail.usedAmount?.toLocaleString() || 0}원</span>
           </div>
           <div className={styles.row}>
-            <span className={styles.label}>입금자명</span>
-            <span className={styles.value}>홍길동</span>
+            <span className={styles.label}>사용한 일수</span>
+            <span className={styles.value}>{cancelDetail.usedDays || 0}일</span>
           </div>
         </div>
 
         <div className={styles.feeBox}>
           <div className={styles.row}>
-            <span className={styles.label}>사용료 환불 금액</span>
-            <span className={styles.amount}>100,000원</span>
+            <span className={styles.label}>보증금</span>
+            <span className={styles.amount}>{cancelDetail.depositAmount?.toLocaleString() || 0}원</span>
           </div>
           <div className={styles.row}>
-            <span className={styles.label}>일일 등록금 환불 금액</span>
-            <span className={styles.amount}>100,000원</span>
+            <span className={styles.label}>환불 요청일</span>
+            <span className={styles.amount}>{cancelDetail.refundRequestDate || '-'}</span>
           </div>
           <div className={`${styles.row} ${styles.totalRow}`}>
             <span className={styles.totalLabel}>총 환불 금액</span>
-            <span className={styles.totalAmount}>200,000원</span>
+            <span className={styles.totalAmount}>{cancelDetail.refundAmount?.toLocaleString() || 0}원</span>
           </div>
         </div>
 
