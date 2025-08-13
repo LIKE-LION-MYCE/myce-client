@@ -60,6 +60,25 @@
   line-height: 1.2;
 }
 
+.activeButton {
+  width: 85px; /* 너비는 필요에 따라 조절 */
+  margin-top: 6px;
+  height: 42px;
+  padding: 0 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
 .submitButton {
   width: 100%;
   background: #000;

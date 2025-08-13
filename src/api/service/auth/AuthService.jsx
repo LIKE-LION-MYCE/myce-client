@@ -3,7 +3,7 @@ import instance from "../../lib/axios";
 const AUTH_PREFIX = "/auth";
 const EAMIL_VERIFICATION_API_PREFIX = `${AUTH_PREFIX}/email-verification`;
 const VERIFICATION_TYPE = {
-    SINGUP : 'SIGNUP',
+    SIGNUP : 'SIGNUP',
     FIND_ID : 'FIND_ID',
     FIND_PASSWORD : 'FIND_PASSWORD'
 }
@@ -29,18 +29,26 @@ const setAccessTokenToStorage = (res) => {
     localStorage.setItem('access_token', accessToken.split(" ")[1]);
 }
 
-const sendVerificatiionEmail = async (email) => {
+const sendVerificatiionEmail = async (verificationType, email) => {
     return await instance.post(`${EAMIL_VERIFICATION_API_PREFIX}/send`, 
-        {verificationType : VERIFICATION_TYPE.SINGUP, email});
+        {verificationType, email});
 }
 
-const verifyVerificationEmail = async (email, code) => {
+const verifyVerificationEmail = async (verificationType, email, code) => {
     return await instance.post(`${EAMIL_VERIFICATION_API_PREFIX}/verify`, 
-        {verificationType : VERIFICATION_TYPE.SINGUP, email, code});
+        {verificationType, email, code});
 }
 
 const checkDuplicateLoginId = async (loginId) => {
     return await instance.get(`${AUTH_PREFIX}/check-duplicate?loginId=${loginId}`);
+}
+
+const findId = async (name, email) => {
+    return await instance.get(`${AUTH_PREFIX}/find-id?name=${name}&email=${email}`);
+}
+
+const findPassword = async (name, loginId, email) => {
+    return await instance.get(`${AUTH_PREFIX}/password/temp`, {name, loginId, email});
 }
 
 export {
@@ -50,5 +58,8 @@ export {
     setAccessTokenToStorage,
     sendVerificatiionEmail,
     verifyVerificationEmail,
-    checkDuplicateLoginId
+    checkDuplicateLoginId,
+    findId,
+    findPassword,
+    VERIFICATION_TYPE
 };
