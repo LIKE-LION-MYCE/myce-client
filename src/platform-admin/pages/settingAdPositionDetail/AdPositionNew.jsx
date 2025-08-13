@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import styles from './BannerLocationDetail.module.css';
+import styles from './AdPositionNew.module.css';
 
-function BannerLocationDetail() {
+function AdPositionNew() {
   const [formData, setFormData] = useState({
-    bannerName: '배너 제목A',
-    imageWidth: '800',
-    imageHeight: '200',
-    maxBannerCount: '5',
+    bannerName: '',
+    imageWidth: '',
+    imageHeight: '',
+    maxBannerCount: '',
     isActive: false,
-    creationDate: '2023-10-01 12:00',
-    modificationDate: '2023-10-02 14:30',
   });
 
   const handleChange = (e) => {
@@ -90,16 +88,6 @@ function BannerLocationDetail() {
           </label>
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>생성일시</label>
-          <div className={styles.staticText}>{formData.creationDate}</div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>수정일시</label>
-          <div className={styles.staticText}>{formData.modificationDate}</div>
-        </div>
-
         <div className={styles.formActions}>
           <button type="submit" className={styles.btnPrimary}>적용</button>
           <button type="button" className={styles.btnDanger}>삭제</button>
@@ -109,4 +97,4 @@ function BannerLocationDetail() {
   );
 }
 
-export default BannerLocationDetail;
+export default AdPositionNew;
