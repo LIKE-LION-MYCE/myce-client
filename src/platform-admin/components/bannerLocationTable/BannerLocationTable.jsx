@@ -9,14 +9,14 @@ function BannerLocationTable({ data }) {
     { key: 'id', header: 'ID' },
     { key: 'name', header: '배너명' },
     { key: 'createdAt', header: '생성일' },
-    { key: 'updatedAt' , header: '수정일자'},
+    { key: 'updatedAt', header: '수정일자' },
     { key: 'status', header: '상태' },
     { key: 'action', header: '상세보기' },
   ];
 
   // 상세 페이지로 이동하면서 status도 함께 전달
   const goToDetail = (row) => {
-    navigate(`/platform/admin/bannerLocations/${row.id}`, {
+    navigate(`/platform/admin/adPosition/${row.id}`, {
       state: {
         expoStatus: row.status, // 예: '활성'
         expoId: row.id
@@ -49,7 +49,11 @@ function BannerLocationTable({ data }) {
                       상세보기
                     </button>
                   ) : (
-                    row[col.key] || '-'
+                    (col.key === 'createdAt' || col.key === 'updatedAt') ? (
+                      row[col.key] ? row[col.key].substring(0, 10) : '-'
+                    ) : (
+                      row[col.key] || '-'
+                    )
                   )}
                 </td>
               ))}
