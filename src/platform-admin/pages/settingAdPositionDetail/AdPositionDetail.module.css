@@ -33,8 +33,8 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: #f9f9f9;
   outline: none;
+  background-color: #f9f9f9;
   transition: border-color 0.2s;
 }
 
@@ -42,13 +42,30 @@
   border-color: #007bff;
 }
 
-/* 확장용 input 타입 */
+/* input 타입별 확장 */
 .inputText {
-  /* 텍스트 기본 */
+  /* 일반 텍스트 입력 */
 }
 
 .inputNumber {
-  text-align: right;
+  text-align: left;
+}
+
+.inputReadonly {
+  background-color: #f1f1f1;
+  color: #888;
+  cursor: default;
+}
+
+.inputTextarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.staticText {
+  font-size: 0.95rem;
+  color: #666;
+  padding: 0.5rem 0.2rem;
 }
 
 /* 토글 스위치 */
@@ -97,7 +114,30 @@
   transform: translateX(20px);
 }
 
-/* 버튼 영역 */
+.backArrow {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+
+.backArrow:hover {
+  color: #999;
+}
+
+.titleWrapper{
+	display: flex;
+  justify-content: space-between;
+}
+
+/* 버튼 그룹 */
 .formActions {
   display: flex;
   justify-content: space-between;
