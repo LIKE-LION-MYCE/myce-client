@@ -22,7 +22,6 @@ function FindIdPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("아이디 찾기!!!!");
     if(!name) {
       triggerToastFail('이름을 입력해주세요.');
       return;

@@ -48,7 +48,7 @@ const findId = async (name, email) => {
 }
 
 const findPassword = async (name, loginId, email) => {
-    return await instance.get(`${AUTH_PREFIX}/password/temp`, {name, loginId, email});
+    return await instance.post(`${AUTH_PREFIX}/password/temp`, {name, loginId, email});
 }
 
 export {
