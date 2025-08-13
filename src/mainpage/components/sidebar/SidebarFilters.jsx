@@ -16,7 +16,8 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
   };
 
   const handleCategoryChange = (categoryValue) => {
-    setFilters(prevFilters => ({ ...prevFilters, category: categoryValue }));
+    const newCategory = categoryValue === '전체' ? undefined : categoryValue;
+    setFilters(prevFilters => ({ ...prevFilters, category: newCategory }));
   };
 
   const handleResetFilters = () => {
