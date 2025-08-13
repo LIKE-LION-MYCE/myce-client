@@ -13,7 +13,40 @@ export default function ChatContainer() {
   const [newMessage, setNewMessage] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState({});
+  const [buttonStates, setButtonStates] = useState({}); // roomCode -> 버튼 상태
   const messagesEndRef = useRef(null);
+
+  // 플랫폼 상담방인지 확인하는 헬퍼 함수
+  const isPlatformRoom = (room) => {
+    return room && (room.expoTitle === '플랫폼 상담' || room.roomCode?.startsWith('platform-'));
+  };
+
+  // 현재 버튼 상태 조회
+  const getCurrentButtonState = (roomCode) => {
+    return buttonStates[roomCode] || 'AI_ACTIVE';
+  };
+
+  // 상태별 버튼 텍스트 반환
+  const getButtonText = (state) => {
+    switch (state) {
+      case 'AI_ACTIVE': return '상담원 연결';
+      case 'WAITING_FOR_ADMIN': return '요청 취소';
+      case 'HUMAN_ACTIVE': return 'AI로 돌아가기';
+      case 'HUMAN_INACTIVE': return 'AI로 계속하기';
+      default: return '상담원 연결';
+    }
+  };
+
+  // 상태별 버튼 액션 반환
+  const getButtonAction = (state) => {
+    switch (state) {
+      case 'AI_ACTIVE': return 'request-handoff';
+      case 'WAITING_FOR_ADMIN': return 'cancel-handoff';
+      case 'HUMAN_ACTIVE': return 'request-ai';
+      case 'HUMAN_INACTIVE': return 'request-ai';
+      default: return 'request-handoff';
+    }
+  };
 
   // WebSocket 연결 및 초기화
   useEffect(() => {
@@ -168,6 +201,20 @@ export default function ChatContainer() {
           }
         });
 
+        // 버튼 상태 업데이트 핸들러 등록 (플랫폼 상담방용)
+        if (isPlatformRoom(selectedRoom)) {
+          ChatWebSocketService.subscribeToButtonUpdates(selectedRoom.roomCode, (buttonData) => {
+            console.log('버튼 상태 업데이트:', buttonData);
+            if (buttonData.type === 'BUTTON_STATE_UPDATE') {
+              const { roomId, state } = buttonData.payload;
+              setButtonStates(prev => ({
+                ...prev,
+                [roomId]: state
+              }));
+            }
+          });
+        }
+
         // unread count 업데이트 핸들러 등록 (읽음 상태 실시간 업데이트)
         ChatWebSocketService.subscribeToUnreadUpdates(selectedRoom.roomCode, (unreadData) => {
           console.log('Unread count 업데이트:', unreadData);
@@ -289,6 +336,34 @@ export default function ChatContainer() {
     }
   };
 
+  // 플랫폼 버튼 클릭 핸들러
+  const handlePlatformButtonClick = async (roomCode, action) => {
+    if (!wsConnected) {
+      console.warn('WebSocket 연결이 없어 버튼 액션 불가');
+      return;
+    }
+
+    try {
+      console.log('플랫폼 버튼 액션 실행:', { roomCode, action });
+      
+      switch (action) {
+        case 'request-handoff':
+          await ChatWebSocketService.requestHandoff(roomCode);
+          break;
+        case 'cancel-handoff':
+          await ChatWebSocketService.cancelHandoff(roomCode);
+          break;
+        case 'request-ai':
+          await ChatWebSocketService.requestAI(roomCode);
+          break;
+        default:
+          console.warn('알 수 없는 버튼 액션:', action);
+      }
+    } catch (error) {
+      console.error('플랫폼 버튼 액션 실패:', error);
+    }
+  };
+
   // Enter 키로 메시지 전송
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -338,9 +413,16 @@ export default function ChatContainer() {
                 className={`${styles.chatRoom} ${selectedRoom?.roomCode === room.roomCode ? styles.selected : ''}`}
                 onClick={() => handleRoomSelect(room)}
               >
-                <img src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx" alt="avatar" />
+                <img 
+                  src={room.expoTitle === '플랫폼 상담' 
+                    ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png" 
+                    : "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx"} 
+                  alt="avatar" 
+                />
                 <div className={styles.chatRoomText}>
-                  <div>{room.expoTitle || '박람회명 없음'}</div>
+                  <div style={room.expoTitle === '플랫폼 상담' ? {fontWeight: 'bold', color: '#2196F3'} : {}}>
+                    {room.expoTitle || '박람회명 없음'}
+                  </div>
                   <span>{formatTime(room.lastMessageAt)}</span>
                 </div>
                 {unreadCounts[room.roomCode] > 0 && (
@@ -357,7 +439,31 @@ export default function ChatContainer() {
         {selectedRoom ? (
           <>
             <header className={styles.chatHeader}>
-              {selectedRoom.expoTitle || '박람회명 없음'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <span>{selectedRoom.expoTitle || '박람회명 없음'}</span>
+                {isPlatformRoom(selectedRoom) && (
+                  <button 
+                    className={styles.platformButton}
+                    onClick={() => handlePlatformButtonClick(
+                      selectedRoom.roomCode, 
+                      getButtonAction(getCurrentButtonState(selectedRoom.roomCode))
+                    )}
+                    disabled={!wsConnected}
+                    style={{
+                      backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '#ff9800' : '#2196F3',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      cursor: wsConnected ? 'pointer' : 'not-allowed',
+                      opacity: wsConnected ? 1 : 0.5
+                    }}
+                  >
+                    {getButtonText(getCurrentButtonState(selectedRoom.roomCode))}
+                  </button>
+                )}
+              </div>
             </header>
 
             <section className={styles.chatMessages}>
@@ -383,14 +489,39 @@ export default function ChatContainer() {
                     
                     // senderType 기반으로 메시지 타입 결정
                     const isAdminMessage = message.senderType === 'ADMIN';
+                    const isAIMessage = message.senderType === 'AI';
                     
                     return (
                       <div key={index} className={`${styles.messageRow} ${isMyMessage ? styles.messageRight : styles.messageLeft}`}>
-                        {isAdminMessage && (
-                          <img src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx" alt="avatar" />
+                        {(isAdminMessage || isAIMessage) && (
+                          <img 
+                            src={isAIMessage 
+                              ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png"
+                              : "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx"
+                            } 
+                            alt="avatar" 
+                          />
                         )}
                         <div className={styles.messageWrapper}>
-                          <div className={`${styles.messageBubble} ${isAdminMessage ? styles.adminMessage : styles.userMessage} ${isMyMessage ? styles.myMessage : styles.otherMessage}`}>
+                          {isAIMessage && message.senderName && (
+                            <div style={{ 
+                              fontSize: '11px', 
+                              color: '#666', 
+                              marginBottom: '2px',
+                              fontWeight: 'bold'
+                            }}>
+                              {message.senderName}
+                            </div>
+                          )}
+                          <div className={`${styles.messageBubble} 
+                            ${isAIMessage ? styles.aiMessage : isAdminMessage ? styles.adminMessage : styles.userMessage} 
+                            ${isMyMessage ? styles.myMessage : styles.otherMessage}`}
+                            style={isAIMessage ? {
+                              backgroundColor: '#e3f2fd',
+                              border: '1px solid #2196F3',
+                              color: '#1976d2'
+                            } : {}}
+                          >
                             {message.content || message.message}
                           </div>
                           <div className={styles.messageInfo}>

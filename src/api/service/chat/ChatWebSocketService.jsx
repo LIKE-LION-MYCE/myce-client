@@ -403,6 +403,109 @@ const subscribeToExpoChatRoomUpdates = (expoId, handler) => {
   }
 };
 
+/**
+ * 플랫폼 버튼 상태 업데이트 구독 (AI 상담용)
+ * @param {string} roomCode - 채팅방 코드  
+ * @param {function} callback - 버튼 상태 업데이트 콜백
+ * @returns {Object|null} - 구독 객체
+ */
+const subscribeToButtonUpdates = (roomCode, callback) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      console.warn('WebSocket이 연결되지 않아 버튼 업데이트 구독 불가');
+      return null;
+    }
+
+    const topic = `/topic/chat/${roomCode}`;
+    const subscription = stompClient.subscribe(topic, (message) => {
+      try {
+        const data = JSON.parse(message.body);
+        if (data.type === 'BUTTON_STATE_UPDATE') {
+          console.log('버튼 상태 업데이트 수신:', data);
+          callback(data);
+        }
+      } catch (error) {
+        console.error('버튼 상태 메시지 파싱 실패:', error);
+      }
+    });
+
+    console.log('버튼 상태 업데이트 구독 완료:', roomCode);
+    return subscription;
+  } catch (error) {
+    console.error('버튼 상태 업데이트 구독 실패:', error);
+    return null;
+  }
+};
+
+/**
+ * 관리자 연결 요청 (플랫폼 상담용)
+ * @param {string} roomCode - 채팅방 코드
+ * @returns {Promise<void>}
+ */
+const requestHandoff = async (roomCode) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      throw new Error('WebSocket이 연결되지 않음');
+    }
+
+    const requestMessage = {
+      roomId: roomCode
+    };
+
+    console.log('관리자 연결 요청 전송:', requestMessage);
+    stompClient.send('/app/request-handoff', {}, JSON.stringify(requestMessage));
+  } catch (error) {
+    console.error('관리자 연결 요청 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 관리자 연결 요청 취소 (플랫폼 상담용)
+ * @param {string} roomCode - 채팅방 코드
+ * @returns {Promise<void>}
+ */
+const cancelHandoff = async (roomCode) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      throw new Error('WebSocket이 연결되지 않음');
+    }
+
+    const requestMessage = {
+      roomId: roomCode
+    };
+
+    console.log('관리자 연결 요청 취소 전송:', requestMessage);
+    stompClient.send('/app/cancel-handoff', {}, JSON.stringify(requestMessage));
+  } catch (error) {
+    console.error('관리자 연결 요청 취소 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * AI로 복귀 요청 (플랫폼 상담용)
+ * @param {string} roomCode - 채팅방 코드
+ * @returns {Promise<void>}
+ */
+const requestAI = async (roomCode) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      throw new Error('WebSocket이 연결되지 않음');
+    }
+
+    const requestMessage = {
+      roomId: roomCode
+    };
+
+    console.log('AI 복귀 요청 전송:', requestMessage);
+    stompClient.send('/app/request-ai', {}, JSON.stringify(requestMessage));
+  } catch (error) {
+    console.error('AI 복귀 요청 실패:', error);
+    throw error;
+  }
+};
+
 // ChatWebSocketService API 내보내기
 export { 
   connect, 
@@ -420,5 +523,10 @@ export {
   requestUnreadCount,
   sendAdminMessage,
   sendReadStatusNotification,
-  subscribeToUserErrors
+  subscribeToUserErrors,
+  // 플랫폼 AI 상담 관련 함수들
+  subscribeToButtonUpdates,
+  requestHandoff,
+  cancelHandoff,
+  requestAI
 };
