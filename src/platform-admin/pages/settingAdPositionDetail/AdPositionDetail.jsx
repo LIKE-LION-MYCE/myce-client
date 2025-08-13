@@ -1,16 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './AdPositionDetail.module.css';
+import { fetchDetail } from '../../../api/service/platform-admin/setting/AdPositionSettingService';
 
 function AdPositionDetail() {
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     bannerName: '배너 제목A',
     imageWidth: '800',
     imageHeight: '200',
     maxBannerCount: '5',
     isActive: false,
-    creationDate: '2023-10-01 12:00',
-    modificationDate: '2023-10-02 14:30',
+    createdAt: '2023-10-01 12:00',
+    updatedAt: '2023-10-02 14:30',
   });
+
+
+  const getData = async () => {
+    const res = await fetchDetail(id);
+    console.log(res.data);
+    setFormData(res.data);
+  };
+
+  useEffect(() => {
+    getData();
+  }, [])
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -92,12 +108,12 @@ function AdPositionDetail() {
 
         <div className={styles.formGroup}>
           <label className={styles.label}>생성일시</label>
-          <div className={styles.staticText}>{formData.creationDate}</div>
+          <div className={styles.staticText}>{formData.createdAt}</div>
         </div>
 
         <div className={styles.formGroup}>
           <label className={styles.label}>수정일시</label>
-          <div className={styles.staticText}>{formData.modificationDate}</div>
+          <div className={styles.staticText}>{formData.updatedAt}</div>
         </div>
 
         <div className={styles.formActions}>
