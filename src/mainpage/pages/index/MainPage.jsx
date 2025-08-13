@@ -35,7 +35,6 @@ export default function MainPage() {
   return (
     <div className="w-full">
       <div className="relative">
-        <TopRightWidgetsSection banners={topRightBanners} />
         <MainBanner banners={mainBanners} />
       </div>
       <SubBanners banners={subBanners} />
