@@ -1,42 +1,52 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt } from '../../../api/service/user/memberApi';
+import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
 
+// 모든 버튼을 항상 표시하는 설정
+const ALL_BUTTONS = [
+  { label: "결제 영수증", color: "black", disabled: false, action: "payment" },
+  { label: "환불 영수증", color: "black", disabled: false, action: "paymentDetail" },
+  { label: "환불 신청(상태별)", color: "purple", disabled: false, action: "refundRequestByStatus" },
+  { label: "취소(상태별)", color: "orange", disabled: false, action: "cancelByStatus" },
+];
+
 // 광고 상태 매핑 객체 (실제 API 상태에 맞게 수정)
 const AD_STATUS_MAP = {
   PENDING_APPROVAL: {
     badge: { label: "승인대기", className: "pending" },
-    mainBtn: { label: "신청 취소", color: "pink", disabled: false },
-    subBtn: null,
+    buttons: ALL_BUTTONS,
   },
   PENDING_PAYMENT: {
     badge: { label: "결제대기", className: "waiting" },
-    mainBtn: { label: "결제", color: "black", disabled: false },
-    subBtn: { label: "신청 취소", color: "pink", disabled: false },
+    buttons: ALL_BUTTONS,
+  },
+  PENDING_PUBLISH: {
+    badge: { label: "게시예정", className: "waiting" },
+    buttons: ALL_BUTTONS,
   },
   PUBLISHED: {
     badge: { label: "게시중", className: "active" },
-    mainBtn: { label: "신청 취소", color: "pink", disabled: false },
-    subBtn: { label: "결제 내역", color: "black", disabled: false },
+    buttons: ALL_BUTTONS,
   },
   COMPLETED: {
     badge: { label: "게시완료", className: "finished" },
-    mainBtn: { label: "결제 내역", color: "black", disabled: false },
-    subBtn: null,
+    buttons: ALL_BUTTONS,
   },
   REJECTED: {
     badge: { label: "거절됨", className: "canceled" },
-    mainBtn: null,
-    subBtn: null,
+    buttons: ALL_BUTTONS,
+  },
+  PENDING_CANCEL: {
+    badge: { label: "환불대기", className: "waiting" },
+    buttons: ALL_BUTTONS,
   },
   CANCELLED: {
     badge: { label: "취소됨", className: "canceled" },
-    mainBtn: null,
-    subBtn: null,
+    buttons: ALL_BUTTONS,
   },
 };
 
@@ -163,6 +173,84 @@ function AdsStatusDetail() {
     // alert("다운로드 기능 연동 필요");
   };
 
+
+  // 통합된 환불 신청 핸들러 (상태별 자동 처리)
+  const handleRefundRequestByStatus = async () => {
+    try {
+      console.log('환불 영수증 API 호출 중, ID:', id);
+      const response = await getAdvertisementRefundReceipt(id);
+      console.log('환불 영수증 API 응답:', response);
+      setRefundData(response.data);
+      setModalType("refundByStatus");
+    } catch (err) {
+      console.error('환불 영수증 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // 통합된 취소 핸들러 (상태별 자동 처리)
+  const handleCancelByStatus = async () => {
+    if (window.confirm('광고를 취소하시겠습니까?')) {
+      try {
+        await cancelAdvertisementByStatus(id);
+        alert('광고가 성공적으로 취소되었습니다.');
+        fetchAdvertisementDetail(); // 데이터 새로고침
+      } catch (error) {
+        console.error('취소 실패:', error);
+        alert('취소 중 오류가 발생했습니다.');
+      }
+    }
+  };
+  
+  const handleCancelAdvertisement = async () => {
+    if (window.confirm('광고를 취소하시겠습니까?')) {
+      try {
+        await deleteAdvertisement(id);
+        alert('광고가 성공적으로 취소되었습니다.');
+        fetchAdvertisementDetail(); // 데이터 새로고침
+      } catch (error) {
+        console.error('취소 실패:', error);
+        alert('취소 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  // 버튼 액션 핸들러
+  const handleButtonAction = (action) => {
+    switch (action) {
+      case 'payment':
+        handlePaymentClick();
+        break;
+      case 'paymentDetail':
+        handleRefundClick();
+        break;
+      case 'refundRequest':
+        handleRefundRequest();
+        break;
+      case 'partialRefundRequest':
+        handlePartialRefundRequest();
+        break;
+      case 'refundRequestByStatus':
+        handleRefundRequestByStatus();
+        break;
+      case 'cancelPendingApproval':
+        handleCancelPendingApproval();
+        break;
+      case 'cancelPendingPayment':
+        handleCancelPendingPayment();
+        break;
+      case 'cancelByStatus':
+        handleCancelByStatus();
+        break;
+      case 'cancel':
+        handleCancelAdvertisement();
+        break;
+      default:
+        console.warn('Unknown action:', action);
+    }
+  };
+
   // 모달 닫기
   const handleCloseModal = () => {
     setModalType(null);
@@ -260,18 +348,16 @@ function AdsStatusDetail() {
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
-              <button
-                className={`${styles.btn} ${styles.black}`}
-                onClick={handlePaymentClick}
-              >
-                결제하기
-              </button>
-              <button
-                className={`${styles.btn} ${styles.pink}`}
-                onClick={handleRefundClick}
-              >
-                정산하기
-              </button>
+              {statusConf.buttons && statusConf.buttons.map((button, index) => (
+                <button
+                  key={index}
+                  className={`${styles.btn} ${styles[button.color]}`}
+                  onClick={() => handleButtonAction(button.action)}
+                  disabled={button.disabled}
+                >
+                  {button.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -309,6 +395,73 @@ function AdsStatusDetail() {
             usedAmount={refundData.usedAmount}
             remainingDays={refundData.remainingDays}
             refundAmount={refundData.refundAmount}
+            onRefund={async (reason) => {
+              try {
+                await requestAdvertisementRefund(id, { reason });
+                alert('환불 신청이 성공적으로 접수되었습니다.');
+                handleCloseModal();
+                fetchAdvertisementDetail(); // 데이터 새로고침
+              } catch (error) {
+                console.error('환불 신청 실패:', error);
+                alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+              }
+            }}
+            onClose={handleCloseModal}
+          />
+        )}
+        {modalType === "partialRefund" && refundData && (
+          <AdPaymentRefundModal
+            advertisementTitle={refundData.advertisementTitle}
+            applicantName={refundData.applicantName}
+            displayStartDate={formatDate(refundData.displayStartDate)}
+            displayEndDate={formatDate(refundData.displayEndDate)}
+            totalDays={refundData.totalDays}
+            feePerDay={refundData.feePerDay}
+            totalAmount={refundData.totalAmount}
+            refundRequestDate={formatDate(refundData.refundRequestDate)}
+            usedDays={refundData.usedDays}
+            usedAmount={refundData.usedAmount}
+            remainingDays={refundData.remainingDays}
+            refundAmount={refundData.refundAmount}
+            onRefund={async (reason) => {
+              try {
+                await requestAdvertisementPartialRefund(id, { reason });
+                alert('부분 환불 신청이 성공적으로 접수되었습니다.');
+                handleCloseModal();
+                fetchAdvertisementDetail(); // 데이터 새로고침
+              } catch (error) {
+                console.error('부분 환불 신청 실패:', error);
+                alert('부분 환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+              }
+            }}
+            onClose={handleCloseModal}
+          />
+        )}
+        {modalType === "refundByStatus" && refundData && (
+          <AdPaymentRefundModal
+            advertisementTitle={refundData.advertisementTitle}
+            applicantName={refundData.applicantName}
+            displayStartDate={formatDate(refundData.displayStartDate)}
+            displayEndDate={formatDate(refundData.displayEndDate)}
+            totalDays={refundData.totalDays}
+            feePerDay={refundData.feePerDay}
+            totalAmount={refundData.totalAmount}
+            refundRequestDate={formatDate(refundData.refundRequestDate)}
+            usedDays={refundData.usedDays}
+            usedAmount={refundData.usedAmount}
+            remainingDays={refundData.remainingDays}
+            refundAmount={refundData.refundAmount}
+            onRefund={async (reason) => {
+              try {
+                await requestAdvertisementRefundByStatus(id, { reason });
+                alert('환불 신청이 성공적으로 접수되었습니다.');
+                handleCloseModal();
+                fetchAdvertisementDetail(); // 데이터 새로고침
+              } catch (error) {
+                console.error('환불 신청 실패:', error);
+                alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+              }
+            }}
             onClose={handleCloseModal}
           />
         )}

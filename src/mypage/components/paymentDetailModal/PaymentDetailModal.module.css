@@ -103,3 +103,43 @@
   background-color: #dee2e6;
   margin: 16px 0;
 }
+
+/* 환불 사유 입력 영역 */
+.refundReasonSection {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 11px;
+  border: 1px solid #e9ecef;
+}
+
+.refundReasonLabel {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.refundReasonTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.refundReasonTextarea:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.refundReasonTextarea::placeholder {
+  color: #6c757d;
+}
