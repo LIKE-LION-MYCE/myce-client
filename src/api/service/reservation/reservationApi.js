@@ -6,6 +6,20 @@ export const getReservationDetail = async (reservationCode) => {
 
 export const updateReservers = async (reservationCode, reserverInfos) => {
   return await instance.put(`/reservations/${reservationCode}/reservers`, {
-    reserverInfos
+    reserverInfos,
   });
+};
+
+// 결제 전에 먼저 resolve 호출
+export const resolveReservers = async (reserverInfos) => {
+  const { data } = await instance.post("/reservations/resolvers", {
+    reserverInfos,
+  });
+  return data.reserverInfos; // 배열 반환
+};
+
+// pending reservation 저장 후 reservation id 반환
+export const saveReservationPending = async (payload) => {
+  const res = await instance.post("/reservations/pending", payload);
+  return res.data;
 };

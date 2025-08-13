@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import styles from "./ExpoPayment.module.css";
 import PaymentCardButton from "../../components/paymentButton/PaymentCardButton"; // 카드 결제 버튼
 import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton"; // 가상계좌 버튼
@@ -9,6 +9,8 @@ import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
 
 export default function ExpoPayment() {
   const SERVICE_FEE_PER_TICKET = 1000;
+  const TARGET_TYPE = "RESERVATION";
+  const { expoId } = useParams();
   const location = useLocation();
   const {
     quantity = 1,
@@ -26,6 +28,22 @@ export default function ExpoPayment() {
       gender: "",
       rememberInfo: false,
     }))
+  );
+
+  // personalInfo -> reserverInfos로 매핑 (서버 DTO 형태 맞춤)
+  const reserverInfos = useMemo(
+    () =>
+      personalInfo.map(({ name, email, birthdate, phone, gender }) => ({
+        name,
+        email,
+        // 서버가 LocalDate 'birth' 를 기대한다면 키를 birth로 맞추고 형식도 YYYY-MM-DD 유지
+        birth: birthdate || "",
+        phone,
+        // 서버 enum이 MALE/FEMALE이면 대문자로 변환
+        gender: gender ? gender.toUpperCase() : null,
+        // rememberInfo는 서버에 필요 없으면 제거(필요하면 포함)
+      })),
+    [personalInfo]
   );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mileage, setMileage] = useState(null); // 보유 마일리지 상태
@@ -453,11 +471,18 @@ export default function ExpoPayment() {
           <div className={styles.methodGroup}>
             {/* 결제 금액에 적용 후 총액을 전달 */}
             <PaymentCardButton
-              amount={totalAfterApply}
+              targetType={TARGET_TYPE}
+              expoId={expoId}
+              ticketId={ticketId}
+              quantity={quantity}
               name={ticketName}
+              amount={totalAfterApply}
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
+              usedMileage={usedMileageInput}
+              savedMileage={remainingMileageAfterApply}
+              reserverInfos={reserverInfos}
             />
             <PaymentVirtualBankButton
               amount={totalAfterApply}
@@ -465,6 +490,7 @@ export default function ExpoPayment() {
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
+              savedMileage={remainingMileageAfterApply}
             />
             <PaymentTransferButton
               amount={totalAfterApply}
@@ -472,6 +498,7 @@ export default function ExpoPayment() {
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
+              savedMileage={remainingMileageAfterApply}
             />
           </div>
         </div>
