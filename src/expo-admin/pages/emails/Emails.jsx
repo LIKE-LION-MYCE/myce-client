@@ -1,116 +1,69 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './Emails.module.css';
 import EmailTable from '../../components/emailTable/EmailTable';
 import Pagination from '../../../common/components/pagination/Pagination';
-import ToastFail from '../../../common/components/toastFail/ToastFail';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
-import { getMyEmails } from '../../../api/service/expo-admin/email/EmailService';
-
-const columns = [
-  { key: 'subject', header: '제목' },
-  { key: 'content', header: '내용' },
-  { key: 'recipientCount', header: '총 수신자' },
-  { key: 'createdAt', header: '발송일시' },
-];
 
 function Emails() {
-  const { expoId } = useParams();
-
   const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(10);
-
   const [pageInfo, setPageInfo] = useState({
-    content: [],
-    totalPages: 0,
-    number: 0,  
-    size: pageSize,
-    totalElements: 0,
+    content: [
+      {
+        subject: '박람회 안내 메일',
+        body: '안녕하세요, 서울 스마트 모빌리티 엑스포에 참여해주셔서 감사합니다. 본 메일은 안내 목적으로 발송되었습니다. 진짜 졸려 뒤지기겠다 정말로요... 졸리지만 멈출완전 짜증난다 진짜 개졸리다 자면 6시일듯',
+        recipients: 36,
+        sentAt: '2025-08-01 14:23:45',
+        fileName: 'expo_guide.pdf'
+      },
+      {
+        subject: '이벤트 당첨자 발표',
+        body: '축하드립니다! 귀하는 2025 엑스포 이벤트에 당첨되셨습니다. 자세한 사항은 첨부파일을 확인해주세요.',
+        recipients: 12,
+        sentAt: '2025-07-28 09:12:00',
+        fileName: ''
+      }
+    ],
+    totalPages: 1,
+    totalElements: 2,
+    size: 10,
+    number: 0,
   });
 
-  // 토스트
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [showFailToast, setShowFailToast] = useState(false);
-  const [failMessage, setFailMessage] = useState('');
-
-  //이메일 목록 조회
-  const fetchEmails = async () => {
-    try {
-      const keywordParam = searchText.trim() || undefined;
-
-      const res = await getMyEmails(
-        expoId,
-        currentPage,
-        pageSize,
-        sortOrder,
-        keywordParam
-      );
-
-      setPageInfo({
-        content: res.content ?? [],
-        totalPages: res.page?.totalPages ?? 0,
-        number: res.page?.number ?? currentPage,
-        size: res.page?.size ?? pageSize,
-        totalElements: res.page?.totalElements ?? 0,
-      });
-    } catch (error) {
-      triggerToastFail(error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchEmails();
-  }, [expoId, currentPage, pageSize, sortOrder, searchText]);
-
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setPageInfo((prev) => ({
+      ...prev,
+      number: page,
+      content: prev.content,
+    }));
   };
 
-  // 성공 토스트
-  const triggerSuccessToast = () => {
-    setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 3000);
-  };
-
-  // 실패 토스트
-  const triggerToastFail = (message) => {
-    setFailMessage(message);
-    setShowFailToast(true);
-    setTimeout(() => setShowFailToast(false), 3000);
-  };
+  const columns = [
+    { key: 'subject', header: '제목' },
+    { key: 'body', header: '내용' },
+    { key: 'recipients', header: '총 수신자' },
+    { key: 'sentAt', header: '발송일시' },
+  ];
 
   return (
     <div className={styles.emailsWrapper}>
-      {/* 상단 필터 영역 */}
       <div className={styles.topControls}>
         <div className={styles.filters}>
-          {/* 검색어 입력 */}
           <div className={styles.filterGroup}>
             <input
               type="text"
               value={searchText}
-              onChange={(e) => {
-                setSearchText(e.target.value);
-                setCurrentPage(0);
-              }}
+              onChange={(e) => setSearchText(e.target.value)}
               placeholder="제목 또는 내용 검색"
               className={styles.input}
             />
             <FiSearch className={styles.searchIcon} />
           </div>
 
-          {/* 정렬 */}
           <div className={styles.filterGroup}>
             <select
               value={sortOrder}
-              onChange={(e) => {
-                setSortOrder(e.target.value);
-                setCurrentPage(0);
-              }}
+              onChange={(e) => setSortOrder(e.target.value)}
               className={styles.select}
             >
               <option value="desc">최신순</option>
@@ -121,19 +74,10 @@ function Emails() {
       </div>
 
       {/* 테이블 */}
-      <EmailTable
-      columns={columns}
-      data={pageInfo.content}
-      numbered
-      numberOffset={pageInfo.number * pageInfo.size}
-      />
+      <EmailTable columns={columns} data={pageInfo.content} />
 
       {/* 페이징 */}
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
-
-      {/* 토스트 */}
-      {showSuccessToast && <ToastSuccess />}
-      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }
