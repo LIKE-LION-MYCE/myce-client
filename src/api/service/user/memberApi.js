@@ -73,12 +73,8 @@ export const getExpoSettlementReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/settlement-receipt`);
 };
 
-export const requestExpoSettlement = async (expoId) => {
-  // API가 없으므로 하드코딩된 응답 반환
-  console.log(`정산 요청 (하드코딩): expoId = ${expoId}`);
-  return Promise.resolve({
-    data: { message: "정산 요청이 성공적으로 처리되었습니다." },
-  });
+export const requestExpoSettlement = async (expoId, settlementData) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/settlement`, settlementData);
 };
 
 export const getExpoRefundReceipt = async (expoId) => {

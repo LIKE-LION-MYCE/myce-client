@@ -412,6 +412,7 @@ const ExpoStatusDetail = () => {
         <SettlementReceiptModal
           receiptData={settlementReceiptData}
           onClose={handleCloseSettlementReceiptModal}
+          expoId={id}
         />
       )}
 

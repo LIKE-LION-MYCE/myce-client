@@ -148,10 +148,65 @@
   color: #d9534f;
 }
 
+/* 정산 신청 폼 스타일 */
+.settlementFormSection {
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 2px solid #eee;
+}
+
+.formTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.formGrid {
+  display: grid;
+  gap: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.formSelect,
+.formInput {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formSelect:focus,
+.formInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formSelect:disabled,
+.formInput:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
 .buttonArea {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 25px;
 }
 
 .closeButton {
@@ -166,6 +221,28 @@
   transition: background-color 0.2s;
 }
 
-.closeButton:hover {
+.closeButton:hover:not(:disabled) {
   background-color: #5a6268;
+}
+
+.submitButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.closeButton:disabled,
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
