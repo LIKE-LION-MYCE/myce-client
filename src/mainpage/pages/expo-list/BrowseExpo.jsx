@@ -1,4 +1,3 @@
-// BrowseExpo.jsx
 import React from "react";
 import styles from "./BrowseExpo.module.css";
 import SidebarFilters from "../../components/sidebar/SidebarFilters";
@@ -7,32 +6,13 @@ import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
 
 export default function BrowseExpo() {
-  const { expos, setExpos, filters, setFilters, isLoading, error } =
+  const { expos, filters, setFilters, isLoading, error, refresh } =
     useExpoData();
   const {
     categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
-
-  const handleBookmarkToggle = (expoId) => {
-    console.log(`Toggling bookmark for expo ID: ${expoId}`);
-    setExpos((prevExpos) => {
-      const updatedExpos = prevExpos.map((expo) => {
-        if (expo.expoId === expoId) {
-          console.log(
-            `Expo ${expoId}: Toggling isBookmark from ${
-              expo.isBookmark
-            } to ${!expo.isBookmark}`
-          );
-          return { ...expo, isBookmark: !expo.isBookmark };
-        }
-        return expo;
-      });
-      console.log("Updated expos array:", updatedExpos);
-      return updatedExpos;
-    });
-  };
 
   if (categoriesLoading) return <div>Loading categories...</div>;
   if (categoriesError)
@@ -50,7 +30,7 @@ export default function BrowseExpo() {
             expos={expos}
             isLoading={isLoading}
             error={error}
-            onBookmarkToggle={handleBookmarkToggle}
+            onBookmarkActionComplete={refresh}
           />
         </section>
         <aside className={styles.sidebar}>
