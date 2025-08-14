@@ -276,8 +276,9 @@ export default function ExpoDetail() {
                       value={ticket.ticketId}
                       disabled={ticket.remainingQuantity <= 0}
                     >
-                      {ticket.name} - {ticket.price?.toLocaleString()}원 (남은
-                      수량: {ticket.remainingQuantity?.toLocaleString()})
+                      [{ticket.type}] {ticket.name} -{" "}
+                      {ticket.price?.toLocaleString()}원 (남은 수량:{" "}
+                      {ticket.remainingQuantity?.toLocaleString()})
                     </option>
                   ))
                 ) : (

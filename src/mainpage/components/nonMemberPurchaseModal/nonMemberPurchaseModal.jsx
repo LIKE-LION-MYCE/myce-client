@@ -103,6 +103,9 @@ export default function NonMemberPurchaseModal({
         </div>
 
         <div className={styles.content}>
+          <div className={styles.notice}>
+            <p>비회원은 한 번에 1매만 구매 가능합니다.</p>
+          </div>
           <div className={styles.ticketInfo}>
             <h4>{ticket.name}</h4>
             <p className={styles.price}>{ticket.price?.toLocaleString()}원</p>
