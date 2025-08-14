@@ -143,3 +143,39 @@
 .refundReasonTextarea::placeholder {
   color: #6c757d;
 }
+
+/* 환불 유형 표시 */
+.titleSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.refundTypeBadge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.refundDescription {
+  text-align: center;
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}

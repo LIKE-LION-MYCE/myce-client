@@ -4,7 +4,7 @@ import ExpoApply2 from "../mainpage/pages/expoApply/ExpoApply2";
 import MainPageLayout from "../mainpage/layout/MainPageLayout";
 import MainPage from "../mainpage/pages/index/MainPage";
 import BrowseExpo from "../mainpage/pages/expo-list/BrowseExpo";
-import ExpoDetail from "../mainpage/pages/detail/ExpoDetail";
+import ExpoDetail from "../mainpage/pages/expoDetail/ExpoDetail";
 import ReviewForm from "../mainpage/pages/detail/reviewform/ReviewForm";
 import AdApply from "../mainpage/pages/adApply/AdApply";
 import ExpoPayment from "../mainpage/pages/payment/ExpoPayment";
