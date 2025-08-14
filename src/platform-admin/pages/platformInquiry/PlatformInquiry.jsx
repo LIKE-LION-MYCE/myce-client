@@ -557,6 +557,26 @@ function PlatformInquiry() {
 
         {/* Right: Chat Area */}
         <main className={styles.chatMain}>
+          {/* Handoff Request Notification Banner */}
+          {selectedRoom && requestingRooms.has(selectedRoom.roomCode) && (
+            <div className={styles.handoffBanner}>
+              <div className={styles.handoffContent}>
+                <div className={styles.handoffIcon}>🔔</div>
+                <div className={styles.handoffText}>
+                  <strong>Handoff Request Pending</strong>
+                  <p>User has requested human assistance. Click to accept and take over this conversation.</p>
+                </div>
+                <button 
+                  className={styles.acceptHandoffButton}
+                  onClick={handleTakeOver}
+                  disabled={!isConnected}
+                >
+                  ✋ Accept Handoff
+                </button>
+              </div>
+            </div>
+          )}
+          
           <SharedChatArea
             messages={messages}
             loading={loadingMessages}
