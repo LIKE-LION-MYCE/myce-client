@@ -26,6 +26,15 @@ function ExpoApplicationForm({ expoData }) {
 
         <div className={styles.formGrid}>
           <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>카테고리</label>
+            <div className={styles.badgeRow}>
+              <div className={styles.badge}>
+                {form.category || '카테고리 없음'}
+              </div>
+            </div>
+          </div>
+
+          <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
             <input
               className={styles.inputField}
@@ -132,14 +141,6 @@ function ExpoApplicationForm({ expoData }) {
             </div>
           </div>
 
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>카테고리</label>
-            <div className={styles.badgeRow}>
-              <div className={styles.badge}>
-                {form.category || '카테고리 없음'}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

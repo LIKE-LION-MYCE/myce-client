@@ -13,7 +13,7 @@
 
 .modal {
   background: #fff;
-  width: 480px;
+  width: 900px;
   padding: 28px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   font-family: 'Pretendard', sans-serif;
@@ -131,4 +131,19 @@
   color: #155724;
   margin-bottom: 12px;
   text-align: center;
+}
+
+/* 2컬럼 레이아웃 */
+.contentLayout {
+  display: flex;
+  gap: 48px;
+  margin-bottom: 25px;
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  flex: 1;
 }

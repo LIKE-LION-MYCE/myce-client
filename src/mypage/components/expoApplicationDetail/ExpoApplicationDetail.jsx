@@ -92,6 +92,12 @@ function ExpoApplicationDetail({
           {(status === '게시종료' || status === '게시 종료') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 신청</button>
           )}
+          {(status === '정산요청' || status === '정산 요청') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
+          )}
+          {status === '종료됨' && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 완료 정보 조회</button>
+          )}
           {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
           )}
