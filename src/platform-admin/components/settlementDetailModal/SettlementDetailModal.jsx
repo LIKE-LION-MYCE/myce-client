@@ -130,7 +130,7 @@ function SettlementDetailModal({ isOpen, onClose, expoId, onSettlementApprove })
                 </div>
                 <div className={styles.row}>
                   <span className={styles.label}>정산 처리 담당자</span>
-                  <span className={styles.value}>지원님</span>
+                  <span className={styles.value}>{settlementData.adminName || '정보 없음'}</span>
                 </div>
               </div>
             )}
