@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import { FaEnvelope, FaDownload, FaQrcode } from 'react-icons/fa';
@@ -9,20 +9,26 @@ import Pagination from '../../../common/components/pagination/Pagination';
 import EmailModal from '../../components/emailModal/EmailModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
-import { getMyExpoReservation } from '../../../api/service/expo-admin/reservation/ReservationService';
-import { getExpoTicketNames } from '../../../api/service/expo-admin/reservation/ReservationService';
-import { updateReserverQrCodeForManualCheckIn } from '../../../api/service/expo-admin/reservation/ReservationService';
-import { downloadMyReservationExcelFile } from '../../../api/service/expo-admin/reservation/ReservationService';
+import {
+  getMyExpoReservation,
+  getExpoTicketNames,
+  updateReserverQrCodeForManualCheckIn,
+  downloadMyReservationExcelFile,
+} from '../../../api/service/expo-admin/reservation/ReservationService';
 
 const tabLabels = ['전체', '발급 대기', '입장 전', '입장 완료', '티켓 만료'];
 
 function Reservations() {
   const { expoId } = useParams();
+
+  // UI 상태
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+
+  // 필터/페이징
   const [currentTab, setCurrentTab] = useState('전체');
   const [searchType, setSearchType] = useState('phone');
   const [searchText, setSearchText] = useState('');
@@ -38,69 +44,85 @@ function Reservations() {
     totalElements: 0,
   });
 
-  //티켓 목록 조회
+  // 선택 상태(페이지 간 유지)
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [selectedMap, setSelectedMap] = useState(() => new Map()); // id -> {name,email,phone}
+  const [selectAllMatching, setSelectAllMatching] = useState(false); // Gmail 스타일
+
+  // 현재 페이지의 id 목록
+  const currentPageIds = useMemo(
+    () =>
+      (pageInfo.content || []).map(
+        (r, i) => r?.reserverId ?? `${r?.reservationCode || 'row'}-${i}`
+      ),
+    [pageInfo.content]
+  );
+
+  // 티켓 목록 조회
   useEffect(() => {
-    const fetchTicketNames = async () => {
+    (async () => {
       try {
-      const names = await getExpoTicketNames(expoId);
-      const sorted = (names ?? []).slice().sort((a, b) => a.localeCompare(b, 'ko-KR', { sensitivity: 'base' }));
-      setTicketOptions(sorted);
+        const names = await getExpoTicketNames(expoId);
+        const sorted = (names ?? [])
+          .slice()
+          .sort((a, b) => a.localeCompare(b, 'ko-KR', { sensitivity: 'base' }));
+        setTicketOptions(sorted);
       } catch (error) {
         triggerToastFail(error.message);
       }
-    };
-    fetchTicketNames();
+    })();
   }, [expoId]);
 
-  //예약자 목록 조회
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        const entranceStatusParam = currentTab === '전체' ? undefined : currentTab;
-        const trimmed = searchText.trim();
-        const nameParam =
-          searchType === 'name' ? (trimmed || undefined) : undefined;
-        const phoneParam =
-          searchType === 'phone' ? (trimmed || undefined) : undefined;
-        const codeParam =
-          searchType === 'reservationCode' ? (trimmed || undefined) : undefined;
-        const ticketParam = ticketName || undefined;
+  // 예약자 목록 조회
+  const fetchReservations = useCallback(async () => {
+    try {
+      const entranceStatusParam = currentTab === '전체' ? undefined : currentTab;
+      const trimmed = searchText.trim();
+      const nameParam = searchType === 'name' ? (trimmed || undefined) : undefined;
+      const phoneParam = searchType === 'phone' ? (trimmed || undefined) : undefined;
+      const codeParam =
+        searchType === 'reservationCode' ? (trimmed || undefined) : undefined;
+      const ticketParam = ticketName || undefined;
 
-        const res = await getMyExpoReservation(
-          expoId,
-          currentPage,
-          pageSize,
-          entranceStatusParam,
-          nameParam,
-          phoneParam,
-          codeParam,
-          ticketParam
-        );
+      const res = await getMyExpoReservation(
+        expoId,
+        currentPage,
+        pageSize,
+        entranceStatusParam,
+        nameParam,
+        phoneParam,
+        codeParam,
+        ticketParam
+      );
 
       setPageInfo({
-      content: res.content ?? [],
-      totalPages: res.page?.totalPages ?? 0,
-      number: res.page?.number ?? 0,
-      size: res.page?.size ?? pageSize,
-      totalElements: res.page?.totalElements ?? 0,
+        content: res.content ?? [],
+        totalPages: res.page?.totalPages ?? 0,
+        number: res.page?.number ?? 0,
+        size: res.page?.size ?? pageSize,
+        totalElements: res.page?.totalElements ?? 0,
       });
-
-      } catch (error) {
-        triggerToastFail(error.message);
-      }
-    };
-
-    fetchReservations();
+    } catch (error) {
+      triggerToastFail(error.message);
+    }
   }, [expoId, currentPage, pageSize, currentTab, searchText, searchType, ticketName]);
 
-  //수기 입장 처리
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
+
+  // 필터/탭/검색 변경 시 선택 초기화
+  useEffect(() => {
+    setSelectedIds(new Set());
+    setSelectedMap(new Map());
+    setSelectAllMatching(false);
+  }, [expoId, currentTab, searchType, searchText, ticketName]);
+
+  // 수기 입장 처리
   const handleEntranceBadgeClick = async (row) => {
-  const msg = '수기 입장 처리를 진행하시겠습니까?';
-  if (!window.confirm(msg)) return;
-
-  try {
+    if (!window.confirm('수기 입장 처리를 진행하시겠습니까?')) return;
+    try {
       const updated = await updateReserverQrCodeForManualCheckIn(expoId, row.reserverId);
-
       if (updated && updated.reserverId) {
         setPageInfo((prev) => ({
           ...prev,
@@ -117,36 +139,103 @@ function Reservations() {
     }
   };
 
-  //이메일 전송
-  const handleSendEmail = (formData) => {
-    console.log(
-      '전송할 폼 데이터:',
-      formData.get('subject'),
-      formData.get('body'),
-      formData.get('attachment')
-    );
-    setShowEmailModal(false);
-    triggerSuccessToast();
+  // 행 선택 토글
+  const handleToggleRow = (id, row) => {
+    setSelectAllMatching(false);
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const exists = next.has(id);
+      if (exists) {
+        next.delete(id);
+        setSelectedMap((m) => {
+          const mm = new Map(m);
+          mm.delete(id);
+          return mm;
+        });
+      } else {
+        next.add(id);
+        setSelectedMap((m) => {
+          const mm = new Map(m);
+          mm.set(id, { name: row?.name ?? '', email: row?.email ?? '', phone: row?.phone ?? '' });
+          return mm;
+        });
+      }
+      return next;
+    });
   };
 
-  //엑셀 다운로드
-  const handleExcelDownload = async () => {
-    if (isDownloading) return; // 중복 클릭 방지
+  // 현재 페이지 전체 토글
+  const handleTogglePage = (idsOfCurrentPage, rowsOfCurrentPage) => {
+    setSelectAllMatching(false);
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const allSelected = idsOfCurrentPage.every((id) => next.has(id));
+      setSelectedMap((m) => {
+        const mm = new Map(m);
+        if (allSelected) {
+          idsOfCurrentPage.forEach((id) => {
+            next.delete(id);
+            mm.delete(id);
+          });
+        } else {
+          idsOfCurrentPage.forEach((id, idx) => {
+            if (!next.has(id)) {
+              next.add(id);
+              const row = rowsOfCurrentPage[idx];
+              mm.set(id, {
+                name: row?.name ?? '',
+                email: row?.email ?? '',
+                phone: row?.phone ?? '',
+              });
+            }
+          });
+        }
+        return mm;
+      });
+      return next;
+    });
+  };
 
+  // 전체 선택/해제 + 선택 취소
+  const selectAllResults = () => setSelectAllMatching(true);
+  const clearAllResults = () => setSelectAllMatching(false);
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+    setSelectedMap(new Map());
+    setSelectAllMatching(false);
+  };
+
+  // 모달 전달용 수신자 배열
+  const selectedRecipients = useMemo(
+    () => Array.from(selectedMap.values()),
+    [selectedMap]
+  );
+
+  // 모달 오픈 가드
+  const handleOpenEmailModal = () => {
+    const hasRecipients = selectAllMatching || selectedRecipients.length > 0;
+    if (!hasRecipients) {
+      triggerToastFail('선택된 수신자가 없습니다.');
+      return;
+    }
+    setShowEmailModal(true);
+  };
+
+  // 엑셀 다운로드
+  const handleExcelDownload = async () => {
+    if (isDownloading) return;
     setIsDownloading(true);
     try {
       const response = await downloadMyReservationExcelFile(expoId);
       const contentDisposition = response.headers['content-disposition'];
-      let fileName = '예약자_명단.xlsx'; 
+      let fileName = '예약자_명단.xlsx';
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
         if (fileNameMatch && fileNameMatch.length === 2) {
           fileName = decodeURIComponent(fileNameMatch[1]);
         }
       }
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', fileName);
@@ -154,9 +243,7 @@ function Reservations() {
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
       triggerSuccessToast();
-
     } catch (e) {
       triggerToastFail(e.message || '다운로드에 실패했습니다.');
     } finally {
@@ -164,30 +251,29 @@ function Reservations() {
     }
   };
 
-  //QR 재발급
+  // QR 재발급(샘플)
+  const selectedCount = selectAllMatching ? pageInfo.totalElements : selectedIds.size;
   const handleReissueQR = () => {
+    if (selectedCount === 0) {
+      triggerToastFail('선택된 항목이 없습니다.');
+      return;
+    }
     triggerSuccessToast();
   };
 
-  //페이지 핸들링
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  //탭 핸들링
+  // 페이지/탭 핸들링
+  const handlePageChange = (page) => setCurrentPage(page);
   const handleTabChange = (index) => {
     const selectedTab = tabLabels[index];
-    setCurrentTab(selectedTab);
     setCurrentPage(0);
+    setCurrentTab(selectedTab);
   };
 
-  //성공 토스트 팝업
+  // 토스트
   const triggerSuccessToast = () => {
     setShowSuccessToast(true);
     setTimeout(() => setShowSuccessToast(false), 3000);
   };
-
-  //실패 토스트 팝업
   const triggerToastFail = (message) => {
     setFailMessage(message);
     setShowFailToast(true);
@@ -196,10 +282,32 @@ function Reservations() {
 
   return (
     <div className={styles.reservationsWrapper}>
-      <Tab
-        tabs={tabLabels}
-        onTabChange={handleTabChange}
-      />
+      <Tab tabs={tabLabels} onTabChange={handleTabChange} />
+
+      {(selectedIds.size > 0 || selectAllMatching) && (
+        <div className={styles.selectionBar}>
+          <span>
+            {selectAllMatching
+              ? `검색 결과 전체 ${pageInfo.totalElements}건이 선택되었습니다.`
+              : `${selectedIds.size}건 선택됨`}
+          </span>
+
+          {!selectAllMatching && pageInfo.totalElements > selectedIds.size && (
+            <button className={styles.selectionLinkBtn} onClick={selectAllResults}>
+              검색 결과 전체 선택
+            </button>
+          )}
+          {selectAllMatching && (
+            <button className={styles.selectionLinkBtn} onClick={clearAllResults}>
+              전체 선택 취소
+            </button>
+          )}
+
+          <button className={styles.selectionClearBtn} onClick={clearSelection}>
+            선택 취소
+          </button>
+        </div>
+      )}
 
       <div className={styles.topControls}>
         <div className={styles.filters}>
@@ -242,7 +350,9 @@ function Reservations() {
             >
               <option value="">티켓 분류</option>
               {ticketOptions.map((name) => (
-                <option key={name} value={name}>{name}</option>
+                <option key={name} value={name}>
+                  {name}
+                </option>
               ))}
             </select>
           </div>
@@ -251,7 +361,7 @@ function Reservations() {
         <div className={styles.buttons}>
           <button
             className={`${styles.actionBtn} ${styles.emailBtn}`}
-            onClick={() => setShowEmailModal(true)}
+            onClick={handleOpenEmailModal}
           >
             <FaEnvelope className={styles.icon} />
             이메일 전송
@@ -266,6 +376,8 @@ function Reservations() {
           <button
             className={`${styles.actionBtn} ${styles.qrBtn}`}
             onClick={handleReissueQR}
+            disabled={selectedCount === 0}
+            title={selectedCount === 0 ? '선택된 항목이 없습니다' : undefined}
           >
             <FaQrcode className={styles.icon} />
             QR 재발급
@@ -273,20 +385,33 @@ function Reservations() {
         </div>
       </div>
 
-      <ReservationTable 
+      <ReservationTable
         data={pageInfo.content}
-        onEntranceClick={handleEntranceBadgeClick}/>
-
-      <Pagination
-        pageInfo={pageInfo}
-        onPageChange={handlePageChange}
+        selectedIds={selectedIds}
+        selectAllMatching={selectAllMatching}
+        onToggleRow={handleToggleRow}
+        onTogglePage={handleTogglePage}
+        onEntranceClick={handleEntranceBadgeClick}
       />
+
+      <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
 
       <EmailModal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        selectedCount={3}
-        onSend={handleSendEmail}
+        expoId={expoId}
+        selectAllMatching={selectAllMatching}
+        selectedRecipients={selectedRecipients}
+        totalElements={pageInfo.totalElements}
+        onAfterSend={() => {
+          clearSelection();
+          setShowEmailModal(false);
+          setTimeout(() => triggerSuccessToast(), 0);
+        }}
+        onError={(msg) => {
+          setShowEmailModal(false);
+          setTimeout(() => triggerToastFail(msg), 0);
+        }}
       />
 
       {showSuccessToast && <ToastSuccess />}
