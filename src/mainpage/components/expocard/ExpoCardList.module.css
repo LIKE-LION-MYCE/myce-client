@@ -27,13 +27,28 @@
   left: 0;
   right: 0;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.3); /* 기본은 30% 투명도 */
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   height: 100%;
   transition: background 0.3s ease;
+  pointer-events: none;
+}
+
+
+
+.bookmark {
+  position: absolute;
+  bottom: 0.7rem;
+  right: 0.7rem;
+  color: white;
+  z-index: 10;
+  background: none;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 /* 기본 텍스트 */
@@ -44,8 +59,9 @@
 }
 
 .remain {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #f87171;
+  font-weight: bold;
 }
 
 /* 숨겨지는 텍스트 (hover 시 보임) */
