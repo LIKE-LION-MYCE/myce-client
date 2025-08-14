@@ -1,0 +1,285 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.content {
+  padding: 24px;
+}
+
+.ticketInfo {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.ticketInfo h4 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ticketType {
+  color: #e74c3c;
+  font-weight: 500;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.price {
+  color: #27ae60;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.description {
+  color: #666;
+  font-size: 14px;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.remaining {
+  color: #555;
+  font-size: 14px;
+  margin: 8px 0 0 0;
+}
+
+.quantitySection {
+  margin-bottom: 24px;
+}
+
+.quantitySection label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.quantityBtn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantityBtn:hover:not(:disabled) {
+  border-color: #3498db;
+  background: #f0f8ff;
+}
+
+.quantityBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantityInput {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.quantityInput:focus {
+  border-color: #3498db;
+}
+
+.priceSection {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 2px solid #ddd;
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.totalPrice {
+  color: #e74c3c;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.error {
+  background: #ffe6e6;
+  border: 1px solid #ffcccc;
+  border-radius: 6px;
+  padding: 12px;
+  color: #d63384;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancelBtn,
+.purchaseBtn {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.cancelBtn {
+  background: #f8f9fa;
+  color: #666;
+  border: 2px solid #ddd;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.purchaseBtn {
+  background: #3498db;
+  color: white;
+  border: 2px solid #3498db;
+}
+
+.purchaseBtn:hover:not(:disabled) {
+  background: #2980b9;
+  border-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.purchaseBtn:disabled {
+  background: #bdc3c7;
+  border-color: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .header {
+    padding: 16px 20px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .cancelBtn,
+  .purchaseBtn {
+    width: 100%;
+  }
+}
