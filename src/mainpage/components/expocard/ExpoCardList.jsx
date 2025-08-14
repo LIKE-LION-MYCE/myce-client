@@ -63,7 +63,7 @@ export default function ExpoCardList({ expos, isLoading, error }) {
           onClick={() => handleCardClick(expo.expoId)}
         >
           <img
-            src={expo.thumbnail}
+            src={expo.thumbnailUrl}
             alt={expo.title}
             className={styles.thumbnail}
           />

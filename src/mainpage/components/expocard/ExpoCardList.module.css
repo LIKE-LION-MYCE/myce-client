@@ -27,14 +27,14 @@
   left: 0;
   right: 0;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.3); /* 기본은 30% 투명도 */
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   height: 100%;
   transition: background 0.3s ease;
-  pointer-events: none; /* Allow clicks to pass through */
+  pointer-events: none;
 }
 
 
@@ -48,7 +48,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  pointer-events: auto; /* Re-enable clicks for the bookmark button */
+  pointer-events: auto;
 }
 
 /* 기본 텍스트 */
