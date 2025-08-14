@@ -10,7 +10,8 @@ function EmailModal({
   selectedRecipients = [],
   totalElements = 0,
   onAfterSend,
-  onError,
+  triggerToastFail,
+  triggerSuccessToast,
 }) {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -40,18 +41,21 @@ function EmailModal({
 
   const handleSend = async () => {
     const trimmedSubject = subject.trim();
+    const trimmedBody = body.trim();
+
     if (!trimmedSubject) {
-      alert('제목을 입력해주세요.');
+      triggerToastFail?.('제목을 입력해주세요.');
       return;
     }
-    if (!body.trim()) {
-      alert('내용을 입력해주세요.');
+    if (!trimmedBody) {
+      triggerToastFail?.('내용을 입력해주세요.');
       return;
     }
 
+    // 수신자 구성
     let dto = {
       subject: trimmedSubject,
-      content: body,
+      content: trimmedBody,
       selectAllMatching: !!selectAllMatching,
     };
 
@@ -61,13 +65,13 @@ function EmailModal({
         .map((x) => ({ name: x?.name ?? '', email: x.email }));
 
       if (recipientInfos.length === 0) {
-        alert('이메일 주소가 있는 수신자가 없습니다.');
+        triggerToastFail?.('이메일 주소가 있는 수신자가 없습니다.');
         return;
       }
       dto = { ...dto, recipientInfos };
     } else {
       if (effectiveRecipientCount === 0) {
-        alert('전체 선택 모드이지만 발송 대상이 없습니다.');
+        triggerToastFail?.('전체 선택 모드이지만 발송 대상이 없습니다.');
         return;
       }
     }
@@ -75,11 +79,12 @@ function EmailModal({
     try {
       setSubmitting(true);
       await sendExpoAdminEmail(expoId, dto);
+      triggerSuccessToast?.();
       onAfterSend?.();
-      handleClose(); // 닫으면서 초기화
+      handleClose();
     } catch (e) {
       const msg = e?.message || '이메일 전송에 실패했습니다.';
-      onError?.(msg);
+      triggerToastFail?.(msg);
     } finally {
       setSubmitting(false);
     }
@@ -143,8 +148,7 @@ function EmailModal({
           <button
             onClick={handleSend}
             className={styles.sendBtn}
-            disabled={submitting || (!selectAllMatching && effectiveRecipientCount === 0)}
-            title={!selectAllMatching && effectiveRecipientCount === 0 ? '수신자가 없습니다' : undefined}
+            disabled={submitting}
           >
             {submitting ? '전송 중...' : '전송하기'}
           </button>

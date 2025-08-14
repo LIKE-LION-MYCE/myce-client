@@ -403,14 +403,11 @@ function Reservations() {
         selectAllMatching={selectAllMatching}
         selectedRecipients={selectedRecipients}
         totalElements={pageInfo.totalElements}
+        triggerToastFail={triggerToastFail}
+        triggerSuccessToast={triggerSuccessToast}
         onAfterSend={() => {
           clearSelection();
           setShowEmailModal(false);
-          setTimeout(() => triggerSuccessToast(), 0);
-        }}
-        onError={(msg) => {
-          setShowEmailModal(false);
-          setTimeout(() => triggerToastFail(msg), 0);
         }}
       />
 
