@@ -12,16 +12,21 @@ export default function CategoryTabs({ categories, onCategoryChange }) {
   };
 
   return (
-    <div className={styles.container}>
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          className={`${styles.tab} ${activeTab === cat ? styles.active : ''}`}
-          onClick={() => handleClick(cat)}
-        >
-          {cat}
-        </button>
-      ))}
+    <div className={styles.wrapper}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>진행중인 행사</h2>
+      </div>
+      <div className={styles.container}>
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={`${styles.tab} ${activeTab === cat ? styles.active : ''}`}
+            onClick={() => handleClick(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

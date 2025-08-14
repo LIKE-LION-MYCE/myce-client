@@ -1,41 +1,207 @@
-.container {
+.wrapper {
   width: 100%;
-  padding: 0.5rem 1rem;
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center; /* 가운데 정렬 */
-  background-color: white;
-  border-bottom: 1px solid #E5E7EB;
-  font-size: 14px;
+  padding: 3rem 2rem 1.5rem 2rem;
+  position: relative;
 }
 
+.wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.header {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.04em;
+  position: relative;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 170px;
+  height: 3px;
+  background: linear-gradient(90deg, #000, #000);
+  border-radius: 2px;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  gap: 0;
+  justify-content: center; /* 중앙 정렬 */
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: relative;
+  padding: 0.5rem; /* 패딩 추가 */
+  min-height: 60px; /* 최소 높이 설정 */
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
 
 .tab {
-  padding: 0.25rem 0rem; /* 상하만 padding */
+  padding: 0.75rem 1.25rem; /* 패딩 조정 */
   position: relative;
-  color: #9CA3AF; /* 기본 글자색: Tailwind text-gray-400 */
-  font-weight: 500;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
   white-space: nowrap;
-  transition: all 0.2s ease;
-  background: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
+  border-radius: 10px; /* 둥근 모서리 줄임 */
+  min-width: fit-content;
+  overflow: visible; /* 오버플로우 변경 */
+  flex-shrink: 0; /* 탭이 줄어들지 않도록 */
+}
+
+.tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 10px; /* 탭과 같은 둥근 모서리 */
+}
+
+.tab:hover {
+  color: #475569;
+  transform: translateY(-2px);
+}
+
+.tab:hover::before {
+  opacity: 1;
 }
 
 .active {
-  color: black;
+  color: #000;
+  font-weight: 800;
+  background: #ffffff;
+  transform: translateY(-1px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.active::after {
-  content: "";
-  position: absolute;
-  bottom: -9px;
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: 100%;
-  height: 2px;
-  background-color: black;
-  border-radius: 2px;
+.active::before {
+  opacity: 0; /* 상단 인디케이터 제거 */
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 활성 탭 상단 인디케이터 제거 */
+.active::before {
+  display: none; /* 완전히 제거 */
+}
+
+/* 글래스모피즘 효과를 위한 추가 스타일 */
+.tab.active {
+  backdrop-filter: blur(20px);
+}
+
+/* 호버 시 주변 탭들이 살짝 흐려지는 효과 */
+.container:hover .tab:not(:hover):not(.active) {
+  opacity: 0.6;
+  transform: scale(0.98);
+}
+
+/* 부드러운 포커스 효과 */
+.tab:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.3);
+  outline-offset: 2px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .container {
+    gap: 0;
+    padding: 0.375rem;
+    border-radius: 14px;
+  }
+  
+  .tab {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+  
+  .active::after {
+    width: 20px;
+    height: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 1.5rem 1rem 0.75rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .header {
+    margin-bottom: 2rem;
+  }
+  
+  .container {
+    padding: 0.25rem;
+    border-radius: 12px;
+  }
+  
+  .tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+  
+  .active::after {
+    width: 16px;
+    height: 2px;
+  }
 }
