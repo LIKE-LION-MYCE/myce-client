@@ -59,8 +59,9 @@
 }
 
 .remain {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #f87171;
+  font-weight: bold;
 }
 
 /* 숨겨지는 텍스트 (hover 시 보임) */
