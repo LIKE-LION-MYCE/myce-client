@@ -47,7 +47,6 @@ export default function MainPage() {
       setMainBanners(response.filter((b) => b.locationId === 1));
       setSubBanners(response.filter((b) => b.locationId === 2));
       setFooterBanners(response.filter((b) => b.locationId === 3));
-      setTopRightBanners(response.filter((b) => b.locationId === 4));
     } catch (error) {
       console.log("배너 데이터를 찾아오지 못했습니다 : ", error);
     }
