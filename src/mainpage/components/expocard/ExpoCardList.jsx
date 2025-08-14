@@ -2,31 +2,62 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ExpoCardList.module.css";
 import { FiBookmark, FiBookmark as FiBookmarkFill } from "react-icons/fi";
+import {
+  saveFavorite,
+  deleteFavorite,
+} from "../../../api/service/user/FavoriteService";
 
-export default function ExpoCardList({ expos, isLoading, error }) {
+export default function ExpoCardList({
+  expos,
+  isLoading,
+  error,
+  onBookmarkActionComplete,
+}) {
   const [internalExpos, setInternalExpos] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (expos) {
-      setInternalExpos(expos.map((expo) => ({ ...expo, isBookmark: false })));
+      setInternalExpos(
+        expos.map((expo) => ({ ...expo, isBookmark: expo.bookmark || false }))
+      );
     }
   }, [expos]);
 
-  const handleBookmarkToggle = (e, expoId) => {
+  const handleBookmarkToggle = async (e, expoId) => {
     e.stopPropagation();
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       alert("비회원은 북마크 기능을 이용하실 수 없습니다");
       return;
     }
-    setInternalExpos((prevExpos) =>
-      prevExpos.map((expo) =>
-        expo.expoId === expoId
-          ? { ...expo, isBookmark: !expo.isBookmark }
-          : expo
-      )
-    );
+
+    const currentExpo = internalExpos.find((expo) => expo.expoId === expoId);
+    if (!currentExpo) return;
+
+    try {
+      let newIsBookmarkStatus;
+      if (currentExpo.isBookmark) {
+        newIsBookmarkStatus = await deleteFavorite(expoId);
+      } else {
+        newIsBookmarkStatus = await saveFavorite(expoId);
+      }
+
+      setInternalExpos((prevExpos) =>
+        prevExpos.map((expo) =>
+          expo.expoId === expoId
+            ? { ...expo, isBookmark: newIsBookmarkStatus }
+            : expo
+        )
+      );
+
+      if (onBookmarkActionComplete) {
+        onBookmarkActionComplete();
+      }
+    } catch (apiError) {
+      console.error("Error toggling bookmark:", apiError);
+      alert("북마크 기능 처리 중 오류가 발생했습니다.");
+    }
   };
 
   const handleCardClick = (expoId) => {

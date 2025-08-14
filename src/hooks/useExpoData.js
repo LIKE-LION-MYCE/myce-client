@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getExpos } from "../api/service/user/expoApi";
 
 export const useExpoData = () => {
@@ -6,6 +6,11 @@ export const useExpoData = () => {
   const [filters, setFilters] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refresh = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
     const fetchExpos = async () => {
@@ -22,7 +27,7 @@ export const useExpoData = () => {
     };
 
     fetchExpos();
-  }, [filters]);
+  }, [filters, refreshTrigger]);
 
-  return { expos, filters, setFilters, isLoading, error };
+  return { expos, filters, setFilters, isLoading, error, refresh };
 };
