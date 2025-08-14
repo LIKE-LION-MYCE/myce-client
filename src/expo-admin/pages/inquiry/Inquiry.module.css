@@ -2,7 +2,9 @@
   display: flex;
   flex-direction: column;
   padding: 32px;
-  width: 1625px;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sectionTitle {
@@ -18,11 +20,15 @@
   overflow: hidden;
   background-color: #fff;
   height: 650px;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* 좌측: 상담자 목록 */
 .sidebar {
   width: 260px;
+  min-width: 260px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #eee;
@@ -122,9 +128,10 @@
   padding: 10px 14px;
   border-radius: 16px;
   background-color: #f0f0f0;
-  max-width: 320px;
+  max-width: min(320px, 70vw);
   font-size: 14px;
   line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .messageRight .messageBubble {

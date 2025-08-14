@@ -6,7 +6,6 @@ import LoadMoreButton from '../../components/button/LoadMoreButton';
 import CategoryTabs from '../../components/category/CategoryTabs';
 import ExpoCardList from '../../components/expocard/ExpoCardList';
 import TopRightWidgetsSection from '../../components/widget/TopRightWidgetsSection';
-import FloatingChatButton from '../../components/chatbutton/FloatingChatButton';
 import { getCurrentBanner } from '../../../api/service/platform-admin/banner/BannerService'
 
 export default function MainPage() {
@@ -43,7 +42,6 @@ export default function MainPage() {
       <ExpoCardList />
       <LoadMoreButton />
       <FooterBanner banners={footerBanners} />
-      <FloatingChatButton />
     </div>
   );
 }

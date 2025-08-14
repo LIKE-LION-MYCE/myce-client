@@ -1,20 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ChatContainer.module.css';
 import instance from '../../../api/lib/axios';
 import * as ChatWebSocketService from '../../../api/service/chat/ChatWebSocketService';
-import { getAllUnreadCounts, markAsRead } from '../../../api/service/chat/chatService';
+import { getAllUnreadCounts, markAsRead, getChatMessages } from '../../../api/service/chat/chatService';
+import { useWorkingChatScroll } from '../../../hooks/useWorkingChatScroll';
 import { jwtDecode } from 'jwt-decode';
+import SharedChatArea from '../../../components/shared/chat/SharedChatArea';
+import SharedChatRoomList from '../../../components/shared/chat/SharedChatRoomList';
 
 export default function ChatContainer() {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState({});
   const [buttonStates, setButtonStates] = useState({}); // roomCode -> 버튼 상태
-  const messagesEndRef = useRef(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [error, setError] = useState(null);
+  
+  // Use proven working chat scroll implementation
+  const {
+    messages,
+    loading: loadingMessages,
+    loadingOlder,
+    hasMore,
+    error: messageError,
+    containerRef: messagesContainerRef,
+    messagesEndRef,
+    loadInitialMessages,
+    handleScroll,
+    scrollToBottom,
+    addMessage,
+    updateMessage,
+    reset: resetMessages
+  } = useWorkingChatScroll(getChatMessages);
+
+  // For compatibility with SharedChatArea
+  const isInitialLoad = loadingMessages;
 
   // 플랫폼 상담방인지 확인하는 헬퍼 함수
   const isPlatformRoom = (room) => {
@@ -60,6 +83,7 @@ export default function ChatContainer() {
 
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.memberId;
+        setCurrentUserId(userId);
         
         console.log('WebSocket 연결 시도...', userId);
         await ChatWebSocketService.connect(token, userId);
@@ -79,6 +103,7 @@ export default function ChatContainer() {
         }
       } catch (error) {
         console.error('채팅방 목록 조회 실패:', error);
+        setError('채팅방을 불러올 수 없습니다.');
       } finally {
         setLoading(false);
       }
@@ -110,32 +135,36 @@ export default function ChatContainer() {
   useEffect(() => {
     if (!selectedRoom) {
       console.log('선택된 채팅방이 없음');
-      setMessages([]);
+      resetMessages();
       return;
     }
 
-    const loadMessages = async () => {
+    // Only run if room code actually changed
+    const roomCode = selectedRoom.roomCode;
+    if (!roomCode) return;
+
+    const loadRoomMessages = async () => {
       try {
-        console.log('메시지 히스토리 로딩 시도:', selectedRoom.roomCode);
-        const response = await instance.get(`/chats/rooms/${selectedRoom.roomCode}/messages`);
-        console.log('메시지 히스토리 응답:', response.data);
-        const messages = response.data.content || response.data.messages || [];
-        // 메시지를 시간순으로 정렬 (오래된 메시지가 위로)
-        const sortedMessages = messages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
-        setMessages(sortedMessages);
+        console.log('메시지 히스토리 로딩 시도:', roomCode);
+        resetMessages();
+        await loadInitialMessages(roomCode);
         
         // 메시지 로드 후 자동으로 읽음 처리
-        if (sortedMessages.length > 0) {
-          await handleMarkAsRead(selectedRoom.roomCode);
+        try {
+          const currentRoom = selectedRoom;
+          const expoId = isPlatformRoom(currentRoom) ? null : currentRoom?.expoId;
+          await markAsRead(roomCode, expoId);
+        } catch (err) {
+          console.error('읽음 처리 실패:', err);
         }
       } catch (error) {
         console.error('메시지 로드 실패:', error);
-        setMessages([]);
       }
     };
 
-    loadMessages();
-  }, [selectedRoom]);
+    loadRoomMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoom?.roomCode]); // Only depend on roomCode to avoid infinite loops
 
   // WebSocket 구독 관리 (selectedRoom과 wsConnected 모두 준비된 후)
   useEffect(() => {
@@ -145,22 +174,36 @@ export default function ChatContainer() {
 
     const joinRoomAndSubscribe = async () => {
       try {
-        console.log('WebSocket 채팅방 입장 시도:', selectedRoom.roomCode);
+        console.log('🔌 WebSocket 채팅방 입장 시도:', selectedRoom.roomCode);
         
         // WebSocket 채팅방 입장
         await ChatWebSocketService.joinRoom(selectedRoom.roomCode);
         
         // 메시지 수신 핸들러 등록
         ChatWebSocketService.onMessage(selectedRoom.roomCode, (message) => {
-          console.log('새 메시지 수신:', message);
           
           // 메시지에 unreadCount가 있으면 그대로 사용, 없으면 1로 설정 (새 메시지)
           const newMessage = {
             ...message,
+            id: message.id || message.messageId, // Ensure id field exists
             unreadCount: message.unreadCount !== undefined ? message.unreadCount : 1
           };
           
-          setMessages(prev => [...prev, newMessage]);
+          console.log('🔍 메시지 분기 체크:', {
+            messageSenderId: message.senderId,
+            currentUserId,
+            senderType: message.senderType,
+            senderName: message.senderName,
+            isMyMessage: message.senderId === currentUserId && message.senderType === 'USER',
+            fullMessage: message
+          });
+
+          // 모든 메시지를 동일하게 처리 (낙관적 업데이트 제거)
+          console.log('✅ 메시지 추가:', newMessage);
+          addMessage(newMessage);
+          
+          
+          // Virtuoso handles auto-scroll automatically with followOutput
           
           // 현재 선택된 채팅방의 메시지면 자동으로 읽음 처리 (자신의 메시지가 아닌 경우만)
           const token = localStorage.getItem('access_token');
@@ -217,17 +260,13 @@ export default function ChatContainer() {
 
         // unread count 업데이트 핸들러 등록 (읽음 상태 실시간 업데이트)
         ChatWebSocketService.subscribeToUnreadUpdates(selectedRoom.roomCode, (unreadData) => {
-          console.log('Unread count 업데이트:', unreadData);
-          
           // read_status_update 메시지 처리
           if (unreadData.type === 'read_status_update') {
             const payload = unreadData.payload || unreadData;
             const readerType = payload.readerType;
             
-            console.log('읽음 상태 업데이트 처리:', { readerType, payload });
-            
-            // 관리자가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
-            if (readerType === 'ADMIN') {
+            // 관리자나 AI가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
+            if (readerType === 'ADMIN' || readerType === 'AI') {
               setMessages(prev => prev.map(msg => {
                 const token = localStorage.getItem('access_token');
                 if (token) {
@@ -271,25 +310,40 @@ export default function ChatContainer() {
     };
   }, [selectedRoom, wsConnected]);
 
-  // 메시지 스크롤 하단 이동
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // No auto-scroll - let users control their scroll position
+  // Badge notifications will show new messages, users can click scroll button to go down
 
   // 메시지 전송 함수
   const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedRoom || !wsConnected) return;
+    if (!newMessage.trim() || !selectedRoom || !wsConnected) {
+      console.log('❌ 메시지 전송 차단:', { 
+        hasMessage: !!newMessage.trim(), 
+        hasRoom: !!selectedRoom, 
+        isConnected: wsConnected 
+      });
+      return;
+    }
 
-    console.log('메시지 전송:', newMessage);
-    ChatWebSocketService.sendMessage(selectedRoom.roomCode, newMessage.trim());
+    const messageContent = newMessage.trim();
+    console.log('📤 메시지 전송 시작:', messageContent, 'to room:', selectedRoom.roomCode);
+
+    // WebSocket으로 메시지 전송 (낙관적 업데이트 제거)
+    ChatWebSocketService.sendMessage(selectedRoom.roomCode, messageContent);
     setNewMessage('');
+
+    // Virtuoso handles auto-scroll with followOutput
   };
 
   // 읽음 처리 함수
   const handleMarkAsRead = async (roomCode) => {
     try {
       console.log('읽음 처리 시작:', roomCode);
-      const response = await markAsRead(roomCode);
+      
+      // 현재 선택된 방이 플랫폼 방인지 확인하여 적절한 API 호출
+      const currentRoom = selectedRoom || chatRooms.find(room => room.roomCode === roomCode);
+      const expoId = isPlatformRoom(currentRoom) ? null : currentRoom?.expoId;
+      
+      const response = await markAsRead(roomCode, expoId);
       console.log('읽음 처리 API 응답:', response);
       
       // 로컬 상태에서 unread count를 0으로 설정
@@ -364,213 +418,147 @@ export default function ChatContainer() {
     }
   };
 
-  // Enter 키로 메시지 전송
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  // 시간 포맷팅 함수
-  const formatTime = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const daysDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
+  // Custom room list functions for user chat
+  const getRoomTitle = (room) => room.expoTitle || '박람회명 없음';
+  
+  const getRoomAvatar = (room) => {
+    const isCurrentlyPlatform = isPlatformRoom(room);
+    const currentButtonState = getCurrentButtonState(room.roomCode);
+    const isAIActive = currentButtonState === 'AI_ACTIVE' || currentButtonState === 'WAITING_FOR_ADMIN';
     
-    if (daysDiff === 0) {
-      return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: true });
-    } else if (daysDiff === 1) {
-      return '어제';
-    } else {
-      return `${daysDiff}일 전`;
+    if (isCurrentlyPlatform) {
+      return isAIActive 
+        ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png"  // Robot mouse
+        : "https://fonts.gstatic.com/s/e/notoemoji/latest/1f9d1_200d_1f4bc/emoji.svg";  // Professional admin
     }
+    return "https://fonts.gstatic.com/s/e/notoemoji/latest/1f3e2/emoji.svg";  // Building/expo emoji
+  };
+  
+  const getRoomPriority = (room) => {
+    // Platform rooms get highest priority
+    if (isPlatformRoom(room)) return 100;
+    return 0;
+  };
+  
+  const getRoomBadges = (room) => {
+    const badges = [];
+    const isCurrentlyPlatform = isPlatformRoom(room);
+    const currentButtonState = getCurrentButtonState(room.roomCode);
+    
+    if (isCurrentlyPlatform) {
+      const isAIActive = currentButtonState === 'AI_ACTIVE' || currentButtonState === 'WAITING_FOR_ADMIN';
+      if (currentButtonState === 'HUMAN_ACTIVE') {
+        badges.push(<div key="active" style={{
+          width: '8px', height: '8px', backgroundColor: '#4CAF50', borderRadius: '50%',
+          animation: 'pulse 2s infinite'
+        }} title="상담원 연결됨" />);
+      }
+    }
+    return badges;
+  };
+  
+  // Custom header content for platform rooms
+  const renderChatHeader = () => {
+    if (!isPlatformRoom(selectedRoom)) {
+      return (
+        <div className={styles.defaultHeader}>
+          <h3>{selectedRoom.expoTitle || '박람회명 없음'}</h3>
+          <div className={styles.connectionStatus}>
+            <span className={`${styles.statusDot} ${wsConnected ? styles.connected : styles.disconnected}`} />
+            {wsConnected ? '연결됨' : '연결 끊김'}
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span>{selectedRoom.expoTitle || '박람회명 없음'}</span>
+          <span style={{
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '12px',
+            fontWeight: '500',
+            backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'HUMAN_ACTIVE' ? '#4CAF50' : 
+                             getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '#ff9800' : '#2196F3',
+            color: 'white'
+          }}>
+            {getCurrentButtonState(selectedRoom.roomCode) === 'HUMAN_ACTIVE' ? '👨‍💼 상담원 연결됨' :
+             getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '⏳ 상담원 대기중' : '🤖 AI 상담중'}
+          </span>
+        </div>
+        <button 
+          className={styles.platformButton}
+          onClick={() => handlePlatformButtonClick(
+            selectedRoom.roomCode, 
+            getButtonAction(getCurrentButtonState(selectedRoom.roomCode))
+          )}
+          disabled={!wsConnected}
+          style={{
+            backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '#ff9800' : '#2196F3',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '6px 12px',
+            fontSize: '12px',
+            cursor: wsConnected ? 'pointer' : 'not-allowed',
+            opacity: wsConnected ? 1 : 0.5
+          }}
+        >
+          {getButtonText(getCurrentButtonState(selectedRoom.roomCode))}
+        </button>
+      </div>
+    );
   };
 
   return (
     <div className={styles.chatWrapper}>
-      {/* 좌측 채팅 리스트 */}
+      {/* Left: Chat Room List */}
       <aside className={styles.chatList}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2>상담 채팅</h2>
-          <div style={{ fontSize: '12px', color: wsConnected ? '#4CAF50' : '#f44336' }}>
-            {wsConnected ? '🟢 연결됨' : '🔴 연결 안됨'}
-          </div>
-        </div>
-        {loading ? (
-          <div style={{ padding: '20px', textAlign: 'center' }}>로딩 중...</div>
-        ) : chatRooms.length === 0 ? (
-          <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-            아직 채팅방이 없습니다.
-          </div>
-        ) : (
-          <ul className={styles.chatRoomList}>
-            {chatRooms.map((room) => (
-              <li 
-                key={room.roomCode} 
-                className={`${styles.chatRoom} ${selectedRoom?.roomCode === room.roomCode ? styles.selected : ''}`}
-                onClick={() => handleRoomSelect(room)}
-              >
-                <img 
-                  src={room.expoTitle === '플랫폼 상담' 
-                    ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png" 
-                    : "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx"} 
-                  alt="avatar" 
-                />
-                <div className={styles.chatRoomText}>
-                  <div style={room.expoTitle === '플랫폼 상담' ? {fontWeight: 'bold', color: '#2196F3'} : {}}>
-                    {room.expoTitle || '박람회명 없음'}
-                  </div>
-                  <span>{formatTime(room.lastMessageAt)}</span>
-                </div>
-                {unreadCounts[room.roomCode] > 0 && (
-                  <span className={styles.unreadBadge}>{unreadCounts[room.roomCode]}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+        <SharedChatRoomList
+          chatRooms={chatRooms}
+          selectedRoom={selectedRoom}
+          loading={loading}
+          error={error}
+          unreadCounts={unreadCounts}
+          onRoomSelect={handleRoomSelect}
+          onRefresh={() => window.location.reload()}
+          title="상담 채팅"
+          emptyMessage="아직 채팅방이 없습니다"
+          getRoomTitle={getRoomTitle}
+          getRoomAvatar={getRoomAvatar}
+          getRoomPriority={getRoomPriority}
+          getRoomBadges={getRoomBadges}
+          headerContent={(
+            <div style={{ fontSize: '12px', color: wsConnected ? '#4CAF50' : '#f44336' }}>
+              {wsConnected ? '🟢 연결됨' : '🔴 연결 안됨'}
+            </div>
+          )}
+        />
       </aside>
 
-      {/* 우측 채팅 내용 */}
+      {/* Right: Chat Area */}
       <main className={styles.chatArea}>
-        {selectedRoom ? (
-          <>
-            <header className={styles.chatHeader}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <span>{selectedRoom.expoTitle || '박람회명 없음'}</span>
-                {isPlatformRoom(selectedRoom) && (
-                  <button 
-                    className={styles.platformButton}
-                    onClick={() => handlePlatformButtonClick(
-                      selectedRoom.roomCode, 
-                      getButtonAction(getCurrentButtonState(selectedRoom.roomCode))
-                    )}
-                    disabled={!wsConnected}
-                    style={{
-                      backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '#ff9800' : '#2196F3',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      cursor: wsConnected ? 'pointer' : 'not-allowed',
-                      opacity: wsConnected ? 1 : 0.5
-                    }}
-                  >
-                    {getButtonText(getCurrentButtonState(selectedRoom.roomCode))}
-                  </button>
-                )}
-              </div>
-            </header>
-
-            <section className={styles.chatMessages}>
-              {messages.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-                  아직 메시지가 없습니다. 첫 메시지를 보내보세요!
-                </div>
-              ) : (
-                <>
-                  {messages.map((message, index) => {
-                    // 현재 로그인한 사용자인지 확인
-                    const token = localStorage.getItem('access_token');
-                    let isMyMessage = false;
-                    
-                    if (token) {
-                      try {
-                        const decodedToken = jwtDecode(token);
-                        isMyMessage = message.senderId === decodedToken.memberId;
-                      } catch (error) {
-                        console.error('토큰 디코딩 실패:', error);
-                      }
-                    }
-                    
-                    // senderType 기반으로 메시지 타입 결정
-                    const isAdminMessage = message.senderType === 'ADMIN';
-                    const isAIMessage = message.senderType === 'AI';
-                    
-                    return (
-                      <div key={index} className={`${styles.messageRow} ${isMyMessage ? styles.messageRight : styles.messageLeft}`}>
-                        {(isAdminMessage || isAIMessage) && (
-                          <img 
-                            src={isAIMessage 
-                              ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png"
-                              : "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f600/u1f600_u1f42d.png?fbx"
-                            } 
-                            alt="avatar" 
-                          />
-                        )}
-                        <div className={styles.messageWrapper}>
-                          {isAIMessage && message.senderName && (
-                            <div style={{ 
-                              fontSize: '11px', 
-                              color: '#666', 
-                              marginBottom: '2px',
-                              fontWeight: 'bold'
-                            }}>
-                              {message.senderName}
-                            </div>
-                          )}
-                          <div className={`${styles.messageBubble} 
-                            ${isAIMessage ? styles.aiMessage : isAdminMessage ? styles.adminMessage : styles.userMessage} 
-                            ${isMyMessage ? styles.myMessage : styles.otherMessage}`}
-                            style={isAIMessage ? {
-                              backgroundColor: '#e3f2fd',
-                              border: '1px solid #2196F3',
-                              color: '#1976d2'
-                            } : {}}
-                          >
-                            {message.content || message.message}
-                          </div>
-                          <div className={styles.messageInfo}>
-                            {message.unreadCount > 0 && (
-                              <span className={`${styles.unreadIndicator} ${
-                                isMyMessage ? styles.unreadIndicatorBlue : styles.unreadIndicatorGray
-                              }`}>{message.unreadCount}</span>
-                            )}
-                            <div className={styles.messageTime}>
-                              {formatTime(message.sentAt)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </>
-              )}
-            </section>
-
-            <footer className={styles.chatInput}>
-              <input 
-                type="text" 
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="메세지를 입력해주세요"
-                disabled={!wsConnected}
-              />
-              <button 
-                onClick={handleSendMessage}
-                disabled={!wsConnected || !newMessage.trim()}
-              >
-                전송
-              </button>
-            </footer>
-          </>
-        ) : (
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            height: '100%', 
-            color: '#666' 
-          }}>
-            {chatRooms.length === 0 ? '채팅방이 없습니다.' : '채팅방을 선택해주세요.'}
-          </div>
-        )}
+        <SharedChatArea
+          messages={messages}
+          loading={loadingMessages}
+          hasMore={hasMore}
+          error={messageError}
+          currentUserId={currentUserId}
+          currentUserType="USER"
+          selectedRoom={selectedRoom}
+          newMessage={newMessage}
+          onMessageChange={setNewMessage}
+          onSendMessage={handleSendMessage}
+          placeholder="메세지를 입력해주세요"
+          messagesContainerRef={messagesContainerRef}
+          messagesEndRef={messagesEndRef}
+          onScroll={handleScroll}
+          onScrollToBottom={scrollToBottom}
+          headerContent={selectedRoom ? renderChatHeader() : null}
+          isConnected={wsConnected}
+        />
       </main>
     </div>
   );

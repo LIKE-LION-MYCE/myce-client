@@ -6,14 +6,37 @@
   height: 60px;
   background-color: #3c3c3c;
   color: white;
+  border: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  text-decoration: none;
+  cursor: pointer;
   z-index: 999;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Add a subtle glow for non-authenticated users to hint at login */
+.fab.loginHint {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 10px rgba(0, 0, 0, 0.2),
+      0 0 20px rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 4px 10px rgba(0, 0, 0, 0.2),
+      0 0 30px rgba(102, 126, 234, 0.5);
+  }
 }
 
 .fab:hover {
