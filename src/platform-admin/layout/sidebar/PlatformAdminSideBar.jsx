@@ -121,14 +121,14 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('dashboard')}
         >
           <MenuItem
-            component={<Link to="/platform/admin#revenue" />}
-            active={currentPath === '/platform/admin' && currentHash === '#revenue'}
+            component={<Link to="/platform/admin/dashboard/revenue" />}
+            active={selectedMenu === '/platform/admin/dashboard/revenue'}
           >
             수익 정산
           </MenuItem>
           <MenuItem
-            component={<Link to="/platform/admin#usage" />}
-            active={currentPath === '/platform/admin' && currentHash === '#usage'}
+            component={<Link to="/platform/admin/dashboard/usage" />}
+            active={selectedMenu === '/platform/admin/dashboard/usage'}
           >
             이용량 조회
           </MenuItem>
@@ -237,8 +237,8 @@ function PlatformAdminSideBar() {
             금액 설정
           </MenuItem>
           <MenuItem
-            component={<Link to="/platform/admin/bannerLocations" />}
-            active={selectedMenu === '/platform/admin/bannerLocations'}
+            component={<Link to="/platform/admin/adPosition" />}
+            active={selectedMenu === '/platform/admin/adPosition'}
           >
             배너 타입 설정
           </MenuItem>

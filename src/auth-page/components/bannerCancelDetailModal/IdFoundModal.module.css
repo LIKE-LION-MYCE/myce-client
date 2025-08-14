@@ -1,0 +1,103 @@
+/* IdFoundModal.module.css */
+
+.modalOverlay {
+  position: fixed;  /* fixed로 변경 */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;  /* 높은 z-index */
+}
+
+.modalContent {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  z-index: 10000;
+}
+
+.modalHeader {
+  margin-bottom: 20px;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.modalSubtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+.foundIdBox {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.foundIdLabel {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.foundId {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  font-family: monospace;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.loginButton {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.loginButton:hover {
+  background-color: #333;
+}
+
+.closeButton {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: #545b62;
+}

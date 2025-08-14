@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
-import styles from './BannerLocationDetail.module.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import styles from './AdPositionNew.module.css';
+import { submitNew } from '../../../api/service/platform-admin/setting/AdPositionSettingService';
 
-function BannerLocationDetail() {
+function AdPositionNew() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    bannerName: '배너 제목A',
-    imageWidth: '800',
-    imageHeight: '200',
-    maxBannerCount: '5',
-    isActive: false,
-    creationDate: '2023-10-01 12:00',
-    modificationDate: '2023-10-02 14:30',
+    bannerName: '',
+    imageWidth: '',
+    imageHeight: '',
+    maxBannerCount: '',
+    active: false, // Correct initial state key
   });
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await submitNew({
+        formData: formData
+      });
+      window.alert("새 배너 타입을 생성했습니다.");
+      navigate(-1);
+      console.log('생성 성공:', response);
+    } catch (error) {
+      window.alert("입력값을 확인해 주세요.")
+      console.error('생성 실패:', error);
+    }
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -20,21 +40,30 @@ function BannerLocationDetail() {
     }));
   };
 
+  // Corrected handleToggle function
   const handleToggle = () => {
     setFormData((prevData) => ({
       ...prevData,
-      isActive: !prevData.isActive,
+      active: !prevData.active, // Toggles the correct key
     }));
   };
 
+  const handleCancel = () => {
+    navigate(-1);
+  }
+
   return (
     <div className={styles.bannerSettings}>
-      <h2 className={styles.heading}>배너 타입 설정</h2>
-      <form>
+      <div className={styles.titleWrapper}>
+        <h2 className={styles.heading}>배너 타입 설정</h2>
+        <button className={styles.backArrow} onClick={handleBack}>←</button>
+      </div>
+      <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label className={styles.label}>광고 위치 이름</label>
           <input
             className={`${styles.input} ${styles.inputText}`}
+            id="bannerName"
             type="text"
             name="bannerName"
             value={formData.bannerName}
@@ -46,9 +75,10 @@ function BannerLocationDetail() {
           <label className={styles.label}>이미지 너비</label>
           <input
             className={`${styles.input} ${styles.inputNumber}`}
+            id="bannerWidth"
             type="text"
-            name="imageWidth"
-            value={formData.imageWidth}
+            name="bannerWidth"
+            value={formData.bannerWidth}
             onChange={handleChange}
             placeholder="px"
           />
@@ -58,9 +88,10 @@ function BannerLocationDetail() {
           <label className={styles.label}>이미지 높이</label>
           <input
             className={`${styles.input} ${styles.inputNumber}`}
+            id="bannerHeight"
             type="text"
-            name="imageHeight"
-            value={formData.imageHeight}
+            name="bannerHeight"
+            value={formData.bannerHeight}
             onChange={handleChange}
             placeholder="px"
           />
@@ -70,6 +101,7 @@ function BannerLocationDetail() {
           <label className={styles.label}>최대 광고 개수</label>
           <input
             className={`${styles.input} ${styles.inputNumber}`}
+            id="maxBannerCount"
             type="text"
             name="maxBannerCount"
             value={formData.maxBannerCount}
@@ -82,7 +114,8 @@ function BannerLocationDetail() {
           <label className={styles.toggleWrapper}>
             <input
               type="checkbox"
-              checked={formData.isActive}
+              id="isActive"
+              checked={formData.active} // Corrected to reference 'isActive'
               className={styles.toggleInput}
               onChange={handleToggle}
             />
@@ -90,23 +123,13 @@ function BannerLocationDetail() {
           </label>
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>생성일시</label>
-          <div className={styles.staticText}>{formData.creationDate}</div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>수정일시</label>
-          <div className={styles.staticText}>{formData.modificationDate}</div>
-        </div>
-
         <div className={styles.formActions}>
-          <button type="submit" className={styles.btnPrimary}>적용</button>
-          <button type="button" className={styles.btnDanger}>삭제</button>
+          <button type="submit" className={styles.btnPrimary}>생성</button>
+          <button type="button" onClick={handleCancel} className={styles.btnCancel}>취소</button>
         </div>
       </form>
     </div>
   );
 }
 
-export default BannerLocationDetail;
+export default AdPositionNew;
