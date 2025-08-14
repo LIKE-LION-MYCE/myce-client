@@ -18,7 +18,7 @@ function ExpoApplicationForm({ expoData }) {
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src={form.mainImageUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
+            src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
             alt="포스터"
             className={styles.profileImage}
           />
@@ -39,6 +39,15 @@ function ExpoApplicationForm({ expoData }) {
             <input
               className={styles.inputField}
               value={form.location || ''}
+              readOnly
+            />
+          </div>
+
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>상세 위치</label>
+            <input
+              className={styles.inputField}
+              value={form.locationDetail || ''}
               readOnly
             />
           </div>
