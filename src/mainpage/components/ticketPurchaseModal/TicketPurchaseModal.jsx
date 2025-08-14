@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './TicketPurchaseModal.module.css';
-import { FiX, FiMinus, FiPlus } from 'react-icons/fi';
-import { createReservationPending } from '../../../api/service/expo/expoDetailApi';
-import { getUserIdFromToken } from '../../../api/utils/jwtUtils';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./TicketPurchaseModal.module.css";
+import { FiX, FiMinus, FiPlus } from "react-icons/fi";
+import { getUserIdFromToken } from "../../../api/utils/jwtUtils";
 
-export default function TicketPurchaseModal({ 
-  ticket, 
-  expoId, 
+export default function TicketPurchaseModal({
+  ticket,
+  expoId,
   expoTitle,
-  isOpen, 
-  onClose 
+  isOpen,
+  onClose,
 }) {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
@@ -18,16 +17,27 @@ export default function TicketPurchaseModal({
 
   if (!isOpen || !ticket) return null;
 
+  const maxQuantity = 4;
+
   const handleQuantityChange = (change) => {
     const newQuantity = quantity + change;
-    if (newQuantity >= 1 && newQuantity <= ticket.remainingQuantity) {
+    if (
+      newQuantity >= 1 &&
+      newQuantity <= ticket.remainingQuantity &&
+      newQuantity <= maxQuantity
+    ) {
       setQuantity(newQuantity);
     }
   };
 
   const handleDirectQuantityChange = (e) => {
     const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= ticket.remainingQuantity) {
+    if (
+      !isNaN(value) &&
+      value >= 1 &&
+      value <= ticket.remainingQuantity &&
+      value <= maxQuantity
+    ) {
       setQuantity(value);
     }
   };
@@ -36,48 +46,27 @@ export default function TicketPurchaseModal({
     return (ticket.price * quantity).toLocaleString();
   };
 
-  const handlePurchase = async () => {
-    try {
-      setIsLoading(true);
-      
-      // 로그인된 사용자 정보 확인
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        alert('로그인이 필요합니다.');
-        navigate('/auth/login');
-        return;
-      }
-      
-      // JWT 토큰에서 사용자 ID 추출
-      const memberId = getUserIdFromToken(token);
-      if (!memberId) {
-        alert('사용자 정보를 확인할 수 없습니다. 다시 로그인해주세요.');
-        navigate('/auth/login');
-        return;
-      }
-      
-      // 예약 대기 요청 데이터 생성
-      const reservationData = {
-        expoId: parseInt(expoId),
-        ticketId: ticket.ticketId,
-        quantity: quantity,
-        userType: 'MEMBER', // 로그인된 사용자는 MEMBER
-        userId: memberId
-      };
-      
-      // 예약 대기 생성
-      const reservationId = await createReservationPending(reservationData);
-      
-      // 성공하면 결제 페이지로 이동
-      navigate(`/detail/${expoId}/payment?reservationId=${reservationId}&ticketId=${ticket.ticketId}&quantity=${quantity}&totalPrice=${ticket.price * quantity}&ticketName=${encodeURIComponent(ticket.name)}`);
-      onClose();
-      
-    } catch (error) {
-      console.error('예약 생성 실패:', error);
-      alert('예약 생성에 실패했습니다. 다시 시도해주세요.');
-    } finally {
+  const handlePurchase = () => {
+    setIsLoading(true);
+
+    // 로그인된 사용자 정보 확인
+    const token = localStorage.getItem("access_token");
+    if (!token || !getUserIdFromToken(token)) {
+      alert("로그인이 필요하거나 세션이 만료되었습니다. 다시 로그인해주세요.");
+      navigate("/auth/login");
       setIsLoading(false);
+      return;
     }
+
+    // API 호출 없이 바로 결제 페이지로 이동
+    navigate(
+      `/detail/${expoId}/payment?ticketId=${
+        ticket.ticketId
+      }&quantity=${quantity}&totalPrice=${
+        ticket.price * quantity
+      }&ticketName=${encodeURIComponent(ticket.name)}`
+    );
+    onClose();
   };
 
   return (
@@ -94,23 +83,22 @@ export default function TicketPurchaseModal({
           <div className={styles.ticketInfo}>
             <h4>{ticket.name}</h4>
             <p className={styles.ticketType}>
-              {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
+              {ticket.type === "EARLY_BIRD" ? "얼리버드" : "일반"}
             </p>
-            <p className={styles.price}>
-              {ticket.price?.toLocaleString()}원
-            </p>
+            <p className={styles.price}>{ticket.price?.toLocaleString()}원</p>
             {ticket.description && (
               <p className={styles.description}>{ticket.description}</p>
             )}
             <p className={styles.remaining}>
-              남은 수량: <strong>{ticket.remainingQuantity?.toLocaleString()}매</strong>
+              남은 수량:{" "}
+              <strong>{ticket.remainingQuantity?.toLocaleString()}매</strong>
             </p>
           </div>
 
           <div className={styles.quantitySection}>
             <label>구매 수량</label>
             <div className={styles.quantityControls}>
-              <button 
+              <button
                 className={styles.quantityBtn}
                 onClick={() => handleQuantityChange(-1)}
                 disabled={quantity <= 1}
@@ -122,13 +110,16 @@ export default function TicketPurchaseModal({
                 value={quantity}
                 onChange={handleDirectQuantityChange}
                 min="1"
-                max={ticket.remainingQuantity}
+                max={Math.min(ticket.remainingQuantity, maxQuantity)}
                 className={styles.quantityInput}
               />
-              <button 
+              <button
                 className={styles.quantityBtn}
                 onClick={() => handleQuantityChange(1)}
-                disabled={quantity >= ticket.remainingQuantity}
+                disabled={
+                  quantity >= ticket.remainingQuantity ||
+                  quantity >= maxQuantity
+                }
               >
                 <FiPlus />
               </button>
@@ -151,18 +142,17 @@ export default function TicketPurchaseModal({
           </div>
 
           <div className={styles.actions}>
-            <button 
-              className={styles.cancelBtn}
-              onClick={onClose}
-            >
+            <button className={styles.cancelBtn} onClick={onClose}>
               취소
             </button>
-            <button 
+            <button
               className={styles.purchaseBtn}
               onClick={handlePurchase}
-              disabled={ticket.remainingQuantity <= 0 || quantity <= 0 || isLoading}
+              disabled={
+                ticket.remainingQuantity <= 0 || quantity <= 0 || isLoading
+              }
             >
-              {isLoading ? '처리 중...' : '구매하기'}
+              {isLoading ? "처리 중..." : "구매하기"}
             </button>
           </div>
         </div>
