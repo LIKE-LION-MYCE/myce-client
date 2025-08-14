@@ -16,8 +16,31 @@ export default function MainPage() {
   const [subBanners, setSubBanners] = useState([]);
   const [footerBanners, setFooterBanners] = useState([]);
   const [topRightBanners, setTopRightBanners] = useState([]);
-  const { expos, setFilters, isLoading, error } = useExpoData();
-  const { categories, isLoading: categoriesLoading, error: categoriesError } = useCategories(); // Use the categories hook
+  const { expos, setExpos, setFilters, isLoading, error } = useExpoData();
+  const {
+    categories,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories();
+
+  const handleBookmarkToggle = (expoId) => {
+    console.log(`Toggling bookmark for expo ID: ${expoId}`);
+    setExpos((prevExpos) => {
+      const updatedExpos = prevExpos.map((expo) => {
+        if (expo.expoId === expoId) {
+          console.log(
+            `Expo ${expoId}: Toggling isBookmark from ${
+              expo.isBookmark
+            } to ${!expo.isBookmark}`
+          );
+          return { ...expo, isBookmark: !expo.isBookmark };
+        }
+        return expo;
+      });
+      console.log("Updated expos array:", updatedExpos);
+      return updatedExpos;
+    });
+  };
 
   const handleBanner = async () => {
     try {
@@ -38,16 +61,16 @@ export default function MainPage() {
 
   const handleCategoryChange = (category) => {
     const newCategory = category === "전체" ? undefined : category;
-    console.log("Setting category filter to:", newCategory); // Add this line for debugging
+    console.log("Setting category filter to:", newCategory);
     setFilters((prevFilters) => ({
       ...prevFilters,
       category: newCategory,
     }));
   };
 
-  // Render loading/error for categories if needed
-  if (categoriesLoading) return <div>Loading categories...</div>;
-  if (categoriesError) return <div>Error loading categories: {categoriesError.message}</div>;
+  if (categoriesLoading) return <div>카테고리 로딩중...</div>;
+  if (categoriesError)
+    return <div>Error loading categories: {categoriesError.message}</div>;
 
   return (
     <div className="w-full">
@@ -56,8 +79,16 @@ export default function MainPage() {
         <MainBanner banners={mainBanners} />
       </div>
       <SubBanners banners={subBanners} />
-      <CategoryTabs onCategoryChange={handleCategoryChange} categories={categories} />
-      <ExpoCardList expos={expos} isLoading={isLoading} error={error} />
+      <CategoryTabs
+        onCategoryChange={handleCategoryChange}
+        categories={categories}
+      />
+      <ExpoCardList
+        expos={expos}
+        isLoading={isLoading}
+        error={error}
+        onBookmarkToggle={handleBookmarkToggle}
+      />
       <LoadMoreButton />
       <FooterBanner banners={footerBanners} />
       <FloatingChatButton />
