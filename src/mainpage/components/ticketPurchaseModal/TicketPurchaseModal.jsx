@@ -54,13 +54,6 @@ export default function TicketPurchaseModal({
     // 로그인된 사용자 정보 확인
     const token = localStorage.getItem("access_token");
     const userId = getUserIdFromToken(token); // Get userId
-    if (!token || !userId) {
-      // Check userId
-      alert("로그인이 필요하거나 세션이 만료되었습니다. 다시 로그인해주세요.");
-      navigate("/auth/login");
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const preReservationData = {
@@ -71,15 +64,20 @@ export default function TicketPurchaseModal({
         quantity: quantity,
       };
 
-      const response = await savePreReservation(preReservationData);
-      // Assuming the response contains a reservationId or similar for the next step
-      // If the payment page needs data from this pre-reservation, it should be passed here.
-      // For now, I'll just navigate.
+      console.log("회원 구매: 결제 페이지 이동 전 reservation 대기 위해", {
+        expoId,
+        preReservationData: {
+          ticketId: ticket.ticketId,
+          userType: "MEMBER",
+          userId: userId,
+          quantity: quantity,
+        },
+      });
 
-      // API 호출 없이 바로 결제 페이지로 이동 -> API 호출 후 결제 페이지로 이동
-      navigate(
-        `/detail/${expoId}/payment?preReservationId=${response.id}`
-      );
+      // preReservation Id 반환하는 POST
+      const response = await savePreReservation(preReservationData);
+
+      navigate(`/detail/${expoId}/payment?preReservationId=${response.id}`);
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);

@@ -74,10 +74,10 @@ export default function NonMemberPurchaseModal({
 
   const handlePurchase = async () => {
     // Added async
-    if (!email) {
-      alert("이메일을 입력해주세요.");
-      return;
-    }
+    // if (!email) { // Temporarily disabled for testing
+    //   alert("이메일을 입력해주세요.");
+    //   return;
+    // }
 
     setIsLoading(true);
 
@@ -85,20 +85,25 @@ export default function NonMemberPurchaseModal({
       const preReservationData = {
         ticketId: ticket.ticketId,
         expoId: expoId,
-        userType: "NON_MEMBER",
+        userType: "GUEST",
         userId: 0, // As per user's clarification
         quantity: quantity,
       };
 
-      const response = await savePreReservation(preReservationData);
-      // Assuming the response contains a reservationId or similar for the next step
-      // If the payment page needs data from this pre-reservation, it should be passed here.
-      // For now, I'll just navigate.
+      console.log("비회원 구매: 결제 페이지로 이동합니다.", {
+        expoId,
+        preReservationData: {
+          ticketId: ticket.ticketId,
+          userType: "GUEST",
+          userId: 0,
+          quantity: quantity,
+        },
+      });
 
-      // API 호출 없이 바로 결제 페이지로 이동 -> API 호출 후 결제 페이지로 이동
-      navigate(
-        `/detail/${expoId}/payment?preReservationId=${response.id}`
-      );
+      // preReservation Id 반환하는 POST
+      const response = await savePreReservation(preReservationData);
+
+      navigate(`/detail/${expoId}/payment?preReservationId=${response.id}`);
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
@@ -186,7 +191,7 @@ export default function NonMemberPurchaseModal({
             <button
               className={styles.purchaseBtn}
               onClick={handlePurchase}
-              disabled={!email || isLoading}
+              disabled={isLoading} // Removed !email
             >
               {isLoading ? "처리 중..." : "구매하기"}
             </button>
