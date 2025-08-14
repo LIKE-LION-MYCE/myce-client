@@ -78,13 +78,7 @@ export default function TicketPurchaseModal({
 
       // API 호출 없이 바로 결제 페이지로 이동 -> API 호출 후 결제 페이지로 이동
       navigate(
-        `/detail/${expoId}/payment?ticketId=${
-          ticket.ticketId
-        }&quantity=${quantity}&totalPrice=${
-          ticket.price * quantity
-        }&ticketName=${encodeURIComponent(ticket.name)}&preReservationId=${
-          response.id
-        }` // Added preReservationId
+        `/detail/${expoId}/payment?preReservationId=${response.id}`
       );
       onClose();
     } catch (error) {
