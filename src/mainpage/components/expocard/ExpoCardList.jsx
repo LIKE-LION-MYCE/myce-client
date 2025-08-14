@@ -15,6 +15,11 @@ export default function ExpoCardList({ expos, isLoading, error }) {
 
   const handleBookmarkToggle = (e, expoId) => {
     e.stopPropagation();
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      alert("비회원은 북마크 기능을 이용하실 수 없습니다");
+      return;
+    }
     setInternalExpos((prevExpos) =>
       prevExpos.map((expo) =>
         expo.expoId === expoId
