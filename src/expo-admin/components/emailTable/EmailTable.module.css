@@ -36,14 +36,16 @@
   white-space: nowrap;
 }
 
+.row:hover {
+  background-color: #f0f8ff;
+  cursor: pointer;
+}
+
 .bodyCell {
   text-align: left;
   width: 400px;
-  max-width: 400px;
-  min-width: 400px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .groupStart {
@@ -107,7 +109,7 @@
 .recipientsList {
   margin: 0;
   padding-left: 18px;
-  max-height: 200px;
+  max-height: 220px;
   overflow: auto;
 }
 
