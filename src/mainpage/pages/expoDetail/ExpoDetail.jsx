@@ -18,6 +18,7 @@ import {
   FiMapPin,
   FiClock,
   FiUsers,
+  FiCalendar,
 } from "react-icons/fi";
 import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/NonMemberPurchaseModal";
@@ -221,12 +222,15 @@ export default function ExpoDetail() {
 
           <div className={styles.basicDetails}>
             <div className={styles.detailItem}>
-              <FiClock className={styles.icon} />
+              <FiCalendar className={styles.icon} />
               <span>
                 {formatDate(basicInfo.startDate)} ~{" "}
                 {formatDate(basicInfo.endDate)}
               </span>
-              <span className={styles.time}>
+            </div>
+            <div className={styles.detailItem}>
+              <FiClock className={styles.icon} />
+              <span>
                 {formatTime(basicInfo.startTime)} ~{" "}
                 {formatTime(basicInfo.endTime)}
               </span>
