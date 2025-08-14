@@ -69,7 +69,7 @@ export default function TicketPurchaseModal({
       const reservationId = await createReservationPending(reservationData);
       
       // 성공하면 결제 페이지로 이동
-      navigate(`/detail/${expoId}/payment?reservationId=${reservationId}&ticketId=${ticket.ticketId}&quantity=${quantity}&totalPrice=${ticket.price * quantity}`);
+      navigate(`/detail/${expoId}/payment?reservationId=${reservationId}&ticketId=${ticket.ticketId}&quantity=${quantity}&totalPrice=${ticket.price * quantity}&ticketName=${encodeURIComponent(ticket.name)}`);
       onClose();
       
     } catch (error) {
