@@ -103,7 +103,9 @@ export default function NonMemberPurchaseModal({
       // preReservation Id 반환하는 POST
       const response = await savePreReservation(preReservationData);
 
-      navigate(`/detail/${expoId}/payment?preReservationId=${response.id}`);
+      navigate(
+        `/detail/${expoId}/payment?preReservationId=${response.reservationId}`
+      );
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
