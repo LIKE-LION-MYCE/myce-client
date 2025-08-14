@@ -32,7 +32,6 @@ function AdPositionNew() {
       console.error('생성 실패:', error);
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({

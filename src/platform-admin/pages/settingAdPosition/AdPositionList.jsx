@@ -25,7 +25,6 @@ const AdPositionList = () => {
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
-
   
   const getList = async () => {
     try {

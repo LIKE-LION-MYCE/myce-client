@@ -53,7 +53,11 @@ function BannerLocationTable({ data }) {
                   ) : col.key === 'active' ? (
                     row[col.key] === true ? '활성' : '비활성'
                   ) : (
-                    row[col.key] || '-'
+                    (col.key === 'createdAt' || col.key === 'updatedAt') ? (
+                      row[col.key] ? row[col.key].substring(0, 10) : '-'
+                    ) : (
+                      row[col.key] || '-'
+                    )
                   )}
                 </td>
               ))}

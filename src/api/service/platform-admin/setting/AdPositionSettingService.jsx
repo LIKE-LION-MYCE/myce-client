@@ -5,7 +5,6 @@ export const fetchList = async (page) => {
         params: { page }
     });
 }
-
 export const fetchDetail = async (bannerId) => {
     return await instance.get(`/ad-positions/${bannerId}`);
 }

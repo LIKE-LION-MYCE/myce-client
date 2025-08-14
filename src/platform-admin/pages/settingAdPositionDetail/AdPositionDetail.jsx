@@ -34,7 +34,6 @@ function AdPositionDetail() {
       [name]: value,
     }));
   };
-
   const handleBack = () => {
     navigate(-1);
   };
