@@ -11,6 +11,8 @@ function ExpoApplicationDetail({
   onRefundButtonClick,
   onSettlementRequestClick,
   onSettlementReceiptClick,
+  onPaymentInfoClick,
+  onAdminPageClick,
 }) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
@@ -62,6 +64,16 @@ function ExpoApplicationDetail({
     }
   };
 
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기, 게시대기 제외)
+  const canViewPaymentInfo = (status) => {
+    const excludedStatuses = [
+      '승인대기', '승인 대기',
+      '결제대기', '결제 대기', 
+      '게시대기', '게시 대기'
+    ];
+    return !excludedStatuses.includes(status);
+  };
+
   const renderButtons = () => {
     console.log('ExpoApplicationDetail - renderButtons, current status:', status);
     
@@ -83,6 +95,9 @@ function ExpoApplicationDetail({
           {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
           )}
+          {canViewPaymentInfo(status) && (
+            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>결제 정보</button>
+          )}
         </div>
         
         {/* 상태별 주요 액션 버튼 */}
@@ -98,8 +113,12 @@ function ExpoApplicationDetail({
   const renderAdminButton = () => {
     if (status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중' || status === '종료됨' || status === '정산요청' || status === '정산 요청') {
       return (
-        // 관리자 정보 버튼 클릭 시 onAdminInfoClick prop 호출
-        <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
+        <div className={styles.adminButtonGroup}>
+          {/* 관리자 정보 버튼 */}
+          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
+          {/* 관리자 페이지로 이동 버튼 */}
+          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>관리자 페이지</button>
+        </div>
       );
     }
     return null;
@@ -221,42 +240,6 @@ function ExpoApplicationDetail({
         </div>
       </div>
       
-      {/* 예상 결제 정보 섹션 */}
-      <div className={`${styles.formGroup} ${styles.full}`}>
-        <label className={styles.label}>예상 결제 정보</label>
-        <div className={styles.paymentContainer}>
-          {form.paymentInfo ? (
-            <div className={styles.paymentGrid}>
-              {/* 프리미엄 여부에 따라 해당 등록금만 표시 */}
-              {isPremium ? (
-                <div className={styles.paymentItem}>
-                  <span className={styles.paymentLabel}>프리미엄 등록금</span>
-                  <span className={styles.paymentValue}>{form.paymentInfo.premiumDeposit?.toLocaleString()}원</span>
-                </div>
-              ) : (
-                <div className={styles.paymentItem}>
-                  <span className={styles.paymentLabel}>기본 등록금</span>
-                  <span className={styles.paymentValue}>{form.paymentInfo.deposit?.toLocaleString()}원</span>
-                </div>
-              )}
-              <div className={styles.paymentItem}>
-                <span className={styles.paymentLabel}>일일 사용료</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.dailyUsageFee?.toLocaleString()}원</span>
-              </div>
-              <div className={styles.paymentItem}>
-                <span className={styles.paymentLabel}>총 게시 기간</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.totalDay}일</span>
-              </div>
-              <div className={`${styles.paymentItem} ${styles.totalAmount}`}>
-                <span className={styles.paymentLabel}>총 결제 금액</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.totalAmount?.toLocaleString()}원</span>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.noPaymentInfo}>결제 정보가 없습니다.</div>
-          )}
-        </div>
-      </div>
       
       {/* 티켓 정보 섹션 */}
       <div className={`${styles.formGroup} ${styles.full}`}>
@@ -291,12 +274,6 @@ function ExpoApplicationDetail({
             <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
           )}
         </div>
-      </div>
-      <div className={`${styles.formGroup} ${styles.full}`}>
-          <label className={styles.label}>첨부파일</label>
-          <div className={styles.fileBox}>
-              <span className={styles.noAttachment}>첨부된 파일이 없습니다.</span>
-          </div>
       </div>
       
       {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}

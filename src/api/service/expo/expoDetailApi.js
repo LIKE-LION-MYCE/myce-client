@@ -38,6 +38,18 @@ export const getExpoBooths = async (expoId) => {
   return response.data;
 };
 
+// 박람회 비즈니스 프로필 조회
+export const getExpoBusinessProfile = async (expoId) => {
+  const response = await instance.get(`/expos/${expoId}/business-profile`);
+  return response.data;
+};
+
+// 박람회 이벤트 정보 조회
+export const getExpoEvents = async (expoId) => {
+  const response = await instance.get(`/expos/${expoId}/events`);
+  return response.data;
+};
+
 // 찜하기 토글 (추후 구현)
 export const toggleExpoBookmark = async (expoId) => {
   const response = await instance.post(`/expos/${expoId}/bookmark/toggle`);

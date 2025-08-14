@@ -8,6 +8,8 @@ import {
   getExpoReviews, 
   getExpoLocation,
   getExpoBooths,
+  getExpoBusinessProfile,
+  getExpoEvents,
   toggleExpoBookmark
 } from '../../../api/service/expo/expoDetailApi';
 import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers } from 'react-icons/fi';
@@ -21,7 +23,9 @@ export default function ExpoDetail() {
   const [reviews, setReviews] = useState(null);
   const [location, setLocation] = useState(null);
   const [booths, setBooths] = useState(null);
-  const [activeTab, setActiveTab] = useState('info'); // info, tickets, booths, reviews, location
+  const [businessProfile, setBusinessProfile] = useState(null);
+  const [events, setEvents] = useState(null);
+  const [activeTab, setActiveTab] = useState('info'); // info, tickets, booths, events, reviews, location
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
@@ -44,7 +48,7 @@ export default function ExpoDetail() {
       setBasicInfo(basicData);
       
       // 다른 정보들도 병렬로 로드
-      const [ticketsData, bookmarkData, reviewsData, locationData, boothsData] = await Promise.all([
+      const [ticketsData, bookmarkData, reviewsData, locationData, boothsData, eventsData] = await Promise.all([
         getExpoTickets(expoId).catch(err => {
           console.error('티켓 정보 로드 실패:', err);
           return null;
@@ -64,6 +68,10 @@ export default function ExpoDetail() {
         getExpoBooths(expoId).catch(err => {
           console.error('부스 정보 로드 실패:', err);
           return null;
+        }),
+        getExpoEvents(expoId).catch(err => {
+          console.error('이벤트 정보 로드 실패:', err);
+          return null;
         })
       ]);
       
@@ -72,6 +80,7 @@ export default function ExpoDetail() {
       setReviews(reviewsData);
       setLocation(locationData);
       setBooths(boothsData);
+      setEvents(eventsData);
       
     } catch (err) {
       console.error('박람회 상세 정보 로드 실패:', err);
@@ -199,8 +208,7 @@ export default function ExpoDetail() {
             
             <div className={styles.detailItem}>
               <FiUsers className={styles.icon} />
-              <span>최대 {basicInfo.maxReserverCount?.toLocaleString()}명</span>
-              <span className={styles.current}>현재 {basicInfo.currentReservationCount?.toLocaleString()}명 예약</span>
+              <span>현재 {basicInfo.currentReservationCount?.toLocaleString()}명 예약</span>
             </div>
           </div>
           
@@ -210,23 +218,19 @@ export default function ExpoDetail() {
             ))}
           </div>
           
-          <div className={styles.organizer}>
-            <p><strong>주최:</strong> {basicInfo.organizerName}</p>
-            <p><strong>연락처:</strong> {basicInfo.organizerContact}</p>
-          </div>
 
           {/* 티켓 구매 섹션 */}
-          {tickets && tickets.length > 0 && (
-            <div className={styles.ticketPurchaseSection}>
-              <h3>티켓 구매</h3>
-              <div className={styles.ticketDropdownContainer}>
-                <select 
-                  className={styles.ticketSelect}
-                  value={selectedTicketId}
-                  onChange={(e) => setSelectedTicketId(e.target.value)}
-                >
-                  <option value="">티켓을 선택하세요</option>
-                  {tickets.map((ticket) => (
+          <div className={styles.ticketPurchaseSection}>
+            <h3>티켓 구매</h3>
+            <div className={styles.ticketDropdownContainer}>
+              <select 
+                className={styles.ticketSelect}
+                value={selectedTicketId}
+                onChange={(e) => setSelectedTicketId(e.target.value)}
+              >
+                <option value="">티켓을 선택하세요</option>
+                {tickets && tickets.length > 0 ? (
+                  tickets.map((ticket) => (
                     <option 
                       key={ticket.ticketId} 
                       value={ticket.ticketId}
@@ -234,18 +238,20 @@ export default function ExpoDetail() {
                     >
                       {ticket.name} - {ticket.price?.toLocaleString()}원 (남은 수량: {ticket.remainingQuantity?.toLocaleString()})
                     </option>
-                  ))}
-                </select>
-                <button 
-                  className={`${styles.purchaseBtn} ${!selectedTicketId ? styles.disabled : ''}`}
-                  disabled={!selectedTicketId}
-                  onClick={handleDropdownPurchase}
-                >
-                  구매하기
-                </button>
-              </div>
+                  ))
+                ) : (
+                  <option value="" disabled>등록된 티켓이 없습니다</option>
+                )}
+              </select>
+              <button 
+                className={`${styles.purchaseBtn} ${!selectedTicketId || !tickets || tickets.length === 0 ? styles.disabled : ''}`}
+                disabled={!selectedTicketId || !tickets || tickets.length === 0}
+                onClick={handleDropdownPurchase}
+              >
+                구매하기
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -270,6 +276,12 @@ export default function ExpoDetail() {
           부스 정보 ({booths?.length || 0})
         </button>
         <button 
+          className={`${styles.tab} ${activeTab === 'events' ? styles.active : ''}`}
+          onClick={() => setActiveTab('events')}
+        >
+          이벤트 ({events?.length || 0})
+        </button>
+        <button 
           className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
           onClick={() => setActiveTab('reviews')}
         >
@@ -286,9 +298,30 @@ export default function ExpoDetail() {
       {/* 탭 컨텐츠 */}
       <div className={styles.tabContent}>
         {activeTab === 'info' && (
-          <div className={styles.description}>
-            <h3>상세 설명</h3>
-            <p>{basicInfo.description || '상세 설명이 없습니다.'}</p>
+          <div className={styles.infoTab}>
+            <div className={styles.description}>
+              <h3>상세 설명</h3>
+              <p>{basicInfo.description || '상세 설명이 없습니다.'}</p>
+            </div>
+            
+            {/* 주최자 정보 섹션 - 기본 정보에서 추출 */}
+            {basicInfo && (
+              <div className={styles.businessProfile}>
+                <h3>주최자 정보</h3>
+                <div className={styles.businessCard}>
+                  <div className={styles.businessHeader}>
+                    <h4>{basicInfo.organizerName || '주최자 정보 없음'}</h4>
+                  </div>
+                  <div className={styles.businessDetails}>
+                    {basicInfo.organizerContact && (
+                      <p className={styles.businessPhone}>
+                        📞 연락처: {basicInfo.organizerContact}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
         
@@ -363,6 +396,57 @@ export default function ExpoDetail() {
               </div>
             ) : (
               <p>등록된 부스가 없습니다.</p>
+            )}
+          </div>
+        )}
+        
+        {activeTab === 'events' && (
+          <div className={styles.eventsSection}>
+            <h3>이벤트 정보</h3>
+            {events && events.length > 0 ? (
+              <div className={styles.eventsList}>
+                {events.map((event) => (
+                  <div key={event.id} className={styles.eventCard}>
+                    <div className={styles.eventHeader}>
+                      <h4>{event.name}</h4>
+                      {event.location && (
+                        <div className={styles.eventLocationHeader}>📍 {event.location}</div>
+                      )}
+                    </div>
+                    <div className={styles.eventDateTime}>
+                      <div className={styles.eventDate}>
+                        📅 {formatDate(event.eventDate)}
+                      </div>
+                      <div className={styles.eventTime}>
+                        🕐 {formatTime(event.startTime)} - {formatTime(event.endTime)}
+                      </div>
+                    </div>
+                    <div className={styles.eventContent}>
+                      <p className={styles.eventDescription}>{event.description || '이벤트 설명이 없습니다.'}</p>
+                      
+                      <div className={styles.contactInfo}>
+                        {event.contactName && (
+                          <p className={styles.contactName}>
+                            👤 담당자: {event.contactName}
+                          </p>
+                        )}
+                        {event.contactPhone && (
+                          <p className={styles.contactPhone}>
+                            📞 연락처: {event.contactPhone}
+                          </p>
+                        )}
+                        {event.contactEmail && (
+                          <p className={styles.contactEmail}>
+                            📧 이메일: {event.contactEmail}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>등록된 이벤트가 없습니다.</p>
             )}
           </div>
         )}
