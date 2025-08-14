@@ -50,10 +50,35 @@ export const getExpoEvents = async (expoId) => {
   return response.data;
 };
 
-// 찜하기 토글 (추후 구현)
+// 찜하기 토글 (현재 상태 확인 후 분기 처리)
 export const toggleExpoBookmark = async (expoId) => {
-  const response = await instance.post(`/expos/${expoId}/bookmark/toggle`);
-  return response.data;
+  try {
+    // 0. 토큰 확인 - 토큰 없으면 에러 던지기
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      const error = new Error("LOGIN_REQUIRED");
+      error.response = { status: 401 };
+      throw error;
+    }
+
+    // 1. 현재 찜 상태 확인
+    const currentStatus = await instance.get(`/expos/${expoId}/bookmark`);
+    const isBookmarked = currentStatus.data.isBookmarked;
+    
+    // 2. 상태에 따라 분기 처리
+    if (isBookmarked) {
+      // 찜 취소
+      const response = await instance.delete(`/favorites/${expoId}`);
+      return { isBookmarked: false, ...response.data };
+    } else {
+      // 찜하기
+      const response = await instance.post(`/favorites/${expoId}`);
+      return { isBookmarked: true, ...response.data };
+    }
+  } catch (error) {
+    console.error('찜하기 토글 실패:', error);
+    throw error;
+  }
 };
 
 // 티켓 예약 대기 생성
