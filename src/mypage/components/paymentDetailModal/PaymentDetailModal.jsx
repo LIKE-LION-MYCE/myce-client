@@ -10,12 +10,15 @@ function PaymentDetailModal({
   dailyUsageFee,
   usageFeeAmount,
   depositAmount,
-  totalAmount,
+  premiumDepositAmount,
   isPremium,
-  commissionRate,
   children,
   onClose,
 }) {
+  // 총액 계산: 프리미엄일 경우 (기본 등록금 + 프리미엄 이용료 + 사용료), 기본일 경우 (기본 등록금 + 사용료)
+  const calculatedTotalAmount = isPremium 
+    ? (depositAmount || 0) + (premiumDepositAmount || 0) + (usageFeeAmount || 0)
+    : (depositAmount || 0) + (usageFeeAmount || 0);
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
@@ -49,18 +52,18 @@ function PaymentDetailModal({
               <span>{usageFeeAmount?.toLocaleString()}원</span>
             </div>
             <div className={styles.row}>
-              <span>{isPremium ? '프리미엄 등록금' : '기본 등록금'}</span>
+              <span>기본 등록금</span>
               <span>{depositAmount?.toLocaleString()}원</span>
             </div>
-            {commissionRate && (
+            {isPremium && premiumDepositAmount && (
               <div className={styles.row}>
-                <span>수수료율</span>
-                <span>{commissionRate}%</span>
+                <span>프리미엄 이용료</span>
+                <span>{premiumDepositAmount?.toLocaleString()}원</span>
               </div>
             )}
             <div className={styles.totalRow}>
               <span>총 결제 금액</span>
-              <span>{totalAmount?.toLocaleString()}원</span>
+              <span>{calculatedTotalAmount?.toLocaleString()}원</span>
             </div>
           </div>
         </div>

@@ -4,11 +4,12 @@ import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoAp
 import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
 import PaymentRefundModal from '../../components/paymentDetailModal/PaymentRefundModal';
 import SettlementReceiptModal from '../../components/paymentDetailModal/SettlementReceiptModal';
+import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import AdminInfoModal from '../../components/adminInfoModal/AdminInfoModal';
-import QRScannerComponent from '../../../components/qrScanner/QRScanner';
 import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
 import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail } from '../../../api/service/user/memberApi';
+import { useNavigate } from 'react-router-dom';
 
 // 상태 라벨 매핑
 const getStatusLabel = (status) => {
@@ -63,6 +64,7 @@ const safeNumber = (num, defaultValue = 0) => {
 
 const ExpoStatusDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [expoData, setExpoData] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [showPaymentSelection, setShowPaymentSelection] = useState(false);
@@ -73,9 +75,10 @@ const ExpoStatusDetail = () => {
   const [showSettlementReceiptModal, setShowSettlementReceiptModal] = useState(false);
   const [settlementReceiptData, setSettlementReceiptData] = useState(null);
   const [paymentDetailData, setPaymentDetailData] = useState(null);
+  const [showPaymentInfoModal, setShowPaymentInfoModal] = useState(false);
+  const [paymentInfoData, setPaymentInfoData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showQRScanner, setShowQRScanner] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -279,14 +282,35 @@ const ExpoStatusDetail = () => {
     setSettlementReceiptData(null);
   };
 
-  // QR 스캔 모달 열기 핸들러
-  const handleOpenQRScanner = () => {
-    setShowQRScanner(true);
+
+  // 결제 정보 조회 핸들러
+  const handlePaymentInfoClick = async () => {
+    try {
+      setLoading(true);
+      const response = await getExpoPaymentDetail(id);
+      console.log('결제 정보 응답:', response.data);
+      console.log('isPremium:', response.data.isPremium);
+      console.log('depositAmount:', response.data.depositAmount);
+      console.log('premiumDepositAmount:', response.data.premiumDepositAmount);
+      setPaymentInfoData(response.data);
+      setShowPaymentInfoModal(true);
+    } catch (err) {
+      console.error('결제 정보 조회 실패:', err);
+      alert('결제 정보를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // QR 스캔 모달 닫기 핸들러
-  const handleCloseQRScanner = () => {
-    setShowQRScanner(false);
+  // 결제 정보 모달 닫기 핸들러
+  const handleClosePaymentInfoModal = () => {
+    setShowPaymentInfoModal(false);
+    setPaymentInfoData(null);
+  };
+
+  // 관리자 페이지로 이동 핸들러
+  const handleAdminPageClick = () => {
+    navigate(`/expos/${id}/admin`);
   };
 
   if (loading) {
@@ -320,18 +344,6 @@ const ExpoStatusDetail = () => {
 
   return (
     <div className={styles.container}>
-      {/* QR 스캔 테스트 버튼 추가 */}
-      <div className={styles.qrScanSection}>
-        <button 
-          className={styles.qrScanButton} 
-          onClick={handleOpenQRScanner}
-        >
-          📱 QR 스캔 테스트
-        </button>
-        <p className={styles.qrScanNote}>
-          * 관리자 전용: 입장 QR 코드를 스캔하여 체크인 처리
-        </p>
-      </div>
 
       <ExpoApplicationDetail
         expoData={expoData}
@@ -341,6 +353,8 @@ const ExpoStatusDetail = () => {
         onRefundButtonClick={handleRefundButtonClick}
         onSettlementRequestClick={handleSettlementRequest}
         onSettlementReceiptClick={handleSettlementReceiptClick}
+        onPaymentInfoClick={handlePaymentInfoClick}
+        onAdminPageClick={handleAdminPageClick}
       />
 
       {modalType === 'waiting' && paymentDetailData && (
@@ -401,12 +415,29 @@ const ExpoStatusDetail = () => {
         />
       )}
 
-      {/* QR 스캐너 모달 조건부 렌더링 */}
-      {showQRScanner && (
-        <QRScannerComponent
-          onClose={handleCloseQRScanner}
-        />
+      {/* 결제 정보 모달 조건부 렌더링 */}
+      {showPaymentInfoModal && paymentInfoData && (
+        <PaymentDetailModal
+          expoName={paymentInfoData.expoTitle}
+          applicant={paymentInfoData.applicantName}
+          period={`${paymentInfoData.displayStartDate} ~ ${paymentInfoData.displayEndDate}`}
+          totalDays={paymentInfoData.totalDays}
+          dailyUsageFee={paymentInfoData.dailyUsageFee}
+          usageFeeAmount={paymentInfoData.usageFeeAmount}
+          depositAmount={paymentInfoData.depositAmount}
+          premiumDepositAmount={paymentInfoData.premiumDepositAmount}
+          isPremium={paymentInfoData.isPremium}
+          onClose={handleClosePaymentInfoModal}
+        >
+          <button 
+            className={styles.confirmBtn}
+            onClick={handleClosePaymentInfoModal}
+          >
+            확인
+          </button>
+        </PaymentDetailModal>
       )}
+
     </div>
   );
 };

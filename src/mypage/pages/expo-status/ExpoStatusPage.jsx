@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ExpoStatusPage.module.css';
 import { getMyExpos } from '../../../api/service/user/memberApi';
+import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 
 // 한 페이지에 보여줄 항목 수
 const ITEMS_PER_PAGE = 5;
@@ -16,6 +17,8 @@ const ExpoStatusPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentData, setSelectedPaymentData] = useState(null);
 
   useEffect(() => {
     fetchMyExpos();
@@ -36,6 +39,7 @@ const ExpoStatusPage = () => {
         postPeriod: formatDateRange(expo.displayStartDate, expo.displayEndDate),
         location: expo.locationDetail ? `${expo.location} (${expo.locationDetail})` : expo.location,
         status: getStatusLabel(expo.status),
+        statusKey: expo.status, // 원본 상태 키 저장
         isPremium: expo.isPremium
       }));
       
@@ -60,17 +64,54 @@ const ExpoStatusPage = () => {
   const getStatusLabel = (status) => {
     const statusMap = {
       'PENDING_APPROVAL': '승인대기',
-      'PENDING_PAYMENT': '결제대기',
+      'PENDING_PAYMENT': '승인완료',
       'PENDING_PUBLISH': '게시대기',
       'PENDING_CANCEL': '취소대기',
       'PUBLISHED': '게시중',
       'PUBLISH_ENDED': '게시종료',
       'SETTLEMENT_REQUESTED': '정산요청',
       'COMPLETED': '종료됨',
-      'REJECTED': '거절됨',
-      'CANCELLED': '취소됨'
+      'REJECTED': '승인거절',
+      'CANCELLED': '취소완료'
     };
     return statusMap[status] || status;
+  };
+
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 승인완료, 게시대기 제외)
+  const canViewPaymentInfo = (statusKey) => {
+    const excludedStatuses = [
+      'PENDING_APPROVAL', // 승인대기
+      'PENDING_PAYMENT',  // 승인완료 
+      'PENDING_PUBLISH'   // 게시대기
+    ];
+    return !excludedStatuses.includes(statusKey);
+  };
+
+  // 결제 정보 버튼 클릭 핸들러
+  const handlePaymentInfoClick = (e, expo) => {
+    e.stopPropagation(); // 행 클릭 이벤트 방지
+    
+    // 기존 PaymentDetailModal 형식에 맞는 데이터
+    const paymentData = {
+      expoName: expo.title,
+      applicant: '홍길동', // TODO: 실제 신청자 정보로 교체
+      period: expo.postPeriod,
+      totalDays: 30, // TODO: 실제 게시 일수로 교체
+      dailyUsageFee: expo.isPremium ? 30000 : 20000,
+      usageFeeAmount: expo.isPremium ? 900000 : 600000,
+      depositAmount: expo.isPremium ? 300000 : 200000,
+      totalAmount: expo.isPremium ? 1200000 : 800000,
+      isPremium: expo.isPremium,
+      commissionRate: 10
+    };
+    
+    setSelectedPaymentData(paymentData);
+    setShowPaymentModal(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setSelectedPaymentData(null);
   };
 
   const handleRowClick = (expo) => {
@@ -188,6 +229,31 @@ const ExpoStatusPage = () => {
         </>
       ) : (
         <div className={styles.noData}>신청한 박람회가 없습니다.</div>
+      )}
+      
+      {/* 결제 상세 정보 모달 */}
+      {showPaymentModal && selectedPaymentData && (
+        <PaymentDetailModal
+          expoName={selectedPaymentData.expoName}
+          applicant={selectedPaymentData.applicant}
+          period={selectedPaymentData.period}
+          totalDays={selectedPaymentData.totalDays}
+          dailyUsageFee={selectedPaymentData.dailyUsageFee}
+          usageFeeAmount={selectedPaymentData.usageFeeAmount}
+          depositAmount={selectedPaymentData.depositAmount}
+          totalAmount={selectedPaymentData.totalAmount}
+          isPremium={selectedPaymentData.isPremium}
+          commissionRate={selectedPaymentData.commissionRate}
+          onClose={handleClosePaymentModal}
+        >
+          {/* 결제 버튼 없이 확인 버튼만 */}
+          <button 
+            className={styles.confirmBtn}
+            onClick={handleClosePaymentModal}
+          >
+            확인
+          </button>
+        </PaymentDetailModal>
       )}
     </div>
   );

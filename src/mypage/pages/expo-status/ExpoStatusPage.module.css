@@ -110,3 +110,57 @@
   color: #ffffff;
   border-color: #000000;
 }
+
+.paymentInfoBtn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.paymentInfoBtn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.premiumBadge {
+  background-color: #fbbf24;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  margin-left: 0.5rem;
+}
+
+.loading, .error, .noData {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.confirmBtn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn:hover {
+  background-color: #4b5563;
+}

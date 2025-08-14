@@ -1,45 +1,121 @@
-/* --- Layout Container --- */
-.settlementContainer {
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.content {
   display: flex;
   flex-direction: column;
-  padding: 32px;
-  width: 100%;
+  gap: 30px;
 }
 
-/* 수평 배치용 */
-.sectionRow {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
+.scanSection {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #f0f0f0;
 }
 
-/* --- Section 공통 --- */
-.section {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  text-align: left;
+.scanIcon {
+  font-size: 4rem;
+  margin-bottom: 20px;
 }
 
-/* --- Title --- */
-.sectionTitle {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.scanSection h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
 }
 
-/* --- NEW 뱃지 --- */
-.newBadge {
-  font-size: 10px;
-  font-weight: 600;
+.scanSection p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.scanBtn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  background-color: #ff3d51;
-  padding: 2px 8px;
-  border-radius: 10px;
-  text-transform: uppercase;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scanBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.instructions {
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.instructions h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.instructions ul {
+  list-style: none;
+  padding: 0;
+}
+
+.instructions li {
+  color: #555;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+  padding-left: 25px;
+}
+
+.instructions li:last-child {
+  border-bottom: none;
+}
+
+.instructions li::before {
+  content: "✓";
+  color: #667eea;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .scanSection {
+    padding: 30px 20px;
+  }
+  
+  .instructions {
+    padding: 20px;
+  }
 }

@@ -468,10 +468,6 @@ export default function ExpoPayment() {
               </span>
             </div>
             <div className={styles.row}>
-              <span>행사 가격</span>
-              <span>-</span>
-            </div>
-            <div className={styles.row}>
               <span>서비스 수수료</span>
               <span>
                 {quantity} x {SERVICE_FEE_PER_TICKET}
