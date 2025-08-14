@@ -132,8 +132,9 @@
 }
 
 .chartPlaceholder {
-  height: 180px;
-  background-color: #f1f1f1;
+  width: 100%;
+  height:400px; 
+  background-color: #fff;
   border-radius: 8px;
 }
 
@@ -163,4 +164,11 @@
   background-color: #5b86e5;
   color: #fff;
   border-color: #5b86e5;
+}
+/* UsageDashboard.module.css */
+
+.chartPlaceholder {
+  /* 여기에 아래 코드를 추가하거나 수정 */
+  width: 100%; /* 부모 요소의 너비를 100%로 채웁니다. */
+  height: 300px; /* 차트 높이를 적절히 설정하여 공간을 확보합니다. */
 }
