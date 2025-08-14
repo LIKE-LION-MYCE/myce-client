@@ -51,10 +51,15 @@ const findPassword = async (name, loginId, email) => {
     return await instance.post(`${AUTH_PREFIX}/password/temp`, {name, loginId, email});
 }
 
+const logout = async () => {
+    return await instance.post(`${AUTH_PREFIX}/logout`);
+}
+
 export {
     signup, 
     login, 
     reissue, 
+    logout,
     setAccessTokenToStorage,
     sendVerificatiionEmail,
     verifyVerificationEmail,

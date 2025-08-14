@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
 import { createSseInstance } from '../../../api/service/system/sse/SseListener'
+import { logout } from '../../../api/service/auth/AuthService';
 
 const MemberMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
@@ -44,6 +45,24 @@ const MemberMainPageHeader = () => {
     navigate('/mypage'); // 마이페이지 버튼 클릭 시 /mypage로 이동
   };
 
+  const handleLogoutClick = () => {
+    console.log('로그아웃 시도!');
+
+    logout()
+    .then(res => {
+      localStorage.removeItem("access_token");
+      if(window.location.pathname.startsWith("/mypage")) {
+        navigate('/');
+      } else {
+        window.location.reload();
+      }
+    })
+    .catch(err => {
+      console.log("로그아웃에 실패했습니다.", err);
+      alert("로그아웃에 실패했습니다.");
+    });
+  }
+
   return (
     <nav className={styles.navbar}>
       {/* Logo Section */}
@@ -72,7 +91,7 @@ const MemberMainPageHeader = () => {
       <div className={styles.rightSection}>
         <NotificationButton />
 
-        <button className={styles.logoutBtn}>로그아웃</button>
+        <button className={styles.logoutBtn} onClick={handleLogoutClick}>로그아웃</button>
         <button className={styles.mypageBtn} onClick={handleMypageClick}>마이페이지</button>
       </div>
     </nav>
