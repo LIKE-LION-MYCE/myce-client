@@ -29,7 +29,7 @@
 }
 
 .logoImage {
-  height: 40px;
+  height: 50px;
   width: auto;
   object-fit: contain;
 }
@@ -37,15 +37,15 @@
 .rightSection {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 8px; /* 미니멀 스타일: 간격 줄임 */
 }
 
 .authBtn {
-  padding: 12px 24px;
+  padding: 8px 16px; /* 미니멀 스타일: 패딩 줄임 */
   border: none;
   border-radius: 6px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500; /* 미니멀 스타일: 폰트 웨이트 줄임 */
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -56,32 +56,40 @@
 }
 
 .loginBtn {
-  background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: none; /* 미니멀 스타일: 투명 배경 */
+  color: #666; /* 미니멀 스타일: 회색 텍스트 */
+  border: none;
+  font-weight: 400;
+  padding: 6px 12px;
 }
 
 .loginBtn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: #f8f9fa;
+  color: #333;
 }
 
 .joinBtn {
-  background: #000000;
+  background: #000000; /* 미니멀 스타일: 검은색 */
   color: white;
+  box-shadow: none; /* 미니멀 스타일: 그림자 제거 */
 }
 
 .joinBtn:hover {
-  background: #1f2937;
+  background: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 미니멀한 그림자 */
 }
 
 .studyBtn {
-  background: #000000;
-  color: white;
+  background: transparent; /* 미니멀 스타일: 투명 배경 */
+  color: #666; /* 미니멀 스타일: 회색 텍스트 */
+  border: 1px solid #ddd; /* 미니멀 스타일: 회색 테두리 */
+  padding: 7px 14px;
 }
 
 .studyBtn:hover {
-  background: #1f2937;
+  border-color: #000;
+  color: #000;
+  background: transparent;
 }
 
 /* Focus styles */
@@ -101,12 +109,20 @@
   }
 
   .rightSection {
-    gap: 12px;
+    gap: 8px; /* 모바일에서도 미니멀한 간격 */
   }
 
   .authBtn {
-    padding: 10px 18px;
+    padding: 8px 14px;
     font-size: 13px;
+  }
+
+  .loginBtn {
+    padding: 6px 10px;
+  }
+
+  .studyBtn {
+    padding: 7px 12px;
   }
 }
 
@@ -116,15 +132,19 @@
   }
 
   .rightSection {
-    gap: 8px;
+    gap: 6px;
   }
 
   .authBtn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-size: 12px;
   }
 
   .loginBtn {
     display: none;
+  }
+
+  .studyBtn {
+    padding: 6px 12px;
   }
 }

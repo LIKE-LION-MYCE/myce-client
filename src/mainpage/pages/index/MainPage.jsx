@@ -74,7 +74,6 @@ export default function MainPage() {
       <div className="relative">
         <MainBanner banners={mainBanners} />
       </div>
-      <SubBanners banners={subBanners} />
       <CategoryTabs
         onCategoryChange={handleCategoryChange}
         categories={categories}

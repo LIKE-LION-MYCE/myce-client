@@ -1,8 +1,10 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   padding: 1rem;
+  margin-top: 120px; /* 상단 마진 120px 추가 */
+  background-color: black;
 }
 
 .item {
@@ -14,7 +16,6 @@
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
-
 
 .image {
   width: 100%;

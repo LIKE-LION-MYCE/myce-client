@@ -1,8 +1,21 @@
-.banner {
-  width: 100%;
-  aspect-ratio: 5 / 1; /* 원하는 비율로 조절 가능 */
-  overflow: hidden;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  background-color: black;
 }
+
+.item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 2;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
 
 .image {
   width: 100%;
