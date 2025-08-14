@@ -2,25 +2,13 @@ import { useState, useEffect } from 'react';
 import styles from './BoothSettingForm.module.css';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
-import ToastFail from '../../../common/components/toastFail/ToastFail';
-import {
-  registerBooth,
-  updateBooth,
-} from '../../../api/service/expo-admin/setting/BoothService';
-import { useParams } from 'react-router-dom';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
-function BoothSettingForm({ initialData, onSuccess }) {
-  const { expoId } = useParams();
+function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
   const [form, setForm] = useState(initForm());
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [failToast, setFailToast] = useState({ show: false, message: '' });
-  const isEditMode = Boolean(initialData);
 
   function initForm() {
     return {
-      id: null,
       boothNumber: '',
       name: '',
       description: '',
@@ -34,12 +22,12 @@ function BoothSettingForm({ initialData, onSuccess }) {
   }
 
   useEffect(() => {
-    if (initialData) {
-      setForm({ ...initForm(), ...initialData });
+    if (editingBooth) {
+      setForm(editingBooth);
     } else {
       setForm(initForm());
     }
-  }, [initialData]);
+  }, [editingBooth]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,65 +42,40 @@ function BoothSettingForm({ initialData, onSuccess }) {
     }));
   };
 
-  const handleImageUploadSuccess = (cdnUrl) => {
-    setForm((prev) => ({ ...prev, mainImageUrl: cdnUrl }));
+  const handleImageUploadSuccess = (imageUrl) => {
+    setForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
   };
 
   const handleImageUploadError = (error) => {
-    showFailToast(error);
-  };
-
-  const showFailToast = (message) => {
-    setFailToast({ show: true, message });
-    setTimeout(() => {
-      setFailToast({ show: false, message: '' });
-    }, 5000);
+    console.error('이미지 업로드 실패:', error);
   };
 
   const validateForm = () => {
-    const {
-      boothNumber,
-      name,
-      description,
-      contactName,
-      contactPhone,
-      contactEmail,
-    } = form;
+    const requiredFields = ['name', 'boothNumber', 'contactName', 'contactPhone', 'contactEmail'];
+    
+    for (const field of requiredFields) {
+      if (!form[field] || form[field].trim() === '') {
+        return false;
+      }
+    }
 
-    if (!boothNumber.trim()) {
-      showFailToast('부스 번호를 입력해주세요.');
-      return false;
-    }
-    if (!name.trim()) {
-      showFailToast('부스명을 입력해주세요.');
-      return false;
-    }
-    if (!description.trim()) {
-      showFailToast('부스 소개를 입력해주세요.');
-      return false;
-    }
-    if (!contactName.trim()) {
-      showFailToast('담당자명을 입력해주세요.');
-      return false;
-    }
-    if (!contactPhone.trim()) {
-      showFailToast('담당자 연락처를 입력해주세요.');
-      return false;
-    }
-    const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
-    if (!phoneRegex.test(contactPhone)) {
-      showFailToast('올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
-      return false;
-    }
-    if (!contactEmail.trim()) {
-      showFailToast('담당자 이메일을 입력해주세요.');
-      return false;
-    }
+    // 이메일 형식 검증
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(contactEmail)) {
-      showFailToast('올바른 이메일 형식이 아닙니다.');
+    if (!emailRegex.test(form.contactEmail)) {
       return false;
     }
+
+    // 전화번호 형식 검증 (숫자와 하이픈만 허용)
+    const phoneRegex = /^[0-9-]+$/;
+    if (!phoneRegex.test(form.contactPhone)) {
+      return false;
+    }
+
+    // 프리미엄 부스인 경우 노출 순위 검증
+    if (form.isPremium && (!form.displayRank || form.displayRank <= 0)) {
+      return false;
+    }
+
     return true;
   };
 
@@ -128,36 +91,19 @@ function BoothSettingForm({ initialData, onSuccess }) {
         : null,
     };
 
-    try {
-      if (isEditMode) {
-        await updateBooth(expoId, form.id, payload);
-      } else {
-        await registerBooth(expoId, payload);
-      }
-
-      // 예외가 발생하지 않으면 성공으로 간주
-      setShowSuccessToast(true);
-      setTimeout(() => setShowSuccessToast(false), 2000);
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      // 모든 실패는 여기서 처리하며, 백엔드의 커스텀 에러 메시지를 우선적으로 사용
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        `${isEditMode ? '수정' : '등록'} 중 오류가 발생했습니다.`;
-      showFailToast(errorMessage);
+    const success = await onSubmit(payload);
+    if (success) {
+      setForm(initForm());
     }
+  };
+
+  const handleCancel = () => {
+    setForm(initForm());
+    onCancel?.();
   };
 
   return (
     <div className={styles.container}>
-      {showSuccessToast && (
-        <ToastSuccess message={`부스 ${isEditMode ? '수정' : '등록'} 완료`} />
-      )}
-      {failToast.show && <ToastFail message={failToast.message} />}
-
       <div className={styles.posterWrapper}>
         <ImageUpload
           initialImageUrl={form.mainImageUrl}
@@ -167,114 +113,141 @@ function BoothSettingForm({ initialData, onSuccess }) {
       </div>
 
       <div className={styles.formGrid}>
-        {/* Left Column */}
+        {/* 왼쪽 컬럼 */}
         <div className={styles.leftColumn}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>부스 번호</label>
+            <label className={styles.label}>
+              부스명 <span style={{color: 'red'}}>*</span>
+            </label>
             <input
-              name="boothNumber"
-              className={styles.inputField}
-              placeholder="부스 번호 입력"
-              value={form.boothNumber || ''}
+              type="text"
+              name="name"
+              value={form.name}
               onChange={handleChange}
+              placeholder="부스명을 입력하세요"
+              className={styles.inputField}
             />
           </div>
+
           <div className={styles.formGroup}>
-            <label className={styles.label}>프리미엄 부스 여부</label>
-            <div className={styles.toggleWrapper}>
+            <label className={styles.label}>
+              부스 위치 <span style={{color: 'red'}}>*</span>
+            </label>
+            <input
+              type="text"
+              name="boothNumber"
+              value={form.boothNumber}
+              onChange={handleChange}
+              placeholder="예: A-01"
+              className={styles.inputField}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>부스 설명</label>
+            <input
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="부스에 대한 간단한 설명을 입력하세요"
+              className={styles.inputField}
+            />
+          </div>
+        </div>
+
+        {/* 오른쪽 컬럼 */}
+        <div className={styles.rightColumn}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              담당자명 <span style={{color: 'red'}}>*</span>
+            </label>
+            <input
+              type="text"
+              name="contactName"
+              value={form.contactName}
+              onChange={handleChange}
+              placeholder="담당자명을 입력하세요"
+              className={styles.inputField}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              담당자 연락처 <span style={{color: 'red'}}>*</span>
+            </label>
+            <input
+              type="text"
+              name="contactPhone"
+              value={form.contactPhone}
+              onChange={handleChange}
+              placeholder="010-1234-5678"
+              className={styles.inputField}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              담당자 이메일 <span style={{color: 'red'}}>*</span>
+            </label>
+            <input
+              type="email"
+              name="contactEmail"
+              value={form.contactEmail}
+              onChange={handleChange}
+              placeholder="example@company.com"
+              className={styles.inputField}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>프리미엄 부스</label>
+            <div className={styles.booleanGroup}>
               <ToggleSwitch
                 checked={form.isPremium}
                 onChange={handleToggle}
               />
             </div>
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>노출 순위</label>
-            <input
-              name="displayRank"
-              className={styles.inputField}
-              type="number"
-              placeholder="숫자로 입력"
-              value={form.displayRank || ''}
-              onChange={handleChange}
-              disabled={!form.isPremium}
-            />
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className={styles.rightColumn}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>부스명</label>
-            <input
-              name="name"
-              className={styles.inputField}
-              placeholder="부스명 입력"
-              value={form.name || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>부스 소개</label>
-            <input
-              name="description"
-              className={styles.inputField}
-              placeholder="부스 소개 입력"
-              value={form.description || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>담당자명</label>
-            <input
-              name="contactName"
-              className={styles.inputField}
-              placeholder="담당자명 입력"
-              value={form.contactName || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>담당자 연락처</label>
-            <input
-              name="contactPhone"
-              className={styles.inputField}
-              placeholder="010-1234-5678"
-              value={form.contactPhone || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>담당자 이메일</label>
-            <input
-              name="contactEmail"
-              className={styles.inputField}
-              placeholder="이메일 입력"
-              value={form.contactEmail || ''}
-              onChange={handleChange}
-            />
+            {form.isPremium && (
+              <div className={styles.formGroup} style={{marginTop: '10px'}}>
+                <input
+                  type="number"
+                  name="displayRank"
+                  value={form.displayRank}
+                  onChange={handleChange}
+                  placeholder="노출 순위 (1~100)"
+                  className={styles.inputField}
+                  min="1"
+                  max="100"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className={styles.buttonGroup}>
         <button
-          className={`${styles.actionBtn} ${styles.submitBtn}`}
+          type="button"
           onClick={handleSubmit}
+          disabled={!validateForm()}
+          className={`${styles.actionBtn} ${styles.submitBtn}`}
         >
-          <FaCheckCircle className={styles.iconBtn} />{' '}
-          {isEditMode ? '수정' : '등록'}
+          <FaCheckCircle />
+          <span>등록</span>
         </button>
-        <button
-          className={`${styles.actionBtn} ${styles.cancelBtn}`}
-          onClick={() => setForm(initForm())}
-        >
-          <FaTimesCircle className={styles.iconBtn} /> 취소
-        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={`${styles.actionBtn} ${styles.cancelBtn}`}
+          >
+            <FaTimesCircle />
+            <span>취소</span>
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
 export default BoothSettingForm;
-

@@ -74,7 +74,6 @@ function EventTable({ data = [], onUpdate, onDelete }) {
   };
 
   const columns = [
-    { header: 'ID', key: 'id' },
     { header: '행사 이름', key: 'name' },
     { header: '행사 위치', key: 'location' },
     { header: '행사 날짜', key: 'eventDate' },

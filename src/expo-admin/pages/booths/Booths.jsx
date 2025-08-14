@@ -1,19 +1,33 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { FiSearch, FiXCircle, FiPlusCircle } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
 import styles from './Booths.module.css';
 import BoothTable from '../../components/boothTable/BoothTable';
 import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm';
 import Pagination from '../../../common/components/pagination/Pagination';
-import { getBooths, deleteBooth } from '../../../api/service/expo-admin/setting/BoothService';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import { getBooths, deleteBooth, updateBooth, registerBooth } from '../../../api/service/expo-admin/setting/BoothService';
 
 function Booths() {
+  const { expoId } = useParams();
+  const [boothList, setBoothList] = useState([]);
+  const [filteredBoothList, setFilteredBoothList] = useState([]);
+  const [page, setPage] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState('latest');
-  const [boothList, setBoothList] = useState([]);
-  const [selectedBooth, setSelectedBooth] = useState(null);
-  const [showDeleteToast, setShowDeleteToast] = useState(false);
-  const { expoId } = useParams();
+  const [toast, setToast] = useState(null);
+  const size = 5;
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const pageInfo = {
+    totalPages: Math.ceil(filteredBoothList.length / size),
+    number: page,
+  };
 
   const fetchBooths = useCallback(async () => {
     if (!expoId) return;
@@ -39,7 +53,7 @@ function Booths() {
 
       setBoothList(formattedData);
     } catch (error) {
-      console.error('Failed to fetch booths:', error);
+      showToast('fail', error.message);
       setBoothList([]);
     }
   }, [expoId]);
@@ -48,18 +62,20 @@ function Booths() {
     fetchBooths();
   }, [fetchBooths]);
 
-  const [page, setPage] = useState(0);
-  const size = 5;
+  useEffect(() => {
+    let processedList = [...boothList];
 
-  // DTO 필드(name, description)에 맞게 검색 로직 수정
-  const filtered = boothList
-    .filter(
-      (b) =>
-        (b.name && b.name.toLowerCase().includes(searchText.toLowerCase())) ||
-        (b.description && b.description.toLowerCase().includes(searchText.toLowerCase()))
-    )
-    // 정렬 로직 수정
-    .sort((a, b) => {
+    // 검색 필터링
+    if (searchText) {
+      processedList = processedList.filter(
+        (booth) =>
+          (booth.name && booth.name.toLowerCase().includes(searchText.toLowerCase())) ||
+          (booth.description && booth.description.toLowerCase().includes(searchText.toLowerCase()))
+      );
+    }
+
+    // 정렬
+    processedList.sort((a, b) => {
       if (sortOrder === 'rank') {
         const rankA = a.displayRank;
         const rankB = b.displayRank;
@@ -78,51 +94,55 @@ function Booths() {
       return b.id - a.id; // 최신순 (id 내림차순)
     });
 
-  const pagedData = filtered.slice(page * size, (page + 1) * size);
-  const pageInfo = {
-    totalPages: Math.ceil(filtered.length / size),
-    number: page,
-  };
+    setFilteredBoothList(processedList);
+    setPage(0); // 필터링이나 정렬 시 첫 페이지로 이동
+  }, [boothList, sortOrder, searchText]);
 
-  const handleRowClick = (booth) => {
-    setSelectedBooth(booth);
-    // 폼이 있는 곳으로 스크롤
-    const formElement = document.getElementById('booth-form-section');
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth' });
+  const handleAdd = async (booth) => {
+    try {
+      await registerBooth(expoId, booth);
+      showToast('success', '부스가 성공적으로 등록되었습니다.');
+      fetchBooths();
+      return true;
+    } catch (error) {
+      showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+      return false;
     }
   };
 
-  const handleCancelEdit = () => {
-    setSelectedBooth(null);
-  };
-
-  const handleDelete = async (boothId) => {
-    if (window.confirm('정말로 이 부스를 삭제하시겠습니까?')) {
-      try {
-        await deleteBooth(expoId, boothId);
-        setShowDeleteToast(true);
-        setTimeout(() => setShowDeleteToast(false), 5000);
-        fetchBooths(); // 목록 새로고침
-        if (selectedBooth && selectedBooth.id === boothId) {
-          setSelectedBooth(null);
-        }
-      } catch (error) {
-        console.error('Failed to delete booth:', error);
-        alert(`부스 삭제 중 오류가 발생했습니다: ${error.message}`);
-      }
+  const handleUpdate = async (updatedBooth) => {
+    try {
+      await updateBooth(expoId, updatedBooth.id, updatedBooth);
+      showToast('success', '부스가 성공적으로 수정되었습니다.');
+      fetchBooths();
+    } catch (error) {
+      showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
     }
   };
 
-  const handleFormSuccess = () => {
-    fetchBooths(); // 목록만 새로고침하고 폼 내용은 유지
+  const handleDelete = async (id) => {
+    try {
+      await deleteBooth(expoId, id);
+      showToast('success', '부스가 성공적으로 삭제되었습니다.');
+      fetchBooths();
+    } catch (error) {
+      showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+    }
   };
 
   return (
     <div className={styles.boothsContainer}>
+      {toast && toast.type === 'success' && <ToastSuccess message={toast.message} />}
+      {toast && toast.type === 'fail' && <ToastFail message={toast.message} />}
+
       {/* 참가 부스 목록 */}
       <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>참가 부스 목록</h4>
+        <h4 className={styles.sectionTitle}>
+          참가 부스 목록 
+          <span style={{fontSize: '12px', color: '#999', marginLeft: '8px', fontWeight: 'normal'}}>
+            총 부스 수: {filteredBoothList.length}개
+          </span>
+        </h4>
 
         <div className={styles.topControls}>
           <div className={styles.filters}>
@@ -151,32 +171,17 @@ function Booths() {
         </div>
 
         <BoothTable
-          data={pagedData}
+          data={filteredBoothList.slice(page * size, page * size + size)}
+          onUpdate={handleUpdate}
           onDelete={handleDelete}
-          onRowClick={handleRowClick}
-          showToast={showDeleteToast}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
 
-      {/* 부스 등록/수정 폼 */}
-      <div id="booth-form-section" className={styles.section}>
-        <div className={styles.formHeader}>
-          <h4 className={styles.sectionTitle}>
-            {selectedBooth ? '부스 수정' : '부스 등록'}
-          </h4>
-          {selectedBooth && (
-            <button className={styles.registerNewBtn} onClick={handleCancelEdit}>
-              <FiPlusCircle />
-              <span>부스 등록</span>
-            </button>
-          )}
-        </div>
-        <BoothSettingForm
-          key={selectedBooth ? selectedBooth.id : 'new'}
-          initialData={selectedBooth}
-          onSuccess={handleFormSuccess}
-        />
+      {/* 부스 등록 */}
+      <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>부스 등록</h4>
+        <BoothSettingForm onSubmit={handleAdd} />
       </div>
     </div>
   );
