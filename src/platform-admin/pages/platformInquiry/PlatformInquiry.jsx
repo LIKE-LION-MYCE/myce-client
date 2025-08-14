@@ -419,21 +419,33 @@ function PlatformInquiry() {
             console.log('📥 Platform admin notification from', room.roomCode, ':', messageData);
             console.log('📋 Message type:', messageData.type, 'Payload:', messageData.payload);
             
-            // SIMPLE TEST: Make ANY message from this room cause glow
-            console.log('🧪 TEST: Making room glow for ANY message type');
-            setRequestingRooms(prev => new Set([...prev, room.roomCode]));
-            setHasNewHandoffRequest(true);
-            
-            // Also check specific conditions (but don't rely on them for now)
+            // Check for handoff requests specifically
             if (messageData.type === 'AI_HANDOFF_REQUEST' || 
                 (messageData.type === 'BUTTON_STATE_UPDATE' && 
                  messageData.payload?.state === 'WAITING_FOR_ADMIN')) {
               
-              console.log('🔔 Specific handoff request detected from room', room.roomCode);
+              console.log('🔔 HANDOFF REQUEST DETECTED! Setting room to glow:', room.roomCode);
+              setRequestingRooms(prev => new Set([...prev, room.roomCode]));
+              setHasNewHandoffRequest(true);
+            }
+            
+            // Check for handoff cancellations to remove glow
+            if (messageData.type === 'BUTTON_STATE_UPDATE' && 
+                messageData.payload?.state === 'AI_ACTIVE') {
+              console.log('🔕 HANDOFF CANCELLED! Removing glow from room:', room.roomCode);
+              setRequestingRooms(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(room.roomCode);
+                if (newSet.size === 0) {
+                  setHasNewHandoffRequest(false);
+                }
+                return newSet;
+              });
             }
           });
           
-          // Then join room (this may reuse existing subscription, but handler is already set)
+          // Force join room to ensure subscription is active
+          console.log('🔗 Force joining room to ensure active subscription:', room.roomCode);
           ChatWebSocketService.joinRoom(room.roomCode);
         }
       });
