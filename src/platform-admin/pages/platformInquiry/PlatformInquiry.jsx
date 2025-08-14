@@ -418,11 +418,19 @@ function PlatformInquiry() {
           ChatWebSocketService.onMessage(room.roomCode, (messageData) => {
             console.log('📥 Platform admin notification from', room.roomCode, ':', messageData);
             console.log('📋 Message type:', messageData.type, 'Payload:', messageData.payload);
+            console.log('🔍 DEBUGGING: Full messageData structure:', JSON.stringify(messageData, null, 2));
+            
+            // The messageData structure might be different for operators vs users
+            // Let's check if it has properties directly or if it's nested
+            const messageType = messageData.type;
+            const messagePayload = messageData.payload || messageData;
+            
+            console.log('🔍 DEBUGGING: Extracted type:', messageType, 'payload:', messagePayload);
             
             // Check for handoff requests specifically
-            if (messageData.type === 'AI_HANDOFF_REQUEST' || 
-                (messageData.type === 'BUTTON_STATE_UPDATE' && 
-                 messageData.payload?.state === 'WAITING_FOR_ADMIN')) {
+            if (messageType === 'AI_HANDOFF_REQUEST' || 
+                (messageType === 'BUTTON_STATE_UPDATE' && 
+                 messagePayload?.state === 'WAITING_FOR_ADMIN')) {
               
               console.log('🔔 HANDOFF REQUEST DETECTED! Setting room to glow:', room.roomCode);
               setRequestingRooms(prev => new Set([...prev, room.roomCode]));
@@ -430,8 +438,8 @@ function PlatformInquiry() {
             }
             
             // Check for handoff cancellations to remove glow
-            if (messageData.type === 'BUTTON_STATE_UPDATE' && 
-                messageData.payload?.state === 'AI_ACTIVE') {
+            if (messageType === 'BUTTON_STATE_UPDATE' && 
+                messagePayload?.state === 'AI_ACTIVE') {
               console.log('🔕 HANDOFF CANCELLED! Removing glow from room:', room.roomCode);
               setRequestingRooms(prev => {
                 const newSet = new Set(prev);

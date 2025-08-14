@@ -176,9 +176,15 @@ const joinRoom = async (roomId) => {
       
       const handler = messageHandlers.get(roomId);
       
-      // Only process actual chat messages, not system messages
-      if (handler && (data.type === 'MESSAGE' || data.type === 'ADMIN_MESSAGE' || data.type === 'AI_MESSAGE')) {
-        handler(data.payload || data);
+      // Process chat messages AND handoff system messages for platform admin notifications
+      if (handler && (data.type === 'MESSAGE' || data.type === 'ADMIN_MESSAGE' || data.type === 'AI_MESSAGE' || 
+                      data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE')) {
+        // For handoff messages, pass the full data object so operators can access type and payload
+        if (data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE') {
+          handler(data); // Pass full object with type and payload
+        } else {
+          handler(data.payload || data); // For regular messages, pass payload as before
+        }
       }
       
       const unreadHandler = unreadCountHandlers.get(roomId);
