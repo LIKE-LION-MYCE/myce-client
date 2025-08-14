@@ -4,8 +4,7 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineBarChart } from 'react-icons/ai';
 import { MdEventNote } from 'react-icons/md';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
-import { FaUserFriends } from 'react-icons/fa';
-import { BiMoneyWithdraw } from 'react-icons/bi';
+import { FaUserFriends, FaQrcode } from 'react-icons/fa';
 import { usePermission } from '../../permission/PermissionContext';
 import ExpoAdminInfoBox from '../../components/InfoBox/ExpoAdminInfoBox';
 
@@ -114,6 +113,18 @@ function ExpoAdminSideBar() {
         </MenuItem>
 
         <MenuItem disabled style={{ cursor: 'default', opacity: 0.6 }}>
+          QR CheckIn
+        </MenuItem>
+
+        <MenuItem
+          icon={<FaQrcode/>}
+          onClick={go(`${basePath}/qrcheckin`)}
+          active={selectedMenu === `${basePath}/qrcheckin`}
+        >
+          QR 체크인
+        </MenuItem>
+
+        <MenuItem disabled style={{ cursor: 'default', opacity: 0.6 }}>
           Pages
         </MenuItem>
 
@@ -193,16 +204,6 @@ function ExpoAdminSideBar() {
           style={!can.operation ? disabledStyle : {}}
         >
           운영 설정
-        </MenuItem>
-
-        <MenuItem
-          icon={<BiMoneyWithdraw />}
-          onClick={can.settlement ? go(`${basePath}/settlement`) : undefined}
-          active={selectedMenu === `${basePath}/settlement`}
-          disabled={!can.settlement}
-          style={!can.settlement ? disabledStyle : {}}
-        >
-          정산
         </MenuItem>
 
         <MenuItem
