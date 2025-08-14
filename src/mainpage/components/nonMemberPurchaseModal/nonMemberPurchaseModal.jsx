@@ -7,6 +7,7 @@ import {
   verifyVerificationEmail,
   VERIFICATION_TYPE,
 } from "../../../api/service/auth/AuthService";
+import { savePreReservation } from "../../../api/service/reservation/reservationApi";
 
 export default function NonMemberPurchaseModal({
   ticket,
@@ -71,7 +72,8 @@ export default function NonMemberPurchaseModal({
     }
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
+    // Added async
     if (!email) {
       alert("이메일을 입력해주세요.");
       return;
@@ -79,17 +81,36 @@ export default function NonMemberPurchaseModal({
 
     setIsLoading(true);
 
-    // API 호출 없이 바로 결제 페이지로 이동
-    navigate(
-      `/detail/${expoId}/payment?ticketId=${
-        ticket.ticketId
-      }&quantity=${quantity}&totalPrice=${
-        ticket.price * quantity
-      }&ticketName=${encodeURIComponent(
-        ticket.name
-      )}&email=${encodeURIComponent(email)}`
-    );
-    onClose();
+    try {
+      const preReservationData = {
+        ticketId: ticket.ticketId,
+        expoId: expoId,
+        userType: "NON_MEMBER",
+        userId: 0, // As per user's clarification
+        quantity: quantity,
+      };
+
+      const response = await savePreReservation(preReservationData);
+      // Assuming the response contains a reservationId or similar for the next step
+      // If the payment page needs data from this pre-reservation, it should be passed here.
+      // For now, I'll just navigate.
+
+      // API 호출 없이 바로 결제 페이지로 이동 -> API 호출 후 결제 페이지로 이동
+      navigate(
+        `/detail/${expoId}/payment?ticketId=${
+          ticket.ticketId
+        }&quantity=${quantity}&totalPrice=${
+          ticket.price * quantity
+        }&ticketName=${encodeURIComponent(
+          ticket.name
+        )}&email=${encodeURIComponent(email)}&preReservationId=${response.id}` // Added preReservationId
+      );
+      onClose();
+    } catch (error) {
+      console.error("사전 예약 생성 실패:", error);
+      alert("티켓 구매 준비에 실패했습니다. 다시 시도해주세요.");
+      setIsLoading(false);
+    }
   };
 
   return (

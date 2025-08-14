@@ -37,3 +37,12 @@ export const getReservationSuccess = async (reservationId) => {
   );
   return data;
 };
+
+// 결제 전 사전 예약 정보 저장(reservation 생성하면서 CONFIRMED_PENDING 저장)
+export const savePreReservation = async (preReservationData) => {
+  const { data } = await instance.post(
+    "/reservations/pre-payment",
+    preReservationData
+  );
+  return data;
+};
