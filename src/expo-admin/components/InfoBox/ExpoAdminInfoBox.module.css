@@ -1,7 +1,18 @@
+.expoInfoBoxContainer {
+  position: relative;
+}
+
 .expoInfoBox {
   display: flex;
   align-items: center;
   border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: background-color 0.2s ease;
+}
+
+.expoInfoBox:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .expoImage {
@@ -10,11 +21,61 @@
   border-radius: 50%;
   object-fit: cover;
   margin-right: 12px;
-  margin-left : 4px;
+  margin-left: 4px;
 }
 
 .expoName {
   font-weight: 500;
   font-size: 14px;
   color: #ffffff;
+  flex: 1;
+}
+
+.dropdownArrow {
+  font-size: 14px;
+  color: #ffffff;
+  margin-left: 8px;
+  transition: transform 0.2s ease;
+}
+
+.dropdownArrowOpen {
+  transform: rotate(90deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f5f5;
+}
+
+.logoutItem {
+  color: #d32f2f;
+}
+
+.logoutItem:hover {
+  background-color: #ffebee;
 }
