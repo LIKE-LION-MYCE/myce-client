@@ -18,3 +18,14 @@ export const getMyEmails = async (expoId, page, size, sort, keyword) => {
     throw new Error(message);
   }
 };
+
+//이메일 목록 상세 조회
+export const getMyEmailDetail = async (expoId, emailId) => {
+  try {
+    const response = await instance.get(`/expos/${expoId}/emails/${emailId}`);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "이메일 목록 상세 조회 중 오류 발생";
+    throw new Error(message);
+  }
+};
