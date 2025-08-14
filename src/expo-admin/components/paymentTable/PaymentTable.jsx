@@ -1,4 +1,3 @@
-// src/pages/expoAdmin/components/paymentTable/PaymentTable.jsx
 import { useState, useMemo, useEffect, Fragment } from 'react';
 import styles from './PaymentTable.module.css';
 
@@ -50,7 +49,6 @@ function PaymentTable({ data = [], fetchDetail }) {
   const [detailMap, setDetailMap] = useState({});
   const [showAllMap, setShowAllMap] = useState({});
 
-  // ✅ 어떤 경우에도 충돌하지 않도록 접두사 + 보조값(index) 포함
   const getRowKey = (row, idx) => {
     const base =
       row?.reservationId ??

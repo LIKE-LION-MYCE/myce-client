@@ -1,4 +1,3 @@
-// src/pages/expoAdmin/pages/payments/Payments.jsx
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
@@ -148,10 +147,7 @@ function Payments() {
         </div>
       </div>
 
-      {/* 상세 조회 연동 (reservationId 사용) */}
       <PaymentTable data={pageInfo.content} fetchDetail={fetchPaymentDetail} />
-
-      {/* ⚠️ Pagination 내부에서도 key에 'pay-page-' 같은 prefix를 쓰는지 확인! */}
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
 
       {showFailToast && <ToastFail message={failMessage} />}
