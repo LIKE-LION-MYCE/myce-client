@@ -3,6 +3,7 @@ import styles from './ExpoAdminHeader.module.css';
 
 const pathMap = {
   '/expos/:expoId/admin': ['대시보드'],
+  '/expos/:expoId/admin/qrcheckin': ['QR 체크인'],
   '/expos/:expoId/admin/setting': ['박람회 관리', '박람회 상세'],
   '/expos/:expoId/admin/booths': ['박람회 관리', '참가 부스'],
   '/expos/:expoId/admin/events': ['박람회 관리', '행사 일정'],
@@ -10,7 +11,6 @@ const pathMap = {
   '/expos/:expoId/admin/reservations': ['예약 관리', '예약자 리스트'],
   '/expos/:expoId/admin/emails': ['예약 관리', '이메일 전송 이력'],
   '/expos/:expoId/admin/operation': ['운영 설정'],
-  '/expos/:expoId/admin/settlement': ['정산'],
   '/expos/:expoId/admin/inquiry': ['문의'],
 };
 
