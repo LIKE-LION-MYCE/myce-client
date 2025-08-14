@@ -114,6 +114,29 @@
   transform: translateX(20px);
 }
 
+.backArrow {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+
+.backArrow:hover {
+  color: #999;
+}
+
+.titleWrapper{
+	display: flex;
+  justify-content: space-between;
+}
+
 /* 버튼 그룹 */
 .formActions {
   display: flex;

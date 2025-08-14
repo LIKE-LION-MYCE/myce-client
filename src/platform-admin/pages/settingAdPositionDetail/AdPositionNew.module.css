@@ -48,7 +48,7 @@
 }
 
 .inputNumber {
-  text-align: right;
+  text-align: left;
 }
 
 /* 토글 스위치 */
@@ -118,9 +118,9 @@
   background-color: #0056b3;
 }
 
-.btnDanger {
+.btnCancel {
   padding: 0.8rem 2rem;
-  background-color: #dc3545;
+  background-color: #555;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -128,6 +128,30 @@
   cursor: pointer;
 }
 
-.btnDanger:hover {
-  background-color: #c82333;
+.btnCancel:hover {
+  background-color: #333;
+}
+
+
+.titleWrapper{
+	display: flex;
+  justify-content: space-between;
+}
+
+.backArrow {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+
+.backArrow:hover {
+  color: #999;
 }

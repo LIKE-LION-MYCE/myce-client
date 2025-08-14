@@ -10,7 +10,7 @@ function BannerLocationTable({ data }) {
     { key: 'name', header: '배너명' },
     { key: 'createdAt', header: '생성일' },
     { key: 'updatedAt', header: '수정일자' },
-    { key: 'status', header: '상태' },
+    { key: 'active', header: '상태' },
     { key: 'action', header: '상세보기' },
   ];
 
@@ -48,6 +48,10 @@ function BannerLocationTable({ data }) {
                     >
                       상세보기
                     </button>
+                  ) : col.key === 'createdAt' || col.key === 'updatedAt' ? (
+                    row[col.key] ? row[col.key].substring(0, 10) : '-'
+                  ) : col.key === 'active' ? (
+                    row[col.key] === true ? '활성' : '비활성'
                   ) : (
                     (col.key === 'createdAt' || col.key === 'updatedAt') ? (
                       row[col.key] ? row[col.key].substring(0, 10) : '-'

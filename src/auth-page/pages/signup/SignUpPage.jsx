@@ -2,7 +2,11 @@ import { useState } from "react";
 import styles from "./SignUpPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { checkDuplicateLoginId, sendVerificatiionEmail, signup, verifyVerificationEmail } from "../../../api/service/auth/AuthService";
+import { checkDuplicateLoginId, 
+  sendVerificatiionEmail, 
+  signup, 
+  verifyVerificationEmail, 
+  VERIFICATION_TYPE } from "../../../api/service/auth/AuthService";
 import { HttpStatusCode } from "axios";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
@@ -132,7 +136,7 @@ const SignUpPage = () => {
   const sendEmailForVerification = () => {
     if(!validEmailFormat()) return;
 
-    sendVerificatiionEmail(form.email)
+    sendVerificatiionEmail(VERIFICATION_TYPE.SIGNUP, form.email)
     .then(() => triggerToastSuccess('메일이 발송되었습니다.'))
     .catch((err) => triggerToastFail('메일 발송에 실패했습니다.', err));
   }

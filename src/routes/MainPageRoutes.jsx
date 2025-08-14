@@ -22,7 +22,10 @@ function MainPageRoutes() {
         <Route path="detail/:expoId" element={<ExpoDetail />} />
         <Route path="detail/:expoId/write-review" element={<ReviewForm />} />
         <Route path="detail/:expoId/payment" element={<ExpoPayment />} />
-        <Route path="reservation-success" element={<ReservationSuccess />} />
+        <Route
+          path="reservation-success/:reservationId"
+          element={<ReservationSuccess />}
+        />
         <Route path="expo-apply" element={<ExpoApply />} />
         <Route path="expo-apply2" element={<ExpoApply2 />} />
         <Route path="ad-apply" element={<AdApply />} />

@@ -5,7 +5,6 @@ import FooterBanner from '../../components/banners/FooterBanner';
 import LoadMoreButton from '../../components/button/LoadMoreButton';
 import CategoryTabs from '../../components/category/CategoryTabs';
 import ExpoCardList from '../../components/expocard/ExpoCardList';
-import TopRightWidgetsSection from '../../components/widget/TopRightWidgetsSection';
 import FloatingChatButton from '../../components/chatbutton/FloatingChatButton';
 import { getCurrentBanner } from '../../../api/service/platform-admin/banner/BannerService'
 
@@ -13,7 +12,6 @@ export default function MainPage() {
   const [mainBanners, setMainBanners] = useState([]);
   const [subBanners, setSubBanners] = useState([]);
   const [footerBanners, setFooterBanners] = useState([]);
-  const [topRightBanners, setTopRightBanners] = useState([]);
 
   const handleBanner = async () => {
     try {
@@ -35,7 +33,6 @@ export default function MainPage() {
   return (
     <div className="w-full">
       <div className="relative">
-        <TopRightWidgetsSection banners={topRightBanners} />
         <MainBanner banners={mainBanners} />
       </div>
       <SubBanners banners={subBanners} />

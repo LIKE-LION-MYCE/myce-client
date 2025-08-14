@@ -8,11 +8,11 @@ const MAX_REFRESH_COUNT = 3;
 export const createSseInstance = (onMessage, onError) => {
   let token = localStorage.getItem('access_token');
   let eventSource;
+  let refreshCount = 0;
 
   const connect = () => {
-    
+
     token = localStorage.getItem('access_token');
-    const refreshCount = 0;
     console.log("attempt to connect, refreshCount = ", refreshCount);
 
     eventSource = new EventSourcePolyfill(baseURL, {
@@ -23,17 +23,20 @@ export const createSseInstance = (onMessage, onError) => {
     });
 
     eventSource.onmessage = (event) => {
-        console.log(event);
+      console.log(event);
       if (onMessage) onMessage(event);
     };
 
     eventSource.onerror = async (err) => {
+      if (refreshCount >= MAX_REFRESH_COUNT) {
+        return;
+      }
+      refreshCount++;
 
       if (err.status === HttpStatusCode.Unauthorized && err.data?.code === 'EXPIRED_TOKEN') {
         try {
           const reissueResult = await reissue();
-          if (reissueResult.status === HttpStatusCode.Ok && refreshCount <= MAX_REFRESH_COUNT) {
-            refreshCount = refreshCount + 1;
+          if (reissueResult.status === HttpStatusCode.Ok) {
             setAccessTokenToStorage(reissueResult);
             eventSource.close();
             connect();
@@ -48,10 +51,10 @@ export const createSseInstance = (onMessage, onError) => {
           return;
         }
       }
-      
+
       eventSource.close();
       setTimeout(connect, 3000);
-      
+
       if (onError) onError(err);
     };
   };

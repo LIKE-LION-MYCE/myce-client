@@ -25,12 +25,15 @@ const AdPositionList = () => {
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
-
+  
   const getList = async () => {
     try {
       const res = await fetchList(currentPage);
-      console.log("fetch res : ", res.data);
-      setPageInfo(res.data);
+      console.log("fetch res : ", res);
+      setPageInfo({
+          ...res.data,
+          number: res.data.page // 'page' 값을 'number'로 할당
+      });
     } catch (err) {
       console.error("fetch failed : ", err);
       setPageInfo({
@@ -44,13 +47,14 @@ const AdPositionList = () => {
 
   useEffect(() => {
     getList();
+    console.log("currentPage : ",currentPage);
   }, [currentPage]);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>배너 타입 설정</h1>
-        <Link to="/new">
+        <Link to="/platform/admin/adPosition/new">
           <button className={styles.addButton}>새 템플릿 생성</button>
         </Link>
       </div>
