@@ -97,7 +97,7 @@ function AdPositionDetail() {
         <div className={styles.formGroup}>
           <label className={styles.label}>이미지 너비</label>
           <input
-            className={`${styles.input} ${styles.inputNumber
+            className={`${styles.input} ${styles.inputNumber}`}
             id="bannerWidth"
             type="text"
             name="bannerWidth"
