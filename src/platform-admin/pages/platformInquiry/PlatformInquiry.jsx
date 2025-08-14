@@ -175,15 +175,8 @@ function PlatformInquiry() {
     setSelectedRoom(room);
     resetMessages();
     
-    // Clear handoff request notification for the selected room
-    setRequestingRooms(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(room.roomCode);
-      if (newSet.size === 0) {
-        setHasNewHandoffRequest(false);
-      }
-      return newSet;
-    });
+    // Don't clear handoff request notification when selecting room
+    // Let it persist until operator explicitly accepts the handoff
     
     if (room?.roomCode) {
       await loadInitialMessages(room.roomCode);
