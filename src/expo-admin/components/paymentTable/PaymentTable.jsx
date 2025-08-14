@@ -60,7 +60,6 @@ function PaymentTable({ data = [], fetchDetail }) {
     return `payrow-${String(base)}-${idx}`;
   };
 
-  // 데이터가 바뀔 때마다 디테일 상태 초기화
   const dataSignature = useMemo(
     () => (data || []).map((r, i) => getRowKey(r, i)).join('|'),
     [data]
@@ -141,54 +140,62 @@ function PaymentTable({ data = [], fetchDetail }) {
     setShowAllMap((prev) => ({ ...prev, [rowKey]: !prev[rowKey] }));
   };
 
-  const renderDetailBox = (detail, rowKey) => {
-    if (!detail) return null;
+const renderDetailBox = (detail, rowKey) => {
+  if (!detail) return null;
 
-    const reservers = Array.isArray(detail) ? detail : Array.isArray(detail.reservers) ? detail.reservers : [];
-    const total = reservers.length;
-    const showAll = !!showAllMap[rowKey];
-    const hiddenCount = Math.max(0, total - DISPLAY_LIMIT);
-    const visible = showAll ? reservers : reservers.slice(0, DISPLAY_LIMIT);
+  const reservers = Array.isArray(detail) ? detail : Array.isArray(detail.reservers) ? detail.reservers : [];
+  const total = reservers.length;
+  const showAll = !!showAllMap[rowKey];
+  const hiddenCount = Math.max(0, total - DISPLAY_LIMIT);
+  const visible = showAll ? reservers : reservers.slice(0, DISPLAY_LIMIT);
 
-    return (
-      <div className={styles.detailBox}>
-        <div className={styles.detailHeaderRow}>
-          <div className={styles.detailHeaderLeft}>
-            <span className={styles.detailTitle}>예약자 목록 : </span>
-            <span className={styles.detailCount}>총 {total}명</span>
-          </div>
-          {hiddenCount > 0 && (
-            <button
-              type="button"
-              className={styles.moreBtn}
-              onClick={() => toggleShowAll(rowKey)}
-            >
-              {showAll ? '접기' : `외 ${hiddenCount}명 더 보기`}
-            </button>
-          )}
+  return (
+    <div className={styles.detailBox}>
+      <div className={styles.detailHeaderRow}>
+        <div className={styles.detailHeaderLeft}>
+          <span className={styles.detailTitle}>예약자 목록 : </span>
+          <span className={styles.detailCount}>총 {total}명</span>
         </div>
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            className={styles.moreBtn}
+            onClick={() => toggleShowAll(rowKey)}
+          >
+            {showAll ? '접기' : `외 ${hiddenCount}명 더 보기`}
+          </button>
+        )}
+      </div>
 
-        <div className={styles.detailTableWrapper}>
-          <table className={styles.detailTable}>
-            <thead>
+      <div className={styles.detailTableWrapper}>
+        <table className={styles.detailTable}>
+          <thead>
+            <tr>
+              <th className={styles.thMini}>#</th>
+              <th>이름</th>
+              <th>성별</th>
+              <th>생년월일</th>
+              <th>전화번호</th>
+              <th>이메일</th>
+              <th>티켓 이름</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.length === 0 ? (
               <tr>
-                <th className={styles.thMini}>#</th>
-                <th>이름</th>
-                <th>성별</th>
-                <th>생년월일</th>
-                <th>전화번호</th>
-                <th>이메일</th>
+                <td colSpan={7} className={styles.emptyCell}>
+                  -
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {visible.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className={styles.emptyCell}>
-                    -
-                  </td>
-                </tr>
-              ) : (
-                visible.map((r, i) => (
+            ) : (
+              visible.map((r, i) => {
+                const ticketName =
+                  r.ticketName ??
+                  detail.ticketName ??
+                  r?.reservation?.ticketName ??
+                  '-';
+
+                return (
                   <tr
                     key={`reserver-${r.reserverId ?? ''}-${r.email ?? ''}-${r.phone ?? ''}-${i}`}
                   >
@@ -198,15 +205,17 @@ function PaymentTable({ data = [], fetchDetail }) {
                     <td>{formatBirth(r.birth)}</td>
                     <td>{r.phone ?? '-'}</td>
                     <td className={styles.emailCell}>{r.email ?? '-'}</td>
+                    <td className={styles.emailCell}>{ticketName}</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   return (
     <div className={styles.tableWrapper}>
