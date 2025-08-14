@@ -80,6 +80,17 @@
   cursor: pointer;
   background-color: black;
   color: white;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.bookmark:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.bookmark:disabled:hover {
+  background-color: #666;
 }
 
 .ticketBox {

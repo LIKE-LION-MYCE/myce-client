@@ -6,6 +6,9 @@ import BoothModal from "../../components/modal/BoothModal";
 import EmailVerifyModal from "../../components/modal/EmailVerifyModal";
 import CancelFeeTable from "../../components/cancelfeetable/CancelFeeTable";
 import { getTicketsForReservation } from "../../../api/service/user/TicketService";
+import { getPublicEvents } from "../../../api/service/expo-admin/setting/EventService";
+import { getExpoBookmarkStatus } from "../../../api/service/expo/expoDetailApi";
+import { saveFavorite, deleteFavorite } from "../../../api/service/user/FavoriteService";
 
 const boothData = [
   {
@@ -52,6 +55,17 @@ export default function ExpoDetail() {
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // 이벤트 관련 상태
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(null);
+
+  // 찜하기 관련 상태
+  const [bookmarkInfo, setBookmarkInfo] = useState({
+    isBookmarked: false,
+    loading: false
+  });
 
   // 티켓 조회 API 연동
   useEffect(() => {
@@ -70,6 +84,52 @@ export default function ExpoDetail() {
       }
     })();
   }, [expoId]);
+
+  // 이벤트 조회 API 연동
+  useEffect(() => {
+    (async () => {
+      try {
+        setEventsLoading(true);
+        const eventList = await getPublicEvents(expoId); // GET /expos/:expoId/events
+        setEvents(Array.isArray(eventList) ? eventList : []);
+        setEventsError(null);
+      } catch (e) {
+        setEventsError(e.message || "이벤트를 불러오지 못했습니다.");
+      } finally {
+        setEventsLoading(false);
+      }
+    })();
+  }, [expoId]);
+
+  // 찜하기 상태 조회 (회원인 경우에만)
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      // 비회원이면 API 호출하지 않고 기본값 설정
+      if (!isMember) {
+        setBookmarkInfo({
+          isBookmarked: false,
+          loading: false
+        });
+        return;
+      }
+
+      try {
+        const response = await getExpoBookmarkStatus(expoId);
+        setBookmarkInfo({
+          isBookmarked: response.isBookmarked || false,
+          loading: false
+        });
+      } catch (error) {
+        console.error('찜 상태 조회 실패:', error);
+        setBookmarkInfo({
+          isBookmarked: false,
+          loading: false
+        });
+      }
+    };
+
+    fetchBookmarkStatus();
+  }, [expoId, isMember]);
 
   // 선택된 티켓/표시값 계산
   const ABSOLUTE_MAX_QTY = 4; // 최대 구매 수량 제한
@@ -134,6 +194,48 @@ export default function ExpoDetail() {
     });
   };
 
+  // 찜하기/취소하기 핸들러
+  const handleBookmarkToggle = async () => {
+    // 비회원이면 알림 표시 후 리턴
+    if (!isMember) {
+      alert("비회원은 북마크 기능을 이용하실 수 없습니다");
+      return;
+    }
+
+    if (bookmarkInfo.loading) return;
+
+    try {
+      setBookmarkInfo(prev => ({ ...prev, loading: true }));
+      
+      // 현재 상태에 따라 API 호출 (메인 페이지와 동일한 방식)
+      let newIsBookmarkStatus;
+      if (bookmarkInfo.isBookmarked) {
+        // 찜 취소
+        newIsBookmarkStatus = await deleteFavorite(expoId);
+        alert('찜 목록에서 제거되었습니다.');
+      } else {
+        // 찜하기
+        newIsBookmarkStatus = await saveFavorite(expoId);
+        alert('찜 목록에 추가되었습니다.');
+      }
+      
+      setBookmarkInfo({
+        isBookmarked: newIsBookmarkStatus,
+        loading: false
+      });
+      
+    } catch (error) {
+      console.error('찜하기 토글 실패:', error);
+      setBookmarkInfo(prev => ({ ...prev, loading: false }));
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('찜하기 처리 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
   // 기존 리뷰 페이징 계산
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
@@ -149,9 +251,26 @@ export default function ExpoDetail() {
         return (
           <section className={styles.detailSection}>
             <h3>행사 정보</h3>
-            <p className={styles.description}>
-              행사에 대한 상세 정보 영역입니다.
-            </p>
+            {eventsLoading && <div>이벤트 불러오는 중...</div>}
+            {eventsError && <div className={styles.error}>{eventsError}</div>}
+            {!eventsLoading && !eventsError && (
+              <div>
+                {events.length === 0 ? (
+                  <p className={styles.description}>등록된 행사가 없습니다.</p>
+                ) : (
+                  events.map((event) => (
+                    <div key={event.id} className={styles.eventItem}>
+                      <h4>{event.name}</h4>
+                      <p><strong>일시:</strong> {event.eventDate} {event.startTime} - {event.endTime}</p>
+                      <p><strong>장소:</strong> {event.location}</p>
+                      <p><strong>담당자:</strong> {event.contactName} ({event.contactPhone})</p>
+                      <p><strong>이메일:</strong> {event.contactEmail}</p>
+                      <p><strong>설명:</strong> {event.description}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
             <h3>부스 정보</h3>
             <table className={styles.boothTable}>
               <thead>
@@ -240,7 +359,18 @@ export default function ExpoDetail() {
             행사 기간 정보(????.??.?? ~ ?????.??.??)
           </p>
           <div className={styles.buttons}>
-            <button className={styles.bookmark}>행사 찜하기</button>
+            <button 
+              className={styles.bookmark} 
+              onClick={handleBookmarkToggle}
+              disabled={bookmarkInfo.loading}
+            >
+              {bookmarkInfo.loading 
+                ? '처리 중...' 
+                : bookmarkInfo.isBookmarked 
+                ? '찜 취소' 
+                : '행사 찜하기'
+              }
+            </button>
             <button className={styles.chat}>1:1 채팅</button>
           </div>
 
