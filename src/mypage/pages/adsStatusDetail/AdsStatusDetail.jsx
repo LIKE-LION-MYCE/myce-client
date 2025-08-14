@@ -1,52 +1,71 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus } from '../../../api/service/user/memberApi';
+import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
+import AdRejectInfoModal from "../../components/rejectInfoModal/AdRejectInfoModal";
+import AdCancelModal from "../../components/cancelModal/AdCancelModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
 
-// 모든 버튼을 항상 표시하는 설정
+// 단순화된 버튼 설정
 const ALL_BUTTONS = [
-  { label: "결제 영수증", color: "black", disabled: false, action: "payment" },
-  { label: "환불 영수증", color: "black", disabled: false, action: "paymentDetail" },
-  { label: "환불 신청(상태별)", color: "purple", disabled: false, action: "refundRequestByStatus" },
-  { label: "취소(상태별)", color: "orange", disabled: false, action: "cancelByStatus" },
+  { label: "결제 신청", color: "black", disabled: false, action: "payment" },
+  { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
+  { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
+  { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
 ];
 
-// 광고 상태 매핑 객체 (실제 API 상태에 맞게 수정)
+// 광고 상태 매핑 객체 (상태별 버튼 분기 처리)
 const AD_STATUS_MAP = {
   PENDING_APPROVAL: {
     badge: { label: "승인대기", className: "pending" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
+    ],
   },
   PENDING_PAYMENT: {
     badge: { label: "결제대기", className: "waiting" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      { label: "결제 신청", color: "black", disabled: false, action: "payment" },
+      { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
+    ],
   },
   PENDING_PUBLISH: {
     badge: { label: "게시예정", className: "waiting" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
+    ],
   },
   PUBLISHED: {
     badge: { label: "게시중", className: "active" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
+    ],
   },
   COMPLETED: {
     badge: { label: "게시완료", className: "finished" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      // 게시완료 상태에서는 버튼 없음
+    ],
   },
   REJECTED: {
     badge: { label: "거절됨", className: "canceled" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
+    ],
   },
   PENDING_CANCEL: {
     badge: { label: "환불대기", className: "waiting" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      // 환불대기 상태에서는 버튼 없음 (처리 중)
+    ],
   },
   CANCELLED: {
     badge: { label: "취소됨", className: "canceled" },
-    buttons: ALL_BUTTONS,
+    buttons: [
+      // 취소됨 상태에서는 버튼 없음
+    ],
   },
 };
 
@@ -57,10 +76,12 @@ function AdsStatusDetail() {
   const [error, setError] = useState(null);
   
   // 모달 상태
-  const [modalType, setModalType] = useState(null); // 'payment' | 'refund' | null
+  const [modalType, setModalType] = useState(null); // 'payment' | 'refund' | 'rejectInfo' | 'cancel' | null
   const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단 선택 페이지 표시 상태
   const [paymentData, setPaymentData] = useState(null);
   const [refundData, setRefundData] = useState(null);
+  const [rejectInfoData, setRejectInfoData] = useState(null);
+  const [cancelData, setCancelData] = useState(null);
 
   // 광고 상세 데이터 불러오기
   const fetchAdvertisementDetail = async () => {
@@ -173,6 +194,21 @@ function AdsStatusDetail() {
     // alert("다운로드 기능 연동 필요");
   };
 
+  // 거절 사유 조회 핸들러
+  const handleViewRejectInfo = async () => {
+    try {
+      console.log('거절 사유 API 호출 중, ID:', id);
+      const response = await getAdvertisementRejectInfo(id);
+      console.log('거절 사유 API 응답:', response);
+      setRejectInfoData(response.data);
+      setModalType("rejectInfo");
+    } catch (err) {
+      console.error('거절 사유 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('거절 사유를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
 
   // 통합된 환불 신청 핸들러 (상태별 자동 처리)
   const handleRefundRequestByStatus = async () => {
@@ -189,15 +225,87 @@ function AdsStatusDetail() {
     }
   };
 
-  // 통합된 취소 핸들러 (상태별 자동 처리)
-  const handleCancelByStatus = async () => {
-    if (window.confirm('광고를 취소하시겠습니까?')) {
+  // 환불 신청 핸들러 (상태별 자동 처리)
+  const handleRefundRequest = async () => {
+    try {
+      console.log('환불 영수증 API 호출 중, ID:', id);
+      const response = await getAdvertisementRefundReceipt(id);
+      console.log('환불 영수증 API 응답:', response);
+      setRefundData({
+        ...response.data,
+        currentStatus: adData.status // 현재 광고 상태 추가
+      });
+      setModalType("refund");
+    } catch (err) {
+      console.error('환불 영수증 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // 부분 환불 신청 핸들러
+  const handlePartialRefundRequest = async () => {
+    try {
+      console.log('부분 환불 영수증 API 호출 중, ID:', id);
+      const response = await getAdvertisementRefundReceipt(id);
+      console.log('부분 환불 영수증 API 응답:', response);
+      setRefundData(response.data);
+      setModalType("partialRefund");
+    } catch (err) {
+      console.error('부분 환불 영수증 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('부분 환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // 취소 모달 표시 핸들러
+  const handleCancelByStatus = () => {
+    setCancelData({
+      advertisementTitle: adData.title,
+      applicantName: adData.businessInfo?.ceoName || '',
+      displayStartDate: formatDate(adData.displayStartDate),
+      displayEndDate: formatDate(adData.displayEndDate),
+      currentStatus: adData.status
+    });
+    setModalType("cancel");
+  };
+
+  // 실제 취소 처리 핸들러
+  const handleCancelConfirm = async () => {
+    try {
+      await cancelAdvertisementByStatus(id);
+      alert('광고가 성공적으로 취소되었습니다.');
+      handleCloseModal();
+      fetchAdvertisementDetail(); // 데이터 새로고침
+    } catch (error) {
+      console.error('취소 실패:', error);
+      alert('취소 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 승인대기 취소 핸들러
+  const handleCancelPendingApproval = async () => {
+    if (window.confirm('승인대기 중인 광고를 취소하시겠습니까?')) {
       try {
         await cancelAdvertisementByStatus(id);
         alert('광고가 성공적으로 취소되었습니다.');
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
-        console.error('취소 실패:', error);
+        console.error('승인대기 취소 실패:', error);
+        alert('취소 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  // 결제대기 취소 핸들러
+  const handleCancelPendingPayment = async () => {
+    if (window.confirm('결제대기 중인 광고를 취소하시겠습니까?')) {
+      try {
+        await cancelAdvertisementByStatus(id);
+        alert('광고가 성공적으로 취소되었습니다.');
+        fetchAdvertisementDetail(); // 데이터 새로고침
+      } catch (error) {
+        console.error('결제대기 취소 실패:', error);
         alert('취소 중 오류가 발생했습니다.');
       }
     }
@@ -222,29 +330,14 @@ function AdsStatusDetail() {
       case 'payment':
         handlePaymentClick();
         break;
-      case 'paymentDetail':
-        handleRefundClick();
-        break;
       case 'refundRequest':
         handleRefundRequest();
         break;
-      case 'partialRefundRequest':
-        handlePartialRefundRequest();
-        break;
-      case 'refundRequestByStatus':
-        handleRefundRequestByStatus();
-        break;
-      case 'cancelPendingApproval':
-        handleCancelPendingApproval();
-        break;
-      case 'cancelPendingPayment':
-        handleCancelPendingPayment();
-        break;
-      case 'cancelByStatus':
+      case 'cancelRequest':
         handleCancelByStatus();
         break;
-      case 'cancel':
-        handleCancelAdvertisement();
+      case 'viewRejectInfo':
+        handleViewRejectInfo();
         break;
       default:
         console.warn('Unknown action:', action);
@@ -256,6 +349,8 @@ function AdsStatusDetail() {
     setModalType(null);
     setPaymentData(null);
     setRefundData(null);
+    setRejectInfoData(null);
+    setCancelData(null);
   };
 
   // 결제수단선택 페이지가 표시될 경우 해당 컴포넌트만 렌더링
@@ -348,7 +443,7 @@ function AdsStatusDetail() {
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
-              {statusConf.buttons && statusConf.buttons.map((button, index) => (
+              {statusConf.buttons && statusConf.buttons.length > 0 && statusConf.buttons.map((button, index) => (
                 <button
                   key={index}
                   className={`${styles.btn} ${styles[button.color]}`}
@@ -358,6 +453,11 @@ function AdsStatusDetail() {
                   {button.label}
                 </button>
               ))}
+              {(!statusConf.buttons || statusConf.buttons.length === 0) && (
+                <div className={styles.noButtonsMessage}>
+                  사용 가능한 작업이 없습니다.
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -395,9 +495,10 @@ function AdsStatusDetail() {
             usedAmount={refundData.usedAmount}
             remainingDays={refundData.remainingDays}
             refundAmount={refundData.refundAmount}
+            currentStatus={refundData.currentStatus}
             onRefund={async (reason) => {
               try {
-                await requestAdvertisementRefund(id, { reason });
+                await requestAdvertisementRefundByStatus(id, { reason });
                 alert('환불 신청이 성공적으로 접수되었습니다.');
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
@@ -462,6 +563,24 @@ function AdsStatusDetail() {
                 alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
               }
             }}
+            onClose={handleCloseModal}
+          />
+        )}
+        {modalType === "rejectInfo" && rejectInfoData && (
+          <AdRejectInfoModal
+            description={rejectInfoData.description}
+            rejectedAt={rejectInfoData.rejectedAt}
+            onClose={handleCloseModal}
+          />
+        )}
+        {modalType === "cancel" && cancelData && (
+          <AdCancelModal
+            advertisementTitle={cancelData.advertisementTitle}
+            applicantName={cancelData.applicantName}
+            displayStartDate={cancelData.displayStartDate}
+            displayEndDate={cancelData.displayEndDate}
+            currentStatus={cancelData.currentStatus}
+            onCancel={handleCancelConfirm}
             onClose={handleCloseModal}
           />
         )}

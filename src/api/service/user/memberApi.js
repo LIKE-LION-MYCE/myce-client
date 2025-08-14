@@ -104,6 +104,10 @@ export const getAdvertisementRefundReceipt = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/refund-receipt`);
 };
 
+export const getAdvertisementRejectInfo = async (advertisementId) => {
+  return await instance.get(`${AD_PREFIX}/${advertisementId}/reject-info`);
+};
+
 export const deleteAdvertisement = async (advertisementId) => {
   return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
 };

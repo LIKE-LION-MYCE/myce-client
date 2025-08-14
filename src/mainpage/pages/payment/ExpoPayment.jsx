@@ -1,23 +1,29 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useSearchParams } from "react-router-dom";
 import styles from "./ExpoPayment.module.css";
 import ReservationPaymentCardButton from "../../components/paymentButton/ReservationPaymentCardButton"; // 카드 결제 버튼
 import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton"; // 가상계좌 버튼
 import PaymentTransferButton from "../../components/paymentButton/PaymentTransferButton";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
+import { getExpoBasicInfo } from "../../../api/service/expo/expoDetailApi";
 
 export default function ExpoPayment() {
   const SERVICE_FEE_PER_TICKET = 1000;
   const TARGET_TYPE = "RESERVATION";
   const { expoId } = useParams();
-  const location = useLocation();
-  const {
-    quantity = 1,
-    ticketName,
-    unitPrice,
-    ticketId,
-  } = location.state || {};
+  const [searchParams] = useSearchParams();
+  
+  // URL 파라미터에서 결제 정보 추출
+  const reservationId = searchParams.get('reservationId');
+  const ticketId = searchParams.get('ticketId');
+  const quantity = parseInt(searchParams.get('quantity') || '1');
+  const totalPrice = parseInt(searchParams.get('totalPrice') || '0');
+  const unitPrice = Math.floor(totalPrice / quantity); // 단가 계산
+  const ticketName = decodeURIComponent(searchParams.get('ticketName') || '티켓');
+  
+  // 박람회 정보 상태
+  const [expoInfo, setExpoInfo] = useState(null);
 
   const [personalInfo, setPersonalInfo] = useState(
     Array.from({ length: quantity }).map(() => ({
@@ -100,7 +106,21 @@ export default function ExpoPayment() {
       });
       return newInfo;
     });
-  }, [quantity]);
+    
+    // 박람회 정보 로드
+    const loadExpoInfo = async () => {
+      if (expoId) {
+        try {
+          const basicInfo = await getExpoBasicInfo(expoId);
+          setExpoInfo(basicInfo);
+        } catch (error) {
+          console.error('박람회 정보 로드 실패:', error);
+        }
+      }
+    };
+    
+    loadExpoInfo();
+  }, [quantity, expoId]);
 
   // 로그인 시 보유 마일리지 불러오기
   useEffect(() => {
@@ -350,16 +370,21 @@ export default function ExpoPayment() {
       <section className={styles.rightSection}>
         <div className={styles.thumbnailBox}>
           <div className={styles.details}>
-            <h3>행사 제목</h3>
+            <h3>{expoInfo?.title || '로딩 중...'}</h3>
             <div className={styles.info}>
-              <p>📍 행사 장소</p>
-              <p>🗓 행사 일정</p>
+              <p>📍 {expoInfo?.location || '장소 정보 없음'}</p>
+              <p>🗓 {expoInfo?.startDate && expoInfo?.endDate ? 
+                  `${new Date(expoInfo.startDate).toLocaleDateString('ko-KR')} ~ ${new Date(expoInfo.endDate).toLocaleDateString('ko-KR')}` 
+                  : '일정 정보 없음'}</p>
             </div>
           </div>
           <img
-            src="https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg"
-            alt="행사 제목"
+            src={expoInfo?.thumbnailUrl || "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg"}
+            alt={expoInfo?.title || "행사 제목"}
             className={styles.thumbnail}
+            onError={(e) => {
+              e.target.src = 'https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg';
+            }}
           />
         </div>
 
