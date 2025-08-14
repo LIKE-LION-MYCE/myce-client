@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import styles from './SettlementDetailModal.module.css';
-import { fetchSettlementDetail } from '../../../api/service/platform-admin/expo/ExpoService';
+import { fetchSettlementDetail, approveSettlement } from '../../../api/service/platform-admin/expo/ExpoService';
 
-function SettlementDetailModal({ isOpen, onClose, expoId }) {
+function SettlementDetailModal({ isOpen, onClose, expoId, onSettlementApprove }) {
   const [settlementData, setSettlementData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [approving, setApproving] = useState(false);
 
   // 정산 데이터 로드
   const loadSettlementData = async () => {
@@ -19,6 +20,26 @@ function SettlementDetailModal({ isOpen, onClose, expoId }) {
       alert('정산 내역을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 정산 승인 처리
+  const handleSettlementApprove = async () => {
+    if (!expoId) return;
+    
+    try {
+      setApproving(true);
+      await approveSettlement(expoId);
+      alert('정산이 승인되었습니다.');
+      onClose(); // 모달 닫기
+      if (onSettlementApprove) {
+        onSettlementApprove(); // 부모 컴포넌트에 승인 완료 알림
+      }
+    } catch (error) {
+      console.error('정산 승인 실패:', error);
+      alert('정산 승인 처리에 실패했습니다.');
+    } finally {
+      setApproving(false);
     }
   };
 
@@ -87,6 +108,33 @@ function SettlementDetailModal({ isOpen, onClose, expoId }) {
               </div>
             </div>
 
+            {/* 정산 완료 상태일 때 추가 정보 표시 */}
+            {settlementData.status === 'COMPLETED' && (
+              <div className={styles.completionBox}>
+                <h3 className={styles.completionTitle}>정산 완료 정보</h3>
+                <div className={styles.row}>
+                  <span className={styles.label}>정산 계좌 예금주</span>
+                  <span className={styles.value}>{settlementData.receiverName || '정보 없음'}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>은행명</span>
+                  <span className={styles.value}>{settlementData.bankName || '정보 없음'}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>계좌번호</span>
+                  <span className={styles.value}>{settlementData.bankAccount || '정보 없음'}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>정산 승인 시점</span>
+                  <span className={styles.value}>{settlementData.settlementAt || '정보 없음'}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>정산 처리 담당자</span>
+                  <span className={styles.value}>지원님</span>
+                </div>
+              </div>
+            )}
+
             {settlementData.ticketSales && settlementData.ticketSales.length > 0 && (
               <div className={styles.infoBox}>
                 <h3>티켓 판매 내역</h3>
@@ -109,6 +157,15 @@ function SettlementDetailModal({ isOpen, onClose, expoId }) {
 
         <div className={styles.actionBox}>
           <button className={styles.cancelBtn} onClick={onClose}>닫기</button>
+          {settlementData?.status !== 'COMPLETED' && (
+            <button 
+              className={styles.approveBtn} 
+              onClick={handleSettlementApprove}
+              disabled={approving}
+            >
+              {approving ? '승인 중...' : '정산 승인'}
+            </button>
+          )}
         </div>
       </div>
     </div>

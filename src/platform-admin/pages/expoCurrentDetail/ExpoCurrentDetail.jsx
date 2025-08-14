@@ -158,12 +158,6 @@ function ExpoCurrentDetail() {
         >
           결제 정보
         </button>
-        <button
-          className={styles.approveBtn}
-          onClick={() => setShowSettlementDetail(true)}
-        >
-          정산 정보
-        </button>
       </div>
     );
   } else if (expo?.status === 'SETTLEMENT_REQUESTED') {
@@ -174,12 +168,6 @@ function ExpoCurrentDetail() {
           onClick={() => setShowSettlementDetail(true)}
         >
           정산 정보 조회
-        </button>
-        <button
-          className={styles.approveBtn}
-          onClick={handleSettlementApprove}
-        >
-          정산 승인
         </button>
       </div>
     );
@@ -255,6 +243,9 @@ function ExpoCurrentDetail() {
         isOpen={showSettlementDetail}
         onClose={() => setShowSettlementDetail(false)}
         expoId={id}
+        onSettlementApprove={async () => {
+          await loadExpoDetail(); // 상태 업데이트
+        }}
       />
 
       <ExpoPaymentDetailModal
