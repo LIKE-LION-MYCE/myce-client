@@ -8,7 +8,7 @@ import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetai
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import SettlementSummaryModal from '../../components/settlementSummaryModal/SettlementSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { fetchDetailBanner, fetchCancelInfo, cancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, fetchCancelInfo, fetchPaymentDetail, cancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
@@ -40,6 +40,16 @@ function BannerCurrentDetail() {
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
 
+  const getPaymentDetail = async () => {
+    try {
+      const res = await fetchPaymentDetail(id);
+      setPaymentDetail(res);
+      console.log("paymentInfo = ", res); // todo: 삭제
+    } catch (err) {
+      console.log("결제 정보를 불러오지 못했습니다 : ", err);
+    }
+  }
+
   const fetchCancelForm = async () => {
     try {
       const res = await fetchCancelInfo(id);
@@ -69,9 +79,12 @@ function BannerCurrentDetail() {
     const fetchData = async () => {
       try {
         const response = await fetchDetailBanner(id);
+        getPaymentDetail();
 
-        fetchCancelForm();
-        console.log("cancelForm : ", cancelForm);
+        if (rawStatus == 'PENDING_CANCEL') {
+          fetchCancelForm();
+          console.log("cancelForm : ", cancelForm);
+        }
 
         console.log('배너 상세 데이터:', response);
         // 배너와 운영자 데이터 설정
@@ -108,12 +121,19 @@ function BannerCurrentDetail() {
   if (rawStatus === 'PENDING_CANCEL') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
+        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
         <button
           className={styles.approveBtn}
           onClick={() => setShowSettlementSummary(true)}
         >
           취소 승인
         </button>
+      </div>
+    );
+  }else if (rawStatus === 'PUBLISHED'){
+        buttonGroup = (
+      <div className={styles.buttonGroup}>
+        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
       </div>
     );
   }
@@ -136,7 +156,7 @@ function BannerCurrentDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={operatorData} />
+        {operatorData && <OperatorApplicationForm operatorData={operatorData} />}
       </div>
 
       {/* 버튼 그룹 */}

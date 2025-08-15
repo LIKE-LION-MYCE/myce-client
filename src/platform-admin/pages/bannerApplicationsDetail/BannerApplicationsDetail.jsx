@@ -93,6 +93,9 @@ function BannerApplicationsDetail() {
       } else if (rawStatus == 'CANCELLED') {
         getPaymentDetail();
         getCancelDetail();
+      }else if (rawStatus == 'PENDING_PAYMENT' || rawStatus == 'COMPLETED' 
+        || rawStatus == 'PENDING_PUBLISH') {
+        getPaymentDetail();
       }
       setBannerData(response);
       setOperatorData({
@@ -123,7 +126,7 @@ function BannerApplicationsDetail() {
   const handleApproveSubmit = () => {
     navigate(location.pathname, {
       replace: true,
-      state: { ...location.state, expoStatus: 'PENDING_PUBLISH' },
+      state: { ...location.state, expoStatus: 'PENDING_PAYMENT' },
     });
     setShowPaymentModal(false);
   }
@@ -164,9 +167,7 @@ function BannerApplicationsDetail() {
         <button className={styles.approveBtn} onClick={handleApprove}>승인</button>
       </div>
     );
-  } else if (rawStatus === 'PENDING_PAYMENT') {
-
-  } else if (rawStatus === 'REJECTED') {
+  }else if (rawStatus === 'REJECTED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowRejectViewModal(true)}>거절 사유</button>
@@ -179,11 +180,10 @@ function BannerApplicationsDetail() {
         <button className={styles.approveBtn} onClick={() => setShowCancelDetail(true)}>취소 내역</button>
       </div>
     );
-  } else if (rawStatus === 'COMPLETED') {
+  } else if (rawStatus === 'COMPLETED' || rawStatus === 'PENDING_PAYMENT') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
-        <button className={styles.approveBtn} onClick={() => setShowSettlementDetail(true)}>정산 내역</button>
       </div>
     );
   }
@@ -206,7 +206,7 @@ function BannerApplicationsDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={operatorData} />
+        {operatorData && <OperatorApplicationForm operatorData={operatorData} />}
       </div>
 
       {/* 버튼 그룹 */}

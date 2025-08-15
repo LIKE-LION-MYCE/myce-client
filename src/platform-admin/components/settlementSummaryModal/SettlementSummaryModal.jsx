@@ -6,7 +6,7 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h2 className={styles.title}>정산 내역</h2>
+        <h2 className={styles.title}>환불 내역</h2>
 
         {/* 박람회/신청자 정보 */}
         <div className={styles.infoBox}>
