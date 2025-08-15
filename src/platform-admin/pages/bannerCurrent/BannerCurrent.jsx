@@ -9,8 +9,11 @@ import { fetchAllBanners, fetchFilteredBanners } from '../../../api/service/plat
 
 const bannerStatusMap = {
   ALL: '전체',
+  PENDING_PUBLISH: '게시 대기',
+  PUBLISHED: '게시중',
   PENDING_CANCEL: '취소 대기',
-  PUBLISHED: '게시중'
+  CANCELLED: '취소됨',
+  COMPLETED: '게시 종료',
 };
 
 function BannerCurrent() {
@@ -77,9 +80,15 @@ function BannerCurrent() {
     console.log(`convertTabToStatus: ${tab}`);
     switch (tab) {
       case 1:
-        return 'PENDING_CANCEL';
+        return 'PENDING_PUBLISH';
       case 2:
         return 'PUBLISHED';
+      case 3:
+        return 'PENDING_CANCEL';
+      case 4:
+        return 'CANCELLED';
+      case 5:
+        return 'COMPLETED';
       default:
         return '';
     }

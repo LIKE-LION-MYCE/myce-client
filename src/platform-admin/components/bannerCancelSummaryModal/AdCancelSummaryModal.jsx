@@ -1,4 +1,4 @@
-import styles from './SettlementSummaryModal.module.css';
+import styles from './AdCancelSummaryModal.module.css';
 
 function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   if (!isOpen) return null;
@@ -6,12 +6,12 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h2 className={styles.title}>환불 내역</h2>
+        <h2 className={styles.title}>환불 승인</h2>
 
         {/* 박람회/신청자 정보 */}
         <div className={styles.infoBox}>
           <div className={styles.row}>
-            <span className={styles.label}>박람회명</span>
+            <span className={styles.label}>배너 제목</span>
             <span className={styles.value}>{cancelForm?.title || '-'}</span>
           </div>
           <div className={styles.row}>
