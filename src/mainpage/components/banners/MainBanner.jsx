@@ -12,7 +12,7 @@ export default function MainBanner({ banners }) {
     }, 4000); // 4초마다 전환
 
     return () => clearInterval(interval);
-  }, []);
+  }, [banners]);
 
   return (
     <div className={styles.banner}>
