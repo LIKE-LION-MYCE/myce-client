@@ -12,13 +12,15 @@ import {
   getExpoEvents,
   toggleExpoBookmark
 } from '../../../api/service/expo/expoDetailApi';
-import TicketPurchaseModal from '../../components/ticketPurchaseModal/TicketPurchaseModal';
 import ExpoHeader from '../../components/expoHeader/ExpoHeader';
 import ExpoInfo from '../../components/expoInfo/ExpoInfo';
 import ExpoTickets from '../../components/expoTickets/ExpoTickets';
 import ExpoBooths from '../../components/expoBooths/ExpoBooths';
 import ExpoEvents from '../../components/expoEvents/ExpoEvents';
 import ExpoReviews from '../../components/expoReviews/ExpoReviews';
+import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
+import NonMemberPurchaseModal from "../../../mainpage/components/nonMemberPurchaseModal/NonMemberPurchaseModal";
+import { isTokenExpired } from "../../../api/utils/jwtUtils";
 
 export default function ExpoDetail() {
   const { expoId } = useParams();
@@ -31,12 +33,13 @@ export default function ExpoDetail() {
   const [booths, setBooths] = useState(null);
   const [businessProfile, setBusinessProfile] = useState(null);
   const [events, setEvents] = useState(null);
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState('info'); // info, tickets, booths, events, reviews, location
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showNonMemberModal, setShowNonMemberModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [selectedTicketId, setSelectedTicketId] = useState('');
+  const [selectedTicketId, setSelectedTicketId] = useState("");
 
   useEffect(() => {
     if (expoId) {
@@ -48,49 +51,55 @@ export default function ExpoDetail() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // 기본 정보는 항상 로드
       const basicData = await getExpoBasicInfo(expoId);
       setBasicInfo(basicData);
-      
+
       // 다른 정보들도 병렬로 로드
-      const [ticketsData, bookmarkData, reviewsData, locationData, boothsData, eventsData] = await Promise.all([
-        getExpoTickets(expoId).catch(err => {
-          console.error('티켓 정보 로드 실패:', err);
+      const [
+        ticketsData,
+        bookmarkData,
+        reviewsData,
+        locationData,
+        boothsData,
+        eventsData,
+      ] = await Promise.all([
+        getExpoTickets(expoId).catch((err) => {
+          console.error("티켓 정보 로드 실패:", err);
           return null;
         }),
-        getExpoBookmarkStatus(expoId).catch(err => {
-          console.error('찜하기 상태 로드 실패:', err);
+        getExpoBookmarkStatus(expoId).catch((err) => {
+          console.error("찜하기 상태 로드 실패:", err);
           return null;
         }),
-        getExpoReviews(expoId).catch(err => {
-          console.error('리뷰 정보 로드 실패:', err);
+        getExpoReviews(expoId).catch((err) => {
+          console.error("리뷰 정보 로드 실패:", err);
           return null;
         }),
-        getExpoLocation(expoId).catch(err => {
-          console.error('위치 정보 로드 실패:', err);
+        getExpoLocation(expoId).catch((err) => {
+          console.error("위치 정보 로드 실패:", err);
           return null;
         }),
-        getExpoBooths(expoId).catch(err => {
-          console.error('부스 정보 로드 실패:', err);
+        getExpoBooths(expoId).catch((err) => {
+          console.error("부스 정보 로드 실패:", err);
           return null;
         }),
-        getExpoEvents(expoId).catch(err => {
-          console.error('이벤트 정보 로드 실패:', err);
+        getExpoEvents(expoId).catch((err) => {
+          console.error("이벤트 정보 로드 실패:", err);
           return null;
-        })
+        }),
       ]);
-      
+
       setTickets(ticketsData);
       setBookmarkStatus(bookmarkData);
       setReviews(reviewsData);
       setLocation(locationData);
       setBooths(boothsData);
       setEvents(eventsData);
-      
     } catch (err) {
-      console.error('박람회 상세 정보 로드 실패:', err);
-      setError('박람회 정보를 불러오는데 실패했습니다.');
+      console.error("박람회 상세 정보 로드 실패:", err);
+      setError("박람회 정보를 불러오는데 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -103,33 +112,43 @@ export default function ExpoDetail() {
       const updatedBookmarkStatus = await getExpoBookmarkStatus(expoId);
       setBookmarkStatus(updatedBookmarkStatus);
     } catch (err) {
-      console.error('찜하기 토글 실패:', err);
-      alert('찜하기 처리에 실패했습니다.');
+      console.error("찜하기 토글 실패:", err);
+      alert("찜하기 처리에 실패했습니다.");
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('ko-KR');
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("ko-KR");
   };
 
   const formatTime = (timeString) => {
-    if (!timeString) return '';
+    if (!timeString) return "";
     return timeString.substring(0, 5); // HH:mm 형식으로 변환
   };
 
   const handleTicketPurchase = (ticket) => {
     setSelectedTicket(ticket);
-    setShowPurchaseModal(true);
+    const token = localStorage.getItem("access_token");
+    if (token && !isTokenExpired(token)) {
+      setShowPurchaseModal(true);
+    } else {
+      setShowNonMemberModal(true);
+    }
   };
 
   const handleDropdownPurchase = () => {
+    console.log('ticket!!!!!' + selectedTicketId);
     if (!selectedTicketId) {
-      alert('티켓을 선택해주세요.');
+      alert("티켓을 선택해주세요.");
       return;
     }
-    
-    const ticket = tickets.find(t => t.ticketId.toString() === selectedTicketId);
+
+    const ticket = tickets.find(
+      (t) =>  t.ticketId === selectedTicketId
+    );
+
+    console.log(ticket)
     if (ticket) {
       handleTicketPurchase(ticket);
     }
@@ -140,8 +159,14 @@ export default function ExpoDetail() {
     setSelectedTicket(null);
   };
 
+
   const handleGoBack = () => {
     navigate(-1); // 이전 페이지로 이동
+  }
+
+  const handleCloseNonMemberModal = () => {
+    setShowNonMemberModal(false);
+    setSelectedTicket(null);
   };
 
   if (loading) {
@@ -263,6 +288,7 @@ export default function ExpoDetail() {
           )}
         </div>
 
+
         {/* 티켓 구매 모달 */}
         <TicketPurchaseModal
           ticket={selectedTicket}
@@ -270,6 +296,14 @@ export default function ExpoDetail() {
           expoTitle={basicInfo?.title}
           isOpen={showPurchaseModal}
           onClose={handleClosePurchaseModal}
+        />
+
+        {/* 비회원 구매 모달 */}
+        <NonMemberPurchaseModal
+          ticket={selectedTicket}
+          expoId={expoId}
+          isOpen={showNonMemberModal}
+          onClose={handleCloseNonMemberModal}
         />
       </div>
     </div>
