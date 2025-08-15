@@ -74,10 +74,11 @@ export default function NonMemberPurchaseModal({
 
   const handlePurchase = async () => {
     // Added async
-    // if (!email) { // Temporarily disabled for testing
-    //   alert("이메일을 입력해주세요.");
-    //   return;
-    // }
+    if (!isVerified) {
+      // 이 확인 로직이 있어야 함
+      alert("이메일 인증을 먼저 완료해주세요.");
+      return;
+    }
 
     setIsLoading(true);
 
@@ -140,7 +141,11 @@ export default function NonMemberPurchaseModal({
                 id="email-input"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setIsVerified(false);
+                  setIsCodeSent(false);
+                }}
                 placeholder="예약 확인용 이메일"
                 className={styles.emailInput}
                 disabled={isCodeSent}
@@ -193,7 +198,7 @@ export default function NonMemberPurchaseModal({
             <button
               className={styles.purchaseBtn}
               onClick={handlePurchase}
-              disabled={isLoading} // Removed !email
+              disabled={!isVerified || isLoading}
             >
               {isLoading ? "처리 중..." : "구매하기"}
             </button>
