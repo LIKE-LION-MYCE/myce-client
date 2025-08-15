@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./NonMemberPurchaseModal.module.css";
+import styles from "./nonMemberPurchaseModal.module.css";
 import { FiX } from "react-icons/fi";
 import {
   sendVerificatiionEmail,
