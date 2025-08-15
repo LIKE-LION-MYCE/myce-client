@@ -10,18 +10,12 @@ export const updateReservers = async (reservationId, reserverInfos) => {
   });
 };
 
-// 결제 전에 먼저 resolve 호출
-export const resolveReservers = async (reserverInfos) => {
-  const { data } = await instance.post("/reservations/resolvers", {
+// 비회원들 guestId 생성 및 guestId reservation에 추가
+export const updateGuestId = async (reservationId, reserverInfos) => {
+  await instance.patch("/reservations/guestId", {
+    reservationId,
     reserverInfos,
   });
-  return data.reserverInfos; // 배열 반환
-};
-
-// pending reservation 저장 후 reservation id 반환
-export const saveReservationPending = async (payload) => {
-  const res = await instance.post("/reservations/pending", payload);
-  return res.data;
 };
 
 // confirm으로 상태 변경
@@ -36,4 +30,35 @@ export const getReservationSuccess = async (reservationId) => {
     {}
   );
   return data;
+};
+
+// 결제 대기 화면 정보
+export const getReservationPending = async (reservationId) => {
+  const { data } = await instance.get(
+    `/reservations/${reservationId}/pending`,
+    {}
+  );
+  return data;
+};
+
+// 결제 전 사전 예약 정보 저장(reservation 생성하면서 CONFIRMED_PENDING 저장)
+export const savePreReservation = async (preReservationData) => {
+  const { data } = await instance.post(
+    "/reservations/pre-reservation",
+    preReservationData
+  );
+  return data;
+};
+
+// 사전 예약 정보 바탕으로 결제 요약 정보 가져오기
+export const getPaymentSummary = async (preReservationId) => {
+  const { data } = await instance.get(
+    `/reservations/${preReservationId}/payment-summary`
+  );
+  return data;
+};
+
+// 결제 취소 or 결제 실패 시 reservation pending 상태 삭제
+export const deleteReservationPending = async (reservationId) => {
+  await instance.delete(`/reservations/${reservationId}`);
 };

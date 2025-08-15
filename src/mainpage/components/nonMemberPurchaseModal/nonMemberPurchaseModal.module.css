@@ -1,4 +1,3 @@
-
 .overlay {
   position: fixed;
   top: 0;
@@ -73,156 +72,112 @@
   flex-grow: 1;
 }
 
-.ticketInfo {
-  margin-bottom: 28px;
-  padding: 22px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+.notice {
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #8a6d3b;
+}
+
+.notice p {
+  margin: 0;
+}
+
+.ticketInfo {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
 }
 
 .ticketInfo h4 {
-  margin: 0 0 10px 0;
-  color: #2c3e50;
+  margin: 0 0 8px 0;
   font-size: 20px;
   font-weight: 600;
 }
 
-.ticketType {
-  display: inline-block;
-  background-color: #e74c3c;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-weight: 500;
-  margin: 4px 0;
-  font-size: 13px;
-  text-transform: uppercase;
-}
-
 .price {
-  color: #007bff;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin: 14px 0;
+  color: #007bff;
 }
 
-.description {
-  color: #555;
-  font-size: 15px;
-  margin: 10px 0;
-  line-height: 1.5;
+.emailSection, .verificationSection {
+  margin-bottom: 24px;
 }
 
-.remaining {
-  color: #444;
-  font-size: 15px;
-  margin: 10px 0 0 0;
-  font-weight: 500;
-}
-
-.quantitySection {
-  margin-bottom: 28px;
-  text-align: center;
-}
-
-.quantitySection label {
+.emailSection label, .verificationSection label {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-weight: 600;
-  color: #333;
   font-size: 16px;
 }
 
-.quantityControls {
+.inputWithButton {
   display: flex;
   align-items: center;
-  gap: 10px;
-  justify-content: center;
-  background: #f8f9fa;
-  border-radius: 25px;
-  padding: 8px;
-  max-width: 200px;
-  margin: 0 auto;
 }
 
-.quantityBtn {
-  width: 38px;
-  height: 38px;
-  border: none;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  color: #007bff;
+.emailInput, .codeInput {
+  flex-grow: 1;
+  border: 2px solid #dee2e6;
+  border-radius: 10px 0 0 10px;
+  padding: 14px 16px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  border-right: none;
 }
 
-.quantityBtn:hover:not(:disabled) {
-  background: #007bff;
-  color: white;
-  transform: scale(1.1);
-}
-
-.quantityBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.quantityInput {
-  width: 60px;
-  height: 40px;
-  text-align: center;
-  border: none;
-  background: transparent;
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
+.emailInput:focus, .codeInput:focus {
   outline: none;
-  -moz-appearance: textfield;
-}
-.quantityInput::-webkit-outer-spin-button,
-.quantityInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+  border-color: #007bff;
 }
 
-.priceSection {
-  background: #f8f9fa;
-  padding: 22px;
-  border-radius: 12px;
-  margin-bottom: 28px;
-}
-
-.priceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  color: #555;
+.sendCodeBtn, .verifyBtn {
+  padding: 14px 18px;
+  border: 2px solid #dee2e6;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  background-color: #f8f9fa;
+  cursor: pointer;
   font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  color: #333;
 }
 
-.totalRow {
+.sendCodeBtn:hover:not(:disabled), .verifyBtn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.sendCodeBtn:disabled, .verifyBtn:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+.summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 15px;
+  padding: 20px 0;
   border-top: 2px dashed #ddd;
-  margin-top: 15px;
-  font-weight: 700;
+  margin-top: 20px;
   font-size: 18px;
-  color: #1a1a1a;
+  font-weight: 700;
 }
 
 .totalPrice {
   color: #e74c3c;
-  font-size: 22px;
   font-weight: 700;
+  font-size: 22px;
 }
 
 .actions {

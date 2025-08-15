@@ -5,7 +5,8 @@ const EAMIL_VERIFICATION_API_PREFIX = `${AUTH_PREFIX}/email-verification`;
 const VERIFICATION_TYPE = {
     SIGNUP : 'SIGNUP',
     FIND_ID : 'FIND_ID',
-    FIND_PASSWORD : 'FIND_PASSWORD'
+    FIND_PASSWORD : 'FIND_PASSWORD',
+    NONMEMBER_VERIFY : 'NONMEMBER_VERIFY'
 }
 
 const signup = async ({name, loginId, email, password, birth, phone, gender}) => {

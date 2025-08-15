@@ -125,11 +125,19 @@ export const deleteAdvertisement = async (advertisementId) => {
 };
 
 export const cancelAdvertisementByStatus = async (advertisementId) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/cancel-by-status`);
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/cancel-by-status`
+  );
 };
 
-export const requestAdvertisementRefundByStatus = async (advertisementId, refundRequest) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/refund-request-by-status`, refundRequest);
+export const requestAdvertisementRefundByStatus = async (
+  advertisementId,
+  refundRequest
+) => {
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/refund-request-by-status`,
+    refundRequest
+  );
 };
 
 export const getMyInfo = async () => {
@@ -140,12 +148,6 @@ export const getMyMileage = async () => {
   return await instance.get("/members/my-mileage");
 };
 
-export const updateMileageForReservation = async (
-  usedMileage,
-  savedMileage
-) => {
-  const res = instance.patch("/members/my-mileage", {
-    usedMileage: Number(usedMileage) || 0,
-    savedMileage: Number(savedMileage) || 0,
-  });
+export const updateGrade = async () => {
+  await instance.patch("/members/grade");
 };
