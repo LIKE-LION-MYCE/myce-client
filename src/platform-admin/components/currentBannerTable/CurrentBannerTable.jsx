@@ -26,7 +26,7 @@ function CurrentBannerTable({ data }) {
   ];
 
   const goToDetail = (row) => {
-    navigate(`/platform/admin/bannerApplications/${row.id}`, {
+    navigate(`/platform/admin/bannerCurrent/${row.id}`, {
       state: {
         expoStatus: row.statusMessage,
         expoId: row.id,
@@ -54,7 +54,6 @@ function CurrentBannerTable({ data }) {
                 if (col.key === 'statusMessage') {
                   // statusMap에 매핑된 한글 상태명 가져오기
                   const statusKorean = statusMap[row[col.key]] || row[col.key];
-                  // CSS 클래스 이름 생성 (예: 'status_승인_대기')
                   const statusClass = statusKorean.replace(/\s/g, '_');
                   const badgeClassName = `${styles.statusBadge} ${styles[`status_${statusClass}`]}`;
                   
