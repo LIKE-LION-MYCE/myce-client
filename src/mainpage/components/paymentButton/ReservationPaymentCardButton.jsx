@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
 import { updateGuestId } from "../../../api/service/reservation/reservationApi";
-import { updateMileageForReservation } from "../../../api/service/user/memberApi";
 import { saveReservers } from "../../../api/service/reservation/ReserverService";
 import { updateReservationStatusConfirm } from "../../../api/service/reservation/reservationApi";
 import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
@@ -82,7 +81,7 @@ function ReservationPaymentCardButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
-            // [gemini] 가장 중요한 단계입니다. 클라이언트(브라우저)의 결제 성공 결과는 위변조될 수 있으므로, 반드시 서버에 결제 정보를 넘겨 실제 결제 금액과 상태를 검증해야 합니다.
+            // 가장 중요한 단계입니다. 클라이언트(브라우저)의 결제 성공 결과는 위변조될 수 있으므로, 반드시 서버에 결제 정보를 넘겨 실제 결제 금액과 상태를 검증해야 합니다.
             try {
               const res = await instance.post("/payment/verify", {
                 impUid: rsp.imp_uid,
@@ -93,10 +92,6 @@ function ReservationPaymentCardButton({
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
               });
-
-              if (userType === "MEMBER") {
-                await updateMileageForReservation(usedMileage, savedMileage);
-              }
 
               await updateReservationStatusConfirm(reservationId);
 
