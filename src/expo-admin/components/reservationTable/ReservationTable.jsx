@@ -1,5 +1,6 @@
 import styles from './ReservationTable.module.css';
 import { useEffect, useRef } from 'react';
+import { FaCheckCircle } from 'react-icons/fa';
 
 // 날짜 포맷
 function formatDateTime(iso) {
@@ -32,9 +33,10 @@ function ReservationTable({
   data = [],
   selectedIds,
   selectAllMatching,
-  onToggleRow,      // (id, row)
-  onTogglePage,     // (idsOfCurrentPage, rowsOfCurrentPage)
+  onToggleRow,
+  onTogglePage,
   onEntranceClick,
+  reissuedIds = new Set(),
 }) {
   const columns = [
     { key: 'reservationCode', header: '예약 코드' },
@@ -77,19 +79,30 @@ function ReservationTable({
 
       const clickable = text === '입장 전' || text === '발급 대기';
 
+      const recentlyReissued = reissuedIds.has(row.reserverId);
+
       return (
-        <span
-          className={`${styles.badge} ${statusClass}`}
-          onClick={(e) => {
-            if (!clickable) return;
-            e.stopPropagation();
-            onEntranceClick && onEntranceClick(row);
-          }}
-          role="button"
-          aria-disabled={!clickable}
-          title={clickable ? '수기 입장 처리' : '상태 변경 불가'}
-        >
-          {text}
+        <span className={styles.statusCellWrapper}>
+          <span
+            className={`${styles.badge} ${statusClass}`}
+            onClick={(e) => {
+              if (!clickable) return;
+              e.stopPropagation();
+              onEntranceClick && onEntranceClick(row);
+            }}
+            role="button"
+            aria-disabled={!clickable}
+            title={clickable ? '수기 입장 처리' : '상태 변경 불가'}
+          >
+            {text}
+          </span>
+
+          {recentlyReissued && (
+            <span className={styles.reissueChip} title="방금 재발급 완료">
+              <FaCheckCircle className={styles.reissueIcon} />
+              재발급 완료
+            </span>
+          )}
         </span>
       );
     }
@@ -127,11 +140,12 @@ function ReservationTable({
           {data.map((row, rowIndex) => {
             const rowKey = getRowKey(row, rowIndex);
             const isSelected = selectAllMatching ? true : selectedIds.has(rowKey);
+            const recentlyReissued = reissuedIds.has(row.reserverId);
 
             return (
               <tr
                 key={rowKey}
-                className={`${styles.row} ${isSelected ? styles.selectedRow : ''}`}
+                className={`${styles.row} ${isSelected ? styles.selectedRow : ''} ${recentlyReissued ? styles.updatedRow : ''}`}
               >
                 <td className={styles.td} onClick={(e) => e.stopPropagation()}>
                   <input
