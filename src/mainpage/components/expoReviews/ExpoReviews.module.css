@@ -1,0 +1,167 @@
+/* 리뷰 섹션 */
+.reviewsSection h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.reviewStats {
+  background: #fff9e6;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #f39c12;
+  margin-bottom: 20px;
+}
+
+.reviewStats p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.ratingSummary {
+  margin: 20px 0;
+}
+
+.ratingBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.ratingBar span {
+  min-width: 30px;
+  font-size: 14px;
+  color: #666;
+}
+
+.barContainer {
+  flex: 1;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #f39c12, #e67e22);
+  transition: width 0.3s ease;
+}
+
+.reviewsList {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reviewCard {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.reviewCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewerName {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.myReviewBadge {
+  background: #3498db;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reviewRating {
+  font-size: 16px;
+}
+
+.reviewDate {
+  color: #999;
+  font-size: 14px;
+}
+
+.reviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reviewTitle {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.reviewComment {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .reviewsSection h3 {
+    font-size: 20px;
+  }
+  
+  .reviewStats {
+    padding: 12px;
+  }
+  
+  .reviewCard {
+    padding: 15px;
+  }
+  
+  .reviewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .reviewerInfo {
+    width: 100%;
+  }
+  
+  .reviewTitle {
+    font-size: 15px;
+  }
+  
+  .reviewComment {
+    font-size: 13px;
+  }
+  
+  .ratingBar span {
+    min-width: 25px;
+    font-size: 13px;
+  }
+}
