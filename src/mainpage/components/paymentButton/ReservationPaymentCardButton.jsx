@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { updateGuestId } from "../../../api/service/reservation/reservationApi";
 import { saveReservers } from "../../../api/service/reservation/ReserverService";
-import { updateReservationStatusConfirm } from "../../../api/service/reservation/reservationApi";
+import {
+  updateReservationStatusConfirm,
+  updateGuestId,
+  deleteReservationPending,
+} from "../../../api/service/reservation/reservationApi";
 import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { updateGrade } from "../../../api/service/user/memberApi";
@@ -121,14 +124,39 @@ function ReservationPaymentCardButton({
               // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황
               // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 함.
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
-              alert(
-                "결제 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요. " +
-                  (err.response?.data?.message || err.message)
-              );
+              console.error("서버 처리 실패, 전액 환불을 시도합니다.", err);
+
+              try {
+                await requestRefund({
+                  impUid: rsp.imp_uid,
+                  merchantUid: rsp.merchant_uid,
+                  reason: "서버 처리 오류로 인한 자동 환불",
+                });
+                alert(
+                  "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
+                );
+                // reservation 데이터 삭제
+                await deleteReservationPending(reservationId);
+              } catch (refundError) {
+                alert("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
+              }
             }
           } else {
-            alert("결제에 실패했습니다: " + rsp.error_msg);
-            // 사용자가 결제를 중간에 취소한 경우. 이 경우 생성했던 CONFIRMED_PENDING 상태의 예약을 삭제
+            try {
+              await deleteReservationPending(reservationId);
+              console.log(
+                "결제 실패로 인해 사전 예약이 성공적으로 취소되었습니다."
+              );
+            } catch (cancelError) {
+              console.error(
+                "사전 예약 취소 처리 중 오류가 발생했습니다.",
+                cancelError
+              );
+            }
+
+            alert("결제가 취소되었습니다. 다시 시도해주세요.");
+
+            navigate(`/detail/${expoId}`);
           }
         }
       );

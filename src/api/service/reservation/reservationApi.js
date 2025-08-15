@@ -48,3 +48,8 @@ export const getPaymentSummary = async (preReservationId) => {
   );
   return data;
 };
+
+// 결제 취소 or 결제 실패 시 reservation pending 상태 삭제
+export const deleteReservationPending = async (reservationId) => {
+  await instance.delete(`/reservations/${reservationId}`);
+};
