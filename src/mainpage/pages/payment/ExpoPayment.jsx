@@ -72,6 +72,7 @@ export default function ExpoPayment() {
   const [mileageError, setMileageError] = useState(null);
   const [usedMileageInput, setUsedMileageInput] = useState("");
   const [appliedMileage, setAppliedMileage] = useState(0);
+  const [mileageRate, setMileageRate] = useState(0.01);
 
   const baseTotal = useMemo(() => {
     const price = Number(unitPrice) || 0;
@@ -191,6 +192,7 @@ export default function ExpoPayment() {
             };
             return newInfo;
           });
+          setMileageRate(userInfo?.mileageRate || 0.01);
           alert("회원 정보가 불러와졌습니다.");
         } else {
           alert("회원 정보를 불러오는데 실패했습니다. (데이터 없음)");
@@ -514,7 +516,7 @@ export default function ExpoPayment() {
               name={ticketName}
               amount={totalAfterApply}
               usedMileage={appliedMileage}
-              savedMileage={Math.floor(totalAfterApply * 0.03)}
+              savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
             />
             <PaymentVirtualBankButton
