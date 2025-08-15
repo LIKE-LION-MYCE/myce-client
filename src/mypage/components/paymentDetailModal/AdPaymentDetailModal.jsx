@@ -9,6 +9,7 @@ function AdPaymentDetailModal({
   feePerDay,
   totalAmount,
   status,
+  mode = "payment", // "payment" | "view"
   onPay,
   onCancel,
   onClose,
@@ -49,12 +50,20 @@ function AdPaymentDetailModal({
         </div>
         {/* 하단 버튼 영역 */}
         <div className={styles.btnRow}>
-          <button className={styles.whiteBtn} onClick={onCancel}>
-            취소
-          </button>
-          <button className={styles.blackBtn} onClick={onPay}>
-            결제하기
-          </button>
+          {mode === "payment" ? (
+            <>
+              <button className={styles.whiteBtn} onClick={onCancel}>
+                취소
+              </button>
+              <button className={styles.blackBtn} onClick={onPay}>
+                결제하기
+              </button>
+            </>
+          ) : (
+            <button className={styles.blackBtn} onClick={onClose}>
+              확인
+            </button>
+          )}
         </div>
       </div>
     </div>

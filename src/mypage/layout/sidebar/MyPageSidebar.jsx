@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { getMyInfo } from "../../../api/service/user/memberApi";
+import { getGradeImagePath } from "../../../utils/gradeImageMapper";
 import styles from "./MyPageSidebar.module.css";
 
 const MyPageSidebar = () => {
@@ -45,17 +46,22 @@ const MyPageSidebar = () => {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.profileSection}>
-        {userInfo.gradeImageUrl ? (
-          <img
-            src={userInfo.gradeImageUrl}
-            alt="등급 이미지"
-            className={styles.profileImg}
-          />
-        ) : (
-          <div className={styles.profileIcon}>
-            {userInfo.name.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <img
+          src={getGradeImagePath(userInfo.gradeImageUrl)}
+          alt="등급 이미지"
+          className={styles.profileImg}
+          onError={(e) => {
+            // 이미지 로드 실패 시 기본 아이콘으로 대체
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+        <div 
+          className={styles.profileIcon}
+          style={{ display: 'none' }}
+        >
+          {userInfo.name.charAt(0).toUpperCase()}
+        </div>
         <h3 className={styles.userName}>{userInfo.name}</h3>
         <p className={styles.loginId}>@{userInfo.loginId}</p>
         <p className={styles.grade}>{userInfo.gradeDescription}</p>
