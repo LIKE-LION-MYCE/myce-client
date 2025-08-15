@@ -4,6 +4,8 @@ import styles from "./ExpoForm.module.css";
 import { MdAccessTime } from "react-icons/md";
 import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 import DaumPostcode from "react-daum-postcode";
+import UsageGuidelines from "../../../common/components/usageGuidelines/UsageGuidelines";
+import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
 
 // .env 환경변수에서 구글맵 API 키 불러오기
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -231,6 +233,10 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       <form onSubmit={handleSubmit}>
         <h1 className={styles["title"]}>박람회 신청</h1>
         <p className={styles["subtitle"]}>박람회 기본정보를 입력해주세요.</p>
+        
+        {/* 주의사항 및 요금제 안내 */}
+        <UsageGuidelines type="expo" />
+        <PricingInfo type="expo" />
         {/* 포스터 */}
         {/* ImageUpload 사용 */}
         <h2 className={styles["section-title"]}>박람회 포스터</h2>
