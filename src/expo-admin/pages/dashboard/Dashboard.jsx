@@ -42,6 +42,11 @@ function Dashboard() {
   const [selectedEndDate, setSelectedEndDate] = useState('');
   const [customWeeklyData, setCustomWeeklyData] = useState(null);
   const [isCustomDateMode, setIsCustomDateMode] = useState(false);
+  
+  // 시간대별 입장인원 날짜 선택 관련 상태
+  const [selectedCheckinDate, setSelectedCheckinDate] = useState('');
+  const [customHourlyData, setCustomHourlyData] = useState(null);
+  const [isCustomCheckinMode, setIsCustomCheckinMode] = useState(false);
 
   const columns = [
     { key: 'ticketType', header: '티켓명' },
@@ -56,7 +61,6 @@ function Dashboard() {
   useEffect(() => {
     if (expoId) {
       loadDashboardData();
-      loadExpoDateRange();
     }
   }, [expoId]);
 
@@ -64,7 +68,47 @@ function Dashboard() {
     try {
       setLoading(true);
       const data = await DashboardService.getExpoDashboard(expoId);
+      console.log('Dashboard data loaded:', data);
+      console.log('reservationStats.weeklyReservations:', data?.reservationStats?.weeklyReservations);
       setDashboardData(data);
+      
+      // expoDisplayDateRange 설정
+      if (data.expoDisplayDateRange) {
+        setExpoDateRange(data.expoDisplayDateRange);
+        
+        // 박람회 게시 기간 내에서 최근 7일을 기본값으로 설정
+        const expoStart = new Date(data.expoDisplayDateRange[0]);
+        const expoEnd = new Date(data.expoDisplayDateRange[1]);
+        const today = new Date();
+        
+        // 최근 7일 계산 (종료일부터 역산)
+        let endDate = today;
+        let startDate = new Date(today);
+        startDate.setDate(endDate.getDate() - 6);
+        
+        // 박람회 게시 기간을 벗어나는 경우 조정
+        if (endDate > expoEnd) {
+          endDate = expoEnd;
+          startDate = new Date(expoEnd);
+          startDate.setDate(expoEnd.getDate() - 6);
+        }
+        
+        if (startDate < expoStart) {
+          startDate = expoStart;
+          // 박람회 기간이 7일보다 짧은 경우는 전체 기간으로 설정
+          if (expoEnd <= startDate) {
+            endDate = expoEnd;
+          }
+        }
+        
+        setSelectedStartDate(startDate.toISOString().split('T')[0]);
+        setSelectedEndDate(endDate.toISOString().split('T')[0]);
+        
+        // 시간대별 입장인원 날짜 초기화 (오늘 날짜, 박람회 기간 내)
+        const checkinDate = today > expoEnd ? expoEnd : today;
+        setSelectedCheckinDate(checkinDate.toISOString().split('T')[0]);
+      }
+      
       setError(null);
     } catch (err) {
       setError('대시보드 데이터를 불러오는데 실패했습니다.');
@@ -74,45 +118,6 @@ function Dashboard() {
     }
   };
 
-  const loadExpoDateRange = async () => {
-    try {
-      const dateRange = await DashboardService.getExpoDisplayDateRange(expoId);
-      setExpoDateRange(dateRange);
-      
-      // 박람회 표시 기간 내에서 최근 7일을 기본값으로 설정
-      const expoStart = new Date(dateRange[0]);
-      const expoEnd = new Date(dateRange[1]);
-      const today = new Date();
-      
-      // 최근 7일 계산 (종료일부터 역산)
-      let endDate = today;
-      let startDate = new Date(today);
-      startDate.setDate(endDate.getDate() - 6);
-      
-      // 박람회 표시 기간을 벗어나는 경우 조정
-      if (endDate > expoEnd) {
-        endDate = expoEnd;
-        startDate = new Date(expoEnd);
-        startDate.setDate(expoEnd.getDate() - 6);
-      }
-      
-      if (startDate < expoStart) {
-        startDate = expoStart;
-        // 박람회 기간이 7일보다 짧은 경우는 전체 기간으로 설정
-        if (expoEnd <= startDate) {
-          endDate = expoEnd;
-        }
-      }
-      
-      const validStartDate = startDate;
-      const validEndDate = endDate;
-      
-      setSelectedStartDate(validStartDate.toISOString().split('T')[0]);
-      setSelectedEndDate(validEndDate.toISOString().split('T')[0]);
-    } catch (err) {
-      console.error('박람회 기간 조회 실패:', err);
-    }
-  };
 
   const loadCustomWeeklyData = async () => {
     if (!selectedStartDate || !selectedEndDate) {
@@ -121,12 +126,13 @@ function Dashboard() {
     }
     
     try {
-      const customData = await DashboardService.getWeeklyReservationsByDateRange(
+      const response = await DashboardService.getWeeklyReservationsByDateRange(
         expoId, 
         selectedStartDate, 
         selectedEndDate
       );
-      setCustomWeeklyData(customData);
+      // 새로운 DTO 구조에서 dailyReservations 추출
+      setCustomWeeklyData(response.dailyReservations);
       setIsCustomDateMode(true);
     } catch (err) {
       alert('선택한 날짜 범위의 데이터를 불러오는데 실패했습니다.');
@@ -137,6 +143,27 @@ function Dashboard() {
   const resetToDefaultWeekly = () => {
     setIsCustomDateMode(false);
     setCustomWeeklyData(null);
+  };
+
+  const loadCustomHourlyData = async () => {
+    if (!selectedCheckinDate) {
+      alert('날짜를 선택해주세요.');
+      return;
+    }
+    
+    try {
+      const hourlyData = await DashboardService.getHourlyCheckinsByDate(expoId, selectedCheckinDate);
+      setCustomHourlyData(hourlyData);
+      setIsCustomCheckinMode(true);
+    } catch (err) {
+      alert('선택한 날짜의 시간대별 입장 데이터를 불러오는데 실패했습니다.');
+      console.error('Custom hourly data loading error:', err);
+    }
+  };
+
+  const resetToDefaultHourly = () => {
+    setIsCustomCheckinMode(false);
+    setCustomHourlyData(null);
   };
 
   const handleRefresh = async (type) => {
@@ -184,6 +211,11 @@ function Dashboard() {
   }
 
   const { reservationStats, checkinStats, paymentStats } = dashboardData || {};
+  
+  // 디버깅용 로그
+  console.log('Rendering chart with:');
+  console.log('customWeeklyData:', customWeeklyData);
+  console.log('reservationStats?.weeklyReservations:', reservationStats?.weeklyReservations);
 
   // 테이블 데이터 변환
   const tableData = paymentStats?.ticketSalesDetail?.map(ticket => ({
@@ -227,13 +259,6 @@ function Dashboard() {
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <h4 className={styles.sectionTitle}>예약</h4>
-          <button 
-            onClick={() => handleRefresh('reservation')} 
-            className={styles.refreshBtn}
-          >
-            <FiRefreshCw className={styles.refreshIcon} />
-            새로고침
-          </button>
         </div>
         <div className={styles.cardGroup}>
           <div className={styles.card}>
@@ -333,7 +358,7 @@ function Dashboard() {
         <div className={styles.fullWidthChart}>
           <div className={styles.chartHeader}>
             <h5 className={styles.chartTitle}>
-              {isCustomDateMode ? '선택 기간 예약 현황' : '일주일 예약 현황'}
+              날짜별 예약 현황
             </h5>
             
             {/* 날짜 선택 컨트롤 */}
@@ -377,38 +402,104 @@ function Dashboard() {
           </div>
           
           <div className={styles.chartWrapper}>
-            <Line
-              data={{
-                labels: (isCustomDateMode && customWeeklyData 
-                  ? customWeeklyData?.map(day => `${day.date.split('-')[1]}/${day.date.split('-')[2]} (${day.dayOfWeek})`) 
-                  : reservationStats?.weeklyReservations?.map(day => day.dayOfWeek)) || [],
-                datasets: [{
-                  label: '예약 수',
-                  data: (isCustomDateMode && customWeeklyData 
-                    ? customWeeklyData?.map(day => day.reservationCount)
-                    : reservationStats?.weeklyReservations?.map(day => day.reservationCount)) || [],
-                  borderColor: '#8884d8',
-                  backgroundColor: 'rgba(136, 132, 216, 0.1)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }}
-              height={250}
-            />
+            {(() => {
+              // 차트 데이터 준비 및 검증
+              const chartData = customWeeklyData || reservationStats?.weeklyReservations || [];
+              const hasValidData = chartData && chartData.length > 0;
+              
+              console.log('Chart render data:', {
+                customWeeklyData,
+                weeklyReservations: reservationStats?.weeklyReservations,
+                chartData,
+                hasValidData
+              });
+
+              if (!hasValidData) {
+                return (
+                  <div style={{ 
+                    height: '250px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: '#666',
+                    fontSize: '14px'
+                  }}>
+                    표시할 데이터가 없습니다.
+                  </div>
+                );
+              }
+
+              const labels = customWeeklyData 
+                ? customWeeklyData.map(day => {
+                    const date = new Date(day.date);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                  })
+                : chartData.map(day => day.dayOfWeek);
+
+              const dataValues = customWeeklyData 
+                ? customWeeklyData.map(day => day.reservationCount || 0)
+                : chartData.map(day => day.reservationCount || 0);
+
+              return (
+                <Line
+                  key={`chart-${isCustomDateMode ? 'custom' : 'default'}-${chartData.length}`}
+                  data={{
+                    labels,
+                    datasets: [{
+                      label: '예약 수',
+                      data: dataValues,
+                      borderColor: '#8884d8',
+                      backgroundColor: 'rgba(136, 132, 216, 0.1)',
+                      tension: 0.3,
+                      fill: true,
+                      pointBackgroundColor: '#8884d8',
+                      pointBorderColor: '#fff',
+                      pointBorderWidth: 2,
+                      pointRadius: 4
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false
+                      },
+                      tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                          title: function(context) {
+                            return customWeeklyData 
+                              ? `${customWeeklyData[context[0].dataIndex]?.date || ''}`
+                              : context[0].label;
+                          }
+                        }
+                      }
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        ticks: {
+                          stepSize: 1
+                        }
+                      },
+                      x: {
+                        grid: {
+                          display: false
+                        }
+                      }
+                    },
+                    interaction: {
+                      mode: 'nearest',
+                      axis: 'x',
+                      intersect: false
+                    }
+                  }}
+                  height={250}
+                />
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -417,13 +508,6 @@ function Dashboard() {
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <h4 className={styles.sectionTitle}>입장</h4>
-          <button 
-            onClick={() => handleRefresh('checkin')} 
-            className={styles.refreshBtn}
-          >
-            <FiRefreshCw className={styles.refreshIcon} />
-            새로고침
-          </button>
         </div>
         
         <div className={styles.checkinContainer}>
@@ -454,36 +538,77 @@ function Dashboard() {
 
         {/* 시간대별 입장 현황 라인 차트 */}
         <div className={styles.fullWidthChart}>
-          <h5 className={styles.chartTitle}>시간대별 입장 현황</h5>
+          <div className={styles.chartTitleRow}>
+            <h5 className={styles.chartTitle}>시간대별 입장 현황</h5>
+            <div className={styles.dateControls}>
+              <input
+                type="date"
+                value={selectedCheckinDate}
+                min={expoDateRange[0]}
+                max={expoDateRange[1]}
+                onChange={(e) => setSelectedCheckinDate(e.target.value)}
+                className={styles.dateInput}
+              />
+              <button 
+                onClick={loadCustomHourlyData}
+                className={styles.applyBtn}
+              >
+                조회
+              </button>
+              {isCustomCheckinMode && (
+                <button 
+                  onClick={resetToDefaultHourly}
+                  className={styles.resetBtn}
+                >
+                  오늘로 복귀
+                </button>
+              )}
+            </div>
+          </div>
           <div className={styles.chartWrapper}>
-            <Line
-              data={{
-                labels: checkinStats?.hourlyCheckins?.map(hour => hour.timeRange) || [],
-                datasets: [{
-                  label: '입장 수',
-                  data: checkinStats?.hourlyCheckins?.map(hour => hour.checkinCount) || [],
-                  borderColor: '#00C49F',
-                  backgroundColor: 'rgba(0, 196, 159, 0.1)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }}
-              height={250}
-            />
+            {(() => {
+              const currentHourlyData = isCustomCheckinMode ? customHourlyData : checkinStats?.hourlyCheckins;
+              
+              if (!currentHourlyData || currentHourlyData.length === 0) {
+                return (
+                  <div className={styles.noDataMessage}>
+                    선택한 날짜에 대한 시간대별 입장 데이터가 없습니다.
+                  </div>
+                );
+              }
+              
+              return (
+                <Line
+                  key={`hourly-${isCustomCheckinMode ? selectedCheckinDate : 'default'}`}
+                  data={{
+                    labels: currentHourlyData.map(hour => hour.timeRange) || [],
+                    datasets: [{
+                      label: '입장 수',
+                      data: currentHourlyData.map(hour => hour.checkinCount) || [],
+                      borderColor: '#00C49F',
+                      backgroundColor: 'rgba(0, 196, 159, 0.1)',
+                      tension: 0.3,
+                      fill: true
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false
+                      }
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }}
+                  height={250}
+                />
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -492,13 +617,6 @@ function Dashboard() {
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <h4 className={styles.sectionTitle}>결제</h4>
-          <button 
-            onClick={() => handleRefresh('payment')} 
-            className={styles.refreshBtn}
-          >
-            <FiRefreshCw className={styles.refreshIcon} />
-            새로고침
-          </button>
         </div>
         
         <div className={styles.cardGroup}>
@@ -515,9 +633,9 @@ function Dashboard() {
             </p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardLabel}>취소/환불</p>
+            <p className={styles.cardLabel}>환불</p>
             <p className={styles.cardValue}>
-              {((paymentStats?.canceledPayments || 0) + (paymentStats?.refundedPayments || 0)).toLocaleString()}
+              {paymentStats?.refundedPayments?.toLocaleString() || 0}
             </p>
           </div>
           <div className={styles.card}>
