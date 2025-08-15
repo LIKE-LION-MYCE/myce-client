@@ -15,6 +15,7 @@ import {
   updateReserverQrCodeForManualCheckIn,
   downloadMyReservationExcelFile,
 } from '../../../api/service/expo-admin/reservation/ReservationService';
+import { reissueReserverQrCode } from '../../../api/service/expo-admin/reservation/ReservationService';
 
 const tabLabels = ['전체', '발급 대기', '입장 전', '입장 완료', '티켓 만료'];
 
@@ -24,6 +25,7 @@ function Reservations() {
   // UI 상태
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isReissuing, setIsReissuing] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
@@ -46,8 +48,12 @@ function Reservations() {
 
   // 선택 상태(페이지 간 유지)
   const [selectedIds, setSelectedIds] = useState(() => new Set());
+  // id -> {name,email,phone,entranceStatus}
   const [selectedMap, setSelectedMap] = useState(() => new Map());
-  const [selectAllMatching, setSelectAllMatching] = useState(false);
+  const [selectAllMatching, setSelectAllMatching] = useState(false); // 전체 선택(검색 결과 전부)
+
+  // 재발급 완료 행 표시용
+  const [reissuedIds, setReissuedIds] = useState(() => new Set());
 
   // 현재 페이지의 id 목록
   const currentPageIds = useMemo(
@@ -156,7 +162,12 @@ function Reservations() {
         next.add(id);
         setSelectedMap((m) => {
           const mm = new Map(m);
-          mm.set(id, { name: row?.name ?? '', email: row?.email ?? '', phone: row?.phone ?? '' });
+          mm.set(id, {
+            name: row?.name ?? '',
+            email: row?.email ?? '',
+            phone: row?.phone ?? '',
+            entranceStatus: row?.entranceStatus ?? '', // 상태 저장
+          });
           return mm;
         });
       }
@@ -186,6 +197,7 @@ function Reservations() {
                 name: row?.name ?? '',
                 email: row?.email ?? '',
                 phone: row?.phone ?? '',
+                entranceStatus: row?.entranceStatus ?? '', // 상태 저장
               });
             }
           });
@@ -251,14 +263,84 @@ function Reservations() {
     }
   };
 
-  // QR 재발급(샘플)
+  // QR 재발급 호출
   const selectedCount = selectAllMatching ? pageInfo.totalElements : selectedIds.size;
-  const handleReissueQR = () => {
+
+  const handleReissueQR = async () => {
+    if (isReissuing) return;
+
+    // 선택 없음 가드
     if (selectedCount === 0) {
-      triggerToastFail('선택된 항목이 없습니다.');
+      triggerToastFail('선택된 예약자가 없습니다.');
       return;
     }
-    triggerSuccessToast();
+
+    // “입장 전”만 재발급 허용
+    if (selectAllMatching) {
+      // 전체 선택 모드에서는 현재 탭이 반드시 “입장 전”이어야 함
+      if (currentTab !== '입장 전') {
+        triggerToastFail('입장 전 상태만 QR 재발급이 가능합니다.');
+        return;
+      }
+    } else {
+      // 부분 선택 모드: 선택된 행들에 “입장 전” 아닌 상태가 하나라도 있으면 차단
+      const hasInvalid = Array.from(selectedIds).some((id) => {
+        const info = selectedMap.get(id);
+        return !info || info.entranceStatus !== '입장 전';
+      });
+      if (hasInvalid) {
+        triggerToastFail('입장 전 상태만 QR 재발급이 가능합니다.');
+        return;
+      }
+    }
+
+    // 선택된 reserverId만 숫자로 추림
+    const selectedReserverIds = Array.from(selectedIds)
+      .map((id) => Number(id))
+      .filter((n) => !Number.isNaN(n));
+
+    const dto = selectAllMatching
+      ? { selectAllMatching: true }
+      : { selectAllMatching: false, reserverIds: selectedReserverIds };
+
+    const params = {
+      entranceStatus: currentTab === '전체' ? undefined : currentTab,
+      name: searchType === 'name' ? (searchText.trim() || undefined) : undefined,
+      phone: searchType === 'phone' ? (searchText.trim() || undefined) : undefined,
+      reservationCode:
+        searchType === 'reservationCode' ? (searchText.trim() || undefined) : undefined,
+      ticketName: ticketName || undefined,
+    };
+
+    try {
+      setIsReissuing(true);
+      const updatedList = await reissueReserverQrCode(expoId, dto, params);
+
+      if (Array.isArray(updatedList) && updatedList.length > 0) {
+        // 화면 데이터 갱신
+        setPageInfo((prev) => ({
+          ...prev,
+          content: (prev.content || []).map((row) => {
+            const hit = updatedList.find((u) => u.reserverId === row.reserverId);
+            return hit ? hit : row;
+          }),
+        }));
+
+        // 재발급 완료 행 하이라이트/칩 표시 (3초)
+        const ids = new Set(updatedList.map((u) => u.reserverId));
+        setReissuedIds(ids);
+        setTimeout(() => setReissuedIds(new Set()), 3000);
+      } else {
+        await fetchReservations();
+      }
+
+      clearSelection();
+      triggerSuccessToast();
+    } catch (e) {
+      triggerToastFail(e.message || 'QR 재발급에 실패했습니다.');
+    } finally {
+      setIsReissuing(false);
+    }
   };
 
   // 페이지/탭 핸들링
@@ -280,7 +362,7 @@ function Reservations() {
     setTimeout(() => setShowFailToast(false), 3000);
   };
 
-  // 컨트롤러에 넘길 현재 필터 파라미터 계산 (모달로 전달)
+  // 컨트롤러로 넘길 현재 필터 파라미터 (모달/재발급 공통)
   const entranceStatusParam = currentTab === '전체' ? undefined : currentTab;
   const trimmed = searchText.trim();
   const nameParam = searchType === 'name' ? (trimmed || undefined) : undefined;
@@ -378,6 +460,8 @@ function Reservations() {
           <button
             className={`${styles.actionBtn} ${styles.excelBtn}`}
             onClick={handleExcelDownload}
+            disabled={isDownloading}
+            title={isDownloading ? '다운로드 중...' : undefined}
           >
             <FaDownload className={styles.icon} />
             엑셀 추출
@@ -385,11 +469,11 @@ function Reservations() {
           <button
             className={`${styles.actionBtn} ${styles.qrBtn}`}
             onClick={handleReissueQR}
-            disabled={selectedCount === 0}
-            title={selectedCount === 0 ? '선택된 항목이 없습니다' : undefined}
+            disabled={isReissuing}
+            title={isReissuing ? '재발급 중...' : undefined}
           >
             <FaQrcode className={styles.icon} />
-            QR 재발급
+            {isReissuing ? '재발급 중...' : 'QR 재발급'}
           </button>
         </div>
       </div>
@@ -401,6 +485,7 @@ function Reservations() {
         onToggleRow={handleToggleRow}
         onTogglePage={handleTogglePage}
         onEntranceClick={handleEntranceBadgeClick}
+        reissuedIds={reissuedIds}
       />
 
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
