@@ -9,6 +9,7 @@ import ReviewForm from "../mainpage/pages/detail/reviewform/ReviewForm";
 import AdApply from "../mainpage/pages/adApply/AdApply";
 import ExpoPayment from "../mainpage/pages/payment/ExpoPayment";
 import ReservationSuccess from "../mainpage/pages/reservationsuccess/ReservationSuccess";
+import ReservationPending from "../mainpage/pages/reservationPending/ReservationPending";
 import Chat from "../mainpage/pages/chat/Chat";
 import NonMemberReservationCheckPage from "../mainpage/pages/nonMemberReservation/NonMemberReservationCheckPage";
 import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
@@ -25,6 +26,10 @@ function MainPageRoutes() {
         <Route
           path="reservation-success/:reservationId"
           element={<ReservationSuccess />}
+        />
+        <Route
+          path="reservation-pending/:reservationId"
+          element={<ReservationPending />}
         />
         <Route path="expo-apply" element={<ExpoApply />} />
         <Route path="expo-apply2" element={<ExpoApply2 />} />

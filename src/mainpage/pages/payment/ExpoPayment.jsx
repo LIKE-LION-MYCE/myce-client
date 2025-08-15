@@ -520,12 +520,15 @@ export default function ExpoPayment() {
               reserverInfos={reserverInfos}
             />
             <PaymentVirtualBankButton
-              amount={totalAfterApply}
+              targetType={TARGET_TYPE}
+              expoId={expoId}
+              ticketId={ticketId}
+              quantity={quantity}
               name={ticketName}
-              buyerName={personalInfo[0]?.name}
-              buyerEmail={personalInfo[0]?.email}
-              buyerTel={personalInfo[0]?.phone}
-              savedMileage={remainingMileageAfterApply}
+              amount={totalAfterApply}
+              usedMileage={appliedMileage}
+              savedMileage={Math.floor(totalAfterApply * mileageRate)}
+              reserverInfos={reserverInfos}
             />
             <PaymentTransferButton
               amount={totalAfterApply}
