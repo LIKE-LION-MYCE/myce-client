@@ -56,8 +56,10 @@ function ExpoApplicationDetail({
       case '종료됨':
         return <span className={`${styles.statusTag} ${styles.completed}`}>종료됨</span>;
       case '거절됨':
+      case '승인 거절':
         return <span className={`${styles.statusTag} ${styles.rejected}`}>거절됨</span>;
       case '취소됨':
+      case '취소 완료':
         return <span className={`${styles.statusTag} ${styles.cancelled}`}>취소됨</span>;
       default:
         return null;
@@ -99,6 +101,9 @@ function ExpoApplicationDetail({
           )}
           {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
+          )}
+          {(status === '취소됨' || status === '취소 완료') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 정보</button>
           )}
           {canViewPaymentInfo(status) && (
             <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>결제 정보</button>
