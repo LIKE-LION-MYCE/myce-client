@@ -265,6 +265,10 @@ const ExpoStatusDetail = () => {
         finalSettlementAmount: response.data.netProfit,
         ticketSales: response.data.ticketSales,
         commissionRate: response.data.commissionRate,
+        // 은행정보 추가
+        bankName: response.data.bankName,
+        bankAccount: response.data.bankAccount,
+        receiverName: response.data.receiverName,
       };
       setSettlementReceiptData(transformedReceiptData);
       setShowSettlementReceiptModal(true);
@@ -413,6 +417,12 @@ const ExpoStatusDetail = () => {
           receiptData={settlementReceiptData}
           onClose={handleCloseSettlementReceiptModal}
           expoId={id}
+          readOnly={expoData?.status === '정산요청' || expoData?.status === '정산 요청' || expoData?.status === 'SETTLEMENT_REQUESTED' || expoData?.status === '종료됨'}
+          bankInfo={expoData?.status === '정산요청' || expoData?.status === '정산 요청' || expoData?.status === 'SETTLEMENT_REQUESTED' || expoData?.status === '종료됨' ? {
+            bankName: settlementReceiptData?.bankName,
+            bankAccount: settlementReceiptData?.bankAccount, 
+            receiverName: settlementReceiptData?.receiverName
+          } : null}
         />
       )}
 

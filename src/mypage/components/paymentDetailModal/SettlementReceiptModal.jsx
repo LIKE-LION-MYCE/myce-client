@@ -4,7 +4,7 @@ import { requestExpoSettlement } from '../../../api/service/user/memberApi';
 
 const bankOptions = ['토스뱅크', '카카오뱅크', '신한은행', '국민은행', '우리은행', '하나은행', '기업은행', 'NH농협은행'];
 
-const SettlementReceiptModal = ({ receiptData, onClose, expoId }) => {
+const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false, bankInfo = null }) => {
   if (!receiptData) return null;
 
   const [settlementForm, setSettlementForm] = useState({
@@ -43,98 +43,124 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId }) => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <h2 className={styles.title}>정산 내역 확인</h2>
-        <div className={styles.receiptContainer}>
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <span className={styles.label}>박람회명</span>
-              <span className={styles.value}>{receiptData.expoTitle}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.label}>정산 요청일</span>
-              <span className={styles.value}>{new Date(receiptData.settlementRequestDate).toLocaleDateString('ko-KR')}</span>
-            </div>
-          </div>
-
-          {receiptData.ticketSales && receiptData.ticketSales.length > 0 && (
-            <div className={styles.ticketSalesSection}>
-              <h3>티켓 판매 내역</h3>
-              <div className={styles.ticketSalesHeader}>
-                <span>티켓명</span>
-                <span>판매 개수</span>
-                <span>총 판매 금액</span>
+        <div className={styles.contentLayout}>
+          {/* 왼쪽 섹션: 박람회 정보 + 티켓 판매 내역 */}
+          <div className={styles.leftSection}>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>박람회명</span>
+                <span className={styles.value}>{receiptData.expoTitle}</span>
               </div>
-              {receiptData.ticketSales.map((ticket, index) => (
-                <div key={index} className={styles.ticketSalesItem}>
-                  <span>{ticket.ticketName}</span>
-                  <span>{ticket.soldCount}개</span>
-                  <span>{ticket.totalSales.toLocaleString()}원</span>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>정산 요청일</span>
+                <span className={styles.value}>{new Date(receiptData.settlementRequestDate).toLocaleDateString('ko-KR')}</span>
+              </div>
+            </div>
+
+            {receiptData.ticketSales && receiptData.ticketSales.length > 0 && (
+              <div className={styles.ticketSalesSection}>
+                <h3>티켓 판매 내역</h3>
+                <div className={styles.ticketSalesHeader}>
+                  <span>티켓명</span>
+                  <span>판매 개수</span>
+                  <span>총 판매 금액</span>
                 </div>
-              ))}
-            </div>
-          )}
-
-          <div className={styles.summarySection}>
-            <div className={styles.summaryItem}>
-              <span className={styles.label}>총 판매 금액</span>
-              <span className={styles.value}>{receiptData.totalRevenue.toLocaleString()}원</span>
-            </div>
-            <div className={styles.summaryItem}>
-              <span className={styles.label}>플랫폼 수수료 ({receiptData.commissionRate}%)</span>
-              <span className={styles.value}>-{receiptData.fee.toLocaleString()}원</span>
-            </div>
-            <div className={`${styles.summaryItem} ${styles.netProfit}`}>
-              <span className={styles.label}>순수익</span>
-              <span className={styles.value}>{receiptData.finalSettlementAmount.toLocaleString()}원</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 은행계좌 입력 섹션 */}
-        <div className={styles.settlementFormSection}>
-          <h3 className={styles.formTitle}>정산 신청 정보</h3>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>은행</label>
-              <select
-                name="bankName"
-                className={styles.formSelect}
-                value={settlementForm.bankName}
-                onChange={handleFormChange}
-                disabled={loading}
-              >
-                <option value="">은행을 선택해주세요</option>
-                {bankOptions.map((bank) => (
-                  <option key={bank} value={bank}>
-                    {bank}
-                  </option>
+                {receiptData.ticketSales.map((ticket, index) => (
+                  <div key={index} className={styles.ticketSalesItem}>
+                    <span>{ticket.ticketName}</span>
+                    <span>{ticket.soldCount}개</span>
+                    <span>{ticket.totalSales.toLocaleString()}원</span>
+                  </div>
                 ))}
-              </select>
+              </div>
+            )}
+          </div>
+
+          {/* 오른쪽 섹션: 금액 정보 + 정산 신청 정보 */}
+          <div className={styles.rightSection}>
+            <div className={styles.summarySection}>
+              <div className={styles.summaryItem}>
+                <span className={styles.label}>총 판매 금액</span>
+                <span className={styles.value}>{receiptData.totalRevenue.toLocaleString()}원</span>
+              </div>
+              <div className={styles.summaryItem}>
+                <span className={styles.label}>플랫폼 수수료 ({receiptData.commissionRate}%)</span>
+                <span className={styles.value}>-{receiptData.fee.toLocaleString()}원</span>
+              </div>
+              <div className={styles.divider}></div>
+              <div className={`${styles.summaryItem} ${styles.netProfit}`}>
+                <span className={styles.label}>순수익</span>
+                <span className={styles.value}>{receiptData.finalSettlementAmount.toLocaleString()}원</span>
+              </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>계좌번호</label>
-              <input
-                type="text"
-                name="bankAccount"
-                className={styles.formInput}
-                value={settlementForm.bankAccount}
-                onChange={handleFormChange}
-                placeholder="계좌번호를 입력해주세요"
-                disabled={loading}
-              />
-            </div>
+            {/* 은행계좌 입력/조회 섹션 */}
+            <div className={styles.settlementFormSection}>
+              <h3 className={styles.formTitle}>정산 신청 정보</h3>
+              {readOnly && bankInfo ? (
+                // 조회 모드: 은행정보 표시
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoItem}>
+                    <span className={styles.label}>은행</span>
+                    <span className={styles.value}>{bankInfo.bankName || '정보 없음'}</span>
+                  </div>
+                  <div className={styles.infoItem}>
+                    <span className={styles.label}>계좌번호</span>
+                    <span className={styles.value}>{bankInfo.bankAccount || '정보 없음'}</span>
+                  </div>
+                  <div className={styles.infoItem}>
+                    <span className={styles.label}>예금주명</span>
+                    <span className={styles.value}>{bankInfo.receiverName || '정보 없음'}</span>
+                  </div>
+                </div>
+              ) : (
+                // 입력 모드: 폼 표시
+                <div className={styles.formGrid}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>은행</label>
+                    <select
+                      name="bankName"
+                      className={styles.formSelect}
+                      value={settlementForm.bankName}
+                      onChange={handleFormChange}
+                      disabled={loading}
+                    >
+                      <option value="">은행을 선택해주세요</option>
+                      {bankOptions.map((bank) => (
+                        <option key={bank} value={bank}>
+                          {bank}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>예금주명</label>
-              <input
-                type="text"
-                name="receiverName"
-                className={styles.formInput}
-                value={settlementForm.receiverName}
-                onChange={handleFormChange}
-                placeholder="예금주명을 입력해주세요"
-                disabled={loading}
-              />
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>계좌번호</label>
+                    <input
+                      type="text"
+                      name="bankAccount"
+                      className={styles.formInput}
+                      value={settlementForm.bankAccount}
+                      onChange={handleFormChange}
+                      placeholder="계좌번호를 입력해주세요"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>예금주명</label>
+                    <input
+                      type="text"
+                      name="receiverName"
+                      className={styles.formInput}
+                      value={settlementForm.receiverName}
+                      onChange={handleFormChange}
+                      placeholder="예금주명을 입력해주세요"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -143,13 +169,15 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId }) => {
           <button className={styles.closeButton} onClick={onClose} disabled={loading}>
             닫기
           </button>
-          <button 
-            className={styles.submitButton} 
-            onClick={handleSubmitSettlement}
-            disabled={loading}
-          >
-            {loading ? '신청 중...' : '정산 신청'}
-          </button>
+          {!readOnly && (
+            <button 
+              className={styles.submitButton} 
+              onClick={handleSubmitSettlement}
+              disabled={loading}
+            >
+              {loading ? '신청 중...' : '정산 신청'}
+            </button>
+          )}
         </div>
       </div>
     </div>
