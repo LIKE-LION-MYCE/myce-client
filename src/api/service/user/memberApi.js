@@ -135,3 +135,7 @@ export const getMyInfo = async () => {
 export const getMyMileage = async () => {
   return await instance.get("/members/my-mileage");
 };
+
+export const updateGrade = async () => {
+  await instance.patch("/members/grade");
+};

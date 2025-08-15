@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// [gemini] SPA 방식의 페이지 이동을 위해 useNavigate를 import 하는 것을 권장합니다.
+// SPA 방식의 페이지 이동을 위해 useNavigate를 import 하는 것을 권장합니다.
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
@@ -8,6 +8,7 @@ import { saveReservers } from "../../../api/service/reservation/ReserverService"
 import { updateReservationStatusConfirm } from "../../../api/service/reservation/reservationApi";
 import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
+import { updateGrade } from "../../../api/service/user/memberApi";
 
 function ReservationPaymentCardButton({
   targetType,
@@ -81,7 +82,6 @@ function ReservationPaymentCardButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
-            // 가장 중요한 단계입니다. 클라이언트(브라우저)의 결제 성공 결과는 위변조될 수 있으므로, 반드시 서버에 결제 정보를 넘겨 실제 결제 금액과 상태를 검증해야 합니다.
             try {
               const res = await instance.post("/payment/verify", {
                 impUid: rsp.imp_uid,
@@ -99,6 +99,13 @@ function ReservationPaymentCardButton({
 
               await updateRemainingQuantity(ticketId, quantity);
 
+              // 회원 등급 업데이트 member_grade의 base_amount
+              // reservation에서 회원 ID로 reservation_payment_info 조회해서 그동안의 결제 금액 계산
+              // 비교에 따라 업데이트
+              if (userType === "MEMBER") {
+                await updateGrade();
+              }
+
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
@@ -111,8 +118,8 @@ function ReservationPaymentCardButton({
                 );
               }
             } catch (err) {
-              // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황입니다.
-              // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 합니다.
+              // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황
+              // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 함.
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
               alert(
                 "결제 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요. " +
@@ -121,7 +128,7 @@ function ReservationPaymentCardButton({
             }
           } else {
             alert("결제에 실패했습니다: " + rsp.error_msg);
-            // 사용자가 결제를 중간에 취소한 경우입니다. 이 경우 생성했던 PENDING 상태의 예약을 삭제
+            // 사용자가 결제를 중간에 취소한 경우. 이 경우 생성했던 CONFIRMED_PENDING 상태의 예약을 삭제
           }
         }
       );
