@@ -1,0 +1,165 @@
+/* System Message Styles */
+.systemMessage {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+}
+
+/* Demarcation Line */
+.demarcationLine {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.demarcationLine::before {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #ff6b35, transparent);
+  margin-right: 1rem;
+}
+
+.demarcationLine::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to left, transparent, #ff6b35, transparent);
+  margin-left: 1rem;
+}
+
+.demarcationText {
+  background: #fff;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  color: #ff6b35;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+  border-radius: 20px;
+  border: 2px solid #ff6b35;
+}
+
+/* System Content */
+.systemContent {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 80%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Admin/AI Icons */
+.adminIcon, .aiIcon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.aiIcon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Message Text */
+.messageText {
+  text-align: center;
+}
+
+.greeting {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* AI Summary Box */
+.summaryBox {
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summaryTitle {
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.summaryText {
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  background: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left: 3px solid #2196f3;
+}
+
+/* Handoff Message */
+.handoffMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .systemMessage {
+    margin: 1.5rem 0;
+  }
+  
+  .systemContent {
+    max-width: 95%;
+    padding: 1rem;
+  }
+  
+  .demarcationText {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .adminIcon, .aiIcon {
+    font-size: 2rem;
+  }
+  
+  .greeting {
+    font-size: 1rem;
+  }
+  
+  .description {
+    font-size: 0.9rem;
+  }
+}

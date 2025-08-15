@@ -9,7 +9,7 @@
 
 /* --- 좌측 채팅 목록 --- */
 .chatList {
-  width: 280px;
+  width: 380px;
   border-right: 1px solid #ddd;
   padding: 1rem;
   box-sizing: border-box;
@@ -140,6 +140,7 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Restore essential message layout styles that were working */
 .messageRow {
   display: flex;
   align-items: flex-start;
@@ -369,21 +370,7 @@
   color: #333;
 }
 
-/* === 메시지 영역 아바타 및 라벨 === */
-
-/* 메시지 아바타 */
-.messageAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid #e0e0e0;
-}
-
-/* AI 메시지 아바타 특별 스타일 */
-.aiMessage + .messageAvatar {
-  border-color: #2196F3;
-  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
-}
+/* Message avatar styles removed - handled by SharedChatArea */
 
 /* 운영자 라벨 (메시지용) */
 .operatorLabel {
@@ -395,29 +382,7 @@
   opacity: 0.8;
 }
 
-/* 메시지 컨텐츠 컨테이너 */
-.messageContent {
-  display: flex;
-  flex-direction: column;
-  max-width: 75%;
-}
-
-.messageRight .messageContent {
-  align-items: flex-end;
-}
-
-.messageLeft .messageContent {
-  align-items: flex-start;
-}
-
-/* 발신자 이름 라벨 */
-.senderNameLabel {
-  font-size: 11px;
-  color: #64748b;
-  margin-bottom: 4px;
-  font-weight: 500;
-  margin-left: 4px;
-}
+/* Message content and sender styles removed - handled by SharedChatArea */
 
 /* AI 메시지 특별 스타일 강화 */
 .aiMessage {

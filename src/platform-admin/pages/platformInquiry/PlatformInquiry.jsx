@@ -4,14 +4,14 @@ import * as ChatWebSocketService from '../../../api/service/chat/ChatWebSocketSe
 import { useWorkingChatScroll } from '../../../hooks/useWorkingChatScroll';
 import SharedChatArea from '../../../components/shared/chat/SharedChatArea';
 import SharedChatRoomList from '../../../components/shared/chat/SharedChatRoomList';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import styles from './PlatformInquiry.module.css';
 
-// Room states from backend ChatRoom.ChatRoomState enum
+// Room states from backend ChatRoom.ChatRoomState enum (3-state system)
 const ROOM_STATES = {
   AI_ACTIVE: 'AI_ACTIVE',                    // AI handling chat - "Request Human" button
   WAITING_FOR_ADMIN: 'WAITING_FOR_ADMIN',   // User requested human help - "Cancel Request" button  
-  HUMAN_ACTIVE: 'HUMAN_ACTIVE',             // Admin took over - "Request AI" button
-  HUMAN_INACTIVE: 'HUMAN_INACTIVE'          // Admin inactive for 5+ mins - "Continue with AI" button
+  ADMIN_ACTIVE: 'ADMIN_ACTIVE'              // Admin took over - "Request AI" button
 };
 
 function PlatformInquiry() {
@@ -25,6 +25,15 @@ function PlatformInquiry() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [hasNewHandoffRequest, setHasNewHandoffRequest] = useState(false);
   const [requestingRooms, setRequestingRooms] = useState(new Set()); // Track specific rooms requesting handoff
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
+  // Toast helper function
+  const triggerToastFail = useCallback((message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 4000); // 4 seconds duration
+  }, []);
   
   // Use the optimized pagination hook
   const {
@@ -54,13 +63,6 @@ function PlatformInquiry() {
       
       const response = await getChatRooms();
       
-      console.log('Raw API response:', {
-        status: response.status,
-        data: response.data,
-        dataType: typeof response.data,
-        isArray: Array.isArray(response.data)
-      });
-      
       // Handle different response formats
       let allRooms = [];
       if (Array.isArray(response.data)) {
@@ -75,38 +77,25 @@ function PlatformInquiry() {
         // Nested data format
         allRooms = response.data.data;
       } else if (response.data && typeof response.data === 'object') {
-        console.warn('Unexpected response format:', response.data);
         allRooms = [];
       }
-      
-      console.log('Chat rooms after parsing:', {
-        totalRooms: allRooms.length,
-        isArray: Array.isArray(allRooms),
-        rooms: allRooms.length > 0 ? allRooms.map(r => ({ roomCode: r.roomCode, type: r.roomCode?.split('-')[0] })) : []
-      });
       
       // Filter only platform rooms (format: platform-{userId})
       // Platform admins should only see platform support rooms, not expo rooms
       const platformRooms = allRooms
-        .filter(room => {
-          const isPlatformRoom = room.roomCode?.startsWith('platform-');
+        .filter(room => room.roomCode?.startsWith('platform-'))
+        .map(room => {
+          const finalState = determineRoomState(room);
           
-          console.log('Platform admin room filtering:', {
-            roomCode: room.roomCode,
-            expoId: room.expoId,
-            expoTitle: room.expoTitle,
-            isPlatformRoom,
-            shouldInclude: isPlatformRoom
-          });
+          console.log('🎭 ROOM STATE:', room.roomCode, '→', finalState);
           
-          return isPlatformRoom;
-        })
-        .map(room => ({
-          ...room,
-          // Add state detection logic
-          needsAttention: room.isWaitingForAdmin || room.hasUnansweredMessages,
-          currentState: determineRoomState(room)
-        }));
+          return {
+            ...room,
+            // Add state detection logic
+            needsAttention: room.isWaitingForAdmin || room.hasUnansweredMessages,
+            currentState: finalState
+          };
+        });
 
       // Sort by priority: handoff requested first, then by last message time
       platformRooms.sort((a, b) => {
@@ -115,15 +104,6 @@ function PlatformInquiry() {
         return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
       });
 
-      console.log('Platform rooms after filtering:', {
-        originalCount: allRooms.length,
-        platformCount: platformRooms.length,
-        platformRooms: platformRooms.map(r => ({ 
-          roomCode: r.roomCode, 
-          lastMessage: r.lastMessage,
-          needsAttention: r.needsAttention 
-        }))
-      });
 
       setChatRooms(platformRooms);
       
@@ -151,16 +131,192 @@ function PlatformInquiry() {
     }
   }, []);
 
-  // Determine room state for UI
+  // Determine room state for UI (3-state system)
   const determineRoomState = (room) => {
+    // Use currentState if available (from backend ChatRoomState enum)
+    if (room.currentState) {
+      return room.currentState;
+    }
+    
+    // Fallback to legacy logic
     if (room.hasAssignedAdmin) {
-      return room.isAdminActive ? ROOM_STATES.HUMAN_ACTIVE : ROOM_STATES.HUMAN_INACTIVE;
+      return ROOM_STATES.ADMIN_ACTIVE;
     } else if (room.isWaitingForAdmin) {
       return ROOM_STATES.WAITING_FOR_ADMIN;
     } else {
       return ROOM_STATES.AI_ACTIVE;
     }
   };
+
+  // Handle system messages for state synchronization
+  const handleSystemMessage = useCallback((messageData, roomCode, shouldDisplayMessage = true) => {
+    
+    // Handle room state updates from all message types
+    if (messageData.roomState) {
+      const roomState = messageData.roomState;
+      
+      // Update requesting rooms based on actual backend state
+      if (roomState.current === 'WAITING_FOR_ADMIN') {
+        setRequestingRooms(prev => new Set([...prev, roomCode]));
+        setHasNewHandoffRequest(true);
+      } else {
+        // Clear handoff request for any non-waiting state
+        setRequestingRooms(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(roomCode);
+          if (newSet.size === 0) {
+            setHasNewHandoffRequest(false);
+          }
+          return newSet;
+        });
+      }
+      
+      // Update selected room if this is for the currently selected room
+      setSelectedRoom(prevRoom => {
+        if (prevRoom && prevRoom.roomCode === roomCode) {
+          return {
+            ...prevRoom,
+            currentState: roomState.current,
+            hasAssignedAdmin: roomState.adminInfo ? true : false,
+            isWaitingForAdmin: roomState.current === 'WAITING_FOR_ADMIN',
+            adminDisplayName: roomState.adminInfo?.displayName || prevRoom.adminDisplayName,
+            currentAdminCode: roomState.adminInfo?.adminCode || prevRoom.currentAdminCode,
+            lastAdminActivity: roomState.adminInfo?.lastActivity || prevRoom.lastAdminActivity
+          };
+        }
+        return prevRoom;
+      });
+      
+      // ALSO update the room in the chatRooms list to sync avatars
+      setChatRooms(prevRooms => prevRooms.map(room => {
+        if (room.roomCode === roomCode) {
+          console.log('🔄 UPDATING ROOM LIST STATE:', roomCode, '→', roomState.current);
+          return {
+            ...room,
+            currentState: roomState.current,
+            hasAssignedAdmin: roomState.adminInfo ? true : false,
+            isWaitingForAdmin: roomState.current === 'WAITING_FOR_ADMIN'
+          };
+        }
+        return room;
+      }));
+      
+      // Note: Room list is already updated above via setChatRooms(), no need to reload from API
+    }
+    
+    switch (messageData.type) {
+      case 'AI_HANDOFF_REQUEST':
+        console.log('🔔 Handoff request detected for room:', roomCode);
+        // State handling is done above via roomState
+        break;
+        
+      case 'BUTTON_STATE_UPDATE':
+        console.log('🔘 Button state update:', messageData.payload?.state);
+        // State handling is done above via roomState
+        break;
+        
+      case 'ADMIN_ASSIGNMENT_UPDATE':
+        console.log('👨‍💼 Admin assignment update:', messageData.payload);
+        // State is already updated via BUTTON_STATE_UPDATE - no need to refresh
+        break;
+        
+      case 'AI_MESSAGE':
+        // Handle AI messages (including summaries and handoff completion)
+        if (shouldDisplayMessage) {
+          const aiMessage = {
+            id: messageData.payload.messageId,
+            senderId: messageData.payload.senderId,
+            senderType: messageData.payload.senderType,
+            senderName: messageData.payload.senderName,
+            content: messageData.payload.content,
+            sentAt: messageData.payload.sentAt,
+            unreadCount: 0
+          };
+          addMessage(aiMessage);
+        }
+        break;
+        
+      case 'ADMIN_MESSAGE':
+        // Handle admin messages during handoff
+        if (shouldDisplayMessage) {
+          const adminMessage = {
+            id: messageData.payload.messageId,
+            senderId: messageData.payload.senderId,
+            senderType: messageData.payload.senderType,
+            senderName: messageData.payload.senderName || messageData.payload.adminDisplayName,
+            content: messageData.payload.content,
+            sentAt: messageData.payload.sentAt,
+            unreadCount: 0
+          };
+          addMessage(adminMessage);
+        }
+        break;
+        
+      case 'ADMIN_INTERVENTION':
+        // Handle proactive admin intervention messages
+        if (shouldDisplayMessage) {
+          const interventionMessage = {
+            id: messageData.payload.messageId,
+            senderId: messageData.payload.senderId,
+            senderType: messageData.payload.senderType,
+            senderName: messageData.payload.adminDisplayName || 'Platform Admin',
+            content: messageData.payload.content,
+            sentAt: messageData.payload.sentAt,
+            unreadCount: 0
+          };
+          addMessage(interventionMessage);
+        }
+        
+        // State is already updated via BUTTON_STATE_UPDATE - no need to refresh
+        console.log('🚀 Admin intervention completed');
+        break;
+        
+      case 'AI_TIMEOUT_TAKEOVER':
+        // Handle admin timeout and AI takeover messages
+        if (shouldDisplayMessage) {
+          const timeoutMessage = {
+            id: messageData.payload.messageId,
+            senderId: messageData.payload.senderId,
+            senderType: messageData.payload.senderType,
+            senderName: messageData.payload.senderName || 'AI 상담사',
+            content: messageData.payload.content,
+            sentAt: messageData.payload.sentAt,
+            unreadCount: 0
+          };
+          addMessage(timeoutMessage);
+        }
+        
+        // State is already updated via BUTTON_STATE_UPDATE - no need to refresh
+        console.log('⏰ Admin timeout occurred');
+        break;
+        
+      case 'SYSTEM_MESSAGE':
+        // Handle system messages (not chat bubbles, but special UI elements)
+        console.log('🎭 System message received:', messageData.payload);
+        if (shouldDisplayMessage) {
+          const systemMessage = {
+            id: `system-${Date.now()}`,
+            type: 'SYSTEM_MESSAGE',
+            payload: messageData.payload,
+            timestamp: messageData.payload?.timestamp || new Date().toISOString(),
+            sentAt: messageData.payload?.timestamp || new Date().toISOString(),
+            unreadCount: 0
+          };
+          console.log('🎭 Admin side - Adding system message:', systemMessage);
+          addMessage(systemMessage);
+        }
+        
+        // Refresh room list after state transitions
+        if (messageData.payload?.type === 'ADMIN_INTERVENTION_START') {
+          console.log('🔄 System message received - state handled via WebSocket');
+          // State updates handled via WebSocket - no refresh needed
+        }
+        break;
+        
+      default:
+        console.log('🤷‍♂️ Unknown system message type:', messageData.type);
+    }
+  }, [setRequestingRooms, setHasNewHandoffRequest, loadChatRooms, addMessage]);
 
   // Handle room selection
   const handleRoomSelect = useCallback(async (room) => {
@@ -185,19 +341,42 @@ function PlatformInquiry() {
       // Join WebSocket room for real-time updates
       if (isConnected) {
         try {
+          // Set up unified message handler that handles regular messages and system messages for selected room
           ChatWebSocketService.onMessage(room.roomCode, (messageData) => {
-            const newMessage = {
-              id: messageData.messageId,
-              senderId: messageData.senderId,
-              senderType: messageData.senderType || 'USER',
-              senderName: messageData.senderName,
-              content: messageData.content,
-              sentAt: messageData.sentAt,
-              unreadCount: 0
-            };
-            addMessage(newMessage);
+            console.log('🎯 ADMIN SIDE - Raw message received for selected room:', {
+              type: messageData.type,
+              senderType: messageData.senderType,
+              content: messageData.content?.substring(0, 50),
+              hasPayload: !!messageData.payload,
+              hasRoomState: !!messageData.roomState,
+              fullData: messageData
+            });
             
-            // Auto-scroll only if user is near bottom (handled by SharedChatArea)
+            // Use the same unified system message handler for consistency
+            if (messageData.type) {
+              console.log('🔧 ROOM HANDLER - Processing message via unified handler:', messageData.type);
+              handleSystemMessage(messageData, room.roomCode, true); // Display messages for room-specific handler
+            } else {
+              console.log('🔧 ROOM HANDLER - Processing as regular message');
+              
+              // Skip persistent system messages in live WebSocket to avoid duplicates
+              if (messageData.senderType === 'SYSTEM') {
+                console.log('🎭 ROOM HANDLER - Skipping persistent system message in live WebSocket to avoid duplicate');
+                return;
+              }
+              
+              // Handle regular message format
+              const newMessage = {
+                id: messageData.messageId || messageData.id,
+                senderId: messageData.senderId,
+                senderType: messageData.senderType || 'USER',
+                senderName: messageData.senderName,
+                content: messageData.content,
+                sentAt: messageData.sentAt,
+                unreadCount: 0
+              };
+              addMessage(newMessage);
+            }
           });
           
           await ChatWebSocketService.joinRoom(room.roomCode);
@@ -206,73 +385,105 @@ function PlatformInquiry() {
         }
       }
     }
-  }, [selectedRoom, isConnected, resetMessages, loadInitialMessages, addMessage, hasNewHandoffRequest]);
+  }, [selectedRoom, isConnected, resetMessages, loadInitialMessages, addMessage]);
 
-  // Handle message send
+  // Check if current user has admin permission for selected room
+  const hasAdminPermission = useCallback((room) => {
+    if (!room || !room.currentAdminCode) return true; // No admin assigned, permission granted
+    
+    // Platform admins use "PLATFORM_ADMIN" as their adminCode
+    const currentAdminCode = "PLATFORM_ADMIN";
+    return room.currentAdminCode === currentAdminCode;
+  }, []);
+
+  // Handle message send with permission check
   const handleSendMessage = useCallback(async () => {
     if (!newMessage.trim() || !selectedRoom?.roomCode || !isConnected) return;
     
+    // Check room state first - operators cannot send messages during AI_ACTIVE state
+    const currentState = determineRoomState(selectedRoom);
+    if (currentState === ROOM_STATES.AI_ACTIVE) {
+      triggerToastFail('AI 상담 중에는 직접 메시지를 보낼 수 없습니다. "개입하기" 버튼을 사용해주세요.');
+      return;
+    }
+    
+    // Permission check: Only allow message if user has admin permission
+    if (!hasAdminPermission(selectedRoom)) {
+      triggerToastFail(`이 상담은 다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 담당하고 있습니다.`);
+      return;
+    }
+    
     try {
-      const messageData = {
-        roomCode: selectedRoom.roomCode,
-        message: newMessage.trim(),
-        expoId: null // Platform rooms have no expo
-      };
-      
-      await ChatWebSocketService.sendAdminMessage(messageData);
+      // Call sendAdminMessage with three separate parameters, not an object
+      await ChatWebSocketService.sendAdminMessage(
+        selectedRoom.roomCode,
+        newMessage.trim(),
+        null // Platform rooms have no expo
+      );
       setNewMessage('');
       
     } catch (err) {
       console.error('메시지 전송 실패:', err);
-      alert('메시지 전송에 실패했습니다.');
+      if (err.response?.data?.message?.includes('권한')) {
+        triggerToastFail(`상담 권한이 없습니다: ${err.response.data.message}`);
+      } else if (err.response?.data?.message?.includes('개입하기')) {
+        triggerToastFail('AI 상담 중에는 직접 메시지를 보낼 수 없습니다. "개입하기" 버튼을 사용해주세요.');
+      } else {
+        triggerToastFail('메시지 전송에 실패했습니다.');
+      }
     }
-  }, [newMessage, selectedRoom, isConnected]);
+  }, [newMessage, selectedRoom, isConnected, hasAdminPermission, triggerToastFail]);
 
-  // Handle admin takeover with AI summary
+  // Handle proactive admin intervention for AI_ACTIVE rooms (with permission check)
+  const handleProactiveIntervention = useCallback(async () => {
+    if (!selectedRoom?.roomCode) return;
+    
+    // Permission check for intervention
+    if (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)) {
+      alert(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
+      return;
+    }
+    
+    try {
+      
+      // Call the new proactive intervention endpoint
+      await ChatWebSocketService.proactiveIntervention(selectedRoom.roomCode);
+      
+      
+    } catch (err) {
+      console.error('Proactive intervention failed:', err);
+      if (err.response?.data?.message?.includes('권한') || err.response?.data?.message?.includes('담당')) {
+        alert(`개입 권한이 없습니다: ${err.response.data.message}`);
+      } else {
+        alert('관리자 개입에 실패했습니다.');
+      }
+    }
+  }, [selectedRoom, hasAdminPermission]);
+
+  // Handle admin takeover with AI summary (user-requested handoff, with permission check)
   const handleTakeOver = useCallback(async () => {
     if (!selectedRoom?.roomCode) return;
     
+    // Permission check for takeover
+    if (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)) {
+      alert(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
+      return;
+    }
+    
     try {
-      console.log('🎯 Starting handoff process for room:', selectedRoom.roomCode);
+      console.log('🎯 Starting formal handoff process for room:', selectedRoom.roomCode);
       
-      // Step 1: Request AI conversation summary
-      console.log('📋 Requesting AI conversation summary...');
-      try {
-        const summaryResponse = await fetch(`/api/ai/chat/${selectedRoom.roomCode}/summary`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (summaryResponse.ok) {
-          const summaryData = await summaryResponse.json();
-          console.log('✅ AI Summary received:', summaryData);
-          
-          // Send summary as admin message
-          await ChatWebSocketService.sendAdminMessage({
-            roomCode: selectedRoom.roomCode,
-            message: `📋 **상담 요약**\n\n${summaryData.summary || '요약을 생성할 수 없습니다.'}`,
-            expoId: null
-          });
-        } else {
-          console.warn('⚠️ Failed to get AI summary, proceeding without it');
-        }
-      } catch (summaryError) {
-        console.error('❌ AI summary failed:', summaryError);
-        // Continue with handoff even if summary fails
-      }
+      // Send admin message with handoff trigger - backend will detect WAITING_FOR_ADMIN state and:
+      // 1. Generate AI conversation summary and broadcast it  
+      // 2. Call handoffAIToAdmin() for proper state transition
+      // 3. Assign admin and enable operator chat
+      // 4. Send handoff completion message with admin info
+      // 5. Update button state to ADMIN_ACTIVE
       
-      // Step 2: Send handoff message
-      await ChatWebSocketService.sendAdminMessage({
-        roomCode: selectedRoom.roomCode,
-        message: "👨‍💼 관리자가 상담을 인계받았습니다. 어떻게 도와드릴까요?",
-        expoId: null,
-        isHandoffMessage: true
-      });
+      // Use proper state transition endpoint instead of chat message
+      await ChatWebSocketService.acceptHandoff(selectedRoom.roomCode);
       
-      // Step 3: Update room state and clear notification for this room
+      // Clear frontend notification - backend will handle the rest
       setRequestingRooms(prev => {
         const newSet = new Set(prev);
         newSet.delete(selectedRoom.roomCode);
@@ -281,15 +492,18 @@ function PlatformInquiry() {
         }
         return newSet;
       });
-      loadChatRooms();
       
-      console.log('✅ Handoff completed successfully');
+      console.log('✅ Formal handoff initiated - backend will generate AI summary and complete transition');
       
     } catch (err) {
       console.error('❌ 상담 인계 실패:', err);
-      alert('상담 인계에 실패했습니다.');
+      if (err.response?.data?.message?.includes('권한') || err.response?.data?.message?.includes('담당')) {
+        alert(`인계 권한이 없습니다: ${err.response.data.message}`);
+      } else {
+        alert('상담 인계에 실패했습니다.');
+      }
     }
-  }, [selectedRoom, loadChatRooms]);
+  }, [selectedRoom, hasAdminPermission]);
 
   // Play notification sound for handoff requests
   const playNotificationSound = useCallback(() => {
@@ -329,6 +543,18 @@ function PlatformInquiry() {
     // Keep notification until operator clicks on the room (don't auto-clear)
   }, [loadChatRooms]);
 
+  // Removed periodic refresh - WebSocket provides real-time updates
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     // Refresh room list every 5 seconds to catch new handoff requests
+  //     const refreshInterval = setInterval(() => {
+  //       loadChatRooms();
+  //     }, 5000);
+  //     
+  //     return () => clearInterval(refreshInterval);
+  //   }
+  // }, [isConnected, loadChatRooms]);
+
   // WebSocket setup and get user info
   useEffect(() => {
     const connectWebSocket = async () => {
@@ -366,6 +592,16 @@ function PlatformInquiry() {
           }
         });
         
+        // Subscribe to error messages
+        ChatWebSocketService.subscribeToUserErrors((errorData) => {
+          console.log('❌ WebSocket error received:', errorData);
+          if (errorData.error === 'INTERVENTION_REQUIRED') {
+            alert(errorData.message);
+          } else if (errorData.error === 'PERMISSION_DENIED') {
+            alert(`권한이 없습니다: ${errorData.message}`);
+          }
+        });
+        
         
         // Also set up a global handler for any new platform rooms
         window.globalPlatformNotificationHandler = (data, roomCode) => {
@@ -398,60 +634,49 @@ function PlatformInquiry() {
     };
   }, [loadChatRooms, selectedRoom?.roomCode, triggerHandoffNotification]);
 
-  // Subscribe to all platform rooms for handoff notifications
+  // Subscribe to all platform rooms for handoff notifications (using multiple handler system)
   useEffect(() => {
     if (isConnected && chatRooms.length > 0) {
       console.log('🔗 Subscribing to all platform room channels for notifications...');
       
+      const cleanupFunctions = [];
+      
       chatRooms.forEach(room => {
         if (room.roomCode?.startsWith('platform-')) {
-          console.log('📡 Setting up notification handler for room:', room.roomCode);
+          console.log('📡 Setting up global notification handler for room:', room.roomCode);
           
-          // Set up message handler FIRST (this overwrites any existing handler)
-          ChatWebSocketService.onMessage(room.roomCode, (messageData) => {
-            console.log('📥 Platform admin notification from', room.roomCode, ':', messageData);
-            console.log('📋 Message type:', messageData.type, 'Payload:', messageData.payload);
-            console.log('🔍 DEBUGGING: Full messageData structure:', JSON.stringify(messageData, null, 2));
+          // Add a GLOBAL handler for notifications (works alongside room-specific handlers)
+          const removeHandler = ChatWebSocketService.addMessageHandler(room.roomCode, (messageData) => {
+            console.log('📥 GLOBAL Platform admin notification from', room.roomCode, ':', {
+              type: messageData.type,
+              payload: messageData.payload,
+              hasRoomState: !!messageData.roomState,
+              fullData: messageData
+            });
             
-            // The messageData structure might be different for operators vs users
-            // Let's check if it has properties directly or if it's nested
-            const messageType = messageData.type;
-            const messagePayload = messageData.payload || messageData;
-            
-            console.log('🔍 DEBUGGING: Extracted type:', messageType, 'payload:', messagePayload);
-            
-            // Check for handoff requests specifically
-            if (messageType === 'AI_HANDOFF_REQUEST' || 
-                (messageType === 'BUTTON_STATE_UPDATE' && 
-                 messagePayload?.state === 'WAITING_FOR_ADMIN')) {
-              
-              console.log('🔔 HANDOFF REQUEST DETECTED! Setting room to glow:', room.roomCode);
-              setRequestingRooms(prev => new Set([...prev, room.roomCode]));
-              setHasNewHandoffRequest(true);
-            }
-            
-            // Check for handoff cancellations to remove glow
-            if (messageType === 'BUTTON_STATE_UPDATE' && 
-                messagePayload?.state === 'AI_ACTIVE') {
-              console.log('🔕 HANDOFF CANCELLED! Removing glow from room:', room.roomCode);
-              setRequestingRooms(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(room.roomCode);
-                if (newSet.size === 0) {
-                  setHasNewHandoffRequest(false);
-                }
-                return newSet;
-              });
+            // Use the unified system message handler for consistent state management
+            if (messageData.type) {
+              console.log('🔧 GLOBAL - Calling handleSystemMessage with type:', messageData.type);
+              handleSystemMessage(messageData, room.roomCode, false); // Don't display messages for global handler (notifications only)
+            } else {
+              console.log('🔧 GLOBAL - No type field, ignoring message');
             }
           });
+          
+          cleanupFunctions.push(removeHandler);
           
           // Force join room to ensure subscription is active
           console.log('🔗 Force joining room to ensure active subscription:', room.roomCode);
           ChatWebSocketService.joinRoom(room.roomCode);
         }
       });
+      
+      // Return cleanup function to remove all global handlers
+      return () => {
+        cleanupFunctions.forEach(cleanup => cleanup());
+      };
     }
-  }, [isConnected, chatRooms, triggerHandoffNotification]);
+  }, [isConnected, chatRooms, handleSystemMessage]);
 
   // Custom header content for AI chat monitoring
   const renderChatHeader = () => (
@@ -467,7 +692,12 @@ function PlatformInquiry() {
         <button 
           className={styles.takeOverButton}
           onClick={handleTakeOver}
-          disabled={!isConnected}
+          disabled={!isConnected || (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom))}
+          title={
+            selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom) 
+              ? `다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 담당 중` 
+              : '상담 인계받기'
+          }
         >
           ✋ 상담 인계받기
         </button>
@@ -481,15 +711,13 @@ function PlatformInquiry() {
     const badgeClass = {
       [ROOM_STATES.AI_ACTIVE]: styles.badgeAiActive,
       [ROOM_STATES.WAITING_FOR_ADMIN]: styles.badgeWaiting,
-      [ROOM_STATES.HUMAN_ACTIVE]: styles.badgeHumanActive,
-      [ROOM_STATES.HUMAN_INACTIVE]: styles.badgeHumanInactive
+      [ROOM_STATES.ADMIN_ACTIVE]: styles.badgeAdminActive
     }[state] || styles.badgeDefault;
 
     const badgeText = {
       [ROOM_STATES.AI_ACTIVE]: '🤖 AI 상담',
       [ROOM_STATES.WAITING_FOR_ADMIN]: '⏳ 상담원 대기',
-      [ROOM_STATES.HUMAN_ACTIVE]: '👨‍💼 상담원 활성',
-      [ROOM_STATES.HUMAN_INACTIVE]: '💤 상담원 비활성'
+      [ROOM_STATES.ADMIN_ACTIVE]: '👨‍💼 상담원 활성'
     }[state] || '❓ 알 수 없음';
 
     return (
@@ -502,7 +730,7 @@ function PlatformInquiry() {
   // Custom room list functions
   const getRoomPriority = (room) => {
     if (room.needsAttention) return 100; // Highest priority
-    if (room.currentState === ROOM_STATES.HUMAN_ACTIVE) return 50;
+    if (room.currentState === ROOM_STATES.ADMIN_ACTIVE) return 50;
     return 0;
   };
 
@@ -525,10 +753,31 @@ function PlatformInquiry() {
   const filterPlatformRooms = (rooms) => 
     rooms.filter(room => room.roomCode?.startsWith('platform-'));
 
+  // Custom room display functions
+  const getRoomTitle = (room) => {
+    // Backend now provides correct user name in otherMemberName field
+    const userName = room.otherMemberName || room.memberName || `사용자 ${room.roomCode.split('-')[1]}`;
+    return `${userName}님`;
+  };
+
+  const getRoomAvatar = (room) => {
+    const currentState = determineRoomState(room);
+    
+    console.log('🖼️ AVATAR:', room.roomCode, currentState === ROOM_STATES.ADMIN_ACTIVE ? '👤 HUMAN' : '🤖 ROBOT');
+    
+    if (currentState === ROOM_STATES.ADMIN_ACTIVE) {
+      // Human silhouette for human chatting
+      return "https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg";
+    } else {
+      // Robot mouse for AI chatting (AI_ACTIVE or WAITING_FOR_ADMIN)
+      return "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png";
+    }
+  };
+
   return (
     <div className={styles.platformInquiry}>
       <div className={styles.header}>
-        <h1>플랫폼 AI 상담 모니터링</h1>
+        <h1>플랫폼 상담 모니터링</h1>
         <div className={styles.connectionStatus}>
           <span className={`${styles.statusDot} ${isConnected ? styles.connected : styles.disconnected}`} />
           {isConnected ? '실시간 연결됨' : '연결 끊김'}
@@ -546,12 +795,14 @@ function PlatformInquiry() {
             unreadCounts={unreadCounts}
             onRoomSelect={handleRoomSelect}
             onRefresh={loadChatRooms}
-            title="AI 상담 목록"
+            title="상담 목록"
             emptyMessage="현재 진행 중인 AI 상담이 없습니다"
             getRoomPriority={getRoomPriority}
             getRoomBadges={getRoomBadges}
             getRoomClassName={getRoomClassName}
             filterRooms={filterPlatformRooms}
+            getRoomTitle={getRoomTitle}
+            getRoomAvatar={getRoomAvatar}
           />
         </aside>
 
@@ -563,15 +814,87 @@ function PlatformInquiry() {
               <div className={styles.handoffContent}>
                 <div className={styles.handoffIcon}>🔔</div>
                 <div className={styles.handoffText}>
-                  <strong>Handoff Request Pending</strong>
-                  <p>User has requested human assistance. Click to accept and take over this conversation.</p>
+                  <strong>상담 인계 요청</strong>
+                  <p>사용자가 상담원 연결을 요청했습니다. 클릭하여 상담을 인계받으세요.</p>
                 </div>
                 <button 
                   className={styles.acceptHandoffButton}
                   onClick={handleTakeOver}
-                  disabled={!isConnected}
+                  disabled={
+                    !isConnected || 
+                    (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom))
+                  }
+                  title={
+                    selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)
+                      ? `다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 담당 중`
+                      : '상담 인계받기'
+                  }
                 >
-                  ✋ Accept Handoff
+                  ✋ 상담 인계받기
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Admin Active Banner - shows when admin is handling the chat */}
+          {selectedRoom && determineRoomState(selectedRoom) === ROOM_STATES.ADMIN_ACTIVE && (
+            <div className={styles.adminActiveBanner}>
+              <div className={styles.adminActiveContent}>
+                <div className={styles.adminActiveIcon}>
+                  <img 
+                    src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg" 
+                    alt="관리자" 
+                    style={{ width: '24px', height: '24px' }}
+                  />
+                </div>
+                <div className={styles.adminActiveText}>
+                  <strong>관리자 상담 진행 중</strong>
+                  <p>{selectedRoom.adminDisplayName || '박람회 관리자 (PLATFORM_ADMIN)'} (상담원)이 직접 상담을 진행하고 있습니다.</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Proactive Intervention Banner - shows for AI_ACTIVE rooms */}
+          {selectedRoom && !requestingRooms.has(selectedRoom.roomCode) && (() => {
+            const currentState = determineRoomState(selectedRoom);
+            console.log('🎯 Banner state check:', {
+              roomCode: selectedRoom.roomCode,
+              currentState,
+              hasAssignedAdmin: selectedRoom.hasAssignedAdmin,
+              isWaitingForAdmin: selectedRoom.isWaitingForAdmin,
+              roomCurrentState: selectedRoom.currentState,
+              shouldShowBanner: currentState === ROOM_STATES.AI_ACTIVE
+            });
+            return currentState === ROOM_STATES.AI_ACTIVE;
+          })() && (
+            <div className={styles.interventionBanner}>
+              <div className={styles.interventionContent}>
+                <div className={styles.interventionIcon}>
+                  <img 
+                    src="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png" 
+                    alt="찍찍봇" 
+                    style={{ width: '24px', height: '24px' }}
+                  />
+                </div>
+                <div className={styles.interventionText}>
+                  <strong>AI 상담 진행 중</strong>
+                  <p>필요시 관리자가 직접 개입하여 상담을 진행할 수 있습니다.</p>
+                </div>
+                <button 
+                  className={styles.interventionButton}
+                  onClick={handleProactiveIntervention}
+                  disabled={
+                    !isConnected || 
+                    (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom))
+                  }
+                  title={
+                    selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)
+                      ? `다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 담당 중`
+                      : '상담에 개입하기'
+                  }
+                >
+                  🚀 개입하기
                 </button>
               </div>
             </div>
@@ -589,16 +912,31 @@ function PlatformInquiry() {
             newMessage={newMessage}
             onMessageChange={setNewMessage}
             onSendMessage={handleSendMessage}
-            placeholder="관리자 메시지를 입력해주세요"
+            placeholder={
+              selectedRoom && selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)
+                ? `이 상담은 다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 담당하고 있습니다`
+                : "관리자 메시지를 입력해주세요"
+            }
             messagesContainerRef={messagesContainerRef}
             messagesEndRef={messagesEndRef}
             onScroll={handleScroll}
             onScrollToBottom={scrollToBottom}
             headerContent={selectedRoom ? renderChatHeader() : null}
             isConnected={isConnected}
+            inputDisabled={
+              selectedRoom && selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)
+            }
           />
         </main>
       </div>
+
+      {/* Toast notifications */}
+      {showFailToast && (
+        <ToastFail
+          message={failMessage}
+          onClose={() => setShowFailToast(false)}
+        />
+      )}
     </div>
   );
 }

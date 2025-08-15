@@ -33,7 +33,8 @@ export default function ChatContainer() {
     scrollToBottom,
     addMessage,
     updateMessage,
-    reset: resetMessages
+    reset: resetMessages,
+    isNearBottom
   } = useWorkingChatScroll(getChatMessages);
 
   // For compatibility with SharedChatArea
@@ -49,24 +50,32 @@ export default function ChatContainer() {
     return buttonStates[roomCode] || 'AI_ACTIVE';
   };
 
-  // 상태별 버튼 텍스트 반환
+  // Backend state-aware button text (Korean) - 3-state system
   const getButtonText = (state) => {
     switch (state) {
       case 'AI_ACTIVE': return '상담원 연결';
       case 'WAITING_FOR_ADMIN': return '요청 취소';
-      case 'HUMAN_ACTIVE': return 'AI로 돌아가기';
-      case 'HUMAN_INACTIVE': return 'AI로 계속하기';
+      case 'ADMIN_ACTIVE': return 'AI로 돌아가기';
       default: return '상담원 연결';
     }
   };
+  
+  // Get room state description (Korean) - 3-state system
+  const getRoomStateDescription = (state) => {
+    switch (state) {
+      case 'AI_ACTIVE': return '🤖 AI 상담중';
+      case 'WAITING_FOR_ADMIN': return '⏳ 상담원 대기중';
+      case 'ADMIN_ACTIVE': return '👨‍💼 상담원 연결됨';
+      default: return '🤖 AI 상담중';
+    }
+  };
 
-  // 상태별 버튼 액션 반환
+  // 상태별 버튼 액션 반환 - 3-state system
   const getButtonAction = (state) => {
     switch (state) {
       case 'AI_ACTIVE': return 'request-handoff';
       case 'WAITING_FOR_ADMIN': return 'cancel-handoff';
-      case 'HUMAN_ACTIVE': return 'request-ai';
-      case 'HUMAN_INACTIVE': return 'request-ai';
+      case 'ADMIN_ACTIVE': return 'request-ai';
       default: return 'request-handoff';
     }
   };
@@ -179,14 +188,81 @@ export default function ChatContainer() {
         // WebSocket 채팅방 입장
         await ChatWebSocketService.joinRoom(selectedRoom.roomCode);
         
-        // 메시지 수신 핸들러 등록
+        // 메시지 수신 핸들러 등록 (unified handler for all message types)
         ChatWebSocketService.onMessage(selectedRoom.roomCode, (message) => {
+          console.log('🎯 USER SIDE - Raw message received:', message);
+          console.log('🎯 USER SIDE - Message type check:', {
+            type: message.type,
+            hasMessageId: !!message.messageId,
+            hasSenderType: !!message.senderType,
+            senderType: message.senderType,
+            isAI: message.senderType === 'AI',
+            senderName: message.senderName,
+            content: message.content?.substring(0, 50) + '...',
+            hasRoomState: !!message.roomState,
+            roomState: message.roomState?.current
+          });
           
-          // 메시지에 unreadCount가 있으면 그대로 사용, 없으면 1로 설정 (새 메시지)
+          // Handle system messages first (they have different structure)
+          if (message.type === 'SYSTEM_MESSAGE') {
+            console.log('🎭 User side - SYSTEM MESSAGE DETECTED!');
+            console.log('🎭 User side - Full message object:', JSON.stringify(message, null, 2));
+            console.log('🎭 User side - Message type:', message.type);
+            console.log('🎭 User side - Payload type:', message.payload?.type);
+            console.log('🎭 User side - Payload content:', message.payload);
+            
+            const systemMessage = {
+              id: `system-${Date.now()}`,
+              type: 'SYSTEM_MESSAGE',
+              payload: message.payload,
+              timestamp: message.payload?.timestamp || new Date().toISOString(),
+              sentAt: message.payload?.timestamp || new Date().toISOString(),
+              unreadCount: 0
+            };
+            console.log('🎭 User side - Created system message object:', JSON.stringify(systemMessage, null, 2));
+            addMessage(systemMessage);
+            
+            // Also handle room state if present
+            if (message.roomState && isPlatformRoom(selectedRoom)) {
+              const newState = message.roomState.current;
+              console.log('🏠 User side - Updating button state:', newState);
+              setButtonStates(prev => ({
+                ...prev,
+                [selectedRoom.roomCode]: newState
+              }));
+            }
+            return; // Don't process as regular message
+          }
+          
+          // Handle room state updates from all message types
+          if (message.roomState && isPlatformRoom(selectedRoom)) {
+            const newState = message.roomState.current;
+            console.log('🏠 Room state update received:', {
+              roomCode: selectedRoom.roomCode,
+              newState,
+              reason: message.roomState.transitionReason,
+              timestamp: message.roomState.timestamp
+            });
+            
+            // Update button state based on room state
+            setButtonStates(prev => ({
+              ...prev,
+              [selectedRoom.roomCode]: newState
+            }));
+          }
+          
+          // 메시지에 unreadCount가 있으면 그대로 사용, 없으면 메시지 타입에 따라 설정
+          // AI messages and admin messages should have unreadCount: 0 (automatic responses)
+          // Only user messages from others should have unreadCount: 1
+          let defaultUnreadCount = 0; // Default for AI/admin messages
+          if (message.senderType === 'USER' && message.senderId !== currentUserId) {
+            defaultUnreadCount = 1; // Only unread for messages from other users
+          }
+          
           const newMessage = {
             ...message,
             id: message.id || message.messageId, // Ensure id field exists
-            unreadCount: message.unreadCount !== undefined ? message.unreadCount : 1
+            unreadCount: message.unreadCount !== undefined ? message.unreadCount : defaultUnreadCount
           };
           
           console.log('🔍 메시지 분기 체크:', {
@@ -199,7 +275,7 @@ export default function ChatContainer() {
           });
 
           // 모든 메시지를 동일하게 처리 (낙관적 업데이트 제거)
-          console.log('✅ 메시지 추가:', newMessage);
+          console.log('✅ USER SIDE - 메시지 추가:', newMessage);
           addMessage(newMessage);
           
           
@@ -230,10 +306,8 @@ export default function ChatContainer() {
                 setTimeout(async () => {
                   await handleMarkAsRead(selectedRoom.roomCode);
                   // 읽음 처리 후 unreadCount를 0으로 업데이트
-                  setMessages(prev => prev.map(msg => ({
-                    ...msg,
-                    unreadCount: msg.senderType === 'ADMIN' ? 0 : msg.unreadCount
-                  })));
+                  // Update messages read status via addMessage hook
+                  // This functionality is handled by the message loading system
                 }, 100); // 100ms 지연으로 "1"이 잠깐 보이게
               } else {
                 console.log('내가 보낸 메시지이므로 읽음 처리 안함');
@@ -267,21 +341,8 @@ export default function ChatContainer() {
             
             // 관리자나 AI가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
             if (readerType === 'ADMIN' || readerType === 'AI') {
-              setMessages(prev => prev.map(msg => {
-                const token = localStorage.getItem('access_token');
-                if (token) {
-                  try {
-                    const decodedToken = jwtDecode(token);
-                    // 내가 보낸 메시지의 unreadCount를 0으로
-                    if (msg.senderId === decodedToken.memberId) {
-                      return { ...msg, unreadCount: 0 };
-                    }
-                  } catch (error) {
-                    console.error('토큰 디코딩 실패:', error);
-                  }
-                }
-                return msg;
-              }));
+              // Messages read status is handled by the message loading system
+              console.log('Admin/AI marked messages as read for readerType:', readerType);
             }
             return; // read_status_update는 여기서 처리 완료
           }
@@ -354,17 +415,8 @@ export default function ChatContainer() {
       
       // 내가 보낸 메시지들은 상대가 읽을 때까지 1 유지
       // 상대가 보낸 메시지들은 내가 읽었으므로 0으로 변경
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        setMessages(prev => prev.map(msg => {
-          // 상대방(관리자)이 보낸 메시지는 읽음 처리
-          if (msg.senderId !== decodedToken.memberId) {
-            return { ...msg, unreadCount: 0 };
-          }
-          return msg; // 내 메시지는 그대로 유지
-        }));
-      }
+      // This is handled by the message hook system
+      console.log('Marking messages as read for room:', roomCode);
       
       // 관리자에게 읽음 상태 알림 전송
       if (ChatWebSocketService.isConnected()) {
@@ -428,10 +480,12 @@ export default function ChatContainer() {
     
     if (isCurrentlyPlatform) {
       return isAIActive 
-        ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png"  // Robot mouse
-        : "https://fonts.gstatic.com/s/e/notoemoji/latest/1f9d1_200d_1f4bc/emoji.svg";  // Professional admin
+        ? "https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f916/u1f916_u1f42d.png"  // Original robot mouse - PERFECT!
+        : "https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg";  // Simple human silhouette
     }
-    return "https://fonts.gstatic.com/s/e/notoemoji/latest/1f3e2/emoji.svg";  // Building/expo emoji
+    
+    // For expo rooms, use human silhouette (admin profile style)
+    return "https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg";  // Human silhouette for expo
   };
   
   const getRoomPriority = (room) => {
@@ -447,7 +501,7 @@ export default function ChatContainer() {
     
     if (isCurrentlyPlatform) {
       const isAIActive = currentButtonState === 'AI_ACTIVE' || currentButtonState === 'WAITING_FOR_ADMIN';
-      if (currentButtonState === 'HUMAN_ACTIVE') {
+      if (currentButtonState === 'ADMIN_ACTIVE') {
         badges.push(<div key="active" style={{
           width: '8px', height: '8px', backgroundColor: '#4CAF50', borderRadius: '50%',
           animation: 'pulse 2s infinite'
@@ -455,6 +509,22 @@ export default function ChatContainer() {
       }
     }
     return badges;
+  };
+
+  const getRoomClassName = (room) => {
+    // Add special styling for expo rooms
+    if (!isPlatformRoom(room)) {
+      return 'expoRoom';
+    }
+    return '';
+  };
+
+  const getRoomTitleClassName = (room) => {
+    // Add special styling for expo room titles
+    if (!isPlatformRoom(room)) {
+      return 'expoTitle';
+    }
+    return '';
   };
   
   // Custom header content for platform rooms
@@ -480,12 +550,11 @@ export default function ChatContainer() {
             borderRadius: '12px',
             fontSize: '12px',
             fontWeight: '500',
-            backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'HUMAN_ACTIVE' ? '#4CAF50' : 
+            backgroundColor: getCurrentButtonState(selectedRoom.roomCode) === 'ADMIN_ACTIVE' ? '#4CAF50' : 
                              getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '#ff9800' : '#2196F3',
             color: 'white'
           }}>
-            {getCurrentButtonState(selectedRoom.roomCode) === 'HUMAN_ACTIVE' ? '👨‍💼 상담원 연결됨' :
-             getCurrentButtonState(selectedRoom.roomCode) === 'WAITING_FOR_ADMIN' ? '⏳ 상담원 대기중' : '🤖 AI 상담중'}
+            {getRoomStateDescription(getCurrentButtonState(selectedRoom.roomCode))}
           </span>
         </div>
         <button 
@@ -530,6 +599,8 @@ export default function ChatContainer() {
           getRoomAvatar={getRoomAvatar}
           getRoomPriority={getRoomPriority}
           getRoomBadges={getRoomBadges}
+          getRoomClassName={getRoomClassName}
+          getRoomTitleClassName={getRoomTitleClassName}
           headerContent={(
             <div style={{ fontSize: '12px', color: wsConnected ? '#4CAF50' : '#f44336' }}>
               {wsConnected ? '🟢 연결됨' : '🔴 연결 안됨'}
@@ -558,6 +629,7 @@ export default function ChatContainer() {
           onScrollToBottom={scrollToBottom}
           headerContent={selectedRoom ? renderChatHeader() : null}
           isConnected={wsConnected}
+          isNearBottom={isNearBottom}
         />
       </main>
     </div>

@@ -35,6 +35,7 @@ export default function SharedChatRoomList({
   getRoomBadges,       // (room) => JSX[]
   getRoomPriority,     // (room) => number (for sorting)
   getRoomClassName,    // (room) => string (custom CSS class)
+  getRoomTitleClassName, // (room) => string (custom CSS class for title)
   
   // Filter function
   filterRooms,         // (rooms) => rooms
@@ -105,7 +106,7 @@ export default function SharedChatRoomList({
         {/* Room Info */}
         <div className={styles.roomInfo}>
           <div className={styles.roomHeader}>
-            <div className={styles.roomTitle}>
+            <div className={`${styles.roomTitle} ${getRoomTitleClassName ? getRoomTitleClassName(room) : ''}`}>
               {getTitle(room)}
             </div>
             <div className={styles.roomTime}>

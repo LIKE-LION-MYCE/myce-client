@@ -65,7 +65,7 @@
 }
 
 .sidebar {
-  width: 350px;
+  width: 450px;
   flex-shrink: 0;
 }
 
@@ -112,14 +112,9 @@
   animation: pulse 1.5s infinite;
 }
 
-.badgeHumanActive {
+.badgeAdminActive {
   background: #e8f5e8;
   color: #388e3c;
-}
-
-.badgeHumanInactive {
-  background: #fce4ec;
-  color: #c2185b;
 }
 
 .badgeDefault {
@@ -357,4 +352,106 @@
     width: 100%;
     padding: 0.875rem;
   }
+}
+
+/* Proactive Intervention Banner */
+.interventionBanner {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+.interventionContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.interventionIcon {
+  font-size: 2rem;
+  animation: pulse 2s infinite;
+}
+
+.interventionText {
+  flex: 1;
+}
+
+.interventionText strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.interventionText p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.interventionButton {
+  background: white;
+  color: #2196F3;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.interventionButton:hover:not(:disabled) {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.interventionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Admin Active Banner */
+.adminActiveBanner {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+.adminActiveContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.adminActiveIcon {
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.adminActiveText {
+  flex: 1;
+}
+
+.adminActiveText strong {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.adminActiveText p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
 }

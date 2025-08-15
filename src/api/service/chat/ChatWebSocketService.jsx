@@ -10,7 +10,8 @@ import { Stomp } from '@stomp/stompjs';
 // WebSocket 연결 상태 관리
 let stompClient = null;
 let subscriptions = new Map(); // 채팅방별 구독 관리
-let messageHandlers = new Map(); // 메시지 핸들러 관리
+let messageHandlers = new Map(); // roomId -> single handler
+let messageHandlersList = new Map(); // roomId -> array of handlers (for multiple listeners)
 let unreadCountHandlers = new Map(); // unread count 핸들러 관리
 let connected = false;
 
@@ -174,17 +175,42 @@ const joinRoom = async (roomId) => {
         console.log('🤖 AI_MESSAGE received:', data);
       }
       
+      // Get both single handler and list of handlers
       const handler = messageHandlers.get(roomId);
+      const handlersList = messageHandlersList.get(roomId) || [];
       
       // Process chat messages AND handoff system messages for platform admin notifications
-      if (handler && (data.type === 'MESSAGE' || data.type === 'ADMIN_MESSAGE' || data.type === 'AI_MESSAGE' || 
-                      data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE')) {
-        // For handoff messages, pass the full data object so operators can access type and payload
-        if (data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE') {
-          handler(data); // Pass full object with type and payload
+      const shouldProcess = data.type === 'MESSAGE' || data.type === 'ADMIN_MESSAGE' || data.type === 'AI_MESSAGE' || 
+                           data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE' || 
+                           data.type === 'SYSTEM_MESSAGE' || data.type === 'AI_TIMEOUT_TAKEOVER';
+      
+      if (shouldProcess) {
+        // Prepare message data
+        let processedData;
+        if (data.type === 'AI_HANDOFF_REQUEST' || data.type === 'BUTTON_STATE_UPDATE' || 
+            data.type === 'SYSTEM_MESSAGE' || data.type === 'AI_TIMEOUT_TAKEOVER') {
+          processedData = data; // Pass full object with type, payload, and roomState
         } else {
-          handler(data.payload || data); // For regular messages, pass payload as before
+          // For regular messages, enhance payload with room state information
+          processedData = data.payload || data;
+          if (data.roomState) {
+            processedData.roomState = data.roomState;
+          }
         }
+        
+        // Call single handler (for backwards compatibility)
+        if (handler) {
+          handler(processedData);
+        }
+        
+        // Call all handlers in the list
+        handlersList.forEach(listHandler => {
+          try {
+            listHandler(processedData);
+          } catch (error) {
+            console.error('Error in message handler:', error);
+          }
+        });
       }
       
       const unreadHandler = unreadCountHandlers.get(roomId);
@@ -251,12 +277,34 @@ const sendMessage = (roomId, content) => {
 };
 
 /**
- * 메시지 수신 핸들러 등록
+ * 메시지 수신 핸들러 등록 (single handler - backwards compatibility)
  * @param {string} roomId - 채팅방 ID
  * @param {function} handler - 메시지 처리 함수
  */
 const onMessage = (roomId, handler) => {
   messageHandlers.set(roomId, handler);
+};
+
+/**
+ * 메시지 수신 핸들러 추가 (multiple handlers support)
+ * @param {string} roomId - 채팅방 ID
+ * @param {function} handler - 메시지 처리 함수
+ * @returns {function} - 핸들러 제거 함수
+ */
+const addMessageHandler = (roomId, handler) => {
+  if (!messageHandlersList.has(roomId)) {
+    messageHandlersList.set(roomId, []);
+  }
+  const handlers = messageHandlersList.get(roomId);
+  handlers.push(handler);
+  
+  // Return a function to remove this specific handler
+  return () => {
+    const index = handlers.indexOf(handler);
+    if (index > -1) {
+      handlers.splice(index, 1);
+    }
+  };
 };
 
 /**
@@ -270,6 +318,7 @@ const leaveRoom = (roomId) => {
     subscriptions.delete(roomId);
   }
   messageHandlers.delete(roomId);
+  messageHandlersList.delete(roomId);
 };
 
 /**
@@ -368,6 +417,7 @@ const disconnect = () => {
     subscriptions.forEach(subscription => subscription.unsubscribe());
     subscriptions.clear();
     messageHandlers.clear();
+    messageHandlersList.clear();
     unreadCountHandlers.clear();
     
     stompClient.disconnect();
@@ -622,6 +672,50 @@ const requestAI = async (roomCode) => {
   }
 };
 
+/**
+ * 관리자 사전 개입 (AI_ACTIVE 상태에서 직접 개입)
+ * @param {string} roomCode - 채팅방 코드
+ * @returns {Promise<void>}
+ */
+const proactiveIntervention = async (roomCode) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      throw new Error('WebSocket이 연결되지 않음');
+    }
+
+    const interventionMessage = {
+      roomId: roomCode
+    };
+
+    console.log('관리자 사전 개입 요청 전송:', interventionMessage);
+    stompClient.send('/app/proactive-intervention', {}, JSON.stringify(interventionMessage));
+  } catch (error) {
+    console.error('관리자 사전 개입 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 관리자 인계 수락 (WAITING_FOR_ADMIN → ADMIN_ACTIVE)
+ * @param {string} roomCode - 채팅방 코드
+ * @returns {Promise<void>}
+ */
+const acceptHandoff = async (roomCode) => {
+  try {
+    if (!connected || !stompClient?.connected) {
+      throw new Error('WebSocket이 연결되지 않음');
+    }
+    const acceptMessage = {
+      roomId: roomCode
+    };
+    console.log('관리자 인계 수락 요청 전송:', acceptMessage);
+    stompClient.send('/app/accept-handoff', {}, JSON.stringify(acceptMessage));
+  } catch (error) {
+    console.error('관리자 인계 수락 실패:', error);
+    throw error;
+  }
+};
+
 // ChatWebSocketService API 내보내기
 export { 
   connect, 
@@ -629,6 +723,7 @@ export {
   joinRoom, 
   sendMessage, 
   onMessage, 
+  addMessageHandler,
   leaveRoom, 
   disconnect, 
   isConnected,
@@ -645,5 +740,7 @@ export {
   subscribeToButtonUpdates,
   requestHandoff,
   cancelHandoff,
-  requestAI
+  requestAI,
+  proactiveIntervention,
+  acceptHandoff
 };

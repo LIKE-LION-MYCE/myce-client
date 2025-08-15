@@ -56,12 +56,20 @@ export function useWorkingChatScroll(loadMessagesFn) {
         setMessages(sortedMessages);
         setHasMore(initialMessages.length === 8); // Has more if exactly 8
         
-        // IMPORTANT: Scroll to bottom after DOM updates
+        // IMPORTANT: Scroll to bottom after DOM updates - multiple attempts for reliability
         setTimeout(() => {
-          if (containerRef.current) {
-            containerRef.current.scrollTop = containerRef.current.scrollHeight;
-          }
-        }, 0); // 0ms timeout ensures DOM has updated
+          scrollToBottom('instant');
+        }, 0);
+        
+        // Backup scroll - ensure it happens after CSS layout
+        setTimeout(() => {
+          scrollToBottom('instant');
+        }, 100);
+        
+        // Final fallback - for slow loading scenarios
+        setTimeout(() => {
+          scrollToBottom('instant');
+        }, 500);
       } else {
         setMessages([]);
         setHasMore(false);
@@ -193,27 +201,101 @@ export function useWorkingChatScroll(loadMessagesFn) {
   }, [hasMore, loadingOlder, loadOlderMessages]);
   
   /**
-   * Scroll to bottom
+   * Scroll to bottom with debug logging
    */
   const scrollToBottom = useCallback((behavior = 'smooth') => {
+    console.log('🔽 scrollToBottom called with behavior:', behavior);
+    
     if (messagesEndRef.current) {
+      console.log('📍 Using messagesEndRef.scrollIntoView');
       messagesEndRef.current.scrollIntoView({ behavior });
     } else if (containerRef.current) {
+      const container = containerRef.current;
+      console.log('📍 Using container scroll - Heights:', {
+        scrollHeight: container.scrollHeight,
+        clientHeight: container.clientHeight,
+        scrollTop: container.scrollTop
+      });
+      
       // Fallback: scroll container to bottom if messagesEndRef not available
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      container.scrollTop = container.scrollHeight;
+      
+      console.log('📍 After scroll - scrollTop:', container.scrollTop);
+    } else {
+      console.log('❌ No scroll target available');
     }
   }, []);
   
   /**
-   * Add new real-time message
+   * Check if user is near bottom of chat (within 100px)
+   */
+  const isNearBottom = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) {
+      console.log('📍 isNearBottom: No container, defaulting to true');
+      return true; // Default to true if container not ready
+    }
+    
+    const threshold = 100; // pixels from bottom
+    const scrollTop = container.scrollTop;
+    const clientHeight = container.clientHeight;
+    const scrollHeight = container.scrollHeight;
+    const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+    const isNear = distanceFromBottom <= threshold;
+    
+    console.log('📍 isNearBottom check:', {
+      scrollTop,
+      clientHeight, 
+      scrollHeight,
+      distanceFromBottom,
+      threshold,
+      isNear
+    });
+    
+    return isNear;
+  }, []);
+
+  /**
+   * Add new real-time message with smart scroll behavior
    */
   const addMessage = useCallback((newMessage) => {
+    // Check if user is near bottom BEFORE adding message
+    const shouldAutoScroll = isNearBottom();
+    
+    console.log('💬 addMessage called:', {
+      messageId: newMessage.id,
+      content: newMessage.content?.substring(0, 30),
+      shouldAutoScroll,
+      isNearBottomResult: shouldAutoScroll
+    });
+    
     setMessages(prev => {
       const exists = prev.some(msg => msg.id === newMessage.id);
-      if (exists) return prev;
+      if (exists) {
+        console.log('⚠️ Message already exists, skipping:', newMessage.id);
+        return prev;
+      }
+      console.log('✅ Adding new message to list');
       return [...prev, newMessage];
     });
-  }, []);
+    
+    // Auto-scroll to bottom if user was near bottom
+    if (shouldAutoScroll) {
+      console.log('🔽 Auto-scrolling because user was near bottom');
+      // Use multiple timeouts to ensure DOM and layout are ready
+      setTimeout(() => {
+        scrollToBottom('smooth');
+      }, 0);
+      
+      setTimeout(() => {
+        scrollToBottom('smooth');
+      }, 100);
+    } else {
+      console.log('🚫 Not auto-scrolling - user is reading old messages');
+    }
+    // If user is scrolled up, don't auto-scroll (they might be reading old messages)
+    // The scroll-to-bottom button will appear instead for manual scrolling
+  }, [isNearBottom, scrollToBottom]);
   
   /**
    * Update existing message
@@ -289,6 +371,7 @@ export function useWorkingChatScroll(loadMessagesFn) {
     scrollToBottom,
     addMessage,
     updateMessage,
-    reset
+    reset,
+    isNearBottom
   };
 }

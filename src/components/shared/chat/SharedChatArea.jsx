@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { formatChatTime } from '../../../utils/timeUtils';
 import styles from './SharedChatArea.module.css';
+import SystemMessage from './SystemMessage';
 
 /**
  * Shared Chat Area Component
@@ -47,7 +48,10 @@ export default function SharedChatArea({
   onMessageAction,
   
   // State indicators
-  isConnected = true
+  isConnected = true,
+  
+  // Scroll helper
+  isNearBottom
 }) {
   const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -55,9 +59,13 @@ export default function SharedChatArea({
   const handleScroll = (e) => {
     onScroll(e);
     
-    const container = e.target;
-    const isNearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 200;
-    setShowScrollButton(!isNearBottom && messages.length > 5);
+    // Use the isNearBottom function from the hook if available, otherwise fallback
+    const nearBottom = isNearBottom ? isNearBottom() : (() => {
+      const container = e.target;
+      return container.scrollTop + container.clientHeight >= container.scrollHeight - 200;
+    })();
+    
+    setShowScrollButton(!nearBottom && messages.length > 5);
   };
 
   // Determine if message is from current user
@@ -65,6 +73,8 @@ export default function SharedChatArea({
     const result = currentUserType === 'USER' 
       ? message.senderType === 'USER' && message.senderId === currentUserId
       : message.senderType === 'ADMIN' && message.senderId === currentUserId;
+    
+    // Remove debug logging
     
     return result;
   };
@@ -80,16 +90,24 @@ export default function SharedChatArea({
         };
       case 'ADMIN':
       case 'PLATFORM_ADMIN':
+        const adminName = message.senderName || '상담원';
+        const displayName = adminName.includes('상담원') ? adminName : `${adminName} (상담원)`;
         return { 
-          name: message.senderName || '상담원', 
+          name: displayName, 
           type: 'admin', 
-          avatar: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f9d1_200d_1f4bc/emoji.svg' // Professional person
+          avatar: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg' // Simple human silhouette
         };
       case 'USER':
         return { 
           name: message.senderName || '사용자', 
           type: 'user', 
           avatar: null // Users don't show avatar for their own messages
+        };
+      case 'SYSTEM':
+        return { 
+          name: '시스템', 
+          type: 'system', 
+          avatar: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f464/emoji.svg' // Simple human silhouette (same as admin)
         };
       default:
         return { name: '알 수 없음', type: 'unknown', avatar: 'https://fonts.gstatic.com/s/e/notoemoji/latest/2754/emoji.svg' };
@@ -158,6 +176,103 @@ export default function SharedChatArea({
         ) : messages.length > 0 && (
           <>
             {messages.map((message, index) => {
+              console.log('🔍 SharedChatArea - Processing message:', {
+                index,
+                id: message.id,
+                type: message.type,
+                senderType: message.senderType,
+                isSystemMessage: message.isSystemMessage,
+                content: message.content?.substring(0, 50),
+                payload: message.payload
+              });
+              
+              // Check if this is a system message (either from WebSocket or persistent from database)
+              if (message.type === 'SYSTEM_MESSAGE' || 
+                  message.senderType === 'SYSTEM') {
+                
+                // Skip persistent system messages that are too recent (likely duplicates from WebSocket)
+                if (message.senderType === 'SYSTEM' && !message.type) {
+                  const messageTime = new Date(message.sentAt);
+                  const now = new Date();
+                  const timeDiffMinutes = (now - messageTime) / (1000 * 60);
+                  
+                  if (timeDiffMinutes < 2) {
+                    console.log('🎭 SharedChatArea - Skipping recent persistent system message to avoid duplicate:', {
+                      messageTime: messageTime.toISOString(),
+                      timeDiffMinutes,
+                      content: message.content
+                    });
+                    return null; // Skip rendering this duplicate
+                  }
+                }
+                console.log('🎭 SharedChatArea - SYSTEM MESSAGE FOUND! Rendering system message:', {
+                  messageType: message.type,
+                  senderType: message.senderType,
+                  isSystemMessage: message.isSystemMessage,
+                  payloadType: message.payload?.type,
+                  payload: message.payload,
+                  content: message.content,
+                  timestamp: message.timestamp || message.sentAt
+                });
+                
+                // Handle persistent system messages from database
+                if (message.senderType === 'SYSTEM' && message.content) {
+                  // Parse content to extract type and message (only split on first colon)
+                  const colonIndex = message.content.indexOf(':');
+                  const systemType = colonIndex > -1 ? message.content.substring(0, colonIndex) : message.content;
+                  const systemMessage = colonIndex > -1 ? message.content.substring(colonIndex + 1) : '';
+                  console.log('🎭 SharedChatArea - PERSISTENT system message parsing:', {
+                    originalContent: message.content,
+                    parsedType: systemType,
+                    parsedMessage: systemMessage,
+                    fullMessage: message
+                  });
+                  
+                  // Special handling for different system message types
+                  let systemPayload;
+                  if (systemType === 'HANDOFF_TO_OPERATOR') {
+                    systemPayload = {
+                      type: systemType,
+                      message: "상담원이 인계받았습니다",
+                      aiSummary: systemMessage || "대화 요약을 불러올 수 없습니다",
+                      timestamp: message.sentAt,
+                      messageId: message.id
+                    };
+                  } else {
+                    systemPayload = {
+                      type: systemType,
+                      message: systemMessage || systemType,
+                      timestamp: message.sentAt,
+                      messageId: message.id
+                    };
+                  }
+                  
+                  console.log('🎭 SharedChatArea - Rendering PERSISTENT SystemMessage with:', {
+                    type: systemType,
+                    payload: systemPayload
+                  });
+                  
+                  return (
+                    <SystemMessage 
+                      key={message.id || index}
+                      type={systemType}
+                      payload={systemPayload}
+                      timestamp={message.sentAt}
+                    />
+                  );
+                }
+                
+                // Handle WebSocket system messages
+                return (
+                  <SystemMessage 
+                    key={message.id || index}
+                    type={message.payload?.type}
+                    payload={message.payload}
+                    timestamp={message.timestamp || message.sentAt}
+                  />
+                );
+              }
+              
               const isMyMsg = isMyMessage(message);
               const senderInfo = getMessageSenderInfo(message);
               
