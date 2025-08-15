@@ -16,7 +16,7 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  width: 500px;
+  width: 900px;
   max-width: 90%;
 }
 
@@ -26,6 +26,21 @@
   margin-bottom: 25px;
   text-align: center;
   color: #333;
+}
+
+/* 2컴럼 레이아웃 */
+.contentLayout {
+  display: flex;
+  gap: 48px;
+  margin-bottom: 25px;
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  flex: 1;
 }
 
 .receiptContainer {
@@ -111,9 +126,13 @@
 }
 
 .summarySection {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
+  margin-bottom: 24px;
+}
+
+.divider {
+  height: 1px;
+  background-color: #ddd;
+  margin: 16px 0;
 }
 
 .summaryItem {
@@ -125,7 +144,6 @@
 
 .summaryItem:last-child {
   font-weight: bold;
-  border-top: 2px solid #333;
   padding-top: 15px;
   margin-top: 15px;
 }
@@ -150,8 +168,8 @@
 
 /* 정산 신청 폼 스타일 */
 .settlementFormSection {
-  margin-top: 25px;
-  padding-top: 25px;
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 2px solid #eee;
 }
 

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useState, useMemo, useEffect, Fragment, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getMyEmailDetail } from '../../../api/service/expo-admin/email/EmailService';
 import styles from './EmailTable.module.css';
@@ -12,7 +12,7 @@ const fieldLabelMap = {
 };
 
 const DATE_KEYS = new Set(['createdAt']);
-const DISPLAY_LIMIT = 10; // 수신자 기본 표시 개수
+const DISPLAY_LIMIT = 10; // 수신자 기본 노출 개수(버튼 카운트 계산용)
 
 function formatDateTime(iso) {
   if (!iso) return '-';
@@ -28,22 +28,25 @@ function formatDateTime(iso) {
   return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
 }
 
-function EmailTable({ columns, data }) {
+function EmailTable({ columns, data = [] }) {
   const { expoId } = useParams();
   const [expandedRow, setExpandedRow] = useState(null);
   const [detailMap, setDetailMap] = useState({});
   const [showAllRecipientsMap, setShowAllRecipientsMap] = useState({});
+  const listRefs = useRef({});
 
   const renderValue = (key, value) => {
     if (DATE_KEYS.has(key)) return formatDateTime(value);
     return value ?? '-';
   };
 
+  const getRowKey = (row, idx) => {
+    const base = row?.id ?? row?._id ?? `${row?.createdAt ?? ''}-${row?.subject ?? ''}`;
+    return `emrow-${String(base)}-${idx}`;
+  };
+
   const dataSignature = useMemo(
-    () =>
-      (data || [])
-        .map((r) => r.id ?? r._id ?? `${r.createdAt ?? ''}-${r.subject ?? ''}-${r.fileName ?? ''}`)
-        .join('|'),
+    () => (data || []).map((r, i) => getRowKey(r, i)).join('|'),
     [data]
   );
 
@@ -51,6 +54,7 @@ function EmailTable({ columns, data }) {
     setExpandedRow(null);
     setDetailMap({});
     setShowAllRecipientsMap({});
+    listRefs.current = {};
   }, [dataSignature, expoId]);
 
   const handleRowClick = async (rowIndex) => {
@@ -59,112 +63,123 @@ function EmailTable({ columns, data }) {
     if (next === null) return;
 
     const row = data[rowIndex];
-    const emailId = row.id ?? row._id;
-    if (!emailId) return;
+    const emailId = row?.id ?? row?._id ?? null;
+    const rowKey = getRowKey(row, rowIndex);
+    const storeKey = emailId ?? rowKey;
 
-    if (detailMap[emailId]?.data || detailMap[emailId]?.loading) return;
+    if (detailMap[storeKey]?.data || detailMap[storeKey]?.loading) return;
 
     if (!expoId) {
       setDetailMap((prev) => ({
         ...prev,
-        [emailId]: { loading: false, error: 'expoId가 없습니다.', data: null },
+        [storeKey]: { loading: false, error: 'expoId가 없습니다.', data: null },
       }));
       return;
     }
 
     setDetailMap((prev) => ({
       ...prev,
-      [emailId]: { loading: true, error: null, data: null },
+      [storeKey]: { loading: true, error: null, data: null },
     }));
 
     try {
       const detail = await getMyEmailDetail(expoId, emailId);
       setDetailMap((prev) => ({
         ...prev,
-        [emailId]: { loading: false, error: null, data: detail },
+        [storeKey]: { loading: false, error: null, data: detail },
       }));
     } catch (err) {
       setDetailMap((prev) => ({
         ...prev,
-        [emailId]: { loading: false, error: err?.message || '상세 조회 실패', data: null },
+        [storeKey]: { loading: false, error: err?.message || '상세 조회 실패', data: null },
       }));
     }
   };
 
-  const toggleRecipients = (emailId) => {
-    setShowAllRecipientsMap((prev) => ({ ...prev, [emailId]: !prev[emailId] }));
+  const toggleRecipients = (storeKey) => {
+    setShowAllRecipientsMap((prev) => {
+      const nextExpanded = !prev[storeKey];
+      if (!nextExpanded && listRefs.current[storeKey]) {
+        listRefs.current[storeKey].scrollTop = 0;
+      }
+      return { ...prev, [storeKey]: nextExpanded };
+    });
   };
 
-  const renderDetailBox = (detail, emailId) => {
+  const renderDetailBox = (detail, storeKey) => {
     if (!detail) return null;
     const { subject, content, recipientCount, recipientInfos = [], createdAt } = detail;
 
-    const showAll = !!showAllRecipientsMap[emailId];
-    const hiddenCount = Math.max(0, recipientInfos.length - DISPLAY_LIMIT);
-    const visibleList = showAll ? recipientInfos : recipientInfos.slice(0, DISPLAY_LIMIT);
+    const total = recipientCount ?? recipientInfos.length ?? 0;
+    const hiddenCount = Math.max(0, (recipientInfos?.length ?? 0) - DISPLAY_LIMIT);
+    const expanded = !!showAllRecipientsMap[storeKey];
 
     return (
       <div className={styles.detailBox}>
-        <div className={styles.detailItem}>
-          <div className={styles.detailLabel}>{fieldLabelMap.subject}</div>
-          <div className={styles.detailValue}>{subject ?? '-'}</div>
-        </div>
+        <div className={styles.detailTableWrapper}>
+          <table className={styles.detailTable}>
+            <tbody>
+              <tr>
+                <td className={styles.metaLabel}>{fieldLabelMap.subject}</td>
+                <td className={styles.metaValue}>{subject ?? '-'}</td>
+              </tr>
+              <tr>
+                <td className={styles.metaLabel}>{fieldLabelMap.content}</td>
+                <td className={`${styles.metaValue} ${styles.preWrap}`}>{content ?? '-'}</td>
+              </tr>
+              <tr>
+                <td className={styles.metaLabel}>{fieldLabelMap.createdAt}</td>
+                <td className={styles.metaValue}>{formatDateTime(createdAt)}</td>
+              </tr>
+              <tr>
+                <td className={styles.metaLabel}>{fieldLabelMap.recipientCount}</td>
+                <td className={styles.metaValue}>{total}</td>
+              </tr>
 
-        <div className={styles.detailItem}>
-          <div className={styles.detailLabel}>{fieldLabelMap.content}</div>
-          <div className={styles.detailValue} style={{ whiteSpace: 'pre-wrap' }}>
-            {content ?? '-'}
-          </div>
-        </div>
+              <tr>
+                <td className={styles.metaLabel}>수신자 목록</td>
+                <td className={`${styles.metaValue} ${styles.recipientsCell}`}>
+                  {recipientInfos.length === 0 ? (
+                    <span className={styles.emptyCell}>-</span>
+                  ) : (
+                    <>
+                      <div
+                        className={`${styles.recipientsScroll} ${
+                          expanded ? styles.recipientsExpanded : ''
+                        }`}
+                        ref={(el) => {
+                          if (el) listRefs.current[storeKey] = el;
+                        }}
+                      >
+                        <ul className={styles.recipientsList}>
+                          {recipientInfos.map((r, i) => (
+                            <li key={`recipient-${r.email ?? ''}-${i}`}>
+                              {r.name ? `${r.name} ` : ''}
+                              <span className={styles.recipientEmail}>{`<${r.email}>`}</span>
+                            </li>
+                          ))}
+                        </ul>
 
-        <div className={styles.detailItem}>
-          <div className={styles.detailLabel}>{fieldLabelMap.createdAt}</div>
-          <div className={styles.detailValue}>{formatDateTime(createdAt)}</div>
-        </div>
+                        {!expanded && hiddenCount > 0 && (
+                          <div className={styles.fadeOverlay} aria-hidden="true" />
+                        )}
+                      </div>
 
-        <div className={styles.detailItem}>
-          <div className={styles.detailLabel}>{fieldLabelMap.recipientCount}</div>
-          <div className={styles.detailValue}>{recipientCount ?? recipientInfos.length ?? 0}</div>
-        </div>
-
-        <div className={styles.detailItem}>
-          <div className={styles.detailLabel}>수신자 목록</div>
-          <div className={styles.detailValue}>
-            {recipientInfos.length === 0 ? (
-              '-'
-            ) : (
-              <>
-                <ul className={styles.recipientsList}>
-                  {visibleList.map((r, i) => (
-                    <li key={`${r.email}-${i}`}>
-                      {r.name ? `${r.name} ` : ''}
-                      <span style={{ color: '#6b7280' }}>{`<${r.email}>`}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {hiddenCount > 0 && !showAll && (
-                  <button
-                    type="button"
-                    className={styles.moreBtn}
-                    onClick={() => toggleRecipients(emailId)}
-                  >
-                    외 {hiddenCount}명 더 보기
-                  </button>
-                )}
-
-                {showAll && recipientInfos.length > DISPLAY_LIMIT && (
-                  <button
-                    type="button"
-                    className={styles.moreBtn}
-                    onClick={() => toggleRecipients(emailId)}
-                  >
-                    접기
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+                      {hiddenCount > 0 && (
+                        <button
+                          type="button"
+                          className={styles.moreBtn}
+                          onClick={() => toggleRecipients(storeKey)}
+                        >
+                          {expanded ? '접기' : `외 ${hiddenCount}명 더 보기`}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -176,7 +191,7 @@ function EmailTable({ columns, data }) {
         <thead>
           <tr className={styles.headerRow}>
             {columns.map((col) => (
-              <th key={col.key} className={styles.th}>
+              <th key={`em-col-${col.key}`} className={styles.th}>
                 {col.header}
               </th>
             ))}
@@ -185,20 +200,23 @@ function EmailTable({ columns, data }) {
 
         <tbody>
           {data.map((row, rowIndex) => {
-            const rowKey = row.id ?? row._id ?? `row-${rowIndex}`;
-            const emailId = row.id ?? row._id;
-            const detailState = emailId ? detailMap[emailId] : undefined;
+            const rowKey = getRowKey(row, rowIndex);
+            const emailId = row?.id ?? row?._id ?? null;
+            const storeKey = emailId ?? rowKey;
+            const detailState = detailMap[storeKey];
             const isExpanded = expandedRow === rowIndex;
 
             return (
-              <Fragment key={rowKey}>
+              <Fragment key={`rowgrp-${rowKey}`}>
                 <tr className={styles.row} onClick={() => handleRowClick(rowIndex)}>
                   {columns.map((col) => (
                     <td
-                      key={col.key}
+                      key={`em-cell-${col.key}-${rowIndex}`}
                       className={`${styles.td} ${
                         col.key === 'content' || col.key === 'body' ? styles.bodyCell : ''
-                      } ${col.groupStart ? styles.groupStart : ''} ${col.code ? styles.codeCell : ''}`}
+                      } ${col.groupStart ? styles.groupStart : ''} ${
+                        col.code ? styles.codeCell : ''
+                      }`}
                     >
                       {renderValue(col.key, row[col.key])}
                     </td>
@@ -214,7 +232,7 @@ function EmailTable({ columns, data }) {
                           {detailState.error}
                         </div>
                       )}
-                      {detailState?.data && renderDetailBox(detailState.data, emailId)}
+                      {detailState?.data && renderDetailBox(detailState.data, storeKey)}
                       {!detailState && <div className={styles.detailBox}>불러오는 중...</div>}
                     </td>
                   </tr>

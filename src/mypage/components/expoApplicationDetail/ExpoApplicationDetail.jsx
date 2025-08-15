@@ -64,12 +64,11 @@ function ExpoApplicationDetail({
     }
   };
 
-  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기, 게시대기 제외)
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
   const canViewPaymentInfo = (status) => {
     const excludedStatuses = [
       '승인대기', '승인 대기',
-      '결제대기', '결제 대기', 
-      '게시대기', '게시 대기'
+      '결제대기', '결제 대기'
     ];
     return !excludedStatuses.includes(status);
   };
@@ -91,6 +90,12 @@ function ExpoApplicationDetail({
           )}
           {(status === '게시종료' || status === '게시 종료') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 신청</button>
+          )}
+          {(status === '정산요청' || status === '정산 요청') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
+          )}
+          {status === '종료됨' && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 완료 정보 조회</button>
           )}
           {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>

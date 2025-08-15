@@ -77,8 +77,16 @@ export const requestExpoSettlement = async (expoId, settlementData) => {
   return await instance.post(`${EXPO_PREFIX}/${expoId}/settlement`, settlementData);
 };
 
+export const completeExpoPayment = async (expoId) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/payment-complete`);
+};
+
 export const getExpoRefundReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-receipt`);
+};
+
+export const requestExpoRefund = async (expoId, refundRequest) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/refund-request`, refundRequest);
 };
 
 // Advertisement related APIs

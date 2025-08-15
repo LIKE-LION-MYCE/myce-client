@@ -65,34 +65,40 @@
   /* 그림자, 테두리 없이 flat */
 }
 
-/* 승인 대기: 부드러운 파스텔 노랑 */
+/* PENDING_APPROVAL: 승인 대기 - 부드러운 파스텔 노랑 */
 .pending {
-  background: #fffbe4; /* 연한 노랑 (레몬 + 크림빛) */
-  color: #b28a15;      /* 골드 계열 텍스트 */
+  background: #fffbe4;
+  color: #b28a15;
 }
 
-/* 결제 대기중: 맑은 하늘색 */
+/* PENDING_PAYMENT: 승인 완료 - 맑은 하늘색 */
 .waiting {
-  background: #eaf4fd;
-  color: #357ec7;
+  background: #e8f4fd;
+  color: #2563eb;
 }
 
-/* 게시중: 부드러운 민트 */
+/* PUBLISHED: 게시 중 - 부드러운 민트 그린 */
 .statusBadge.active {
-  background: hsl(150, 67%, 94%);
-  color: #29966a;
+  background: #ecfdf5;
+  color: #059669;
 }
 
-/* 취소됨: 연한 핑크 */
+/* REJECTED: 승인 거절 - 연한 핑크 */
 .canceled {
-  background: #faeded;
-  color: #e05260;
+  background: #fef2f2;
+  color: #dc2626;
 }
 
-/* 종료됨: 밝은 라이트그레이 */
+/* CANCELLED: 취소 완료 - 연한 핑크 */
+.canceled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* COMPLETED: 종료 됨 - 밝은 그레이 */
 .finished {
-  background: #f6f6f7;
-  color: #a6adb6;
+  background: #f9fafb;
+  color: #6b7280;
 }
 
 .clickableRow:hover {
@@ -104,26 +110,26 @@
 .pagination {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 36px;
+  gap: 8px;
+  margin-top: 2rem;
+  padding: 1rem 0;
 }
 
 /* 페이지네이션 버튼 스타일 */
 .pageBtn {
-  padding: 8px 16px;
-  background-color: #eee;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  color: #555;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
 .pageBtn:hover:not(:disabled) {
-  background-color: #c1c4cc;
-  color: #666;
+  background-color: #e5e7eb;
 }
 
 .pageBtn:disabled {
@@ -133,9 +139,8 @@
 }
 
 /* 현재 페이지 활성화 표시 */
-.active {
-  background-color: #666;
-  color: white;
-  font-weight: 700;
-  cursor: default;
+.pageBtn.active {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
 }
