@@ -1,0 +1,96 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 auto; /* 중앙 정렬 */
+  letter-spacing: -0.04em;
+  position: relative;
+  text-align: center; /* 중앙 정렬 */
+  width: fit-content; /* 언더라인이 텍스트 너비에 맞게 */
+  margin-bottom: 2.5rem;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%; /* 중앙에서 시작 */
+  transform: translateX(-50%); /* 중앙 정렬 */
+  width: 190px; /* 너비 줄임 */
+  height: 3px;
+  background: linear-gradient(90deg, #000, #000);
+  border-radius: 2px;
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.buttonContainer {
+  text-align: center;
+}
+
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 25px;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moreButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.refreshIcon {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .moreButton {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+}

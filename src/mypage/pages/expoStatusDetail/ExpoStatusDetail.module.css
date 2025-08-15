@@ -50,3 +50,19 @@
   font-size: 1.25rem;
   color: #6b7280;
 }
+
+.confirmBtn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn:hover {
+  background-color: #4b5563;
+}

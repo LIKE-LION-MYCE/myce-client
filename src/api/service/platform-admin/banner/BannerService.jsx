@@ -10,7 +10,7 @@ export const fetchAllBanners = async ({ page, latestFirst, isApply }) => {
 // 필터 조회 API
 export const fetchFilteredBanners = async ({ page, latestFirst, keyword, status, isApply }) => {
   const params = { page, latestFirst, keyword, status, isApply };
-  const res = await instance.get('/platform/ads/list/filter', { params });
+  const res = await instance.get('/platform/ads/filter', { params });
   return res.data;
 };
 

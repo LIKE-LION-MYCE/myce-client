@@ -71,6 +71,10 @@ function OperatorSection() {
     try {
       await updateMyBusinessProfile(expoId, form);
       triggerSuccessToast();
+      // 사이드바 프로필 이미지 업데이트를 위해 페이지 새로고침
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); // 토스트 메시지가 잠깐 보이도록 1.5초 후 새로고침
     } catch (error) {
       triggerToastFail(error.message);
     }

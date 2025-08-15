@@ -11,6 +11,8 @@ function ExpoApplicationDetail({
   onRefundButtonClick,
   onSettlementRequestClick,
   onSettlementReceiptClick,
+  onPaymentInfoClick,
+  onAdminPageClick,
 }) {
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
@@ -21,6 +23,7 @@ function ExpoApplicationDetail({
     if (expoData) {
       console.log('ExpoApplicationDetail - 받은 expoData:', expoData);
       console.log('ExpoApplicationDetail - isPremium 값:', expoData.isPremium);
+      console.log('ExpoApplicationDetail - status 값:', expoData.status);
       setForm({ ...expoData });
       setIsPremium(expoData.isPremium);
       setStatus(expoData.status);
@@ -30,50 +33,87 @@ function ExpoApplicationDetail({
   const renderStatusTag = () => {
     switch (status) {
       case '승인대기':
+      case '승인 대기':
         return <span className={`${styles.statusTag} ${styles.pending}`}>승인 대기</span>;
       case '결제대기':
+      case '결제 대기':
         return <span className={`${styles.statusTag} ${styles.paymentPending}`}>결제 대기</span>;
       case '게시대기':
+      case '게시 대기':
         return <span className={`${styles.statusTag} ${styles.pending}`}>게시 대기</span>;
       case '취소대기':
+      case '취소 대기':
         return <span className={`${styles.statusTag} ${styles.pending}`}>취소 대기</span>;
       case '게시중':
+      case '게시 중':
         return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 중</span>;
       case '게시종료':
+      case '게시 종료':
         return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 종료</span>;
       case '정산요청':
+      case '정산 요청':
         return <span className={`${styles.statusTag} ${styles.settled}`}>정산 요청</span>;
       case '종료됨':
         return <span className={`${styles.statusTag} ${styles.completed}`}>종료됨</span>;
       case '거절됨':
+      case '승인 거절':
         return <span className={`${styles.statusTag} ${styles.rejected}`}>거절됨</span>;
       case '취소됨':
+      case '취소 완료':
         return <span className={`${styles.statusTag} ${styles.cancelled}`}>취소됨</span>;
       default:
         return null;
     }
   };
 
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
+  const canViewPaymentInfo = (status) => {
+    const excludedStatuses = [
+      '승인대기', '승인 대기',
+      '결제대기', '결제 대기'
+    ];
+    return !excludedStatuses.includes(status);
+  };
+
   const renderButtons = () => {
+    console.log('ExpoApplicationDetail - renderButtons, current status:', status);
+    
+    // 상태가 로드되지 않았으면 버튼을 렌더링하지 않음
+    if (!status || status.length === 0) {
+      return null;
+    }
+    
     return (
       <div className={styles.buttonGroup}>
-        {/* 모든 영수증 버튼 항상 표시 */}
+        {/* 상태별 영수증 버튼 */}
         <div className={styles.receiptButtons}>
-          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 영수증</button>
-          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 영수증</button>
-          <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 영수증</button>
+          {(status === '결제대기' || status === '결제 대기') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 신청</button>
+          )}
+          {(status === '게시종료' || status === '게시 종료') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 신청</button>
+          )}
+          {(status === '정산요청' || status === '정산 요청') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
+          )}
+          {status === '종료됨' && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 완료 정보 조회</button>
+          )}
+          {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
+          )}
+          {(status === '취소됨' || status === '취소 완료') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 정보</button>
+          )}
+          {canViewPaymentInfo(status) && (
+            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>결제 정보</button>
+          )}
         </div>
         
         {/* 상태별 주요 액션 버튼 */}
         <div className={styles.actionButtons}>
-          {(status === '승인대기' || status === '결제대기') && (
+          {(status === '승인대기' || status === '승인 대기' || status === '결제대기' || status === '결제 대기' || status === 'PENDING_APPROVAL' || status === 'PENDING_PAYMENT') && (
             <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>취소 신청</button>
-          )}
-          {(status === '게시대기' || status === '게시중') && (
-            <button className={`${styles.button} ${styles.refundButton}`} onClick={onRefundButtonClick}>환불 신청</button>
-          )}
-          {status === '게시종료' && (
-            <button className={`${styles.button} ${styles.settlementButton}`} onClick={onSettlementRequestClick}>정산 요청</button>
           )}
         </div>
       </div>
@@ -81,10 +121,14 @@ function ExpoApplicationDetail({
   };
   
   const renderAdminButton = () => {
-    if (status === '게시대기' || status === '게시중' || status === '종료됨' || status === '정산요청') {
+    if (status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중' || status === '종료됨' || status === '정산요청' || status === '정산 요청') {
       return (
-        // 관리자 정보 버튼 클릭 시 onAdminInfoClick prop 호출
-        <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
+        <div className={styles.adminButtonGroup}>
+          {/* 관리자 정보 버튼 */}
+          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
+          {/* 관리자 페이지로 이동 버튼 */}
+          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>관리자 페이지</button>
+        </div>
       );
     }
     return null;
@@ -206,42 +250,6 @@ function ExpoApplicationDetail({
         </div>
       </div>
       
-      {/* 예상 결제 정보 섹션 */}
-      <div className={`${styles.formGroup} ${styles.full}`}>
-        <label className={styles.label}>예상 결제 정보</label>
-        <div className={styles.paymentContainer}>
-          {form.paymentInfo ? (
-            <div className={styles.paymentGrid}>
-              {/* 프리미엄 여부에 따라 해당 등록금만 표시 */}
-              {isPremium ? (
-                <div className={styles.paymentItem}>
-                  <span className={styles.paymentLabel}>프리미엄 등록금</span>
-                  <span className={styles.paymentValue}>{form.paymentInfo.premiumDeposit?.toLocaleString()}원</span>
-                </div>
-              ) : (
-                <div className={styles.paymentItem}>
-                  <span className={styles.paymentLabel}>기본 등록금</span>
-                  <span className={styles.paymentValue}>{form.paymentInfo.deposit?.toLocaleString()}원</span>
-                </div>
-              )}
-              <div className={styles.paymentItem}>
-                <span className={styles.paymentLabel}>일일 사용료</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.dailyUsageFee?.toLocaleString()}원</span>
-              </div>
-              <div className={styles.paymentItem}>
-                <span className={styles.paymentLabel}>총 게시 기간</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.totalDay}일</span>
-              </div>
-              <div className={`${styles.paymentItem} ${styles.totalAmount}`}>
-                <span className={styles.paymentLabel}>총 결제 금액</span>
-                <span className={styles.paymentValue}>{form.paymentInfo.totalAmount?.toLocaleString()}원</span>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.noPaymentInfo}>결제 정보가 없습니다.</div>
-          )}
-        </div>
-      </div>
       
       {/* 티켓 정보 섹션 */}
       <div className={`${styles.formGroup} ${styles.full}`}>
@@ -276,12 +284,6 @@ function ExpoApplicationDetail({
             <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
           )}
         </div>
-      </div>
-      <div className={`${styles.formGroup} ${styles.full}`}>
-          <label className={styles.label}>첨부파일</label>
-          <div className={styles.fileBox}>
-              <span className={styles.noAttachment}>첨부된 파일이 없습니다.</span>
-          </div>
       </div>
       
       {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}

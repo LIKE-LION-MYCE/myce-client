@@ -10,6 +10,7 @@ function PaymentWaitingModal(props) {
     dailyUsageFee,
     usageFeeAmount,
     depositAmount,
+    premiumDepositAmount,
     totalAmount,
     isPremium,
     commissionRate,
@@ -17,6 +18,10 @@ function PaymentWaitingModal(props) {
     onCancel,
     onClose,
   } = props;
+  
+  console.log('PaymentWaitingModal - isPremium:', isPremium);
+  console.log('PaymentWaitingModal - premiumDepositAmount:', premiumDepositAmount);
+  
   return (
     <PaymentDetailModal
       expoName={expoName}
@@ -26,6 +31,7 @@ function PaymentWaitingModal(props) {
       dailyUsageFee={dailyUsageFee}
       usageFeeAmount={usageFeeAmount}
       depositAmount={depositAmount}
+      premiumDepositAmount={premiumDepositAmount}
       totalAmount={totalAmount}
       isPremium={isPremium}
       commissionRate={commissionRate}

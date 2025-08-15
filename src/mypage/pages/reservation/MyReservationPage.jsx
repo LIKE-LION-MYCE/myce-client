@@ -92,7 +92,7 @@ const MyReservationPage = () => {
       {reservations.length > 0 ? (
         <div className={styles.list}>
           {reservations.map((reservation) => (
-            <ReservationCard key={reservation.reservationCode} reservation={reservation} />
+            <ReservationCard key={reservation.reservationId} reservation={reservation} />
           ))}
         </div>
       ) : (

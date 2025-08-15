@@ -127,7 +127,12 @@ function Events() {
 
       {/* 행사 목록 */}
       <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>행사 목록</h4>
+        <h4 className={styles.sectionTitle}>
+          행사 목록 
+          <span style={{fontSize: '12px', color: '#999', marginLeft: '8px', fontWeight: 'normal'}}>
+            총 행사 수: {filteredEventList.length}개
+          </span>
+        </h4>
 
         <div className={styles.topControls}>
           <button

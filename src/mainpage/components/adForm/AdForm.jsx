@@ -5,6 +5,8 @@ import { getAdPositions } from "../../../api/service/user/adPositionApi";
 import { saveAdvertisement, validatePeriod } from "../../../api/service/user/advertisementApi";
 import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 import DaumPostcode from "react-daum-postcode";
+import UsageGuidelines from "../../../common/components/usageGuidelines/UsageGuidelines";
+import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   // 서버에 보낼 정보만 유지
@@ -214,6 +216,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       <form onSubmit={handleSubmit}>
         <h1 className={styles["title"]}>광고 신청</h1>
         <p className={styles["subtitle"]}>광고 정보를 입력해주세요.</p>
+        
+        {/* 주의사항 및 요금제 안내 */}
+        <UsageGuidelines type="ad" />
+        <PricingInfo type="ad" />
 
         {/* 광고명 */}
         <div className={styles["form-group"]}>

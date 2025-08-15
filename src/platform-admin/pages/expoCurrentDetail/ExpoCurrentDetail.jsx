@@ -12,6 +12,7 @@ import { fetchExpoDetail, approveCancellation, approveSettlement, fetchPaymentIn
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
   PENDING_PAYMENT: '결제_대기',
+  PENDING_PUBLISH: '게시_대기',
   PUBLISHED: '게시중',
   PUBLISH_ENDED: '게시_종료',
   SETTLEMENT_REQUESTED: '정산_요청',
@@ -22,6 +23,7 @@ const statusClassMap = {
 const statusTextMap = {
   취소_대기: '취소 대기',
   결제_대기: '승인 완료',
+  게시_대기: '게시 대기',
   게시중: '게시 중',
   게시_종료: '게시 종료',
   정산_요청: '정산 요청',
@@ -158,28 +160,22 @@ function ExpoCurrentDetail() {
         >
           결제 정보
         </button>
-        <button
-          className={styles.approveBtn}
-          onClick={() => setShowSettlementDetail(true)}
-        >
-          정산 정보
-        </button>
       </div>
     );
   } else if (expo?.status === 'SETTLEMENT_REQUESTED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button
-          className={styles.rejectBtn}
-          onClick={() => setShowSettlementDetail(true)}
+          className={styles.infoBtn}
+          onClick={handlePaymentDetailOpen}
         >
-          정산 정보 조회
+          결제 정보
         </button>
         <button
           className={styles.approveBtn}
-          onClick={handleSettlementApprove}
+          onClick={() => setShowSettlementDetail(true)}
         >
-          정산 승인
+          정산 정보 조회
         </button>
       </div>
     );
@@ -212,8 +208,22 @@ function ExpoCurrentDetail() {
       </div>
     );
   } else if (expo?.status === 'PUBLISH_ENDED') {
-    // 게시 종료 - 버튼 없음 (박람회 관리자 권한으로 처리)
-    buttonGroup = null;
+    buttonGroup = (
+      <div className={styles.buttonGroup}>
+        <button
+          className={styles.infoBtn}
+          onClick={handlePaymentDetailOpen}
+        >
+          결제 정보
+        </button>
+        <button
+          className={styles.approveBtn}
+          onClick={() => setShowSettlementDetail(true)}
+        >
+          정산 정보 조회
+        </button>
+      </div>
+    );
   }
 
   if (loading) {
@@ -255,6 +265,10 @@ function ExpoCurrentDetail() {
         isOpen={showSettlementDetail}
         onClose={() => setShowSettlementDetail(false)}
         expoId={id}
+        readOnly={expo?.status === 'PUBLISH_ENDED'}
+        onSettlementApprove={async () => {
+          await loadExpoDetail(); // 상태 업데이트
+        }}
       />
 
       <ExpoPaymentDetailModal

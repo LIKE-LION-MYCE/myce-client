@@ -148,6 +148,32 @@ function Inquiry() {
             });
             return updated;
           });
+        } else if (updateData.type === 'ADMIN_RELEASED') {
+          // 담당자 타임아웃으로 인한 자동 해제 처리
+          const payload = updateData.payload || updateData;
+          const roomCodes = payload.roomCodes || [];
+          
+          console.log('담당자 자동 해제 알림 수신:', roomCodes);
+          
+          setChatRooms(prev => {
+            const updated = prev.map(room => {
+              if (roomCodes.includes(room.roomCode)) {
+                // 해당 채팅방의 담당자를 해제
+                return {
+                  ...room,
+                  currentAdminCode: null,
+                  adminDisplayName: null
+                };
+              }
+              return room;
+            });
+            return updated;
+          });
+          
+          // 사용자에게 알림 표시 (선택적)
+          if (roomCodes.length > 0) {
+            console.log(`${roomCodes.length}개 채팅방의 담당자가 비활성으로 인해 자동 해제되었습니다.`);
+          }
         }
       });
       

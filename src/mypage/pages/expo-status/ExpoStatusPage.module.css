@@ -56,30 +56,65 @@
   font-weight: 500;
 }
 
-/* 상태별 뱃지 색상 */
-.결제대기 {
-  background-color: #fde68a;
-  color: #92400e;
+/* 상태별 뱃지 색상 - EXPO STATUS */
+/* PENDING_APPROVAL: 승인 대기 */
+.승인대기, .승인대기 {
+  background: #fffbe4;
+  color: #b28a15;
 }
 
-.진행중 {
-  background-color: #bbf7d0;
-  color: #15803d;
+/* PENDING_PAYMENT: 결제 대기 */
+.결제대기, .결제대기 {
+  background: #e8f4fd;
+  color: #2563eb;
 }
 
-.승인대기 {
-  background-color: #c7d2fe;
-  color: #312e81;
+/* PENDING_PUBLISH: 게시 대기 */
+.게시대기, .게시대기 {
+  background: #e8f4fd;
+  color: #2563eb;
 }
 
-.종료됨 {
-  background-color: #e5e7eb;
-  color: #4b5563;
+/* PENDING_CANCEL: 취소 대기 */
+.취소대기, .취소대기 {
+  background: #fffbe4;
+  color: #b28a15;
 }
 
-.정산완료 {
-  background-color: #faeded;
-  color: #e05260;
+/* PUBLISHED: 게시 중 */
+.게시중, .게시중 {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* PUBLISH_ENDED: 게시 종료 */
+.게시종료, .게시종료 {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* SETTLEMENT_REQUESTED: 정산 요청 */
+.정산요청, .정산요청 {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* COMPLETED: 종료됨 */
+.종료됨, .종료됨 {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+/* REJECTED: 승인 거절 */
+.승인거절, .승인거절 {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* CANCELLED: 취소 완료 */
+.취소완료, .취소완료 {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 /* 페이지네이션 스타일 */
@@ -109,4 +144,58 @@
   background-color: #000000;
   color: #ffffff;
   border-color: #000000;
+}
+
+.paymentInfoBtn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.paymentInfoBtn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.premiumBadge {
+  background-color: #fbbf24;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  margin-left: 0.5rem;
+}
+
+.loading, .error, .noData {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.confirmBtn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn:hover {
+  background-color: #4b5563;
 }

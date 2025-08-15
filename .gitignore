@@ -33,6 +33,7 @@ CLAUDE.md
 .claude-config/
 claude-context.md
 claude-session.md
+pr.md
 
 # Gemini CLI
 .gemini/

@@ -71,6 +71,18 @@
   background-color: #5cb85c;
 }
 
+.게시_대기 {
+  background-color: #5cb85c;
+}
+
+.취소됨 {
+  background-color: #d9534f;
+}
+
+.게시_종료 {
+  background-color: #6c757d;
+}
+
 .buttonGroup {
   display: flex;
   gap: 12px;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from 'react';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import styles from './EventTable.module.css';
 
 const fieldLabelMap = {
@@ -33,12 +32,6 @@ const managerFields = [
 function EventTable({ data = [], onUpdate, onDelete }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editForm, setEditForm] = useState(null);
-  const [showToast, setShowToast] = useState(false);
-
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
-  };
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
@@ -57,7 +50,7 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   const handleSave = () => {
     onUpdate(editForm);
-    triggerToast();
+    // 부모에서 토스트 관리하므로 여기서는 토스트 띄우지 않음
   };
 
   const handleDeleteClick = (e, id) => {
@@ -74,7 +67,6 @@ function EventTable({ data = [], onUpdate, onDelete }) {
   };
 
   const columns = [
-    { header: 'ID', key: 'id' },
     { header: '행사 이름', key: 'name' },
     { header: '행사 위치', key: 'location' },
     { header: '행사 날짜', key: 'eventDate' },
@@ -86,8 +78,6 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   return (
     <div className={styles.tableWrapper}>
-      {showToast && <ToastSuccess />}
-
       <table className={styles.table}>
         <thead>
           <tr className={styles.headerRow}>

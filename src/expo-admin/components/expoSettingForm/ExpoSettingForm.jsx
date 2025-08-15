@@ -9,6 +9,7 @@ import {
   getMyExpoInfo,
   updateMyExpoInfo,
 } from '../../../api/service/expo-admin/setting/ExpoInfoService';
+import { getCategories } from '../../../api/service/user/categoryApi';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function ExpoSettingForm() {
@@ -18,6 +19,7 @@ function ExpoSettingForm() {
   const [showToast, setShowToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [categories, setCategories] = useState([]);
 
   function initForm() {
     return {
@@ -68,8 +70,31 @@ function ExpoSettingForm() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const getCategoryNames = (categoryIds) => {
+    if (!categoryIds || categoryIds.length === 0) return '카테고리 없음';
+    
+    const categoryNames = categoryIds
+      .map(id => {
+        const category = categories.find(cat => cat.id === id);
+        return category ? category.name : `ID: ${id}`;
+      })
+      .filter(name => name);
+    
+    return categoryNames.length > 0 ? categoryNames.join(', ') : '카테고리 없음';
+  };
+
   useEffect(() => {
     fetchExpoInfo();
+    fetchCategories();
   }, [expoId]);
 
   const handleChange = (e) => {
@@ -290,13 +315,10 @@ function ExpoSettingForm() {
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>상태 및 카테고리</label>
+            <label className={styles.label}>카테고리</label>
             <div className={styles.badgeRow}>
-              <div className={`${styles.badge} ${styles.red}`}>
-                {form.status || '상태 없음'}
-              </div>
               <div className={styles.badge}>
-                {form.categoryIds.join(', ') || '카테고리 없음'}
+                {getCategoryNames(form.categoryIds)}
               </div>
             </div>
           </div>

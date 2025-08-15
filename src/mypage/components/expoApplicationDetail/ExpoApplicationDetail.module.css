@@ -57,6 +57,14 @@
   background-color: #d9534f; /* 결제대기 */
 }
 
+.rejected {
+  background-color: #d9534f; /* 거절됨 */
+}
+
+.cancelled {
+  background-color: #6c757d; /* 취소됨 */
+}
+
 
 /* 버튼 그룹 스타일 */
 .buttonGroup {
@@ -102,6 +110,12 @@
   border-color: #d39e00;
 }
 
+.adminButtonGroup {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px;
+}
+
 .adminButton {
   padding: 8px 16px;
   border: 1px solid #000;
@@ -112,7 +126,30 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  margin-left: 10px;
+  font-size: 14px;
+}
+
+.adminButton:hover {
+  background-color: #f0f0f0;
+}
+
+.adminPageButton {
+  padding: 8px 16px;
+  border: 1px solid #667eea;
+  background-color: #667eea;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.adminPageButton:hover {
+  background-color: #5a6fd8;
+  border-color: #5a6fd8;
 }
 
 .topRow {
@@ -435,6 +472,20 @@
 .receiptButton:hover {
   background-color: #5a6268;
   border-color: #545b62;
+}
+
+.paymentInfoButton {
+  background-color: #3b82f6;
+  color: white;
+  border: 1px solid #3b82f6;
+  padding: 8px 16px;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.paymentInfoButton:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 
 /* 액션 버튼 그룹 */

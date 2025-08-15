@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
   import ExpoAdminHeader from "./header/ExpoAdminHeader";
   import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
 
-  import { getMyExpos } from "../../api/service/expo-admin/AuthService";
   import { jwtDecode } from 'jwt-decode';
   import instance from "../../api/lib/axios";
   import { usePermission } from "../permission/PermissionContext";
@@ -90,6 +89,7 @@ import { useEffect, useState } from "react";
     if (path === basePath || path === `${basePath}/`) return true;
 
     const rules = [
+      { match: `${basePath}/qrcheckin`,   allow: !!perm?.isSettlementView },
       { match: `${basePath}/setting`,      allow: !!perm?.isExpoDetailUpdate },
       { match: `${basePath}/booths`,       allow: !!perm?.isBoothInfoUpdate },
       { match: `${basePath}/events`,       allow: !!perm?.isScheduleUpdate },
@@ -97,7 +97,6 @@ import { useEffect, useState } from "react";
       { match: `${basePath}/reservations`, allow: !!perm?.isReserverListView },
       { match: `${basePath}/emails`,       allow: !!perm?.isEmailLogView },
       { match: `${basePath}/operation`,    allow: !!perm?.isOperationsConfigUpdate },
-      { match: `${basePath}/settlement`,   allow: !!perm?.isSettlementView },
       { match: `${basePath}/inquiry`,      allow: !!perm?.isInquiryView },
     ];
 
