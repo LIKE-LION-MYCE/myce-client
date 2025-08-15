@@ -11,12 +11,12 @@ import styles from './OperatorApplicationForm.module.css';
 function OperatorApplicationForm({ operatorData, businessData}) {
 
   const form = {
-    companyName: businessData?.companyName || operatorData.companyName || '',
-    ceoName: businessData?.ceoName || operatorData.ceoName || '',
+    companyName: businessData?.companyName || operatorData?.companyName || '',
+    ceoName: businessData?.ceoName || operatorData?.ceoName || '',
     email: businessData?.contactEmail || operatorData?.email || '',
     phone: businessData?.contactPhone || operatorData?.phone || '',
-    address: businessData?.address || operatorData.address || '',
-    businessNumber: businessData?.businessRegistrationNumber || operatorData.businessNumber || '',
+    address: businessData?.address || operatorData?.address || '',
+    businessNumber: businessData?.businessRegistrationNumber || operatorData?.businessNumber || '',
   };
 
   return (
