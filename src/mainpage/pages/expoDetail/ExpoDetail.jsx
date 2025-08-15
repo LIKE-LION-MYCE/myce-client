@@ -21,6 +21,7 @@ import {
   FiCalendar,
 } from "react-icons/fi";
 import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
+
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/nonMemberPurchaseModal";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 
