@@ -6,7 +6,6 @@ import LoadMoreButton from "../../components/button/LoadMoreButton";
 import CategoryTabs from "../../components/category/CategoryTabs";
 import ExpoCardList from "../../components/expocard/ExpoCardList";
 import FloatingChatButton from "../../components/chatbutton/FloatingChatButton";
-import TopRightWidgetsSection from "../../components/widget/TopRightWidgetsSection";
 import { getCurrentBanner } from "../../../api/service/platform-admin/banner/BannerService";
 import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
