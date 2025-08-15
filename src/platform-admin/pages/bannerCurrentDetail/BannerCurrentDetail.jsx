@@ -5,11 +5,10 @@ import styles from './BannerCurrentDetail.module.css';
 import BannerApplicationForm from '../../components/bannerApplicationForm/BannerApplicationForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
-import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
 import AdCancelDetailModal from '../../components/bannerCancelDetailModal/AdCancelDetailModal';
-import SettlementSummaryModal from '../../components/settlementSummaryModal/SettlementSummaryModal';
+import AdCancelSummaryModal from '../../components/bannerCancelSummaryModal/AdCancelSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { fetchDetailBanner, fetchCancelInfo, fetchPaymentDetail, cancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
@@ -33,7 +32,6 @@ function BannerCurrentDetail() {
   const { id } = useParams();
 
   const [showSettlementSummary, setShowSettlementSummary] = useState(false);
-  const [showSettlementDetail, setShowSettlementDetail] = useState(false);
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
   const [showCancelDetail, setShowCancelDetail] = useState(false);
 
@@ -48,6 +46,7 @@ function BannerCurrentDetail() {
   const [cancelForm, setCancelForm] = useState(null);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [paymentDetail, setPaymentDetail] = useState(null);
 
   const getPaymentDetail = async () => {
     try {
@@ -69,7 +68,7 @@ function BannerCurrentDetail() {
     }
   }
 
-    const getCancelDetail = async () => {
+  const getCancelDetail = async () => {
     try {
       const res = await fetchCancelDetail(id);
       setCancelDetail(res);
@@ -104,6 +103,8 @@ function BannerCurrentDetail() {
           getPaymentDetail();
           fetchCancelForm();
           console.log("cancelForm : ", cancelForm);
+        } else if (rawStatus == 'CANCELLED') {
+          getCancelDetail();
         }
 
         console.log('배너 상세 데이터:', response);
@@ -192,27 +193,25 @@ function BannerCurrentDetail() {
       {buttonGroup}
 
       {/* 모달들 */}
-      <SettlementSummaryModal
+      <AdCancelSummaryModal
         isOpen={showSettlementSummary}
         onClose={() => setShowSettlementSummary(false)}
         cancelForm={cancelForm}
         onSubmit={handleSettlementSubmit}
       />
 
-      <SettlementDetailModal
-        isOpen={showSettlementDetail}
-        onClose={() => setShowSettlementDetail(false)}
-      />
 
+      
       <PaymentDetailModal
         isOpen={showPaymentDetail}
         onClose={() => setShowPaymentDetail(false)}
+        paymentDetail={paymentDetail}
       />
-  
+
       <AdCancelDetailModal
         isOpen={showCancelDetail}
         onClose={() => setShowCancelDetail(false)}
-        cancelDetail = {cancelDetail}
+        cancelDetail={cancelDetail}
       />
 
 

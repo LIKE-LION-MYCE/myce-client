@@ -7,9 +7,8 @@ import OperatorApplicationForm from '../../components/operatorApplicationForm/Op
 import RejectReasonModal from '../../components/rejectReasonModal/RejectReasonModal';
 import RejectReasonViewModal from '../../components/rejectReasonViewModal/RejectReasonViewModal';
 import PaymentSummaryModal from '../../components/paymentSummaryModal/PaymentSummaryModal';
-import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { fetchDetailBanner, rejectBanner, fetchRejectInfo, fetchPaymentDetail, fetchCancelDetail } from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, rejectBanner, fetchRejectInfo } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
@@ -30,7 +29,6 @@ function BannerApplicationsDetail() {
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showPaymentDetail, setShowPaymentDetail] = useState(false);
   const [showRejectViewModal, setShowRejectViewModal] = useState(false);
 
   const [bannerData, setBannerData] = useState(null);
@@ -43,7 +41,6 @@ function BannerApplicationsDetail() {
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
   const [rejectReason, setRejectReason] = useState(null);
-  const [paymentDetail, setPaymentDetail] = useState(null);
 
   const getRejectReason = async () => {
     try {
@@ -54,15 +51,6 @@ function BannerApplicationsDetail() {
     }
   }
 
-  const getPaymentDetail = async () => {
-    try {
-      const res = await fetchPaymentDetail(id);
-      setPaymentDetail(res);
-      console.log("paymentInfo = ", res); // todo: 삭제
-    } catch (err) {
-      console.log("결제 정보를 불러오지 못했습니다 : ", err);
-    }
-  }
 
 
   const fetchData = async () => {
@@ -72,9 +60,6 @@ function BannerApplicationsDetail() {
       // 배너와 운영자 데이터 설정
       if (rawStatus == 'REJECTED') {
         getRejectReason();
-      } else if (rawStatus == 'CANCELLED') {
-        getPaymentDetail();
-        getCancelDetail();
       }
       setBannerData(response);
       setOperatorData({
@@ -194,11 +179,6 @@ function BannerApplicationsDetail() {
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         onSubmit={handleApproveSubmit}
-      />
-      <PaymentDetailModal
-        isOpen={showPaymentDetail}
-        onClose={() => setShowPaymentDetail(false)}
-        paymentDetail={paymentDetail}
       />
 
 
