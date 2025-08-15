@@ -36,14 +36,17 @@
   white-space: nowrap;
 }
 
+.row:hover {
+  background-color: #f0f8ff;
+  cursor: pointer;
+}
+
+/* 본문이 긴 컬럼에만 좌측 정렬 + 말줄임 */
 .bodyCell {
   text-align: left;
   width: 400px;
-  max-width: 400px;
-  min-width: 400px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .groupStart {
@@ -57,6 +60,7 @@
   text-align: left;
 }
 
+/* ===== 상세(펼침) 영역 ===== */
 .detailRow {
   background-color: #fafcff;
 }
@@ -89,17 +93,101 @@
   word-break: break-word;
 }
 
-.saveBtn {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background-color: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+/* 상세 내 테이블 */
+.detailTableWrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
-.saveBtn:hover {
-  background-color: #4338ca;
+.detailTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.detailTable thead tr {
+  background: #f9fafb;
+}
+
+.detailTable th,
+.detailTable td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+}
+
+/* 메타 표 전용 */
+.metaLabel {
+  width: 140px;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  background: #fbfbfc;
+  white-space: nowrap;
+}
+
+.metaValue {
+  text-align: left;
+  color: #222;
+}
+
+.preWrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.recipientsCell {
+  text-align: left;
+}
+
+.recipientsScroll {
+  position: relative;
+  max-height: 220px;
+  overflow: auto;
+  padding-right: 6px;
+  background: #fff;
+}
+
+.fadeOverlay {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #ffffff 70%);
+}
+
+.recipientsExpanded {}
+
+.recipientsList {
+  margin: 0;
+  padding: 10px 16px 12px 22px;
+}
+
+.recipientEmail {
+  color: #6b7280;
+}
+
+/* 유틸 */
+.emptyCell {
+  text-align: center;
+  color: #6b7280;
+  padding: 16px;
+}
+
+/* 버튼 */
+.moreBtn {
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+.moreBtn:hover {
+  background: #f5f5f5;
 }

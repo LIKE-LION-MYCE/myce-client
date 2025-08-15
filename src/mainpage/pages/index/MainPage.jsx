@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import MainBanner from "../../components/banners/MainBanner";
-import SubBanners from "../../components/banners/SubBanners";
 import FooterBanner from "../../components/banners/FooterBanner";
 import LoadMoreButton from "../../components/button/LoadMoreButton";
 import CategoryTabs from "../../components/category/CategoryTabs";
@@ -9,6 +8,9 @@ import FloatingChatButton from "../../components/chatbutton/FloatingChatButton";
 import { getCurrentBanner } from "../../../api/service/platform-admin/banner/BannerService";
 import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
+import UpcomingCardList from "../../components/upcominglist/UpcomingCardList";
+import SubBanners from "../../components/banners/SubBanners";
+import BestReviews from "../../components/bestreviews/BestReviews";
 
 export default function MainPage() {
   const [mainBanners, setMainBanners] = useState([]);
@@ -74,7 +76,6 @@ export default function MainPage() {
       <div className="relative">
         <MainBanner banners={mainBanners} />
       </div>
-      <SubBanners banners={subBanners} />
       <CategoryTabs
         onCategoryChange={handleCategoryChange}
         categories={categories}
@@ -86,7 +87,12 @@ export default function MainPage() {
         onBookmarkToggle={handleBookmarkToggle}
       />
       <LoadMoreButton />
+
+      <UpcomingCardList/>
+
       <FooterBanner banners={footerBanners} />
+      <BestReviews/>
+      <SubBanners banners={subBanners} />
       <FloatingChatButton />
     </div>
   );

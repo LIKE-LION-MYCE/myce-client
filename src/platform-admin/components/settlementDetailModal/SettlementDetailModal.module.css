@@ -13,7 +13,7 @@
 
 .modal {
   background: #fff;
-  width: 480px;
+  width: 900px;
   padding: 28px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   font-family: 'Pretendard', sans-serif;
@@ -100,4 +100,50 @@
 .cancelBtn:hover {
   background-color: #f5f5f5;
   border-color: #999;
+}
+
+.approveBtn {
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+}
+
+.approveBtn:hover {
+  background-color: #0056b3;
+}
+
+.approveBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.completionBox {
+  background-color: #e8f5e8;
+  border: 1px solid #28a745;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.completionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #155724;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* 2컬럼 레이아웃 */
+.contentLayout {
+  display: flex;
+  gap: 48px;
+  margin-bottom: 25px;
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  flex: 1;
 }

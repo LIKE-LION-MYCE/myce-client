@@ -37,3 +37,45 @@
   width: 100%; 
   max-width: 1550px; 
 }
+
+/* --- Status Badge --- */
+.badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 12px;
+}
+
+.badgePENDING_APPROVAL {
+  background-color: #f0ad4e; /* 승인대기 - 주황 */
+}
+
+.badgePENDING_PAYMENT {
+  background-color: #d9534f; /* 결제대기 - 빨강 */
+}
+
+.badgePENDING_PUBLISH {
+  background-color: #5bc0de; /* 게시대기 - 하늘 */
+}
+
+.badgePUBLISHED {
+  background-color: #5cb85c; /* 게시중 - 초록 */
+}
+
+.badgePUBLISH_ENDED {
+  background-color: #777; /* 게시종료 - 회색 */
+}
+
+.badgeCANCELLED {
+  background-color: #666; /* 취소됨 - 짙은 회색 */
+}
+
+.badgeREJECTED {
+  background-color: #d9534f; /* 거절됨 - 빨강 */
+}
+
+.badgeCOMPLETED {
+  background-color: #337ab7; /* 완료됨 - 파랑 */
+}

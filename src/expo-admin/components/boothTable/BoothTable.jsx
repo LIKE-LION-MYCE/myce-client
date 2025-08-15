@@ -1,9 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import styles from './BoothTable.module.css';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
-
-const DEFAULT_IMAGE = 'https://via.placeholder.com/240x180?text=No+Image';
+import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
+import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
 const fieldLabelMap = {
   name: '부스명',
@@ -19,7 +18,6 @@ const boothFields = [
   'name',
   'description', 
   'boothNumber',
-  'displayRank',
 ];
 
 const contactFields = [
@@ -31,11 +29,6 @@ const contactFields = [
 function BoothTable({ data = [], onDelete, onUpdate }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editForm, setEditForm] = useState(null);
-  const [showToast, setShowToast] = useState(false);
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
-  };
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
@@ -52,9 +45,33 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageUploadSuccess = (imageUrl) => {
+    setEditForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
+  };
+
+  const handleImageUploadError = (error) => {
+    console.error('이미지 업로드 실패:', error);
+  };
+
+  const handlePremiumToggle = (checked) => {
+    setEditForm((prev) => ({
+      ...prev,
+      isPremium: checked,
+      displayRank: checked ? prev.displayRank : '',
+    }));
+  };
+
   const handleSave = () => {
-    onUpdate(editForm);
-    triggerToast();
+    // 프리미엄 부스가 아닌 경우 displayRank를 null로 설정
+    const payload = {
+      ...editForm,
+      displayRank: editForm.isPremium 
+        ? parseInt(editForm.displayRank || '0', 10) 
+        : null,
+    };
+    
+    onUpdate(payload);
+    // 부모에서 토스트 관리하므로 여기서는 토스트 띄우지 않음
   };
 
   const handleDeleteClick = (e, id) => {
@@ -79,8 +96,6 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
 
   return (
     <div className={styles.tableWrapper}>
-      {showToast && <ToastSuccess />}
-
       <table className={styles.table}>
         <thead>
           <tr className={styles.headerRow}>
@@ -127,16 +142,26 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                   <tr key={`detail-${row.id}`} className={styles.detailRow}>
                     <td colSpan={columns.length + 1}>
                       <div className={styles.detailBox}>
-                        <div className={styles.detailGrid}>
-                          {/* 부스 정보 */}
-                          <div className={styles.column}>
+                        <div className={styles.topRow}>
+                          {/* 썸네일 이미지 */}
+                          <div className={styles.imageWrapper}>
+                            <ImageUpload
+                              initialImageUrl={editForm.mainImageUrl}
+                              onUploadSuccess={handleImageUploadSuccess}
+                              onUploadError={handleImageUploadError}
+                            />
+                          </div>
+                        
+                          <div className={styles.detailGrid}>
+                            {/* 부스 정보 */}
+                            <div className={styles.column}>
                             {boothFields.map((key) => (
                               <div key={key} className={styles.detailItem}>
                                 <div className={styles.detailLabel}>
                                   {fieldLabelMap[key]}
                                 </div>
                                 <input
-                                  type={key === 'displayRank' ? 'number' : 'text'}
+                                  type="text"
                                   name={key}
                                   value={editForm[key] || ''}
                                   onChange={handleChange}
@@ -144,6 +169,32 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                                 />
                               </div>
                             ))}
+                            
+                            {/* 프리미엄 부스 토글 */}
+                            <div className={styles.detailItem}>
+                              <div className={styles.detailLabel}>프리미엄 부스</div>
+                              <div className={styles.booleanGroup}>
+                                <ToggleSwitch
+                                  checked={editForm.isPremium || false}
+                                  onChange={handlePremiumToggle}
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* 조건부 노출 순위 */}
+                            {editForm.isPremium && (
+                              <div className={styles.detailItem}>
+                                <div className={styles.detailLabel}>노출 순위</div>
+                                <input
+                                  type="number"
+                                  name="displayRank"
+                                  value={editForm.displayRank || ''}
+                                  onChange={handleChange}
+                                  placeholder="노출 순위 (1~100)"
+                                  className={styles.inputField}
+                                />
+                              </div>
+                            )}
                           </div>
 
                           {/* 담당자 정보 */}
@@ -161,6 +212,7 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                                 />
                               </div>
                             ))}
+                            </div>
                           </div>
                         </div>
 

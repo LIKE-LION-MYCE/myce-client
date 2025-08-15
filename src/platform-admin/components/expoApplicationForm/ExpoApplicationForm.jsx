@@ -18,13 +18,22 @@ function ExpoApplicationForm({ expoData }) {
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src={form.mainImageUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
+            src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
             alt="포스터"
             className={styles.profileImage}
           />
         </div>
 
         <div className={styles.formGrid}>
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>카테고리</label>
+            <div className={styles.badgeRow}>
+              <div className={styles.badge}>
+                {form.category || '카테고리 없음'}
+              </div>
+            </div>
+          </div>
+
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
             <input
@@ -39,6 +48,15 @@ function ExpoApplicationForm({ expoData }) {
             <input
               className={styles.inputField}
               value={form.location || ''}
+              readOnly
+            />
+          </div>
+
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>상세 위치</label>
+            <input
+              className={styles.inputField}
+              value={form.locationDetail || ''}
               readOnly
             />
           </div>
@@ -123,14 +141,6 @@ function ExpoApplicationForm({ expoData }) {
             </div>
           </div>
 
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>카테고리</label>
-            <div className={styles.badgeRow}>
-              <div className={styles.badge}>
-                {form.category || '카테고리 없음'}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

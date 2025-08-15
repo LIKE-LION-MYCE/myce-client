@@ -75,7 +75,7 @@ function ExpoAdminSideBar() {
     >
       <div
         style={{
-          padding: '16px',
+          padding: '8px',
           backgroundColor: '#1e2a38',
           borderBottom: '1px solid #2b3c50ff',
         }}

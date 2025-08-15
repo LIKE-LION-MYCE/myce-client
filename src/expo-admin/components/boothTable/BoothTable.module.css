@@ -53,6 +53,25 @@
   font-size: 14px;
 }
 
+.topRow {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.detailGrid {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .imageWrapper {
   display: flex;
   justify-content: flex-start;
@@ -100,6 +119,13 @@
   font-size: 13px;
   color: #888;
   font-weight: 500;
+}
+
+.booleanGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 9px;
+  align-items: center;
 }
 
 .inputField {

@@ -43,6 +43,24 @@ export const updateReserverQrCodeForManualCheckIn = async (expoId, reserverId) =
   }
 };
 
+//예약자 QR 코드 재발급
+export const reissueReserverQrCode = async (expoId, dto, params = {}) => {
+  try {
+    const res = await instance.post(
+      `/expos/${expoId}/reservers/qr-reissue`,
+      dto,
+      {
+        params,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    const message = error.response?.data?.message || '예약자 QR 코드 재발급 중 오류 발생';
+    throw new Error(message);
+  }
+};
+
 //예약자 엑셀 추출
 export const downloadMyReservationExcelFile = async (expoId) => {
   try {

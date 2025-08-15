@@ -2,6 +2,20 @@ import styles from './PaymentDetailModal.module.css';
 
 function PaymentDetailModal({ isOpen, onClose, paymentDetail }) {
   if (!isOpen) return null;
+  const paymentType = paymentDetail.paymentType;
+
+  // 결제수단 한글 매핑
+  const typeLabelMap = {
+    CARD: '신용/체크카드',
+    EASY_PAY: '간편결제',
+    TRANSFER: '계좌이체',
+    FOREIGN_PAY: '해외결제',
+  };
+  const paymentTypeLabel = typeLabelMap[paymentType] || paymentType || '-';
+  // 계좌/카드 명칭 분기
+  const isTransfer = paymentType === 'TRANSFER';
+  const companyLabel = isTransfer ? '은행' : '카드사';
+  const accountLabel = isTransfer ? '은행 계좌번호' : '카드 번호';
 
   return (
     <div className={styles.modalOverlay}>
@@ -22,6 +36,22 @@ function PaymentDetailModal({ isOpen, onClose, paymentDetail }) {
             <span className={styles.value}>
               {paymentDetail?.startAt || '-'} ~ {paymentDetail?.endAt || '-'}
             </span>
+          </div>
+        </div>
+
+        {/* 결제 계좌 정보 */}
+        <div className={styles.infoBox}>
+          <div className={styles.row}>
+            <span className={styles.label}>결제 수단</span>
+            <span className={styles.value}>{typeLabelMap[paymentType]}</span>
+          </div>
+          <div className={styles.row}>
+            <span className={styles.label}>{companyLabel}</span>
+            <span className={styles.value}>{paymentDetail?.paymentCompanyName}</span>
+          </div>
+          <div className={styles.row}>
+            <span className={styles.label}>{accountLabel}</span>
+            <span className={styles.value}>{paymentDetail?.paymentAccountInfo}</span>
           </div>
         </div>
 

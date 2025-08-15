@@ -1,7 +1,18 @@
 import instance from '../../../lib/axios';
 
-// 행사 목록 조회
+// 행사 목록 조회 (관리자용)
 export const getEvents = async (expoId) => {
+  try {
+    const response = await instance.get(`/expos/${expoId}/events/admin`);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || '행사 목록 조회 중 오류 발생';
+    throw new Error(message);
+  }
+};
+
+// 행사 목록 조회 (공개용 - 비회원 접근 가능)
+export const getPublicEvents = async (expoId) => {
   try {
     const response = await instance.get(`/expos/${expoId}/events`);
     return response.data;
