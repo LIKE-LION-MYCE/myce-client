@@ -26,7 +26,7 @@ function CurrentBannerTable({ data }) {
   ];
 
   const goToDetail = (row) => {
-    navigate(`/platform/admin/bannerCurrent/${row.id}`, {
+    navigate(`/platform/admin/bannerApplications/${row.id}`, {
       state: {
         expoStatus: row.statusMessage,
         expoId: row.id,
@@ -49,24 +49,54 @@ function CurrentBannerTable({ data }) {
         <tbody>
           {data.map((row, rowIndex) => (
             <tr key={rowIndex} className={styles.row}>
-              {columns.map((col) => (
-                <td key={col.key} className={styles.td}>
-                  {col.key === 'statusMessage' ? (
-                    statusMap[row[col.key]] || row[col.key]
-                  ) : col.key === 'action' ? (
-                    <button
-                      className={styles.detailBtn}
-                      onClick={() => goToDetail(row)}
-                    >
-                      상세보기
-                    </button>
-                  ) : col.key === 'createdAt' ? (
-                    row[col.key]?.split('T')[0] || '-'
-                  ) : (
-                    row[col.key] || '-'
-                  )}
-                </td>
-              ))}
+              {columns.map((col) => {
+                // 상태(statusMessage) 열에 뱃지 스타일 적용
+                if (col.key === 'statusMessage') {
+                  // statusMap에 매핑된 한글 상태명 가져오기
+                  const statusKorean = statusMap[row[col.key]] || row[col.key];
+                  // CSS 클래스 이름 생성 (예: 'status_승인_대기')
+                  const statusClass = statusKorean.replace(/\s/g, '_');
+                  const badgeClassName = `${styles.statusBadge} ${styles[`status_${statusClass}`]}`;
+                  
+                  return (
+                    <td key={col.key} className={styles.td}>
+                      <span className={badgeClassName}>
+                        {statusKorean}
+                      </span>
+                    </td>
+                  );
+                }
+                
+                // 상세보기 버튼
+                if (col.key === 'action') {
+                  return (
+                    <td key={col.key} className={styles.td}>
+                      <button
+                        className={styles.detailBtn}
+                        onClick={() => goToDetail(row)}
+                      >
+                        상세보기
+                      </button>
+                    </td>
+                  );
+                }
+
+                // 신청일자 포맷 변경
+                if (col.key === 'createdAt') {
+                  return (
+                    <td key={col.key} className={styles.td}>
+                      {row[col.key]?.split('T')[0] || '-'}
+                    </td>
+                  );
+                }
+
+                // 그 외 열
+                return (
+                  <td key={col.key} className={styles.td}>
+                    {row[col.key] || '-'}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
