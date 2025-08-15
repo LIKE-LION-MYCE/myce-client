@@ -21,7 +21,7 @@ export const getExpoBookmarkStatus = async (expoId) => {
 // 박람회 리뷰 정보 조회
 export const getExpoReviews = async (expoId, page = 0, size = 10) => {
   const response = await instance.get(`/expos/${expoId}/reviews`, {
-    params: { page, size }
+    params: { page, size },
   });
   return response.data;
 };
@@ -83,19 +83,24 @@ export const toggleExpoBookmark = async (expoId) => {
 
 // 티켓 예약 대기 생성
 export const createReservationPending = async (reservationData) => {
-  const response = await instance.post('/reservations/pending', reservationData);
+  const response = await instance.post(
+    "/reservations/pending",
+    reservationData
+  );
   return response.data;
 };
 
 // 예약자 정보 해결
 export const resolveReservers = async (reserverData) => {
-  const response = await instance.post('/reservations/resolvers', reserverData);
+  const response = await instance.post("/reservations/resolvers", reserverData);
   return response.data;
 };
 
 // 예약 확정
 export const confirmReservation = async (reservationId) => {
-  const response = await instance.patch(`/reservations/${reservationId}/confirm`);
+  const response = await instance.patch(
+    `/reservations/${reservationId}/confirm`
+  );
   return response.data;
 };
 

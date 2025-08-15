@@ -8,7 +8,7 @@ import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetai
 import AdminInfoModal from '../../components/adminInfoModal/AdminInfoModal';
 import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
-import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail, completeExpoPayment, requestExpoRefund } from '../../../api/service/user/memberApi';
+import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoRefundHistory, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail, completeExpoPayment, requestExpoRefund } from '../../../api/service/user/memberApi';
 import { useNavigate } from 'react-router-dom';
 
 // 상태 라벨 매핑
@@ -237,7 +237,10 @@ const ExpoStatusDetail = () => {
   const handleRefundButtonClick = async () => {
     try {
       setLoading(true);
-      const response = await getExpoRefundReceipt(id);
+      // CANCELLED 상태일 때는 실제 환불 내역 조회, 아니면 계산된 환불 정보 조회
+      const response = expoData.status === '취소됨' || expoData.status === '취소 완료' 
+        ? await getExpoRefundHistory(id) 
+        : await getExpoRefundReceipt(id);
       setRefundData(response.data);
       setShowRefundModal(true);
     } catch (err) {
@@ -457,6 +460,7 @@ const ExpoStatusDetail = () => {
           onRefund={handleRefund}
           onClose={handleCloseRefundModal}
           onCancel={handleCloseRefundModal}
+          readOnly={expoData.status === '취소됨' || expoData.status === '취소 완료'}
         />
       )}
 

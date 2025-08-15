@@ -85,6 +85,10 @@ export const getExpoRefundReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-receipt`);
 };
 
+export const getExpoRefundHistory = async (expoId) => {
+  return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-history`);
+};
+
 export const requestExpoRefund = async (expoId, refundRequest) => {
   return await instance.post(`${EXPO_PREFIX}/${expoId}/refund-request`, refundRequest);
 };
@@ -112,16 +116,28 @@ export const getAdvertisementRejectInfo = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/reject-info`);
 };
 
+export const completeAdvertisementPayment = async (advertisementId) => {
+  return await instance.post(`${AD_PREFIX}/${advertisementId}/payment/complete`);
+};
+
 export const deleteAdvertisement = async (advertisementId) => {
   return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
 };
 
 export const cancelAdvertisementByStatus = async (advertisementId) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/cancel-by-status`);
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/cancel-by-status`
+  );
 };
 
-export const requestAdvertisementRefundByStatus = async (advertisementId, refundRequest) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/refund-request-by-status`, refundRequest);
+export const requestAdvertisementRefundByStatus = async (
+  advertisementId,
+  refundRequest
+) => {
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/refund-request-by-status`,
+    refundRequest
+  );
 };
 
 export const getMyInfo = async () => {
@@ -132,12 +148,6 @@ export const getMyMileage = async () => {
   return await instance.get("/members/my-mileage");
 };
 
-export const updateMileageForReservation = async (
-  usedMileage,
-  savedMileage
-) => {
-  const res = instance.patch("/members/my-mileage", {
-    usedMileage: Number(usedMileage) || 0,
-    savedMileage: Number(savedMileage) || 0,
-  });
+export const updateGrade = async () => {
+  await instance.patch("/members/grade");
 };

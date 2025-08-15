@@ -134,3 +134,20 @@
 .noticeList li:last-child {
   margin-bottom: 0;
 }
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #dc3545;
+  font-size: 14px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+}
