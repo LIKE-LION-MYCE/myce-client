@@ -147,3 +147,269 @@
   margin-top: 16px;
   padding: 0 8px;
 }
+
+/* --- 새로 추가된 스타일 --- */
+
+/* 전체 새로고침 버튼 */
+.globalActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.refreshAllBtn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.refreshAllBtn:hover {
+  background-color: #0056b3;
+}
+
+/* 섹션 헤더 */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* 차트 컨테이너 */
+.chartContainer {
+  flex: 1 1 48%;
+  background-color: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  min-width: 280px;
+}
+
+.chartWrapper {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+  color: #333;
+}
+
+.fullWidthChart {
+  background-color: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.fullWidthChart .chartWrapper {
+  height: 250px;
+}
+
+/* 테이블 컨테이너 */
+.tableContainer {
+  margin-top: 24px;
+}
+
+.tableTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* 로딩 및 에러 상태 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+.retryBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.retryBtn:hover {
+  background-color: #c82333;
+}
+
+/* 데이터 소스 정보 */
+.dataSourceInfo {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  margin-top: 32px;
+}
+
+.dataSourceText {
+  font-size: 12px;
+  color: #666;
+  margin: 4px 0;
+}
+
+/* 결제 카드 그룹 확장 */
+.cardGroup {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* 결제 섹션의 카드는 좀 더 작게 */
+.section .cardGroup .card {
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 16px;
+    gap: 32px;
+  }
+  
+  .chartGrid {
+    flex-direction: column;
+  }
+  
+  .chartContainer {
+    min-width: 100%;
+  }
+  
+  .cardGroup {
+    flex-direction: column;
+  }
+  
+  .card {
+    min-width: 100%;
+  }
+}
+
+/* 사용 안내 공지 */
+.noticeInfo {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+  margin-bottom: 24px;
+}
+
+.noticeText {
+  font-size: 14px;
+  color: #495057;
+  margin: 0;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.noticeText:last-child {
+  margin-bottom: 0;
+}
+
+/* 날짜 선택 컨트롤 */
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.dateControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dateInput {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.dateApplyBtn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.dateApplyBtn:hover {
+  background-color: #218838;
+}
+
+.dateResetBtn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.dateResetBtn:hover {
+  background-color: #5a6268;
+}
+
+/* 모바일 반응형 - 날짜 선택기 */
+@media (max-width: 768px) {
+  .chartHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dateControls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .dateInput {
+    min-width: 120px;
+  }
+}

@@ -73,16 +73,24 @@ export const getExpoSettlementReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/settlement-receipt`);
 };
 
-export const requestExpoSettlement = async (expoId) => {
-  // API가 없으므로 하드코딩된 응답 반환
-  console.log(`정산 요청 (하드코딩): expoId = ${expoId}`);
-  return Promise.resolve({
-    data: { message: "정산 요청이 성공적으로 처리되었습니다." },
-  });
+export const requestExpoSettlement = async (expoId, settlementData) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/settlement`, settlementData);
+};
+
+export const completeExpoPayment = async (expoId) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/payment-complete`);
 };
 
 export const getExpoRefundReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-receipt`);
+};
+
+export const getExpoRefundHistory = async (expoId) => {
+  return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-history`);
+};
+
+export const requestExpoRefund = async (expoId, refundRequest) => {
+  return await instance.post(`${EXPO_PREFIX}/${expoId}/refund-request`, refundRequest);
 };
 
 // Advertisement related APIs
@@ -108,16 +116,28 @@ export const getAdvertisementRejectInfo = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/reject-info`);
 };
 
+export const completeAdvertisementPayment = async (advertisementId) => {
+  return await instance.post(`${AD_PREFIX}/${advertisementId}/payment/complete`);
+};
+
 export const deleteAdvertisement = async (advertisementId) => {
   return await instance.delete(`${AD_PREFIX}/${advertisementId}`);
 };
 
 export const cancelAdvertisementByStatus = async (advertisementId) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/cancel-by-status`);
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/cancel-by-status`
+  );
 };
 
-export const requestAdvertisementRefundByStatus = async (advertisementId, refundRequest) => {
-  return await instance.post(`${AD_PREFIX}/${advertisementId}/refund-request-by-status`, refundRequest);
+export const requestAdvertisementRefundByStatus = async (
+  advertisementId,
+  refundRequest
+) => {
+  return await instance.post(
+    `${AD_PREFIX}/${advertisementId}/refund-request-by-status`,
+    refundRequest
+  );
 };
 
 export const getMyInfo = async () => {
@@ -128,12 +148,6 @@ export const getMyMileage = async () => {
   return await instance.get("/members/my-mileage");
 };
 
-export const updateMileageForReservation = async (
-  usedMileage,
-  savedMileage
-) => {
-  const res = instance.patch("/members/my-mileage", {
-    usedMileage: Number(usedMileage) || 0,
-    savedMileage: Number(savedMileage) || 0,
-  });
+export const updateGrade = async () => {
+  await instance.patch("/members/grade");
 };

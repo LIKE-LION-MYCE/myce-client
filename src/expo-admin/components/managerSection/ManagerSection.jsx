@@ -10,7 +10,7 @@ const permissionTabs = {
   '박람회 관리': ['isExpoDetailUpdate', 'isBoothInfoUpdate', 'isScheduleUpdate'],
   '예약 관리': ['isReserverListView', 'isPaymentView', 'isEmailLogView'],
   '운영 설정': ['isOperationsConfigUpdate'],
-  '기타': ['isSettlementView', 'isInquiryView'],
+  '기타': ['isInquiryView'],
 };
 
 const permissionLabels = {
@@ -21,7 +21,6 @@ const permissionLabels = {
   isReserverListView: '예약자 리스트',
   isEmailLogView: '이메일 전송 이력',
   isOperationsConfigUpdate: '운영 설정',
-  isSettlementView: '정산',
   isInquiryView: '문의',
 };
 

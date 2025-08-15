@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo } from '../../../api/service/user/memberApi';
+import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo, completeAdvertisementPayment } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
@@ -11,6 +11,7 @@ import PaymentSelection from "../payment-selection/PaymentSelection";
 // 단순화된 버튼 설정
 const ALL_BUTTONS = [
   { label: "결제 신청", color: "black", disabled: false, action: "payment" },
+  { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
   { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
   { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
   { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
@@ -37,16 +38,23 @@ const AD_STATUS_MAP = {
       { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
     ],
   },
+  PENDING_CANCEL: {
+    badge: { label: "취소대기", className: "pending" },
+    buttons: [
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
+    ],
+  },
   PUBLISHED: {
     badge: { label: "게시중", className: "active" },
     buttons: [
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
       { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
     ],
   },
   COMPLETED: {
     badge: { label: "게시완료", className: "finished" },
     buttons: [
-      // 게시완료 상태에서는 버튼 없음
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
     ],
   },
   REJECTED: {
@@ -55,16 +63,10 @@ const AD_STATUS_MAP = {
       { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
     ],
   },
-  PENDING_CANCEL: {
-    badge: { label: "환불대기", className: "waiting" },
-    buttons: [
-      // 환불대기 상태에서는 버튼 없음 (처리 중)
-    ],
-  },
   CANCELLED: {
     badge: { label: "취소됨", className: "canceled" },
     buttons: [
-      // 취소됨 상태에서는 버튼 없음
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
     ],
   },
 };
@@ -76,7 +78,7 @@ function AdsStatusDetail() {
   const [error, setError] = useState(null);
   
   // 모달 상태
-  const [modalType, setModalType] = useState(null); // 'payment' | 'refund' | 'rejectInfo' | 'cancel' | null
+  const [modalType, setModalType] = useState(null); // 'payment' | 'paymentView' | 'refund' | 'rejectInfo' | 'cancel' | null
   const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단 선택 페이지 표시 상태
   const [paymentData, setPaymentData] = useState(null);
   const [refundData, setRefundData] = useState(null);
@@ -190,9 +192,6 @@ function AdsStatusDetail() {
     }
   };
 
-  const handleDownload = () => {
-    // alert("다운로드 기능 연동 필요");
-  };
 
   // 거절 사유 조회 핸들러
   const handleViewRejectInfo = async () => {
@@ -324,11 +323,29 @@ function AdsStatusDetail() {
     }
   };
 
+  // 결제 정보 조회 핸들러 (결제 완료 후 정보 보기용)
+  const handleViewPaymentInfo = async () => {
+    try {
+      console.log('결제 정보 조회 API 호출 중, ID:', id);
+      const response = await getAdvertisementPayment(id);
+      console.log('결제 정보 조회 API 응답:', response);
+      setPaymentData(response.data);
+      setModalType("paymentView");
+    } catch (err) {
+      console.error('결제 정보 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('결제 정보를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   // 버튼 액션 핸들러
   const handleButtonAction = (action) => {
     switch (action) {
       case 'payment':
         handlePaymentClick();
+        break;
+      case 'viewPaymentInfo':
+        handleViewPaymentInfo();
         break;
       case 'refundRequest':
         handleRefundRequest();
@@ -430,16 +447,6 @@ function AdsStatusDetail() {
               className={styles.textarea}
             />
           </div>
-          {/* 첨부파일: 두 칸 전체 */}
-          <div className={styles.fullRow}>
-            <label>광고 이미지</label>
-            <div className={styles.attachmentRow}>
-              <input value={imageUrl || "이미지 없음"} readOnly className={styles.input} />
-              <button className={styles.downloadBtn} onClick={handleDownload}>
-                이미지 업로드
-              </button>
-            </div>
-          </div>
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
@@ -473,11 +480,32 @@ function AdsStatusDetail() {
             feePerDay={paymentData.feePerDay}
             totalAmount={paymentData.totalAmount}
             status={paymentData.status}
-            onPay={() => {
-              setShowPaymentSelection(true);
-              handleCloseModal();
+            mode="payment"
+            onPay={async () => {
+              try {
+                await completeAdvertisementPayment(id);
+                alert('결제가 성공적으로 완료되었습니다.');
+                handleCloseModal();
+                fetchAdvertisementDetail(); // 데이터 새로고침
+              } catch (error) {
+                console.error('결제 완료 실패:', error);
+                alert('결제 완료 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+              }
             }}
             onCancel={handleCloseModal}
+            onClose={handleCloseModal}
+          />
+        )}
+        {modalType === "paymentView" && paymentData && (
+          <AdPaymentDetailModal
+            advertisementTitle={paymentData.advertisementTitle}
+            applicantName={paymentData.applicantName}
+            period={`${formatDate(paymentData.displayStartDate)} ~ ${formatDate(paymentData.displayEndDate)}`}
+            totalDays={paymentData.totalDays}
+            feePerDay={paymentData.feePerDay}
+            totalAmount={paymentData.totalAmount}
+            status={paymentData.status}
+            mode="view"
             onClose={handleCloseModal}
           />
         )}

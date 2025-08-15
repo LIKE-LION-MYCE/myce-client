@@ -33,7 +33,7 @@ export default function ExpoDetail() {
   const [booths, setBooths] = useState(null);
   const [businessProfile, setBusinessProfile] = useState(null);
   const [events, setEvents] = useState(null);
-  const [activeTab, setActiveTab] = useState('info'); // info, tickets, booths, events, reviews, location
+  const [activeTab, setActiveTab] = useState("info"); // info, tickets, booths, events, reviews, location
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
@@ -158,7 +158,6 @@ export default function ExpoDetail() {
     setShowPurchaseModal(false);
     setSelectedTicket(null);
   };
-
 
   const handleGoBack = () => {
     navigate(-1); // 이전 페이지로 이동
@@ -287,7 +286,6 @@ export default function ExpoDetail() {
             <ExpoReviews reviews={reviews} />
           )}
         </div>
-
 
         {/* 티켓 구매 모달 */}
         <TicketPurchaseModal

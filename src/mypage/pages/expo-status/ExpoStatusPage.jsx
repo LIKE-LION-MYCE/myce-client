@@ -63,26 +63,42 @@ const ExpoStatusPage = () => {
 
   const getStatusLabel = (status) => {
     const statusMap = {
-      'PENDING_APPROVAL': '승인대기',
-      'PENDING_PAYMENT': '승인완료',
-      'PENDING_PUBLISH': '게시대기',
-      'PENDING_CANCEL': '취소대기',
-      'PUBLISHED': '게시중',
-      'PUBLISH_ENDED': '게시종료',
-      'SETTLEMENT_REQUESTED': '정산요청',
+      'PENDING_APPROVAL': '승인 대기',
+      'PENDING_PAYMENT': '결제 대기',
+      'PENDING_PUBLISH': '게시 대기',
+      'PENDING_CANCEL': '취소 대기',
+      'PUBLISHED': '게시 중',
+      'PUBLISH_ENDED': '게시 종료',
+      'SETTLEMENT_REQUESTED': '정산 요청',
       'COMPLETED': '종료됨',
-      'REJECTED': '승인거절',
-      'CANCELLED': '취소완료'
+      'REJECTED': '승인 거절',
+      'CANCELLED': '취소 완료'
     };
     return statusMap[status] || status;
   };
 
-  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 승인완료, 게시대기 제외)
+  // 상태에 따른 CSS 클래스 매핑
+  const getStatusClass = (status) => {
+    const statusClassMap = {
+      'PENDING_APPROVAL': styles.승인대기,
+      'PENDING_PAYMENT': styles.결제대기,
+      'PENDING_PUBLISH': styles.게시대기,
+      'PENDING_CANCEL': styles.취소대기,
+      'PUBLISHED': styles.게시중,
+      'PUBLISH_ENDED': styles.게시종료,
+      'SETTLEMENT_REQUESTED': styles.정산요청,
+      'COMPLETED': styles.종료됨,
+      'REJECTED': styles.승인거절,
+      'CANCELLED': styles.취소완료
+    };
+    return statusClassMap[status] || '';
+  };
+
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 승인완료 제외)
   const canViewPaymentInfo = (statusKey) => {
     const excludedStatuses = [
       'PENDING_APPROVAL', // 승인대기
-      'PENDING_PAYMENT',  // 승인완료 
-      'PENDING_PUBLISH'   // 게시대기
+      'PENDING_PAYMENT'   // 승인완료 
     ];
     return !excludedStatuses.includes(statusKey);
   };
@@ -214,7 +230,7 @@ const ExpoStatusPage = () => {
                   <td>{expo.postPeriod}</td>
                   <td>{expo.location}</td>
                   <td>
-                    <span className={`${styles.statusBadge} ${styles[expo.status.replace(/\s/g, '')]}`}>
+                    <span className={`${styles.statusBadge} ${getStatusClass(expo.statusKey)}`}>
                       {expo.status}
                     </span>
                   </td>

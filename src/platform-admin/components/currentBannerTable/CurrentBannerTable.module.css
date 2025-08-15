@@ -79,3 +79,34 @@
   background-color: #d9d9d9;
   color: #1e2a38;
 }
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+}
+
+.status_게시중 { 
+  background-color: #5cb85c;
+}
+
+.status_게시_대기 {
+  background-color: #5cb85c;
+}
+
+.status_취소_대기 {
+  background-color: #f0ad4e;
+}
+
+
+.status_취소됨 {
+  background-color: #d9534f; /* 회색 */
+}
+
+.status_게시_종료 {
+  background-color: #6c757d; /* 초록색 */
+}
