@@ -85,6 +85,10 @@ export const getExpoRefundReceipt = async (expoId) => {
   return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-receipt`);
 };
 
+export const getExpoRefundHistory = async (expoId) => {
+  return await instance.get(`${EXPO_PREFIX}/${expoId}/refund-history`);
+};
+
 export const requestExpoRefund = async (expoId, refundRequest) => {
   return await instance.post(`${EXPO_PREFIX}/${expoId}/refund-request`, refundRequest);
 };
@@ -110,6 +114,10 @@ export const getAdvertisementRefundReceipt = async (advertisementId) => {
 
 export const getAdvertisementRejectInfo = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/reject-info`);
+};
+
+export const completeAdvertisementPayment = async (advertisementId) => {
+  return await instance.post(`${AD_PREFIX}/${advertisementId}/payment/complete`);
 };
 
 export const deleteAdvertisement = async (advertisementId) => {

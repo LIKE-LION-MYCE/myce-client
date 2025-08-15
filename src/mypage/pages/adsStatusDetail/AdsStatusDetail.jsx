@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo } from '../../../api/service/user/memberApi';
+import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo, completeAdvertisementPayment } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
@@ -481,9 +481,16 @@ function AdsStatusDetail() {
             totalAmount={paymentData.totalAmount}
             status={paymentData.status}
             mode="payment"
-            onPay={() => {
-              setShowPaymentSelection(true);
-              handleCloseModal();
+            onPay={async () => {
+              try {
+                await completeAdvertisementPayment(id);
+                alert('결제가 성공적으로 완료되었습니다.');
+                handleCloseModal();
+                fetchAdvertisementDetail(); // 데이터 새로고침
+              } catch (error) {
+                console.error('결제 완료 실패:', error);
+                alert('결제 완료 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+              }
             }}
             onCancel={handleCloseModal}
             onClose={handleCloseModal}
