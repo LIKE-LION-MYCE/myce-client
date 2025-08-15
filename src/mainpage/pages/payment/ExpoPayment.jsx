@@ -513,9 +513,6 @@ export default function ExpoPayment() {
               quantity={quantity}
               name={ticketName}
               amount={totalAfterApply}
-              buyerName={personalInfo[0]?.name}
-              buyerEmail={personalInfo[0]?.email}
-              buyerTel={personalInfo[0]?.phone}
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * 0.03)}
               reserverInfos={reserverInfos}
