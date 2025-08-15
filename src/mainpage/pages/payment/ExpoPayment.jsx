@@ -1,72 +1,85 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useParams, useLocation, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import styles from "./ExpoPayment.module.css";
-import ReservationPaymentCardButton from "../../components/paymentButton/ReservationPaymentCardButton"; // 카드 결제 버튼
-import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton"; // 가상계좌 버튼
+import ReservationPaymentCardButton from "../../components/paymentButton/ReservationPaymentCardButton";
+import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton";
 import PaymentTransferButton from "../../components/paymentButton/PaymentTransferButton";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
 import { getExpoBasicInfo } from "../../../api/service/expo/expoDetailApi";
+import { getPaymentSummary } from "../../../api/service/reservation/reservationApi";
 
 export default function ExpoPayment() {
   const SERVICE_FEE_PER_TICKET = 1000;
   const TARGET_TYPE = "RESERVATION";
   const { expoId } = useParams();
   const [searchParams] = useSearchParams();
-  
-  // URL 파라미터에서 결제 정보 추출
-  const reservationId = searchParams.get('reservationId');
-  const ticketId = searchParams.get('ticketId');
-  const quantity = parseInt(searchParams.get('quantity') || '1');
-  const totalPrice = parseInt(searchParams.get('totalPrice') || '0');
-  const unitPrice = Math.floor(totalPrice / quantity); // 단가 계산
-  const ticketName = decodeURIComponent(searchParams.get('ticketName') || '티켓');
-  
-  // 박람회 정보 상태
+
+  const reservationId = searchParams.get("preReservationId");
+
+  const [paymentSummary, setPaymentSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const {
+    ticketId,
+    ticketName,
+    ticketQuantity: quantity = 1,
+    ticketPrice: unitPrice = 0,
+  } = paymentSummary || {};
+
+  useEffect(() => {
+    const fetchPaymentSummary = async () => {
+      if (!reservationId) {
+        setError("예약 정보를 찾을 수 없습니다.");
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        const data = await getPaymentSummary(reservationId);
+        setPaymentSummary(data);
+        setError(null);
+      } catch (err) {
+        console.error("결제 요약 정보 로드 실패:", err);
+        setError(
+          err.response?.data?.message || "결제 정보를 불러오지 못했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPaymentSummary();
+  }, [reservationId]);
+
   const [expoInfo, setExpoInfo] = useState(null);
+  const [personalInfo, setPersonalInfo] = useState([]);
 
-  const [personalInfo, setPersonalInfo] = useState(
-    Array.from({ length: quantity }).map(() => ({
-      name: "",
-      email: "",
-      birthdate: "",
-      phone: "",
-      gender: "",
-      rememberInfo: false,
-    }))
-  );
-
-  // personalInfo -> reserverInfos로 매핑 (서버 DTO 형태 맞춤)
   const reserverInfos = useMemo(
     () =>
       personalInfo.map(({ name, email, birthdate, phone, gender }) => ({
         name,
         email,
-        // 서버가 LocalDate 'birth' 를 기대한다면 키를 birth로 맞추고 형식도 YYYY-MM-DD 유지
         birth: birthdate || "",
         phone,
-        // 서버 enum이 MALE/FEMALE이면 대문자로 변환
         gender: gender ? gender.toUpperCase() : null,
-        // rememberInfo는 서버에 필요 없으면 제거(필요하면 포함)
       })),
     [personalInfo]
   );
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [mileage, setMileage] = useState(null); // 보유 마일리지 상태
-  const [mileageError, setMileageError] = useState(null); // 마일리지 에러 표시용
 
-  // 마일리지 적용 관련 상태
-  const [usedMileageInput, setUsedMileageInput] = useState(""); // 입력창 값(문자열 유지)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mileage, setMileage] = useState(null);
+  const [mileageError, setMileageError] = useState(null);
+  const [usedMileageInput, setUsedMileageInput] = useState("");
   const [appliedMileage, setAppliedMileage] = useState(0);
 
-  // 기본 합계/최대 사용 가능 마일리지/적용 후 금액을 계산
   const baseTotal = useMemo(() => {
     const price = Number(unitPrice) || 0;
-    return quantity * price + quantity * SERVICE_FEE_PER_TICKET;
+    const numQuantity = Number(quantity) || 0;
+    return numQuantity * price + numQuantity * SERVICE_FEE_PER_TICKET;
   }, [quantity, unitPrice]);
 
   const maxUsableMileage = useMemo(() => {
-    // 결제 금액을 초과해서는 사용 불가
     return Math.min(mileage ?? 0, baseTotal);
   }, [mileage, baseTotal]);
 
@@ -80,49 +93,37 @@ export default function ExpoPayment() {
   }, [mileage, appliedMileage]);
 
   useEffect(() => {
-    // 로그인 여부 체크
     const token = localStorage.getItem("access_token");
     const tokenExpired = isTokenExpired(token);
-    if (token && !tokenExpired) {
-      setIsLoggedIn(true);
-      console.log("User is logged in.");
-    } else {
-      setIsLoggedIn(false);
-      console.log("User is NOT logged in.");
+    setIsLoggedIn(!!(token && !tokenExpired));
+
+    if (quantity > 0) {
+      setPersonalInfo(
+        Array.from({ length: quantity }).map(() => ({
+          name: "",
+          email: "",
+          birthdate: "",
+          phone: "",
+          gender: "",
+          rememberInfo: false,
+        }))
+      );
     }
 
-    setPersonalInfo((prevInfo) => {
-      const newInfo = Array.from({ length: quantity }).map((_, index) => {
-        return (
-          prevInfo[index] || {
-            name: "",
-            email: "",
-            birthdate: "",
-            phone: "",
-            gender: "",
-            rememberInfo: false,
-          }
-        );
-      });
-      return newInfo;
-    });
-    
-    // 박람회 정보 로드
     const loadExpoInfo = async () => {
       if (expoId) {
         try {
           const basicInfo = await getExpoBasicInfo(expoId);
           setExpoInfo(basicInfo);
         } catch (error) {
-          console.error('박람회 정보 로드 실패:', error);
+          console.error("박람회 정보 로드 실패:", error);
         }
       }
     };
-    
+
     loadExpoInfo();
   }, [quantity, expoId]);
 
-  // 로그인 시 보유 마일리지 불러오기
   useEffect(() => {
     const fetchMileage = async () => {
       if (!isLoggedIn) {
@@ -138,7 +139,6 @@ export default function ExpoPayment() {
         const parsed = Number(value) || 0;
         setMileage(parsed);
 
-        // 현재 적용된 마일리지가 보유치/최대 가능치보다 크면 보정
         const maxUse = Math.min(parsed, baseTotal);
         if (appliedMileage > maxUse) {
           setAppliedMileage(maxUse);
@@ -156,7 +156,6 @@ export default function ExpoPayment() {
     fetchMileage();
   }, [isLoggedIn, baseTotal]);
 
-  // 수량/가격/보유마일리지 변경 시, 적용 마일리지가 최대 사용 가능치 초과하지 않도록 보정
   useEffect(() => {
     const maxUse = Math.min(mileage ?? 0, baseTotal);
     if (appliedMileage > maxUse) {
@@ -172,7 +171,6 @@ export default function ExpoPayment() {
     });
   };
 
-  // 개인 정보 입력칸
   const loadMemberInfo = async () => {
     const token = localStorage.getItem("access_token");
     if (token && !isTokenExpired(token)) {
@@ -209,14 +207,12 @@ export default function ExpoPayment() {
     }
   };
 
-  // 전액사용 버튼 핸들러
   const handleUseAllMileage = () => {
     if (!isLoggedIn || mileage === null) return;
     const maxUse = Math.min(mileage || 0, baseTotal);
     setUsedMileageInput(String(maxUse));
   };
 
-  // 적용 버튼 핸들러
   const handleApplyMileage = () => {
     if (!isLoggedIn) {
       setMileageError("로그인 후 이용 가능합니다.");
@@ -247,6 +243,22 @@ export default function ExpoPayment() {
     setAppliedMileage(rounded);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <h2>결제 정보를 불러오는 중...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.errorText}>오류: {error}</h2>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       {/* 왼쪽 개인 정보 입력 */}
@@ -273,7 +285,7 @@ export default function ExpoPayment() {
                     <input
                       type="text"
                       id={`name-${index}`}
-                      value={personalInfo[index].name}
+                      value={personalInfo[index]?.name || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "name", e.target.value)
                       }
@@ -285,7 +297,7 @@ export default function ExpoPayment() {
                     <input
                       type="email"
                       id={`email-${index}`}
-                      value={personalInfo[index].email}
+                      value={personalInfo[index]?.email || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "email", e.target.value)
                       }
@@ -297,7 +309,7 @@ export default function ExpoPayment() {
                     <input
                       type="text"
                       id={`birthdate-${index}`}
-                      value={personalInfo[index].birthdate}
+                      value={personalInfo[index]?.birthdate || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(
                           index,
@@ -313,7 +325,7 @@ export default function ExpoPayment() {
                     <input
                       type="tel"
                       id={`phone-${index}`}
-                      value={personalInfo[index].phone}
+                      value={personalInfo[index]?.phone || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "phone", e.target.value)
                       }
@@ -330,7 +342,7 @@ export default function ExpoPayment() {
                         type="radio"
                         name={`gender-${index}`}
                         value="male"
-                        checked={personalInfo[index].gender === "male"}
+                        checked={personalInfo[index]?.gender === "male"}
                         onChange={(e) =>
                           handlePersonalInfoChange(
                             index,
@@ -346,7 +358,7 @@ export default function ExpoPayment() {
                         type="radio"
                         name={`gender-${index}`}
                         value="female"
-                        checked={personalInfo[index].gender === "female"}
+                        checked={personalInfo[index]?.gender === "female"}
                         onChange={(e) =>
                           handlePersonalInfoChange(
                             index,
@@ -360,7 +372,7 @@ export default function ExpoPayment() {
                   </div>
                 </div>
               </div>
-              {index < quantity - 1 && <hr className={styles.divider} />}{" "}
+              {index < quantity - 1 && <hr className={styles.divider} />}
             </div>
           ))}
         </form>
@@ -370,20 +382,31 @@ export default function ExpoPayment() {
       <section className={styles.rightSection}>
         <div className={styles.thumbnailBox}>
           <div className={styles.details}>
-            <h3>{expoInfo?.title || '로딩 중...'}</h3>
+            <h3>{expoInfo?.title || "로딩 중..."}</h3>
             <div className={styles.info}>
-              <p>📍 {expoInfo?.location || '장소 정보 없음'}</p>
-              <p>🗓 {expoInfo?.startDate && expoInfo?.endDate ? 
-                  `${new Date(expoInfo.startDate).toLocaleDateString('ko-KR')} ~ ${new Date(expoInfo.endDate).toLocaleDateString('ko-KR')}` 
-                  : '일정 정보 없음'}</p>
+              <p>📍 {expoInfo?.location || "장소 정보 없음"}</p>
+              <p>
+                🗓{" "}
+                {expoInfo?.startDate && expoInfo?.endDate
+                  ? `${new Date(expoInfo.startDate).toLocaleDateString(
+                      "ko-KR"
+                    )} ~ ${new Date(expoInfo.endDate).toLocaleDateString(
+                      "ko-KR"
+                    )}`
+                  : "일정 정보 없음"}
+              </p>
             </div>
           </div>
           <img
-            src={expoInfo?.thumbnailUrl || "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg"}
+            src={
+              expoInfo?.thumbnailUrl ||
+              "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg"
+            }
             alt={expoInfo?.title || "행사 제목"}
             className={styles.thumbnail}
             onError={(e) => {
-              e.target.src = 'https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg';
+              e.target.src =
+                "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg";
             }}
           />
         </div>
@@ -395,7 +418,6 @@ export default function ExpoPayment() {
               <div className={styles.currentMileage}>
                 <span>보유 마일리지</span>
                 <strong>
-                  {/* 보유 마일리지 표시 */}
                   {mileage === null
                     ? "불러오는 중..."
                     : `${mileage.toLocaleString()} M`}
@@ -405,7 +427,6 @@ export default function ExpoPayment() {
 
             <div className={styles.mileageControls}>
               <div className={styles.mileageInputContainer}>
-                {/* 입력 상태와 연결 */}
                 <input
                   type="number"
                   placeholder="사용할 마일리지"
@@ -414,7 +435,6 @@ export default function ExpoPayment() {
                   onChange={(e) => setUsedMileageInput(e.target.value)}
                   min={0}
                 />
-                {/* 전액사용 핸들러 연결 */}
                 <button
                   type="button"
                   className={styles.useAllButton}
@@ -423,7 +443,6 @@ export default function ExpoPayment() {
                   전액사용
                 </button>
               </div>
-              {/* 적용 버튼 핸들러 연결 */}
               <button
                 type="button"
                 className={styles.applyMileageButton}
@@ -435,7 +454,6 @@ export default function ExpoPayment() {
             </div>
 
             <div className={styles.mileageFooter}>
-              {/* 에러 문구 또는 적용 후 마일리지 동적 표시 */}
               {mileageError ? (
                 <div className={styles.errorText}>{mileageError}</div>
               ) : (
@@ -470,17 +488,15 @@ export default function ExpoPayment() {
             <div className={styles.row}>
               <span>서비스 수수료</span>
               <span>
-                {quantity} x {SERVICE_FEE_PER_TICKET}
+                {quantity} x {SERVICE_FEE_PER_TICKET.toLocaleString()}
               </span>
             </div>
             <div className={styles.row}>
               <span>마일리지</span>
-              {/* 적용된 마일리지 금액 차감 표시 */}
               <span>- {appliedMileage.toLocaleString()}원</span>
             </div>
             <div className={`${styles.row} ${styles.total}`}>
               <span>총계</span>
-              {/* 적용 후 총액 표시 */}
               <span>{totalAfterApply.toLocaleString()}원</span>
             </div>
           </div>
@@ -490,7 +506,6 @@ export default function ExpoPayment() {
           <h3>결제 방법 선택</h3>
 
           <div className={styles.methodGroup}>
-            {/* 결제 금액에 적용 후 총액을 전달 */}
             <ReservationPaymentCardButton
               targetType={TARGET_TYPE}
               expoId={expoId}
@@ -501,8 +516,8 @@ export default function ExpoPayment() {
               buyerName={personalInfo[0]?.name}
               buyerEmail={personalInfo[0]?.email}
               buyerTel={personalInfo[0]?.phone}
-              usedMileage={usedMileageInput}
-              savedMileage={totalAfterApply * 0.03} // 일단 결제 금액의 3퍼로 설정
+              usedMileage={appliedMileage}
+              savedMileage={Math.floor(totalAfterApply * 0.03)}
               reserverInfos={reserverInfos}
             />
             <PaymentVirtualBankButton
