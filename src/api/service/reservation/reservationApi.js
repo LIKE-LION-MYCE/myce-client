@@ -10,18 +10,12 @@ export const updateReservers = async (reservationId, reserverInfos) => {
   });
 };
 
-// 결제 전에 먼저 resolve 호출
-export const resolveReservers = async (reserverInfos) => {
-  const { data } = await instance.post("/reservations/resolvers", {
+// 비회원들 guestId 생성 및 guestId reservation에 추가
+export const updateGuestId = async (reservationId, reserverInfos) => {
+  await instance.patch("/reservations/guestId", {
+    reservationId,
     reserverInfos,
   });
-  return data.reserverInfos; // 배열 반환
-};
-
-// pending reservation 저장 후 reservation id 반환
-export const saveReservationPending = async (payload) => {
-  const res = await instance.post("/reservations/pending", payload);
-  return res.data;
 };
 
 // confirm으로 상태 변경
