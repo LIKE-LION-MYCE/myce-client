@@ -1,0 +1,289 @@
+/* Privacy Modal Styles */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.modalOverlay.open {
+  opacity: 1;
+}
+
+.modalOverlay.closing {
+  opacity: 0;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 
+    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.9) translateY(40px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.modalContent.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modalContent.closing {
+  transform: scale(0.9) translateY(40px);
+  opacity: 0;
+}
+
+/* Close Button */
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
+}
+
+.closeButton svg {
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+/* Content */
+.content {
+  padding: 40px 32px 32px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 24px;
+}
+
+.header h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Privacy Content */
+.privacyContent {
+  line-height: 1.7;
+  color: #333;
+}
+
+.privacyContent section {
+  margin-bottom: 32px;
+}
+
+.privacyContent h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  padding: 12px 0;
+  border-bottom: 2px solid #667eea;
+}
+
+.privacyContent h4 {
+  margin: 20px 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.privacyContent p {
+  margin: 0 0 12px 0;
+  color: #555;
+  line-height: 1.7;
+}
+
+.privacyContent ol,
+.privacyContent ul {
+  margin: 0 0 16px 0;
+  padding-left: 24px;
+}
+
+.privacyContent li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.privacyContent ul ul,
+.privacyContent ol ul {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* Nested Lists */
+.privacyContent ul ul li {
+  margin-bottom: 4px;
+}
+
+/* Contact Info */
+.contactInfo {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #28a745;
+  margin: 16px 0;
+}
+
+.contactInfo h4 {
+  margin: 0 0 16px 0 !important;
+  color: #28a745 !important;
+  border-bottom: none !important;
+  padding: 0 !important;
+}
+
+.contactInfo ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.contactInfo li {
+  margin-bottom: 8px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contactInfo li:last-child {
+  margin-bottom: 0;
+}
+
+/* Effective Date */
+.effective {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.effective p {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.effective p:last-child {
+  margin-bottom: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Bold text styling */
+.privacyContent strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modalOverlay {
+    padding: 16px;
+  }
+  
+  .modalContent {
+    max-width: 100%;
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+  
+  .content {
+    padding: 32px 24px 24px;
+  }
+  
+  .header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .privacyContent h3 {
+    font-size: 1rem;
+  }
+  
+  .privacyContent h4 {
+    font-size: 0.95rem;
+  }
+  
+  .privacyContent p,
+  .privacyContent li {
+    font-size: 0.9rem;
+  }
+  
+  .privacyContent ol,
+  .privacyContent ul {
+    padding-left: 20px;
+  }
+  
+  .contactInfo {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 24px 20px 20px;
+  }
+  
+  .header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .privacyContent h3 {
+    font-size: 0.95rem;
+  }
+  
+  .privacyContent p,
+  .privacyContent li {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+}

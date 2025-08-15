@@ -1,0 +1,426 @@
+/* Shared Chat Area Styles */
+
+.chatArea {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.chatHeader {
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+}
+
+.defaultHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.defaultHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.statusDot.connected {
+  background: #4CAF50;
+}
+
+.statusDot.disconnected {
+  background: #f44336;
+}
+
+/* Messages Container */
+.messagesContainer {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: #fafafa;
+  /* Better scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  /* GPU acceleration for smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  /* Prevent layout shifting */
+  contain: layout style paint;
+  /* Fixed height for stable scroll behavior */
+  height: 400px;
+}
+
+/* Webkit scrollbar styling */
+.messagesContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messagesContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Loading and Status Indicators */
+.loadingIndicator {
+  text-align: center;
+  padding: 10px;
+  color: #666;
+  background-color: #f5f5f5;
+  margin: 5px 0;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.loadingIndicator.smooth {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.conversationStart {
+  text-align: center;
+  padding: 15px;
+  color: #999;
+  font-size: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 10px;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 10px;
+  color: #f44336;
+  background-color: #ffebee;
+  margin: 5px 0;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.emptyChat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* No Chat Selected */
+.noChatSelected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f8f9fa;
+}
+
+.noChatContent {
+  text-align: center;
+  color: #666;
+}
+
+.noChatContent h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.noChatContent p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Message Rows - Use working flexbox approach from ChatContainer */
+.messageRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.messageLeft {
+  justify-content: flex-start;
+}
+
+.messageRight {
+  justify-content: flex-end;
+}
+
+/* Avatars */
+.messageAvatar {
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar.ai {
+  border: 2px solid #2196F3;
+}
+
+.avatar.admin {
+  border: 2px solid #4CAF50;
+}
+
+.avatar.user {
+  border: 2px solid #9E9E9E;
+}
+
+/* Message Content */
+.messageContent {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  min-width: 0;
+}
+
+/* Ensure right messages have proper content alignment */
+.messageRight .messageContent {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  min-width: 0;
+  align-items: flex-end;
+}
+
+.messageLeft .messageContent {
+  align-items: flex-start;
+}
+
+.senderName {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 4px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.messageBubbleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  width: 100%;
+}
+
+/* Right-align bubble containers for user messages */
+.messageRight .messageBubbleContainer {
+  align-items: flex-end;
+}
+
+/* Message Bubbles - WhatsApp/KakaoTalk style */
+.messageBubble {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 255px;
+  min-width: 60px;
+  position: relative;
+  white-space: pre-wrap;
+}
+
+.myMessage {
+  background-color: #3478f6;
+  color: white;
+  border: none;
+}
+
+.aiMessage {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  box-shadow: 0 1px 2px rgba(59, 130, 246, 0.05);
+}
+
+.adminMessage {
+  background: #f0f9f0;
+  border: 1px solid #c6e8c6;
+  color: #2e7d2e;
+  box-shadow: 0 1px 2px rgba(46, 125, 46, 0.05);
+}
+
+/* Message Metadata */
+.messageMetadata {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 4px;
+  justify-content: inherit;
+}
+
+.unreadCount {
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+  background-color: #3478f6;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #999;
+}
+
+/* Scroll to Bottom Button */
+.scrollToBottomButton {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none;
+}
+
+.scrollToBottomButton.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.scrollToBottomButton:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.scrollToBottomButton svg {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.scrollToBottomButton:hover svg {
+  color: #333;
+}
+
+/* Input Area */
+.inputArea {
+  padding: 1rem 1.5rem;
+  background: #f9f9f9;
+  border-top: 1px solid #ddd;
+  border-radius: 0 0 8px 8px;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.messageInput {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.messageInput:focus {
+  border-color: #3478f6;
+  box-shadow: 0 0 0 2px rgba(52, 120, 246, 0.1);
+}
+
+.messageInput:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.sendButton {
+  background-color: #3478f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.sendButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
