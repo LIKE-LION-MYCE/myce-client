@@ -2,8 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import styles from './CurrentBannerTable.module.css';
 
 const statusMap = {
-  PENDING_CANCEL: '취소 대기',
+  PENDING_PUBLISH: '게시 대기',
   PUBLISHED: '게시중',
+  PENDING_CANCEL: '취소 대기',
+  CANCELLED: '취소됨',
+  COMPLETED: '게시 종료',
 };
 
 function CurrentBannerTable({ data }) {
