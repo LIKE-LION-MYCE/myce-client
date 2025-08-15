@@ -20,6 +20,7 @@ function PaymentRefundModal({
   onRefund,
   onCancel,
   onClose,
+  readOnly = false,
 }) {
   const [refundReason, setRefundReason] = useState("");
   
@@ -37,7 +38,7 @@ function PaymentRefundModal({
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
         <h2 className={styles.title}>
-          환불 신청서{isFullRefund && " (전액 환불)"}
+          {readOnly ? "환불 내역" : "환불 신청서"}{isFullRefund && !readOnly && " (전액 환불)"}
         </h2>
         <div className={styles.infoSection}>
           <div>
@@ -107,33 +108,43 @@ function PaymentRefundModal({
           </div>
         </div>
         
-        {/* 환불 사유 입력 섹션 */}
-        <div className={styles.reasonSection}>
-          <label htmlFor="refundReason" className={styles.reasonLabel}>
-            환불 사유 <span className={styles.required}>*</span>
-          </label>
-          <textarea
-            id="refundReason"
-            className={styles.reasonInput}
-            value={refundReason}
-            onChange={(e) => setRefundReason(e.target.value)}
-            placeholder="환불 사유를 입력해주세요."
-            maxLength={500}
-            rows={4}
-          />
-          <div className={styles.charCount}>
-            {refundReason.length}/500
+        {/* 환불 사유 입력 섹션 - readOnly일 때 숨김 */}
+        {!readOnly && (
+          <div className={styles.reasonSection}>
+            <label htmlFor="refundReason" className={styles.reasonLabel}>
+              환불 사유 <span className={styles.required}>*</span>
+            </label>
+            <textarea
+              id="refundReason"
+              className={styles.reasonInput}
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              placeholder="환불 사유를 입력해주세요."
+              maxLength={500}
+              rows={4}
+            />
+            <div className={styles.charCount}>
+              {refundReason.length}/500
+            </div>
           </div>
-        </div>
+        )}
         
         {/* 하단 버튼 영역 */}
         <div className={styles.btnRow}>
-          <button className={styles.whiteBtn} onClick={onCancel}>
-            취소
-          </button>
-          <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={handleRefundClick}>
-            환불 신청
-          </button>
+          {readOnly ? (
+            <button className={styles.blackBtn} onClick={onClose}>
+              확인
+            </button>
+          ) : (
+            <>
+              <button className={styles.whiteBtn} onClick={onCancel}>
+                취소
+              </button>
+              <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={handleRefundClick}>
+                환불 신청
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
