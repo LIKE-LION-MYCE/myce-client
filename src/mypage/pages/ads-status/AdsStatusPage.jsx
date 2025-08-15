@@ -5,15 +5,18 @@ import styles from "./AdsStatusPage.module.css";
 
 // 상태 라벨 및 스타일 맵
 const STATUS_MAP = {
-  PENDING_APPROVAL: { label: "승인대기", className: "pending" },
-  PENDING_PAYMENT: { label: "결제대기", className: "waiting" },
-  PUBLISHED: { label: "게시중", className: "active" },
-  REJECTED: { label: "거절됨", className: "canceled" },
-  CANCELLED: { label: "취소됨", className: "canceled" },
-  COMPLETED: { label: "게시완료", className: "finished" },
+  PENDING_APPROVAL: { label: "승인 대기", className: "pending" },
+  PENDING_PAYMENT: { label: "결제 대기", className: "waiting" },
+  PENDING_PUBLISH: { label: "게시 대기", className: "waiting" },
+  PENDING_CANCEL: { label: "취소 대기", className: "pending" },
+  PUBLISHED: { label: "게시 중", className: "active" },
+  REJECTED: { label: "승인 거절", className: "canceled" },
+  CANCELLED: { label: "취소 완료", className: "canceled" },
+  COMPLETED: { label: "종료됨", className: "finished" },
 };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
+const PAGE_BTN_COUNT = 5;
 
 // 상태별 스타일 클래스
 const getStatusClass = (status) => {
@@ -88,52 +91,10 @@ function AdsTable({ data, onRowClick }) {
   );
 }
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  return (
-    <div className={styles.pagination}>
-      <button
-        className={styles.pageButton}
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 0}
-      >
-        이전
-      </button>
-      
-      <div className={styles.pageNumbers}>
-        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-          const startPage = Math.max(0, currentPage - 2);
-          const pageNumber = startPage + i;
-          
-          if (pageNumber >= totalPages) return null;
-          
-          return (
-            <button
-              key={pageNumber}
-              className={`${styles.pageNumber} ${
-                pageNumber === currentPage ? styles.active : ''
-              }`}
-              onClick={() => onPageChange(pageNumber)}
-            >
-              {pageNumber + 1}
-            </button>
-          );
-        })}
-      </div>
-      
-      <button
-        className={styles.pageButton}
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages - 1}
-      >
-        다음
-      </button>
-    </div>
-  );
-}
 
 const AdsStatusPage = () => {
   const [advertisements, setAdvertisements] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -142,17 +103,16 @@ const AdsStatusPage = () => {
   const navigate = useNavigate();
 
   // 광고 데이터 불러오기
-  const fetchAdvertisements = async (page = 0) => {
+  const fetchAdvertisements = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getMyAdvertisements(page, ITEMS_PER_PAGE);
-      const { content, totalPages, totalElements, number } = response.data;
+      const response = await getMyAdvertisements(currentPage - 1, ITEMS_PER_PAGE);
+      const { content, totalPages, totalElements } = response.data;
       
       setAdvertisements(content);
       setTotalPages(totalPages);
       setTotalElements(totalElements);
-      setCurrentPage(number);
     } catch (err) {
       console.error('광고 목록 조회 실패:', err);
       setError('광고 목록을 불러오는데 실패했습니다.');
@@ -163,13 +123,56 @@ const AdsStatusPage = () => {
 
   useEffect(() => {
     fetchAdvertisements();
-  }, []);
+  }, [currentPage]);
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (page) => {
-    if (page >= 0 && page < totalPages && page !== currentPage) {
-      fetchAdvertisements(page);
+  // 페이지네이션 렌더링
+  const renderPaginationButtons = () => {
+    const pages = [];
+    const startPage = Math.floor((currentPage - 1) / PAGE_BTN_COUNT) * PAGE_BTN_COUNT + 1;
+    const endPage = Math.min(startPage + PAGE_BTN_COUNT - 1, totalPages);
+
+    // 첫 페이지로 이동
+    pages.push(
+      <button key="first" onClick={() => setCurrentPage(1)} className={styles.pageBtn} disabled={currentPage === 1}>
+        «
+      </button>
+    );
+
+    // 이전 페이지 그룹으로 이동
+    pages.push(
+      <button key="prev" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} className={styles.pageBtn} disabled={currentPage === 1}>
+        이전
+      </button>
+    );
+
+    // 페이지 번호 버튼들
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i)}
+          className={`${styles.pageBtn} ${i === currentPage ? styles.active : ''}`}
+        >
+          {i}
+        </button>
+      );
     }
+
+    // 다음 페이지 그룹으로 이동
+    pages.push(
+      <button key="next" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} className={styles.pageBtn} disabled={currentPage === totalPages}>
+        다음
+      </button>
+    );
+
+    // 마지막 페이지로 이동
+    pages.push(
+      <button key="last" onClick={() => setCurrentPage(totalPages)} className={styles.pageBtn} disabled={currentPage === totalPages}>
+        »
+      </button>
+    );
+
+    return pages;
   };
 
   // 광고 상세 페이지로 이동
@@ -209,11 +212,10 @@ const AdsStatusPage = () => {
       ) : (
         <>
           <AdsTable data={advertisements} onRowClick={handleRowClick} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          {/* 페이지네이션 버튼 영역 */}
+          <div className={styles.pagination}>
+            {renderPaginationButtons()}
+          </div>
         </>
       )}
     </div>

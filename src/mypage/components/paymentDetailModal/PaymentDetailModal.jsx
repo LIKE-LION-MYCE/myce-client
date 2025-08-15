@@ -15,10 +15,18 @@ function PaymentDetailModal({
   children,
   onClose,
 }) {
+  // 디버깅용 로그
+  console.log('PaymentDetailModal - isPremium:', isPremium);
+  console.log('PaymentDetailModal - depositAmount:', depositAmount);
+  console.log('PaymentDetailModal - premiumDepositAmount:', premiumDepositAmount);
+  console.log('PaymentDetailModal - usageFeeAmount:', usageFeeAmount);
+  
   // 총액 계산: 프리미엄일 경우 (기본 등록금 + 프리미엄 이용료 + 사용료), 기본일 경우 (기본 등록금 + 사용료)
   const calculatedTotalAmount = isPremium 
     ? (depositAmount || 0) + (premiumDepositAmount || 0) + (usageFeeAmount || 0)
     : (depositAmount || 0) + (usageFeeAmount || 0);
+    
+  console.log('PaymentDetailModal - calculatedTotalAmount:', calculatedTotalAmount);
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
@@ -55,7 +63,7 @@ function PaymentDetailModal({
               <span>기본 등록금</span>
               <span>{depositAmount?.toLocaleString()}원</span>
             </div>
-            {isPremium && premiumDepositAmount && (
+            {isPremium && premiumDepositAmount > 0 && (
               <div className={styles.row}>
                 <span>프리미엄 이용료</span>
                 <span>{premiumDepositAmount?.toLocaleString()}원</span>

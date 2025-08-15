@@ -1,19 +1,68 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { getMyInfo } from "../../../api/service/user/memberApi";
 import styles from "./MyPageSidebar.module.css";
 
 const MyPageSidebar = () => {
+  const [userInfo, setUserInfo] = useState({
+    name: "로딩 중...",
+    loginId: "",
+    gradeDescription: "로딩 중...",
+    gradeImageUrl: "",
+    mileage: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await getMyInfo();
+        const data = response.data;
+        setUserInfo({
+          name: data.name || "사용자",
+          loginId: data.loginId || "",
+          gradeDescription: data.gradeDescription || "일반 회원",
+          gradeImageUrl: data.gradeImageUrl || "",
+          mileage: data.mileage || 0
+        });
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+        setUserInfo({
+          name: "사용자",
+          loginId: "",
+          gradeDescription: "일반 회원",
+          gradeImageUrl: "",
+          mileage: 0
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.profileSection}>
-        <img
-          src="/default-profile.png"
-          alt="프로필"
-          className={styles.profileImg}
-        />
-        <h3 className={styles.userName}>홍길동</h3>
-        <p className={styles.grade}>초보 찍찍이</p>
-        <p className={styles.mileage}>🪙 마일리지 : 100000 point</p>
+        {userInfo.gradeImageUrl ? (
+          <img
+            src={userInfo.gradeImageUrl}
+            alt="등급 이미지"
+            className={styles.profileImg}
+          />
+        ) : (
+          <div className={styles.profileIcon}>
+            {userInfo.name.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <h3 className={styles.userName}>{userInfo.name}</h3>
+        <p className={styles.loginId}>@{userInfo.loginId}</p>
+        <p className={styles.grade}>{userInfo.gradeDescription}</p>
+        <p className={styles.mileage}>
+          <img src="/images/icons/mileage.png" alt="마일리지" className={styles.mileageIcon} />
+          마일리지 : {userInfo.mileage.toLocaleString()} point
+        </p>
       </div>
       <nav className={styles.menu}>
         <ul>

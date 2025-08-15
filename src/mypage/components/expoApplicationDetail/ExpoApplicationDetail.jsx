@@ -64,12 +64,11 @@ function ExpoApplicationDetail({
     }
   };
 
-  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기, 게시대기 제외)
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
   const canViewPaymentInfo = (status) => {
     const excludedStatuses = [
       '승인대기', '승인 대기',
-      '결제대기', '결제 대기', 
-      '게시대기', '게시 대기'
+      '결제대기', '결제 대기'
     ];
     return !excludedStatuses.includes(status);
   };
