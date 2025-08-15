@@ -46,8 +46,8 @@ function Reservations() {
 
   // 선택 상태(페이지 간 유지)
   const [selectedIds, setSelectedIds] = useState(() => new Set());
-  const [selectedMap, setSelectedMap] = useState(() => new Map()); // id -> {name,email,phone}
-  const [selectAllMatching, setSelectAllMatching] = useState(false); // Gmail 스타일
+  const [selectedMap, setSelectedMap] = useState(() => new Map());
+  const [selectAllMatching, setSelectAllMatching] = useState(false);
 
   // 현재 페이지의 id 목록
   const currentPageIds = useMemo(
@@ -280,6 +280,15 @@ function Reservations() {
     setTimeout(() => setShowFailToast(false), 3000);
   };
 
+  // 컨트롤러에 넘길 현재 필터 파라미터 계산 (모달로 전달)
+  const entranceStatusParam = currentTab === '전체' ? undefined : currentTab;
+  const trimmed = searchText.trim();
+  const nameParam = searchType === 'name' ? (trimmed || undefined) : undefined;
+  const phoneParam = searchType === 'phone' ? (trimmed || undefined) : undefined;
+  const reservationCodeParam =
+    searchType === 'reservationCode' ? (trimmed || undefined) : undefined;
+  const ticketNameParam = ticketName || undefined;
+
   return (
     <div className={styles.reservationsWrapper}>
       <Tab tabs={tabLabels} onTabChange={handleTabChange} />
@@ -409,6 +418,11 @@ function Reservations() {
           clearSelection();
           setShowEmailModal(false);
         }}
+        entranceStatus={entranceStatusParam}
+        name={nameParam}
+        phone={phoneParam}
+        reservationCode={reservationCodeParam}
+        ticketName={ticketNameParam}
       />
 
       {showSuccessToast && <ToastSuccess />}

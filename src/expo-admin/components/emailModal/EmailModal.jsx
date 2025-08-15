@@ -12,6 +12,11 @@ function EmailModal({
   onAfterSend,
   triggerToastFail,
   triggerSuccessToast,
+  entranceStatus,
+  name,
+  phone,
+  reservationCode,
+  ticketName,
 }) {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -52,7 +57,7 @@ function EmailModal({
       return;
     }
 
-    // 수신자 구성
+    // DTO 구성
     let dto = {
       subject: trimmedSubject,
       content: trimmedBody,
@@ -76,9 +81,17 @@ function EmailModal({
       }
     }
 
+    const params = {
+      entranceStatus: entranceStatus || undefined,
+      name: name || undefined,
+      phone: phone || undefined,
+      reservationCode: reservationCode || undefined,
+      ticketName: ticketName || undefined,
+    };
+
     try {
       setSubmitting(true);
-      await sendExpoAdminEmail(expoId, dto);
+      await sendExpoAdminEmail(expoId, dto, params);
       triggerSuccessToast?.();
       onAfterSend?.();
       handleClose();
