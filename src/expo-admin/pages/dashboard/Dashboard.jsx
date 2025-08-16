@@ -47,6 +47,9 @@ function Dashboard() {
   const [selectedCheckinDate, setSelectedCheckinDate] = useState('');
   const [customHourlyData, setCustomHourlyData] = useState(null);
   const [isCustomCheckinMode, setIsCustomCheckinMode] = useState(false);
+  
+  // 캐시 삭제 버튼 표시 여부
+  const [showClearCacheBtn, setShowClearCacheBtn] = useState(false);
 
   const columns = [
     { key: 'ticketType', header: '티켓명' },
@@ -189,6 +192,24 @@ function Dashboard() {
     }
   };
 
+  const handleCacheClear = async () => {
+    if (!window.confirm('모든 캐시를 완전히 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      return;
+    }
+    
+    try {
+      await DashboardService.clearAllCache(expoId);
+      // 캐시 삭제 후 데이터 다시 로드
+      await loadDashboardData();
+      // 캐시 삭제 버튼 숨기기
+      setShowClearCacheBtn(false);
+      alert('캐시가 완전히 삭제되었습니다.');
+    } catch (err) {
+      console.error('Cache clear error:', err);
+      alert('캐시 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.dashboardContainer}>
@@ -253,6 +274,14 @@ function Dashboard() {
           <FiRefreshCw className={styles.refreshIcon} />
           전체 새로고침
         </button>
+        {showClearCacheBtn && (
+          <button 
+            onClick={handleCacheClear} 
+            className={styles.clearCacheBtn}
+          >
+            🗑️ 캐시 완전 삭제
+          </button>
+        )}
       </div>
 
       {/* 예약 */}
@@ -262,13 +291,13 @@ function Dashboard() {
         </div>
         <div className={styles.cardGroup}>
           <div className={styles.card}>
-            <p className={styles.cardLabel}>누적 예약자</p>
+            <p className={styles.cardLabel}>누적 예약수</p>
             <p className={styles.cardValue}>
               {reservationStats?.totalReservations?.toLocaleString() || 0}
             </p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardLabel}>오늘 예약자</p>
+            <p className={styles.cardLabel}>오늘 예약수</p>
             <p className={styles.cardValue}>
               {reservationStats?.todayReservations?.toLocaleString() || 0}
             </p>
@@ -521,7 +550,7 @@ function Dashboard() {
             </div>
             <div>
               <h2>{checkinStats?.reservedTickets?.toLocaleString() || 0}</h2>
-              <p className={styles.checkinSub}>예약 티켓 수</p>
+              <p className={styles.checkinSub}>누적 예약수</p>
             </div>
           </div>
           <div className={styles.checkinRate}>
