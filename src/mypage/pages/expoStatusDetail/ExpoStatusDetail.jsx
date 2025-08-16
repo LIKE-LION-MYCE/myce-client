@@ -281,16 +281,30 @@ const ExpoStatusDetail = () => {
     }
   };
 
-  // 정산 요청 핸들러
+  // 정산 요청 핸들러 - 모달을 통해 은행 정보 입력 후 정산 신청
   const handleSettlementRequest = async () => {
     try {
       setLoading(true);
-      await requestExpoSettlement(id);
-      alert('정산 요청이 완료되었습니다.');
-      fetchExpoDetail(); // 상태 업데이트를 위해 데이터 다시 불러오기
+      const response = await getExpoSettlementReceipt(id);
+      console.log('정산 내역 API 응답:', response.data);
+      const transformedReceiptData = {
+        expoTitle: response.data.expoTitle,
+        settlementRequestDate: response.data.issueDate,
+        totalRevenue: response.data.totalRevenue,
+        fee: response.data.commissionAmount,
+        finalSettlementAmount: response.data.netProfit,
+        ticketSales: response.data.ticketSales,
+        commissionRate: response.data.commissionRate,
+        // 은행정보는 null (정산 신청 모드)
+        bankName: null,
+        bankAccount: null,
+        receiverName: null,
+      };
+      setSettlementReceiptData(transformedReceiptData);
+      setShowSettlementReceiptModal(true);
     } catch (err) {
-      console.error('정산 요청 실패:', err);
-      alert('정산 요청에 실패했습니다.');
+      console.error('정산 내역 조회 실패:', err);
+      alert('정산 내역을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -329,6 +343,28 @@ const ExpoStatusDetail = () => {
   const handleCloseSettlementReceiptModal = () => {
     setShowSettlementReceiptModal(false);
     setSettlementReceiptData(null);
+  };
+
+  // 실제 정산 신청 처리 핸들러
+  const handleActualSettlementRequest = async (bankInfo) => {
+    try {
+      setLoading(true);
+      const settlementData = {
+        receiverName: bankInfo.receiverName,
+        bankName: bankInfo.bankName,
+        bankAccount: bankInfo.bankAccount
+      };
+      
+      await requestExpoSettlement(id, settlementData);
+      alert('정산 요청이 완료되었습니다.');
+      handleCloseSettlementReceiptModal();
+      fetchExpoDetail(); // 상태 업데이트를 위해 데이터 다시 불러오기
+    } catch (err) {
+      console.error('정산 요청 실패:', err);
+      alert('정산 요청에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -477,6 +513,7 @@ const ExpoStatusDetail = () => {
             bankAccount: settlementReceiptData?.bankAccount, 
             receiverName: settlementReceiptData?.receiverName
           } : null}
+          onSettlementRequest={handleActualSettlementRequest}
         />
       )}
 
