@@ -6,6 +6,7 @@ import PaymentRefundModal from '../../components/paymentDetailModal/PaymentRefun
 import SettlementReceiptModal from '../../components/paymentDetailModal/SettlementReceiptModal';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import AdminInfoModal from '../../components/adminInfoModal/AdminInfoModal';
+import SevenDayRuleModal from '../../components/sevenDayRuleModal/SevenDayRuleModal';
 import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
 import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoRefundHistory, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail, completeExpoPayment, requestExpoRefund } from '../../../api/service/user/memberApi';
@@ -79,6 +80,7 @@ const ExpoStatusDetail = () => {
   const [paymentInfoData, setPaymentInfoData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showSevenDayRuleModal, setShowSevenDayRuleModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -275,10 +277,22 @@ const ExpoStatusDetail = () => {
       await fetchExpoDetail();
     } catch (err) {
       console.error('환불 신청 실패:', err);
-      alert('환불 신청에 실패했습니다.');
+      
+      // 7일 규칙 위반 에러 처리 (RF003)
+      if (err.response?.data?.errorCode === 'RF003') {
+        handleCloseRefundModal(); // 환불 모달 닫기
+        setShowSevenDayRuleModal(true); // 7일 규칙 모달 열기
+      } else {
+        alert('환불 신청에 실패했습니다.');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  // 7일 규칙 모달 닫기 핸들러
+  const handleCloseSevenDayRuleModal = () => {
+    setShowSevenDayRuleModal(false);
   };
 
   // 정산 요청 핸들러 - 모달을 통해 은행 정보 입력 후 정산 신청
@@ -493,6 +507,7 @@ const ExpoStatusDetail = () => {
           remainingDays={refundData.remainingDays}
           refundAmount={refundData.refundAmount}
           status={refundData.status}
+          refundReason={refundData.refundReason}
           onRefund={handleRefund}
           onClose={handleCloseRefundModal}
           onCancel={handleCloseRefundModal}
@@ -538,6 +553,13 @@ const ExpoStatusDetail = () => {
             확인
           </button>
         </PaymentDetailModal>
+      )}
+
+      {/* 7일 규칙 위반 모달 조건부 렌더링 */}
+      {showSevenDayRuleModal && (
+        <SevenDayRuleModal
+          onClose={handleCloseSevenDayRuleModal}
+        />
       )}
 
     </div>

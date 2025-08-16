@@ -138,10 +138,6 @@ function ExpoApplicationDetail({
           )}
           
           
-          {/* 취소 대기인 경우 - 취소 철회나 정보만 조회 가능 */}
-          {(status === '취소대기' || status === '취소 대기') && (
-            <span className={styles.waitingMessage}>취소 처리 대기 중입니다</span>
-          )}
         </div>
       </div>
     );

@@ -1,6 +1,6 @@
 import styles from './ExpoPaymentDetailModal.module.css';
 
-function ExpoPaymentDetailModal({ isOpen, onClose, paymentDetail }) {
+function ExpoPaymentDetailModal({ isOpen, onClose, paymentDetail, onApprove }) {
   if (!isOpen) return null;
   
   // 총액 계산: 프리미엄일 경우 (기본 등록금 + 프리미엄 이용료 + 사용료), 기본일 경우 (기본 등록금 + 사용료)
@@ -98,6 +98,11 @@ function ExpoPaymentDetailModal({ isOpen, onClose, paymentDetail }) {
 
         <div className={styles.actionBox}>
           <button className={styles.cancelBtn} onClick={onClose}>닫기</button>
+          {onApprove && (
+            <button className={styles.approveBtn} onClick={onApprove}>
+              승인하기
+            </button>
+          )}
         </div>
       </div>
     </div>

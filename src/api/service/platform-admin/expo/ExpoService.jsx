@@ -44,6 +44,12 @@ export const fetchPaymentInfo = async (expoId) => {
   return res.data;
 };
 
+// 박람회 승인 시 결제 정보 미리보기
+export const fetchPaymentPreview = async (expoId) => {
+  const res = await instance.get(`/platform/expo/${expoId}/payment-preview`);
+  return res.data;
+};
+
 // 박람회 거절 정보 조회
 export const fetchRejectInfo = async (expoId) => {
   const res = await instance.get(`/platform/expo/${expoId}/reject`);
