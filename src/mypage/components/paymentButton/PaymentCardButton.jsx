@@ -5,10 +5,10 @@ import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
 import { requestRefund } from "../../../api/service/payment/RefundService";
 
-function PaymentCardButton({ name, amount, buyer }) {
+function PaymentCardButton({ name, amount, buyer, targetType }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { id: expoId } = useParams();
+  const { id } = useParams();
 
   const handlePay = async () => {
     if (!window.IMP) {
@@ -33,22 +33,20 @@ function PaymentCardButton({ name, amount, buyer }) {
         async function (rsp) {
           if (rsp.success) {
             try {
-              const res = await instance.post(
-                `/members/expos/${expoId}/payment-complete`,
-                {
-                  impUid: rsp.imp_uid,
-                  merchantUid: rsp.merchant_uid,
-                  amount: amount,
-                  targetType: "EXPO",
-                }
-              );
+              const res = await instance.post(`/payment/verify`, {
+                impUid: rsp.imp_uid,
+                merchantUid: rsp.merchant_uid,
+                amount: amount,
+                targetId: id,
+                targetType: targetType,
+              });
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
-                navigate(`/mypage/expo-status/${expoId}`);
+                navigate(`/mypage/expo-status/${id}`);
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
@@ -75,7 +73,7 @@ function PaymentCardButton({ name, amount, buyer }) {
             }
           } else {
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
-            navigate(`/mypage/expo-status/${expoId}`);
+            navigate(`/mypage/expo-status/${id}`);
           }
         }
       );
