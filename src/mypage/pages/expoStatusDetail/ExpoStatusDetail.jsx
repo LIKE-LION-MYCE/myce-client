@@ -96,6 +96,9 @@ const ExpoStatusDetail = () => {
       // 프리미엄 디버깅을 위한 로그
       console.log('백엔드 데이터:', data);
       console.log('paymentInfo:', data.paymentInfo);
+      console.log('isPremium 원본 값:', data.isPremium);
+      console.log('isPremium 타입:', typeof data.isPremium);
+      console.log('상태:', data.status);
       
       // 백엔드 데이터를 프론트엔드 형식으로 변환
       const transformedData = {
@@ -109,7 +112,7 @@ const ExpoStatusDetail = () => {
         endTime: formatTime(data.endTime),
         postStartDate: data.displayStartDate || '',
         postEndDate: data.displayEndDate || '',
-        isPremium: data.isPremium || false,
+        isPremium: Boolean(data.isPremium),
         isPublic: data.status === 'PUBLISHED',
         category: data.category || '카테고리 미정',
         description: data.description === 'string' ? '상세 설명이 없습니다.' : (data.description || '상세 설명이 없습니다.'),

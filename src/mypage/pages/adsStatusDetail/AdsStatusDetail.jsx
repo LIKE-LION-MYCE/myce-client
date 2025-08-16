@@ -10,7 +10,7 @@ import PaymentSelection from "../payment-selection/PaymentSelection";
 
 // 단순화된 버튼 설정
 const ALL_BUTTONS = [
-  { label: "결제 신청", color: "black", disabled: false, action: "payment" },
+  { label: "결제하기", color: "black", disabled: false, action: "payment" },
   { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
   { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
   { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
@@ -28,7 +28,7 @@ const AD_STATUS_MAP = {
   PENDING_PAYMENT: {
     badge: { label: "결제대기", className: "waiting" },
     buttons: [
-      { label: "결제 신청", color: "black", disabled: false, action: "payment" },
+      { label: "결제하기", color: "black", disabled: false, action: "payment" },
       { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
     ],
   },

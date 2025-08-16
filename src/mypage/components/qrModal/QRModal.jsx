@@ -150,11 +150,11 @@ const QRModal = ({
             </div>
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>사용 시작일</span>
-              <span className={styles.detailValue}>{formatDate(expoInfo?.startDate)}</span>
+              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
             </div>
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>사용 종료일</span>
-              <span className={styles.detailValue}>{formatDate(expoInfo?.endDate)}</span>
+              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
             </div>
           </div>
         </div>

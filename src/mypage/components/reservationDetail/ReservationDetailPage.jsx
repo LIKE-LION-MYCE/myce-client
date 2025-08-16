@@ -94,7 +94,7 @@ const ReservationDetailPage = () => {
     setEditMembers(updated);
   };
 
-  // 박람회 기간 체크 함수
+  // QR 코드 접근 가능 기간 체크 함수
   const isExpoActive = () => {
     if (!reservationData?.expoInfo?.startDate || !reservationData?.expoInfo?.endDate) {
       return false;
@@ -109,7 +109,11 @@ const ReservationDetailPage = () => {
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
     
-    return today >= startDate && today <= endDate;
+    // QR 코드는 박람회 시작 2일 전부터 박람회 종료일까지 접근 가능
+    const qrAvailableDate = new Date(startDate);
+    qrAvailableDate.setDate(qrAvailableDate.getDate() - 2);
+    
+    return today >= qrAvailableDate && today <= endDate;
   };
 
   // 상세보기 버튼 클릭 시
