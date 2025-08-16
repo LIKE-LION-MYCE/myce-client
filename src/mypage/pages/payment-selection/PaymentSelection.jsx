@@ -7,7 +7,6 @@ import Spinner from "../../../common/components/spinner/Spinner";
 // 3가지 결제 버튼 컴포넌트를 모두 import 합니다.
 import PaymentCardButton from "../../components/paymentButton/PaymentCardButton";
 import PaymentTransferButton from "../../components/paymentButton/PaymentTransferButton";
-import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton";
 
 const PaymentSelection = () => {
   const { id: expoId } = useParams();
