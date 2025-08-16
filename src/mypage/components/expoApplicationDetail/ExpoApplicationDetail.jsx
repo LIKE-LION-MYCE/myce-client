@@ -91,7 +91,7 @@ function ExpoApplicationDetail({
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 신청</button>
           )}
           {(status === '게시종료' || status === '게시 종료') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 신청</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>정산 신청</button>
           )}
           {(status === '정산요청' || status === '정산 요청') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
