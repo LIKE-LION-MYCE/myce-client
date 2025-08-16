@@ -12,6 +12,7 @@ import {
 import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { updateGrade } from "../../../api/service/user/memberApi";
+import { requestRefund } from "../../../api/service/payment/RefundService";
 
 function ReservationPaymentCardButton({
   targetType,
