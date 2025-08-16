@@ -154,6 +154,7 @@
 .globalActions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -174,6 +175,22 @@
 
 .refreshAllBtn:hover {
   background-color: #0056b3;
+}
+
+.clearCacheBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.clearCacheBtn:hover {
+  background-color: #c82333;
 }
 
 /* 섹션 헤더 */
