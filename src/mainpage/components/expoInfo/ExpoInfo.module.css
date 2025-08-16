@@ -51,6 +51,13 @@
   font-size: 18px;
 }
 
+.companyName {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
 .businessNumber {
   font-size: 12px;
   color: #666;
@@ -59,13 +66,14 @@
   border-radius: 3px;
 }
 
-.businessDetails p {
-  margin: 8px 0;
+.businessItem {
+  margin: 12px 0;
   font-size: 14px;
   color: #555;
   display: flex;
   align-items: center;
   gap: 8px;
+  line-height: 1.4;
 }
 
 .businessPhone {
