@@ -136,25 +136,23 @@ const ExpoStatusPage = () => {
 
   // 페이지네이션 버튼 렌더링
   const renderPaginationButtons = () => {
+    if (totalPages <= 1) return null;
+
     const pages = [];
-    const startPage = Math.floor((currentPage - 1) / PAGE_BTN_COUNT) * PAGE_BTN_COUNT + 1;
-    const endPage = Math.min(startPage + PAGE_BTN_COUNT - 1, totalPages);
 
-    // 첫 페이지로 이동
-    pages.push(
-      <button key="first" onClick={() => setCurrentPage(1)} className={styles.pageButton} disabled={currentPage === 1}>
-        «
-      </button>
-    );
+    // 이전 버튼
+    if (currentPage > 1) {
+      pages.push(
+        <button key="prev" onClick={() => setCurrentPage(currentPage - 1)} className={styles.pageButton}>
+          이전
+        </button>
+      );
+    }
 
-    // 이전 페이지 그룹으로 이동
-    pages.push(
-      <button key="prev" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} className={styles.pageButton} disabled={currentPage === 1}>
-        이전
-      </button>
-    );
+    // 페이지 번호들 (현재 페이지 기준 ±2)
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
 
-    // 페이지 번호 버튼들
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
@@ -167,19 +165,14 @@ const ExpoStatusPage = () => {
       );
     }
 
-    // 다음 페이지 그룹으로 이동
-    pages.push(
-      <button key="next" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} className={styles.pageButton} disabled={currentPage === totalPages}>
-        다음
-      </button>
-    );
-
-    // 마지막 페이지로 이동
-    pages.push(
-      <button key="last" onClick={() => setCurrentPage(totalPages)} className={styles.pageButton} disabled={currentPage === totalPages}>
-        »
-      </button>
-    );
+    // 다음 버튼
+    if (currentPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => setCurrentPage(currentPage + 1)} className={styles.pageButton}>
+          다음
+        </button>
+      );
+    }
 
     return pages;
   };

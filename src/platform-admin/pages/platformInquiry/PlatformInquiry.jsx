@@ -379,6 +379,55 @@ function PlatformInquiry() {
             }
           });
           
+          // Subscribe to unread updates for read status handling
+          ChatWebSocketService.subscribeToUnreadUpdates(room.roomCode, (updateData) => {
+            if (updateData.type === 'read_status_update') {
+              const payload = updateData.payload || updateData;
+              const readerType = payload.readerType;
+              
+              // 유저가 읽었을 때 → 내(플랫폼 관리자)가 보낸 메시지들의 "1" 제거  
+              if (readerType === 'USER') {
+                try {
+                  // Immediate state update: remove badges from my platform admin messages
+                  const updatedCount = messages.filter(msg => {
+                    const isMyMsg = msg.senderType === 'PLATFORM_ADMIN' && msg.senderId === currentUserId;
+                    return isMyMsg && msg.unreadCount > 0;
+                  }).length;
+                  
+                  if (updatedCount > 0) {
+                    console.log(`🔄 Removing ${updatedCount} unread badges from my platform admin messages (USER read them)`);
+                    
+                    // Update messages state to remove unread badges
+                    messages.forEach(msg => {
+                      const isMyMsg = msg.senderType === 'PLATFORM_ADMIN' && msg.senderId === currentUserId;
+                      if (isMyMsg && msg.unreadCount > 0) {
+                        updateMessage(msg.id, { unreadCount: 0 });
+                      }
+                    });
+                    
+                    // Background refetch for accuracy after 1.5 seconds
+                    setTimeout(async () => {
+                      try {
+                        if (selectedRoom && selectedRoom.roomCode) {
+                          console.log('🔄 Platform admin background refetch for accuracy after read status update');
+                          await loadInitialMessages(selectedRoom.roomCode);
+                        }
+                      } catch (error) {
+                        console.error('Platform admin background refetch failed:', error);
+                      }
+                    }, 1500);
+                  }
+                } catch (error) {
+                  console.error('Failed to update platform admin read status, falling back to immediate refetch:', error);
+                  // Fallback: immediate refetch if state update fails
+                  if (selectedRoom && selectedRoom.roomCode) {
+                    loadInitialMessages(selectedRoom.roomCode).catch(console.error);
+                  }
+                }
+              }
+            }
+          });
+          
           await ChatWebSocketService.joinRoom(room.roomCode);
         } catch (err) {
           console.error('WebSocket 방 구독 실패:', err);

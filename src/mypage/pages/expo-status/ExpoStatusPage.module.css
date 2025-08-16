@@ -126,24 +126,28 @@
 }
 
 .pageButton {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
-  color: #4b5563;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-radius: 6px;
+  padding: 8px 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s;
+  min-width: 40px;
+  font-size: 14px;
 }
 
-.pageButton:hover {
-  background-color: #e5e7eb;
+.pageButton:hover:not(.activePage) {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
 }
 
 .pageButton.activePage {
-  background-color: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  font-weight: 600;
 }
 
 .paymentInfoBtn {

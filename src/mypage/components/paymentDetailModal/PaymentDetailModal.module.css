@@ -10,7 +10,7 @@
 .modalBox {
   background: #fff;
   border-radius: 18px;
-  max-width: 480px;
+  max-width: 800px;
   width: 100%;
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   padding: 40px 34px 34px 34px;
@@ -225,4 +225,51 @@
   background: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #007bff;
+}
+
+/* 2컬럼 레이아웃 */
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.leftColumn, .rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leftTopBox, .leftBottomBox, .rightTopBox, .rightBottomBox {
+  background: #fafbfc;
+  border-radius: 11px;
+  padding: 16px;
+}
+
+.leftBottomBox {
+  border: 1px solid #e9ecef;
+}
+
+.refundReasonLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.refundReasonTextarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.refundReasonTextarea:focus {
+  outline: none;
+  border-color: #007bff;
 }

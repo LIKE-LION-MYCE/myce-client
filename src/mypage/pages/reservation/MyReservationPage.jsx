@@ -6,10 +6,35 @@ import { getReservedExpos } from "../../../api/service/user/memberApi";
 function ReservationCard({ reservation }) {
   const navigate = useNavigate();
 
+  // 예약 상태를 한글로 변환하는 함수
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      'CANCELLED': '취소됨',
+      'CONFIRMED_PENDING': '결제 대기',
+      'CONFIRMED': '결제 완료'
+    };
+    return statusMap[status] || status;
+  };
+
+  // 예약 상태에 따른 CSS 클래스 반환
+  const getStatusClass = (status) => {
+    const statusClassMap = {
+      'CANCELLED': styles.statusCancelled,
+      'CONFIRMED_PENDING': styles.statusPending,
+      'CONFIRMED': styles.statusConfirmed
+    };
+    return statusClassMap[status] || styles.statusDefault;
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.info}>
-        <h3>{reservation.title}</h3>
+        <div className={styles.titleRow}>
+          <h3>{reservation.title}</h3>
+          <span className={`${styles.statusBadge} ${getStatusClass(reservation.reservationStatus)}`}>
+            {getStatusLabel(reservation.reservationStatus)}
+          </span>
+        </div>
         <p>예매번호: {reservation.reservationCode}</p>
         <div className={styles.detailRow}>
           <div>
@@ -21,8 +46,8 @@ function ReservationCard({ reservation }) {
             <p>{reservation.ticketCount}매</p>
           </div>
           <div>
-            <strong>티켓가격</strong>
-            <p>{reservation.ticketPrice?.toLocaleString()}원</p>
+            <strong>예매일</strong>
+            <p>{new Date(reservation.createdAt).toLocaleDateString('ko-KR')}</p>
           </div>
         </div>
         <div className={styles.buttons}>
@@ -48,17 +73,23 @@ const MyReservationPage = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
     fetchReservedExpos();
-  }, []);
+  }, [currentPage]);
 
   const fetchReservedExpos = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getReservedExpos();
-      setReservations(response.data || []);
+      const response = await getReservedExpos(currentPage, 10, "createdAt,desc");
+      
+      setReservations(response.data?.content || []);
+      setTotalPages(response.data?.totalPages || 0);
+      setTotalElements(response.data?.totalElements || 0);
     } catch (err) {
       console.error('예매 내역 조회 실패:', err);
       setError('예매 내역을 불러오는데 실패했습니다.');
@@ -66,6 +97,65 @@ const MyReservationPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 0 && pageNumber < totalPages && pageNumber !== currentPage) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const startPage = Math.max(0, currentPage - 2);
+    const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    // 이전 버튼
+    if (currentPage > 0) {
+      pages.push(
+        <button 
+          key="prev" 
+          className={styles.pageBtn} 
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          이전
+        </button>
+      );
+    }
+
+    // 페이지 번호들
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`${styles.pageBtn} ${i === currentPage ? styles.active : ''}`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    // 다음 버튼
+    if (currentPage < totalPages - 1) {
+      pages.push(
+        <button 
+          key="next" 
+          className={styles.pageBtn} 
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          다음
+        </button>
+      );
+    }
+
+    return (
+      <div className={styles.pagination}>
+        {pages}
+      </div>
+    );
   };
 
   if (loading) {
@@ -90,11 +180,14 @@ const MyReservationPage = () => {
     <div className={styles.wrapper}>
       <h2 className={styles.pageTitle}>예매 내역</h2>
       {reservations.length > 0 ? (
-        <div className={styles.list}>
-          {reservations.map((reservation) => (
-            <ReservationCard key={reservation.reservationId} reservation={reservation} />
-          ))}
-        </div>
+        <>
+          <div className={styles.list}>
+            {reservations.map((reservation) => (
+              <ReservationCard key={reservation.reservationId} reservation={reservation} />
+            ))}
+          </div>
+          {renderPagination()}
+        </>
       ) : (
         <div className={styles.noData}>예매 내역이 없습니다.</div>
       )}

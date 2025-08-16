@@ -66,13 +66,20 @@ function ExpoApplicationDetail({
     }
   };
 
-  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 
   const canViewPaymentInfo = (status) => {
     const excludedStatuses = [
       '승인대기', '승인 대기',
-      '결제대기', '결제 대기'
+      '결제대기', '결제 대기',
+      '거절됨', '승인 거절'
     ];
-    return !excludedStatuses.includes(status);
+    return !excludedStatuses.includes(status) && expoData?.paymentInfo;
+  };
+  
+  // 환불 정보를 볼 수 있는지 확인하는 함수 (결제를 했고 취소/환불 상태인 경우)
+  const canViewRefundInfo = (status) => {
+    const refundStatuses = ['취소대기', '취소 대기', '취소됨', '취소 완료'];
+    return refundStatuses.includes(status) && expoData?.paymentInfo;
   };
 
   const renderButtons = () => {
@@ -85,13 +92,30 @@ function ExpoApplicationDetail({
     
     return (
       <div className={styles.buttonGroup}>
-        {/* 상태별 영수증 버튼 */}
+        {/* 상태별 정보 조회 버튼 */}
         <div className={styles.receiptButtons}>
+          {/* 결제 관련 버튼 */}
           {(status === '결제대기' || status === '결제 대기') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 신청</button>
           )}
+          
+          {/* 환불 관련 버튼 */}
+          {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
+          )}
+          {(status === '취소대기' || status === '취소 대기' || status === '취소됨' || status === '취소 완료') && (
+            <>
+              {expoData?.paymentInfo ? (
+                <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 정보</button>
+              ) : (
+                <span className={styles.infoMessage}>결제/환불 정보가 존재하지 않습니다.</span>
+              )}
+            </>
+          )}
+          
+          {/* 정산 관련 버튼 */}
           {(status === '게시종료' || status === '게시 종료') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 신청</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>정산 신청</button>
           )}
           {(status === '정산요청' || status === '정산 요청') && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
@@ -99,12 +123,8 @@ function ExpoApplicationDetail({
           {status === '종료됨' && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 완료 정보 조회</button>
           )}
-          {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
-          )}
-          {(status === '취소됨' || status === '취소 완료') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 정보</button>
-          )}
+          
+          {/* 결제 정보 조회 버튼 */}
           {canViewPaymentInfo(status) && (
             <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>결제 정보</button>
           )}
@@ -112,8 +132,15 @@ function ExpoApplicationDetail({
         
         {/* 상태별 주요 액션 버튼 */}
         <div className={styles.actionButtons}>
-          {(status === '승인대기' || status === '승인 대기' || status === '결제대기' || status === '결제 대기' || status === 'PENDING_APPROVAL' || status === 'PENDING_PAYMENT') && (
+          {/* 취소 신청 버튼 */}
+          {(status === '승인대기' || status === '승인 대기' || status === '결제대기' || status === '결제 대기') && (
             <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>취소 신청</button>
+          )}
+          
+          
+          {/* 취소 대기인 경우 - 취소 철회나 정보만 조회 가능 */}
+          {(status === '취소대기' || status === '취소 대기') && (
+            <span className={styles.waitingMessage}>취소 처리 대기 중입니다</span>
           )}
         </div>
       </div>

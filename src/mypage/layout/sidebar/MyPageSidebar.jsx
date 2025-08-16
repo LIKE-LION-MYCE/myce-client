@@ -84,16 +84,6 @@ const MyPageSidebar = () => {
           </li>
           <li>
             <NavLink
-              to="/mypage/payment"
-              className={({ isActive }) =>
-                isActive ? styles.active : undefined
-              }
-            >
-              결제 내역
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
               to="/mypage/reservation"
               className={({ isActive }) =>
                 isActive ? styles.active : undefined
