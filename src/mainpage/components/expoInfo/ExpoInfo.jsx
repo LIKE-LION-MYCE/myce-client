@@ -16,11 +16,39 @@ const ExpoInfo = ({ basicInfo, location }) => {
           <div className={styles.businessCard}>
             <div className={styles.businessHeader}>
               <h4>{basicInfo.organizerName || '주최자 정보 없음'}</h4>
+              {basicInfo.organizerInfo?.companyName && basicInfo.organizerInfo.companyName !== basicInfo.organizerName && (
+                <p className={styles.companyName}>{basicInfo.organizerInfo.companyName}</p>
+              )}
             </div>
+            
             <div className={styles.businessDetails}>
+              {basicInfo.organizerInfo?.ceoName && (
+                <p className={styles.businessItem}>
+                  👤 대표자: {basicInfo.organizerInfo.ceoName}
+                </p>
+              )}
+              
               {basicInfo.organizerContact && (
-                <p className={styles.businessPhone}>
+                <p className={styles.businessItem}>
                   📞 연락처: {basicInfo.organizerContact}
+                </p>
+              )}
+              
+              {basicInfo.organizerInfo?.contactEmail && (
+                <p className={styles.businessItem}>
+                  ✉️ 이메일: {basicInfo.organizerInfo.contactEmail}
+                </p>
+              )}
+              
+              {basicInfo.organizerInfo?.address && (
+                <p className={styles.businessItem}>
+                  📍 주소: {basicInfo.organizerInfo.address}
+                </p>
+              )}
+              
+              {basicInfo.organizerInfo?.businessRegistrationNumber && (
+                <p className={styles.businessItem}>
+                  🏢 사업자등록번호: {basicInfo.organizerInfo.businessRegistrationNumber}
                 </p>
               )}
             </div>

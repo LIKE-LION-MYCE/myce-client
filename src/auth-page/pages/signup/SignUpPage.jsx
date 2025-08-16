@@ -143,7 +143,7 @@ const SignUpPage = () => {
 
   const verifyEmailForVerification = () => {
     console.log(`request verification : ${form.email} ==> ${form.emailCode}`);
-    verifyVerificationEmail(form.email, form.emailCode)
+    verifyVerificationEmail('SIGNUP',form.email, form.emailCode)
     .then((res) => {
       if(res.status === HttpStatusCode.Ok) {
         triggerToastSuccess('인증이 완료되었습니다.');

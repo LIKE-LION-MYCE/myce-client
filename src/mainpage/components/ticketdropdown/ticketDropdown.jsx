@@ -14,6 +14,27 @@ const TicketDropdown = ({
   // 선택된 티켓 정보 가져오기
   const selectedTicket = tickets.find(t => t.ticketId === selectedTicketId);
 
+  // 판매 기간 체크 함수
+  const isTicketSalePeriodValid = (ticket) => {
+    if (!ticket.saleStartDate || !ticket.saleEndDate) return true; // 날짜 정보가 없으면 판매 가능으로 처리
+    
+    const today = new Date();
+    const saleStart = new Date(ticket.saleStartDate);
+    const saleEnd = new Date(ticket.saleEndDate);
+    
+    // 시간 부분을 제거하고 날짜만 비교
+    today.setHours(0, 0, 0, 0);
+    saleStart.setHours(0, 0, 0, 0);
+    saleEnd.setHours(23, 59, 59, 999);
+    
+    return today >= saleStart && today <= saleEnd;
+  };
+
+  // 티켓 구매 가능 여부 체크
+  const isTicketAvailable = (ticket) => {
+    return ticket.remainingQuantity > 0 && isTicketSalePeriodValid(ticket);
+  };
+
   // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,6 +62,17 @@ const TicketDropdown = ({
       alert('티켓을 선택해주세요.');
       return;
     }
+    
+    const ticket = tickets.find(t => t.ticketId === selectedTicketId);
+    if (ticket && !isTicketAvailable(ticket)) {
+      if (ticket.remainingQuantity <= 0) {
+        alert('선택한 티켓이 매진되었습니다.');
+      } else if (!isTicketSalePeriodValid(ticket)) {
+        alert('선택한 티켓의 판매 기간이 아닙니다.');
+      }
+      return;
+    }
+    
     onPurchase();
   };
 
@@ -68,22 +100,34 @@ const TicketDropdown = ({
           {dropdownOpen && (
             <div className={styles.dropdownMenu}>
               {tickets && tickets.length > 0 ? (
-                tickets.map((ticket) => (
-                  <button
-                    key={ticket.ticketId}
-                    className={`${styles.dropdownOption} ${ticket.remainingQuantity <= 0 ? styles.disabled : ''}`}
-                    onClick={() => {
-                      if (ticket.remainingQuantity > 0) {
-                        handleTicketSelect(ticket.ticketId);
+                tickets.map((ticket) => {
+                  const isAvailable = isTicketAvailable(ticket);
+                  const isSalePeriodValid = isTicketSalePeriodValid(ticket);
+                  
+                  return (
+                    <button
+                      key={ticket.ticketId}
+                      className={`${styles.dropdownOption} ${!isAvailable ? styles.disabled : ''}`}
+                      onClick={() => {
+                        if (isAvailable) {
+                          handleTicketSelect(ticket.ticketId);
+                        }
+                      }}
+                      disabled={!isAvailable}
+                      type="button"
+                      title={
+                        !isSalePeriodValid 
+                          ? `판매기간: ${ticket.saleStartDate} ~ ${ticket.saleEndDate}` 
+                          : ticket.remainingQuantity <= 0 
+                            ? '매진된 티켓입니다' 
+                            : ''
                       }
-                    }}
-                    disabled={ticket.remainingQuantity <= 0}
-                    type="button"
-                  >
-                    {ticket.name} - {ticket.price?.toLocaleString()}원 
-                    (남은 수량: {ticket.remainingQuantity?.toLocaleString()})
-                  </button>
-                ))
+                    >
+                      {ticket.name} - {ticket.price?.toLocaleString()}원 
+                      ({!isSalePeriodValid ? '판매기간 아님' : `남은 수량: ${ticket.remainingQuantity?.toLocaleString()}`})
+                    </button>
+                  );
+                })
               ) : (
                 <div className={styles.noOptions}>등록된 티켓이 없습니다</div>
               )}
@@ -92,8 +136,8 @@ const TicketDropdown = ({
         </div>
         
         <button 
-          className={`${styles.purchaseBtn} ${!selectedTicketId || !tickets || tickets.length === 0 || disabled ? styles.disabled : ''}`}
-          disabled={!selectedTicketId || !tickets || tickets.length === 0 || disabled}
+          className={`${styles.purchaseBtn} ${!selectedTicketId || !tickets || tickets.length === 0 || disabled || (selectedTicket && !isTicketAvailable(selectedTicket)) ? styles.disabled : ''}`}
+          disabled={!selectedTicketId || !tickets || tickets.length === 0 || disabled || (selectedTicket && !isTicketAvailable(selectedTicket))}
           onClick={handlePurchaseClick}
         >
           구매하기
