@@ -5,6 +5,7 @@ import { getMemberInfo, updateMemberInfo, withdrawMember } from "../../../api/se
 
 const MyInfoPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [memberInfo, setMemberInfo] = useState({
     name: '',
     birth: '',
@@ -13,15 +14,29 @@ const MyInfoPage = () => {
     email: '',
     gender: ''
   });
+  const [originalInfo, setOriginalInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const handleEditToggle = () => {
+    if (isEditMode) {
+      // 취소하는 경우 원본 데이터 복원
+      setMemberInfo(originalInfo);
+    } else {
+      // 편집 시작 시 원본 데이터 백업
+      setOriginalInfo({...memberInfo});
+    }
+    setIsEditMode(!isEditMode);
+  };
+
   const handleUpdateInfo = async () => {
     try {
       await updateMemberInfo(memberInfo);
       alert('회원 정보가 수정되었습니다.');
+      setOriginalInfo({...memberInfo});
+      setIsEditMode(false);
     } catch (error) {
       console.error('회원 정보 수정 실패:', error);
       alert('회원 정보 수정에 실패했습니다.');
@@ -47,6 +62,7 @@ const MyInfoPage = () => {
       try {
         const response = await getMemberInfo();
         setMemberInfo(response.data);
+        setOriginalInfo(response.data);
       } catch (error) {
         console.error('회원 정보 조회 실패:', error);
       } finally {
@@ -73,23 +89,36 @@ const MyInfoPage = () => {
         <div className={styles.formGrid}>
           <div className={styles.formGroup}>
             <label>이름</label>
-            <input type="text" value={memberInfo.name} disabled className={styles.inputText} />
+            <input 
+              type="text" 
+              value={memberInfo.name} 
+              disabled={!isEditMode} 
+              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, name: e.target.value})}
+              className={`${styles.inputText} ${!isEditMode ? styles.disabled : ''}`} 
+            />
           </div>
           <div className={styles.formGroup}>
             <label>생년월일</label>
-            <input type="date" value={memberInfo.birth} disabled className={styles.inputDate} />
+            <input 
+              type="date" 
+              value={memberInfo.birth} 
+              disabled={!isEditMode} 
+              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, birth: e.target.value})}
+              className={`${styles.inputDate} ${!isEditMode ? styles.disabled : ''}`} 
+            />
           </div>
           <div className={styles.formGroup}>
             <label>아이디</label>
-            <input type="text" disabled value={memberInfo.loginId} className={styles.inputText} />
+            <input type="text" disabled value={memberInfo.loginId} className={`${styles.inputText} ${styles.disabled}`} />
           </div>
           <div className={styles.formGroup}>
             <label>전화번호</label>
             <input 
               type="tel" 
               value={memberInfo.phone} 
-              onChange={(e) => setMemberInfo({...memberInfo, phone: e.target.value})}
-              className={styles.inputTel} 
+              disabled={!isEditMode}
+              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, phone: e.target.value})}
+              className={`${styles.inputTel} ${!isEditMode ? styles.disabled : ''}`} 
             />
           </div>
           <div className={styles.formGroupFull}>
@@ -97,8 +126,9 @@ const MyInfoPage = () => {
             <input 
               type="email" 
               value={memberInfo.email}
-              onChange={(e) => setMemberInfo({...memberInfo, email: e.target.value})}
-              className={styles.inputEmail} 
+              disabled={!isEditMode}
+              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, email: e.target.value})}
+              className={`${styles.inputEmail} ${!isEditMode ? styles.disabled : ''}`} 
             />
           </div>
           <div className={styles.genderGroup}>
@@ -110,7 +140,8 @@ const MyInfoPage = () => {
                   name="gender" 
                   value="FEMALE" 
                   checked={memberInfo.gender === 'FEMALE'}
-                  onChange={(e) => setMemberInfo({...memberInfo, gender: e.target.value})}
+                  disabled={!isEditMode}
+                  onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
                 /> 여자
               </label>
               <label>
@@ -119,7 +150,8 @@ const MyInfoPage = () => {
                   name="gender" 
                   value="MALE" 
                   checked={memberInfo.gender === 'MALE'}
-                  onChange={(e) => setMemberInfo({...memberInfo, gender: e.target.value})}
+                  disabled={!isEditMode}
+                  onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
                 /> 남자
               </label>
             </div>
@@ -127,10 +159,19 @@ const MyInfoPage = () => {
         </div>
 
         <div className={styles.buttonGroup}>
-          <button className={styles.modifyBtn} onClick={handleUpdateInfo}>정보 수정</button>
-          <button className={styles.passwordBtn} onClick={openModal}>
-            비밀번호 변경
-          </button>
+          {!isEditMode ? (
+            <>
+              <button className={styles.modifyBtn} onClick={handleEditToggle}>정보 수정</button>
+              <button className={styles.passwordBtn} onClick={openModal}>
+                비밀번호 변경
+              </button>
+            </>
+          ) : (
+            <>
+              <button className={styles.saveBtn} onClick={handleUpdateInfo}>저장</button>
+              <button className={styles.cancelBtn} onClick={handleEditToggle}>취소</button>
+            </>
+          )}
         </div>
       </section>
 

@@ -461,6 +461,7 @@ const ExpoStatusDetail = () => {
           onClose={handleCloseRefundModal}
           onCancel={handleCloseRefundModal}
           readOnly={expoData.status === '취소됨' || expoData.status === '취소 완료'}
+          isRefundCompleted={expoData.status === '취소됨' || expoData.status === '취소 완료'}
         />
       )}
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo, completeAdvertisementPayment } from '../../../api/service/user/memberApi';
+import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, getAdvertisementRefundHistory, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo, completeAdvertisementPayment } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
@@ -36,19 +36,21 @@ const AD_STATUS_MAP = {
     badge: { label: "게시예정", className: "waiting" },
     buttons: [
       { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
     ],
   },
   PENDING_CANCEL: {
     badge: { label: "취소대기", className: "pending" },
     buttons: [
       { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
+      { label: "환불 정보", color: "purple", disabled: false, action: "refundHistory" },
     ],
   },
   PUBLISHED: {
     badge: { label: "게시중", className: "active" },
     buttons: [
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
       { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
+      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
     ],
   },
   COMPLETED: {
@@ -65,9 +67,7 @@ const AD_STATUS_MAP = {
   },
   CANCELLED: {
     badge: { label: "취소됨", className: "canceled" },
-    buttons: [
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
-    ],
+    buttons: "conditional", // 결제 정보 유무에 따라 조건부 렌더링
   },
 };
 
@@ -242,6 +242,25 @@ function AdsStatusDetail() {
     }
   };
 
+  // 환불 내역 조회 핸들러 (COMPLETED, CANCELLED 상태용)
+  const handleRefundHistory = async () => {
+    try {
+      console.log('환불 내역 API 호출 중, ID:', id);
+      const response = await getAdvertisementRefundHistory(id);
+      console.log('환불 내역 API 응답:', response);
+      setRefundData({
+        ...response.data,
+        currentStatus: adData.status,
+        isRefundCompleted: true // 환불 완료 상태 표시
+      });
+      setModalType("refund");
+    } catch (err) {
+      console.error('환불 내역 조회 실패:', err);
+      console.error('에러 상세:', err.response?.data || err.message);
+      alert('환불 내역을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   // 부분 환불 신청 핸들러
   const handlePartialRefundRequest = async () => {
     try {
@@ -350,6 +369,9 @@ function AdsStatusDetail() {
       case 'refundRequest':
         handleRefundRequest();
         break;
+      case 'refundHistory':
+        handleRefundHistory();
+        break;
       case 'cancelRequest':
         handleCancelByStatus();
         break;
@@ -450,7 +472,35 @@ function AdsStatusDetail() {
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
-              {statusConf.buttons && statusConf.buttons.length > 0 && statusConf.buttons.map((button, index) => (
+              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 전/후 구분) */}
+              {statusConf.buttons === "conditional" && (
+                <>
+                  {/* 임시로 상태가 PENDING_PAYMENT 이후 상태면 결제 정보 있다고 가정 */}
+                  {adData?.status && !['PENDING_APPROVAL', 'PENDING_PAYMENT', 'REJECTED'].includes(adData.status) ? (
+                    <>
+                      <button
+                        className={`${styles.btn} ${styles.blue}`}
+                        onClick={() => handleButtonAction("viewPaymentInfo")}
+                      >
+                        결제 정보
+                      </button>
+                      <button
+                        className={`${styles.btn} ${styles.purple}`}
+                        onClick={() => handleButtonAction("refundHistory")}
+                      >
+                        환불 정보
+                      </button>
+                    </>
+                  ) : (
+                    <div className={styles.infoMessage}>
+                      결제/환불 정보가 존재하지 않습니다.
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {/* 일반 버튼 렌더링 */}
+              {statusConf.buttons && Array.isArray(statusConf.buttons) && statusConf.buttons.length > 0 && statusConf.buttons.map((button, index) => (
                 <button
                   key={index}
                   className={`${styles.btn} ${styles[button.color]}`}
@@ -460,7 +510,9 @@ function AdsStatusDetail() {
                   {button.label}
                 </button>
               ))}
-              {(!statusConf.buttons || statusConf.buttons.length === 0) && (
+              
+              {/* 버튼이 없는 경우 */}
+              {(!statusConf.buttons || (Array.isArray(statusConf.buttons) && statusConf.buttons.length === 0)) && (
                 <div className={styles.noButtonsMessage}>
                   사용 가능한 작업이 없습니다.
                 </div>
@@ -524,7 +576,8 @@ function AdsStatusDetail() {
             remainingDays={refundData.remainingDays}
             refundAmount={refundData.refundAmount}
             currentStatus={refundData.currentStatus}
-            onRefund={async (reason) => {
+            isRefundCompleted={refundData.isRefundCompleted}
+            onRefund={!refundData.isRefundCompleted ? async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
                 alert('환불 신청이 성공적으로 접수되었습니다.');
@@ -534,7 +587,7 @@ function AdsStatusDetail() {
                 console.error('환불 신청 실패:', error);
                 alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
               }
-            }}
+            } : null}
             onClose={handleCloseModal}
           />
         )}
