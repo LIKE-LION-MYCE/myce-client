@@ -1,0 +1,206 @@
+/* 티켓 구매 섹션 */
+.ticketPurchaseSection {
+  background: white;
+  margin-top: auto;
+  padding: 20px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.ticketPurchaseSection h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ticketDropdownContainer {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+/* 커스텀 드롭다운 컨테이너 */
+.customDropdown {
+  flex: 1;
+  position: relative;
+}
+
+/* 드롭다운 버튼 */
+.dropdownButton {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  background: white;
+  color: #2c3e50;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdownButton:hover:not(:disabled) {
+  border-color: #3498db;
+}
+
+.dropdownButton:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.dropdownButton:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 화살표 */
+.dropdownArrow {
+  color: #666;
+  transition: transform 0.2s ease;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.dropdownArrow.open {
+  transform: rotate(180deg);
+}
+
+/* 드롭다운 메뉴 */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 드롭다운 옵션 */
+.dropdownOption {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.5;
+}
+
+.dropdownOption:hover:not(.disabled) {
+  background: #f8f9fa;
+}
+
+.dropdownOption:last-child {
+  border-bottom: none;
+  border-radius: 0 0 10px 10px;
+}
+
+.dropdownOption.disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* 옵션이 없을 때 */
+.noOptions {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* 구매 버튼 */
+.purchaseBtn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.purchaseBtn:hover:not(.disabled) {
+  background: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+}
+
+.purchaseBtn.disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ticketPurchaseSection {
+    padding: 20px 0;
+  }
+  
+  .ticketDropdownContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .dropdownButton {
+    padding: 14px 18px;
+    min-height: 50px;
+    font-size: 13px;
+  }
+  
+  .dropdownOption {
+    padding: 14px 18px;
+    font-size: 13px;
+  }
+  
+  .purchaseBtn {
+    width: 100%;
+    height: 50px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ticketPurchaseSection {
+    padding: 15px 0;
+  }
+  
+  .dropdownButton {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+  
+  .dropdownOption {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+  
+  .purchaseBtn {
+    height: 45px;
+    font-size: 12px;
+  }
+}

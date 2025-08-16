@@ -1,0 +1,145 @@
+/* 헤더 섹션 */
+.header {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.imageSection {
+  padding: 0 10px;
+  flex: 0 0 400px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.infoSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.infoContent {
+  flex: 1;
+}
+
+.topSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+}
+
+.bookmarkBtn {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  color: 333;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.bookmarkBtn:hover {
+  background: #555;
+}
+
+.basicDetails {
+  margin-bottom: 20px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #555;
+}
+
+.icon {
+  color: #333;
+  flex-shrink: 0;
+}
+
+.time, .detail, .current {
+  color: #888;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.category {
+  background: #333;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .imageSection {
+    flex: none;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .topSection {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .bookmarkBtn {
+    align-self: flex-end;
+  }
+  
+  .basicDetails {
+    margin-bottom: 15px;
+  }
+  
+  .detailItem {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  
+  .categories {
+    gap: 6px;
+  }
+  
+  .category {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+}
