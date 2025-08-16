@@ -23,10 +23,12 @@ function ExpoApplicationDetail({
     if (expoData) {
       console.log('ExpoApplicationDetail - 받은 expoData:', expoData);
       console.log('ExpoApplicationDetail - isPremium 값:', expoData.isPremium);
+      console.log('ExpoApplicationDetail - isPremium 타입:', typeof expoData.isPremium);
       console.log('ExpoApplicationDetail - status 값:', expoData.status);
       setForm({ ...expoData });
       setIsPremium(expoData.isPremium);
       setStatus(expoData.status);
+      console.log('ExpoApplicationDetail - 설정된 isPremium 상태:', expoData.isPremium);
     }
   }, [expoData]); // expoData가 변경될 때마다 useEffect 실행
 
@@ -80,6 +82,12 @@ function ExpoApplicationDetail({
   const canViewRefundInfo = (status) => {
     const refundStatuses = ['취소대기', '취소 대기', '취소됨', '취소 완료'];
     return refundStatuses.includes(status) && expoData?.paymentInfo;
+  };
+
+  // 티켓 정보를 볼 수 있는지 확인하는 함수 (PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김)
+  const canViewTicketInfo = (status) => {
+    const hiddenStatuses = ['승인대기', '승인 대기', '게시대기', '게시 대기'];
+    return !hiddenStatuses.includes(status);
   };
 
   const renderButtons = () => {
@@ -148,7 +156,7 @@ function ExpoApplicationDetail({
   };
   
   const renderAdminButton = () => {
-    if (status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중' || status === '종료됨' || status === '정산요청' || status === '정산 요청') {
+    if (status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중' || status === '게시종료' || status === '게시 종료' || status === '종료됨' || status === '정산요청' || status === '정산 요청') {
       return (
         <div className={styles.adminButtonGroup}>
           {/* 관리자 정보 버튼 */}
@@ -278,40 +286,42 @@ function ExpoApplicationDetail({
       </div>
       
       
-      {/* 티켓 정보 섹션 */}
-      <div className={`${styles.formGroup} ${styles.full}`}>
-        <label className={styles.label}>티켓 정보</label>
-        <div className={styles.ticketContainer}>
-          {form.tickets && form.tickets.length > 0 ? (
-            <>
-              {/* 티켓 헤더 */}
-              <div className={styles.ticketHeader}>
-                <div className={styles.ticketHeaderInfo}>
-                  <span className={styles.headerLabel}>티켓명</span>
-                  <span className={styles.headerLabel}>가격</span>
-                  <span className={styles.headerLabel}>판매개수</span>
-                  <span className={styles.headerLabel}>종류</span>
-                </div>
-              </div>
-              {/* 티켓 목록 */}
-              {form.tickets.map((ticket, index) => (
-                <div key={index} className={styles.ticketRow}>
-                  <div className={styles.ticketInfo}>
-                    <span className={styles.ticketName}>{ticket.name}</span>
-                    <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
-                    <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
-                    <span className={styles.ticketType}>
-                      {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
-                    </span>
+      {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
+      {canViewTicketInfo(status) && (
+        <div className={`${styles.formGroup} ${styles.full}`}>
+          <label className={styles.label}>티켓 정보</label>
+          <div className={styles.ticketContainer}>
+            {form.tickets && form.tickets.length > 0 ? (
+              <>
+                {/* 티켓 헤더 */}
+                <div className={styles.ticketHeader}>
+                  <div className={styles.ticketHeaderInfo}>
+                    <span className={styles.headerLabel}>티켓명</span>
+                    <span className={styles.headerLabel}>가격</span>
+                    <span className={styles.headerLabel}>판매개수</span>
+                    <span className={styles.headerLabel}>종류</span>
                   </div>
                 </div>
-              ))}
-            </>
-          ) : (
-            <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
-          )}
+                {/* 티켓 목록 */}
+                {form.tickets.map((ticket, index) => (
+                  <div key={index} className={styles.ticketRow}>
+                    <div className={styles.ticketInfo}>
+                      <span className={styles.ticketName}>{ticket.name}</span>
+                      <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
+                      <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
+                      <span className={styles.ticketType}>
+                        {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}
       <div className={styles.bottomButtonArea}>

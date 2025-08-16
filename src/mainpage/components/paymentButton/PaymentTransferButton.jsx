@@ -12,6 +12,7 @@ import {
 import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { updateGrade } from "../../../api/service/user/memberApi";
+import { generateQrForReservation } from "../../../api/service/qr/qrApi";
 
 function PaymentTransferButton({
   targetType,
@@ -113,6 +114,14 @@ function PaymentTransferButton({
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
+                // QR 코드 즉시 생성 시도
+                try {
+                  await generateQrForReservation(reservationId);
+                  console.log("QR 코드 생성 완료");
+                } catch (qrError) {
+                  console.warn("QR 코드 생성 실패 (스케줄러에서 생성됨):", qrError);
+                }
+                
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
                 navigate(`/reservation-success/${reservationId}`);
               } else {
