@@ -45,8 +45,13 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
-                alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
-                navigate(`/mypage/expo-status/${id}`);
+                if (targetType === "RESERVATION") {
+                  alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
+                  navigate(`/mypage/expo-status/${id}`);
+                } else {
+                  alert("결제 검증 성공! 광고 결제가 완료되었습니다.");
+                  navigate(`/mypage/ads-status/${id}`);
+                }
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
@@ -73,7 +78,11 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
             }
           } else {
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
-            navigate(`/mypage/expo-status/${id}`);
+            if (targetType === "RESERVATION") {
+              navigate(`/mypage/expo-status/${id}`);
+            } else {
+              navigate(`/mypage/ads-status/${id}`);
+            }
           }
         }
       );
