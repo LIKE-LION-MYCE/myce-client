@@ -74,10 +74,24 @@ function ExpoCurrentDetail() {
     setShowSettlementSummary(false);
   };
 
-  // 취소 승인 처리 (ExpoApplicationDetail의 handleApprove 패턴 참고)
+  // 취소 내역 조회 및 모달 열기
+  const handleCancelDetailView = async () => {
+    try {
+      const cancelInfo = await fetchCancelInfo(id);
+      setCancelDetail(cancelInfo);
+      setShowCancelDetail(true);
+    } catch (error) {
+      console.error('취소 내역 조회 실패:', error);
+      alert('취소 내역을 불러올 수 없습니다.');
+    }
+  };
+
+  // 최종 취소 승인 처리 (모달에서 호출)
   const handleCancelApprove = async () => {
     try {
       await approveCancellation(id);
+      alert('취소 승인이 완료되었습니다.');
+      setShowCancelDetail(false);
       // 상세 정보 다시 로드하여 상태 업데이트
       await loadExpoDetail();
       // 목록 페이지로 이동
@@ -134,7 +148,7 @@ function ExpoCurrentDetail() {
       <div className={styles.buttonGroup}>
         <button
           className={styles.approveBtn}
-          onClick={handleCancelApprove}
+          onClick={handleCancelDetailView}
         >
           취소 승인
         </button>
@@ -281,6 +295,8 @@ function ExpoCurrentDetail() {
         isOpen={showCancelDetail}
         onClose={() => setShowCancelDetail(false)}
         cancelDetail={cancelDetail}
+        onApprove={expo?.status === 'PENDING_CANCEL' ? handleCancelApprove : null}
+        isPendingCancel={expo?.status === 'PENDING_CANCEL'}
       />
     </div>
   );
