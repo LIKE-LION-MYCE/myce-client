@@ -69,7 +69,7 @@ function AdPaymentDetailModal({
                 className={styles.blackBtn}
                 onClick={handlePaymentSelection}
               >
-                결제하기????
+                결제하기
               </button>
             </>
           ) : (
