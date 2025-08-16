@@ -57,7 +57,7 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
         {/* 버튼 */}
         <div className={styles.actionBox}>
           <button className={styles.cancelBtn} onClick={onClose}>취소</button>
-          <button className={styles.submitBtn} onClick={onSubmit}>정산 요청</button>
+          <button className={styles.submitBtn} onClick={onSubmit}>환불 승인</button>
         </div>
       </div>
     </div>

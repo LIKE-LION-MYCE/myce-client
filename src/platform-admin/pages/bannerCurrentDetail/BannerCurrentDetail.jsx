@@ -8,7 +8,7 @@ import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetai
 import AdCancelDetailModal from '../../components/bannerCancelDetailModal/AdCancelDetailModal';
 import AdCancelSummaryModal from '../../components/bannerCancelSummaryModal/AdCancelSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail } from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail, denyCancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
@@ -92,6 +92,19 @@ function BannerCurrentDetail() {
     setShowSettlementSummary(false);
   };
 
+  const handleCancelDeny = async () => {
+    try{
+      await denyCancelBanner(id);
+      alert("취소 거절에 성공했습니다.");
+      navigate(-1, {
+        replace: true,
+        state: { ...location.state, expoStatus: 'PUBLISHED' },
+      });
+    }catch(err){
+      console.log("취소 거부 실패 : ", err);
+    }
+  }
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -144,6 +157,7 @@ function BannerCurrentDetail() {
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
         <button className={styles.approveBtn} onClick={() => setShowSettlementSummary(true)}>취소 승인</button>
+        <button className={styles.approveBtn} onClick={() => handleCancelDeny()}>취소 거절</button>
       </div>
     );
   } else if (rawStatus === 'PUBLISHED') {

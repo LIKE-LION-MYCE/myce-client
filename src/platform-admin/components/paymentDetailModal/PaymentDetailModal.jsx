@@ -2,7 +2,8 @@ import styles from './PaymentDetailModal.module.css';
 
 function PaymentDetailModal({ isOpen, onClose, paymentDetail }) {
   if (!isOpen) return null;
-  const paymentType = paymentDetail.paymentType;
+
+  const paymentType = paymentDetail?.paymentType;
 
   // 결제수단 한글 매핑
   const typeLabelMap = {
@@ -11,11 +12,12 @@ function PaymentDetailModal({ isOpen, onClose, paymentDetail }) {
     TRANSFER: '계좌이체',
     FOREIGN_PAY: '해외결제',
   };
-  const paymentTypeLabel = typeLabelMap[paymentType] || paymentType || '-';
-  // 계좌/카드 명칭 분기
+  
+  // 조건에 따라 동적으로 값 설정
   const isTransfer = paymentType === 'TRANSFER';
-  const companyLabel = isTransfer ? '은행' : '카드사';
-  const accountLabel = isTransfer ? '은행 계좌번호' : '카드 번호';
+  const paymentTypeLabel = paymentType ? typeLabelMap[paymentType] : '-';
+  const companyLabel = paymentType ? (isTransfer ? '은행' : '카드사') : '-';
+  const accountLabel = paymentType ? (isTransfer ? '은행 계좌번호' : '카드 번호') : '-';
 
   return (
     <div className={styles.modalOverlay}>
@@ -43,15 +45,15 @@ function PaymentDetailModal({ isOpen, onClose, paymentDetail }) {
         <div className={styles.infoBox}>
           <div className={styles.row}>
             <span className={styles.label}>결제 수단</span>
-            <span className={styles.value}>{typeLabelMap[paymentType]}</span>
+            <span className={styles.value}>{paymentTypeLabel}</span>
           </div>
           <div className={styles.row}>
             <span className={styles.label}>{companyLabel}</span>
-            <span className={styles.value}>{paymentDetail?.paymentCompanyName}</span>
+            <span className={styles.value}>{paymentType ? paymentDetail?.paymentCompanyName : '-'}</span>
           </div>
           <div className={styles.row}>
             <span className={styles.label}>{accountLabel}</span>
-            <span className={styles.value}>{paymentDetail?.paymentAccountInfo}</span>
+            <span className={styles.value}>{paymentType ? paymentDetail?.paymentAccountInfo : '-'}</span>
           </div>
         </div>
 
