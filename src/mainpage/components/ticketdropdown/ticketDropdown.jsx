@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './TicketDropdown.module.css';
+import styles from './ticketDropdown.module.css'; // Fixed case sensitivity: TicketDropdown -> ticketDropdown
 
 const TicketDropdown = ({ 
   tickets = [], 
