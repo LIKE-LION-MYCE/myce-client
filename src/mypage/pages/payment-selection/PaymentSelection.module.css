@@ -35,7 +35,7 @@
   color: #495057;
   margin-bottom: 16px;
   padding-left: 8px;
-  border-left: 3px solid #007bff; /* 포인트 컬러로 강조 */
+  border-left: 3px solid #212529; /* 포인트 컬러로 강조 */
   border-bottom: none; 
   padding-bottom: 0;
 }
@@ -84,7 +84,7 @@
 .totalAmount {
   font-size: 22px;
   font-weight: 700;
-  color: #007bff;
+  color: #212529;
 }
 
 /* 에러 메시지 스타일 */
