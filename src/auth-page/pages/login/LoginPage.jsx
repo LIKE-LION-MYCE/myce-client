@@ -3,6 +3,7 @@ import styles from "./LoginPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { login } from "../../../api/service/auth/AuthService";
+import { getMyPermission } from "../../../api/service/expo-admin/permission/PermissionService";
 import { HttpStatusCode } from "axios";
 
 const LOGIN_TYPE = {
@@ -32,20 +33,35 @@ const LoginPage = () => {
     userLogin();
   };
 
-  const userLogin = () => {
-    login(activeTab, userId, password).then((res) => {
-      if(res.status === HttpStatusCode.Ok) {
+  const userLogin = async () => {
+    try {
+      const res = await login(activeTab, userId, password);
+      if (res.status === HttpStatusCode.Ok) {
         alert('로그인이 완료되었습니다.');
+        
+        // 관리자 코드 로그인인 경우 박람회 관리 페이지로 리다이렉트
+        if (activeTab === LOGIN_TYPE.ADMIN_CODE) {
+          try {
+            const permissionData = await getMyPermission();
+            if (permissionData.expoIds && permissionData.expoIds.length > 0) {
+              const firstExpoId = permissionData.expoIds[0];
+              window.location.href = `/expos/${firstExpoId}/admin`;
+              return;
+            }
+          } catch (permissionError) {
+            console.error('권한 조회 실패:', permissionError);
+            alert('박람회 정보를 불러오는데 실패했습니다. 메인 페이지로 이동합니다.');
+          }
+        }
+        
+        // 일반 로그인이거나 관리자 권한 조회 실패시 메인 페이지로
         window.location.href = '/';
-
-        // TODO 관리자 로그인 시 해당 박람회의 관리페이지로 바로 이동
-        // 관리자의 박람회 id 조회하기
       }
-    }).catch((err) => {
+    } catch (err) {
       alert('로그인에 실패했습니다.');
-      console.log(`로그인에 실패했습니다. ${err}`)
-    })
-  }
+      console.log(`로그인에 실패했습니다. ${err}`);
+    }
+  };
 
   return (
     <AuthLayout>

@@ -117,30 +117,32 @@
 
 /* 페이지네이션 버튼 스타일 */
 .pageBtn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  color: #374151;
-  font-size: 0.875rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-radius: 6px;
+  padding: 8px 12px;
   font-weight: 500;
-  border-radius: 0.375rem;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s;
+  min-width: 40px;
+  font-size: 14px;
 }
 
-.pageBtn:hover:not(:disabled) {
-  background-color: #e5e7eb;
+.pageBtn:hover:not(.active) {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
 }
 
 .pageBtn:disabled {
-  background-color: #f5f5f5;
-  color: #bbb;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 /* 현재 페이지 활성화 표시 */
 .pageBtn.active {
-  background-color: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  font-weight: 600;
 }

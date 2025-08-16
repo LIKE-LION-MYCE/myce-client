@@ -2,6 +2,15 @@ import React from 'react';
 import styles from './ExpoTickets.module.css';
 
 const ExpoTickets = ({ tickets }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
   return (
     <div className={styles.ticketsSection}>
       <h3>티켓 정보</h3>
@@ -15,8 +24,11 @@ const ExpoTickets = ({ tickets }) => {
                 </p>
                 <h4>{ticket.name}</h4>
                 <p className={styles.salePeriod}>
-                  판매기간: 2024.03.01 - 2024.05.15
+                  판매기간: {formatDate(ticket.saleStartDate)} - {formatDate(ticket.saleEndDate)}
                 </p>
+                {ticket.description && (
+                  <p className={styles.description}>{ticket.description}</p>
+                )}
               </div>
               <div className={styles.ticketRight}>
                 <p className={styles.price}>

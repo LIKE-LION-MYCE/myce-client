@@ -16,8 +16,14 @@ export const updateSettings = async (settings) => {
   return await instance.put(`${MEMBER_PREFIX}/settings`, settings);
 };
 
-export const getReservedExpos = async () => {
-  return await instance.get(`${MEMBER_PREFIX}/reserved-expos`);
+export const getReservedExpos = async (
+  page = 0,
+  size = 10,
+  sort = "createdAt,desc"
+) => {
+  return await instance.get(`${MEMBER_PREFIX}/reserved-expos`, {
+    params: { page, size, sort },
+  });
 };
 
 export const getPaymentHistory = async (
@@ -110,6 +116,10 @@ export const getAdvertisementPayment = async (advertisementId) => {
 
 export const getAdvertisementRefundReceipt = async (advertisementId) => {
   return await instance.get(`${AD_PREFIX}/${advertisementId}/refund-receipt`);
+};
+
+export const getAdvertisementRefundHistory = async (advertisementId) => {
+  return await instance.get(`${AD_PREFIX}/${advertisementId}/refund-history`);
 };
 
 export const getAdvertisementRejectInfo = async (advertisementId) => {
