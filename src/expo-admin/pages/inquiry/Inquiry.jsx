@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import styles from './Inquiry.module.css';
-import { getExpoChatRooms, getExpoChatMessages, markExpoChatAsRead } from '../../../api/service/expo-admin/expoChatService';
+import { getChatMessages, markAsRead } from '../../../api/service/chat/chatService';
 import * as ChatWebSocketService from '../../../api/service/chat/ChatWebSocketService';
-import { useChatPaginationV3 } from '../../../hooks/useChatPaginationV3';
+import instance from '../../../api/lib/axios';
+import { useWorkingChatScroll } from '../../../hooks/useWorkingChatScroll';
 import SharedChatArea from '../../../components/shared/chat/SharedChatArea';
 import SharedChatRoomList from '../../../components/shared/chat/SharedChatRoomList';
 
@@ -19,25 +20,26 @@ function Inquiry() {
   const [wsConnected, setWsConnected] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   
-  // Use optimized pagination hook
+  // Use the same working chat scroll that platform and user chat use
   const {
     messages,
     loading: loadingMessages,
+    loadingOlder,
     hasMore,
     error: messageError,
-    isInitialLoad,
-    messagesContainerRef,
+    containerRef: messagesContainerRef,
     messagesEndRef,
     loadInitialMessages,
     handleScroll,
     scrollToBottom,
     addMessage,
     updateMessage,
-    reset: resetMessages
-  } = useChatPaginationV3(async (roomCode, params) => {
-    const response = await getExpoChatMessages(expoId, roomCode, params);
-    return response.data;
-  }, 10);
+    reset: resetMessages,
+    isNearBottom
+  } = useWorkingChatScroll(getChatMessages);
+
+  // For compatibility with SharedChatArea
+  const isInitialLoad = loadingMessages;
 
 
   // 초기 데이터 로드
@@ -62,8 +64,9 @@ function Inquiry() {
       setLoading(true);
       setError(null);
       
-      const response = await getExpoChatRooms(expoId);
-      const roomsData = response.data[0]?.chatRooms || [];
+      // Use expo-specific endpoint for this expo's chat rooms
+      const response = await instance.get(`/chats/rooms/expo/${expoId}`);
+      const roomsData = response.data.chatRooms || [];
       
       setChatRooms(roomsData);
       
@@ -255,7 +258,7 @@ function Inquiry() {
       
       // 읽음 처리
       try {
-        await markExpoChatAsRead(expoId, room.roomCode, null);
+        await markAsRead(room.roomCode, expoId);
         
         // 읽음 처리 후 UI에서 안읽은 개수를 0으로 업데이트
         setChatRooms(prev => prev.map(r => 
@@ -296,7 +299,7 @@ function Inquiry() {
               
               // 사용자 메시지가 오면 자동으로 읽음 처리
               if (messageData.senderType === 'USER') {
-                markExpoChatAsRead(expoId, room.roomCode, null)
+                markAsRead(room.roomCode, expoId)
                   .catch(err => console.error('읽음 처리 실패:', err));
               }
             }
@@ -331,8 +334,43 @@ function Inquiry() {
             
             // 유저가 읽었을 때 → 내(관리자)가 보낸 메시지들의 "1" 제거  
             if (readerType === 'USER') {
-              // Admin messages read by user - remove unread indicators
-              console.log('User read admin messages');
+              try {
+                // Immediate state update: remove badges from my admin messages
+                const updatedCount = messages.filter(msg => {
+                  const isMyMsg = msg.senderType === 'ADMIN' && msg.senderId === currentUserId;
+                  return isMyMsg && msg.unreadCount > 0;
+                }).length;
+                
+                if (updatedCount > 0) {
+                  console.log(`🔄 Removing ${updatedCount} unread badges from my admin messages (USER read them)`);
+                  
+                  // Update messages state to remove unread badges
+                  messages.forEach(msg => {
+                    const isMyMsg = msg.senderType === 'ADMIN' && msg.senderId === currentUserId;
+                    if (isMyMsg && msg.unreadCount > 0) {
+                      updateMessage(msg.id, { unreadCount: 0 });
+                    }
+                  });
+                  
+                  // Background refetch for accuracy after 1.5 seconds
+                  setTimeout(async () => {
+                    try {
+                      if (selectedRoom && selectedRoom.roomCode) {
+                        console.log('🔄 Admin background refetch for accuracy after read status update');
+                        await loadInitialMessages(selectedRoom.roomCode);
+                      }
+                    } catch (error) {
+                      console.error('Admin background refetch failed:', error);
+                    }
+                  }, 1500);
+                }
+              } catch (error) {
+                console.error('Failed to update admin read status, falling back to immediate refetch:', error);
+                // Fallback: immediate refetch if state update fails
+                if (selectedRoom && selectedRoom.roomCode) {
+                  loadInitialMessages(selectedRoom.roomCode).catch(console.error);
+                }
+              }
             }
           }
         });
@@ -437,6 +475,7 @@ function Inquiry() {
           <SharedChatArea
             messages={messages}
             loading={loadingMessages}
+            loadingOlder={loadingOlder}
             hasMore={hasMore}
             isInitialLoad={isInitialLoad}
             error={messageError}

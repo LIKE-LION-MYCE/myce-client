@@ -341,8 +341,43 @@ export default function ChatContainer() {
             
             // 관리자나 AI가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
             if (readerType === 'ADMIN' || readerType === 'AI') {
-              // Messages read status is handled by the message loading system
-              console.log('Admin/AI marked messages as read for readerType:', readerType);
+              try {
+                // Immediate state update: remove badges from my messages
+                const updatedCount = messages.filter(msg => {
+                  const isMyMsg = msg.senderType === 'USER' && msg.senderId === currentUserId;
+                  return isMyMsg && msg.unreadCount > 0;
+                }).length;
+                
+                if (updatedCount > 0) {
+                  console.log(`🔄 Removing ${updatedCount} unread badges from my messages (${readerType} read them)`);
+                  
+                  // Update messages state to remove unread badges
+                  messages.forEach(msg => {
+                    const isMyMsg = msg.senderType === 'USER' && msg.senderId === currentUserId;
+                    if (isMyMsg && msg.unreadCount > 0) {
+                      updateMessage(msg.id, { unreadCount: 0 });
+                    }
+                  });
+                  
+                  // Background refetch for accuracy after 1.5 seconds
+                  setTimeout(async () => {
+                    try {
+                      if (selectedRoom && selectedRoom.roomCode) {
+                        console.log('🔄 Background refetch for accuracy after read status update');
+                        await loadInitialMessages(selectedRoom.roomCode);
+                      }
+                    } catch (error) {
+                      console.error('Background refetch failed:', error);
+                    }
+                  }, 1500);
+                }
+              } catch (error) {
+                console.error('Failed to update read status, falling back to immediate refetch:', error);
+                // Fallback: immediate refetch if state update fails
+                if (selectedRoom && selectedRoom.roomCode) {
+                  loadInitialMessages(selectedRoom.roomCode).catch(console.error);
+                }
+              }
             }
             return; // read_status_update는 여기서 처리 완료
           }

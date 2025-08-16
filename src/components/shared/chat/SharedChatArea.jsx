@@ -176,15 +176,6 @@ export default function SharedChatArea({
         ) : messages.length > 0 && (
           <>
             {messages.map((message, index) => {
-              console.log('🔍 SharedChatArea - Processing message:', {
-                index,
-                id: message.id,
-                type: message.type,
-                senderType: message.senderType,
-                isSystemMessage: message.isSystemMessage,
-                content: message.content?.substring(0, 50),
-                payload: message.payload
-              });
               
               // Check if this is a system message (either from WebSocket or persistent from database)
               if (message.type === 'SYSTEM_MESSAGE' || 
@@ -197,23 +188,9 @@ export default function SharedChatArea({
                   const timeDiffMinutes = (now - messageTime) / (1000 * 60);
                   
                   if (timeDiffMinutes < 2) {
-                    console.log('🎭 SharedChatArea - Skipping recent persistent system message to avoid duplicate:', {
-                      messageTime: messageTime.toISOString(),
-                      timeDiffMinutes,
-                      content: message.content
-                    });
                     return null; // Skip rendering this duplicate
                   }
                 }
-                console.log('🎭 SharedChatArea - SYSTEM MESSAGE FOUND! Rendering system message:', {
-                  messageType: message.type,
-                  senderType: message.senderType,
-                  isSystemMessage: message.isSystemMessage,
-                  payloadType: message.payload?.type,
-                  payload: message.payload,
-                  content: message.content,
-                  timestamp: message.timestamp || message.sentAt
-                });
                 
                 // Handle persistent system messages from database
                 if (message.senderType === 'SYSTEM' && message.content) {
@@ -221,12 +198,6 @@ export default function SharedChatArea({
                   const colonIndex = message.content.indexOf(':');
                   const systemType = colonIndex > -1 ? message.content.substring(0, colonIndex) : message.content;
                   const systemMessage = colonIndex > -1 ? message.content.substring(colonIndex + 1) : '';
-                  console.log('🎭 SharedChatArea - PERSISTENT system message parsing:', {
-                    originalContent: message.content,
-                    parsedType: systemType,
-                    parsedMessage: systemMessage,
-                    fullMessage: message
-                  });
                   
                   // Special handling for different system message types
                   let systemPayload;
@@ -246,11 +217,6 @@ export default function SharedChatArea({
                       messageId: message.id
                     };
                   }
-                  
-                  console.log('🎭 SharedChatArea - Rendering PERSISTENT SystemMessage with:', {
-                    type: systemType,
-                    payload: systemPayload
-                  });
                   
                   return (
                     <SystemMessage 
