@@ -11,6 +11,7 @@ import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
 import ExpoStatusDetail from "../mypage/pages/expoStatusDetail/ExpoStatusDetail";
 import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
 import PaymentSelection from "../mypage/pages/payment-selection/PaymentSelection";
+import AdPaymentSelection from "../mypage/pages/payment-selection/AdPaymentSelection";
 
 const MyPageRoutes = () => {
   return (
@@ -28,7 +29,14 @@ const MyPageRoutes = () => {
         <Route path="ads-status/:id" element={<AdsStatusDetail />} />
         <Route path="expo-status" element={<ExpoStatusPage />} />
         <Route path="expo-status/:id" element={<ExpoStatusDetail />} />
-        <Route path="payment-selection" element={<PaymentSelection />} />
+        <Route
+          path="expo-status/:id/payment-selection"
+          element={<PaymentSelection />}
+        />
+        <Route
+          path="ads-status/:id/payment-selection"
+          element={<AdPaymentSelection />}
+        />
       </Route>
     </Routes>
   );
