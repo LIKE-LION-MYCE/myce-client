@@ -1,5 +1,5 @@
 import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers, FiCalendar } from 'react-icons/fi';
-import TicketDropdown from '../ticketdropdown/ticketDropDown';
+import TicketDropdown from '../ticketdropdown/ticketDropdown'; // Fixed case sensitivity: ticketDropDown -> ticketDropdown
 import styles from './ExpoHeader.module.css';
 
 const ExpoHeader = ({ 
