@@ -9,6 +9,7 @@ import TicketTable from '../../components/ticketTable/TicketTable';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 
+import { usePermission } from '../../permission/PermissionContext';
 import { FaCheckCircle } from 'react-icons/fa';
 
 import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
@@ -21,6 +22,7 @@ import {
 
 function Setting() {
   const { expoId } = useParams();
+  const { perm } = usePermission();
 
   const [status, setStatus] = useState('');
   const [tickets, setTickets] = useState([]);
@@ -132,15 +134,17 @@ function Setting() {
       <div className={styles.ticketSection}>
         <div className={styles.titleRow}>
           <h4 className={styles.sectionTitle}>티켓 목록</h4>
-          <button className={styles.addBtn} onClick={() => setOpenCreate(true)}>
-            <FaCheckCircle className={styles.addIcon} /> 티켓 등록
-          </button>
+          {perm?.isExpoDetailUpdate && (
+            <button className={styles.addBtn} onClick={() => setOpenCreate(true)}>
+              <FaCheckCircle className={styles.addIcon} /> 티켓 등록
+            </button>
+          )}
         </div>
 
         <TicketTable
           data={tickets}
-          onUpdate={handleUpdateTicket}
-          onDelete={handleDeleteTicket}
+          onUpdate={perm?.isExpoDetailUpdate ? handleUpdateTicket : null}
+          onDelete={perm?.isExpoDetailUpdate ? handleDeleteTicket : null}
         />
       </div>
 

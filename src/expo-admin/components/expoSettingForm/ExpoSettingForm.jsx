@@ -5,6 +5,7 @@ import { FaCheckCircle, FaTimesCircle, FaEdit } from 'react-icons/fa';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
+import { usePermission } from '../../permission/PermissionContext';
 import {
   getMyExpoInfo,
   updateMyExpoInfo,
@@ -14,6 +15,7 @@ import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function ExpoSettingForm() {
   const { expoId } = useParams();
+  const { perm } = usePermission();
   const [form, setForm] = useState(initForm());
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -124,7 +126,7 @@ function ExpoSettingForm() {
 
   // 수정 버튼 표시 여부 확인
   const canShowEditButton = () => {
-    return expoStatus === 'PENDING_PUBLISH';
+    return perm?.isExpoDetailUpdate && expoStatus === 'PENDING_PUBLISH';
   };
 
   // 설명 필드만 수정 가능한지 확인

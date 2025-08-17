@@ -26,7 +26,7 @@ const contactFields = [
   'contactEmail',
 ];
 
-function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
+function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermission = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
@@ -53,6 +53,15 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePremiumToggle = (isPremium) => {
+    setEditForm((prev) => ({
+      ...prev,
+      isPremium,
+      // 프리미엄이 아닌 경우 순위를 null로 설정
+      displayRank: isPremium ? prev.displayRank : null
+    }));
+  };
+
   const handleImageUploadSuccess = (imageUrl) => {
     setEditForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
   };
@@ -63,12 +72,11 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
 
 
   const handleSave = () => {
-    // 프리미엄 박람회가 아닌 경우 displayRank를 null로 설정
     const payload = {
       ...editForm,
-      isPremium: expoIsPremium || false,
-      displayRank: (expoIsPremium && editForm.displayRank) 
-        ? parseInt(editForm.displayRank || '0', 10) 
+      isPremium: expoIsPremium ? (editForm.isPremium || false) : false,
+      displayRank: (expoIsPremium && editForm.isPremium && editForm.displayRank) 
+        ? parseInt(editForm.displayRank, 10) 
         : null,
     };
     
@@ -163,7 +171,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                             {boothFields.map((key) => (
                               <div key={key} className={styles.detailItem}>
                                 <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]}
+                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
                                 </div>
                                 <input
                                   type="text"
@@ -175,19 +183,35 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                               </div>
                             ))}
                             
-                            {/* 프리미엄 박람회인 경우에만 노출 순위 수정 가능 */}
+                            {/* 프리미엄 박람회인 경우에만 프리미엄 부스 설정 가능 */}
                             {expoIsPremium && (
-                              <div className={styles.detailItem}>
-                                <div className={styles.detailLabel}>노출 순위</div>
-                                <input
-                                  type="number"
-                                  name="displayRank"
-                                  value={editForm.displayRank || ''}
-                                  onChange={handleChange}
-                                  placeholder="노출 순위 (1~3)"
-                                  className={styles.inputField}
-                                />
-                              </div>
+                              <>
+                                <div className={styles.detailItem}>
+                                  <div className={styles.detailLabel}>프리미엄 부스</div>
+                                  <ToggleSwitch
+                                    checked={editForm.isPremium || false}
+                                    onChange={(value) => handlePremiumToggle(value)}
+                                  />
+                                </div>
+                                
+                                {/* 프리미엄 부스인 경우에만 순위 입력 */}
+                                {editForm.isPremium && (
+                                  <div className={styles.detailItem}>
+                                    <div className={styles.detailLabel}>노출 순위 <span style={{color: 'red'}}>*</span></div>
+                                    <select
+                                      name="displayRank"
+                                      value={editForm.displayRank || ''}
+                                      onChange={handleChange}
+                                      className={styles.inputField}
+                                    >
+                                      <option value="">순위 선택</option>
+                                      <option value="1">1위</option>
+                                      <option value="2">2위</option>
+                                      <option value="3">3위</option>
+                                    </select>
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
 
@@ -196,7 +220,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                             {contactFields.map((key) => (
                               <div key={key} className={styles.detailItem}>
                                 <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]}
+                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
                                 </div>
                                 <input
                                   name={key}
@@ -247,12 +271,22 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                                   ))}
                                   
                                   {expoIsPremium && (
-                                    <div className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>노출 순위</div>
-                                      <div className={styles.detailValue}>
-                                        {row.displayRank || '-'}
+                                    <>
+                                      <div className={styles.detailItem}>
+                                        <div className={styles.detailLabel}>프리미엄 부스</div>
+                                        <div className={styles.detailValue}>
+                                          {row.isPremium ? '예' : '아니오'}
+                                        </div>
                                       </div>
-                                    </div>
+                                      {row.isPremium && (
+                                        <div className={styles.detailItem}>
+                                          <div className={styles.detailLabel}>노출 순위</div>
+                                          <div className={styles.detailValue}>
+                                            {row.displayRank ? `${row.displayRank}위` : '-'}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </div>
 
@@ -272,12 +306,16 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                             </div>
 
                             <div className={styles.buttonGroupBottom}>
-                              <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
-                                수정
-                              </button>
-                              <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
-                                삭제
-                              </button>
+                              {hasPermission && onUpdate && (
+                                <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                  수정
+                                </button>
+                              )}
+                              {hasPermission && onDelete && (
+                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                  삭제
+                                </button>
+                              )}
                             </div>
                           </>
                         )}

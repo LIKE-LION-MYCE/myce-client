@@ -16,7 +16,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
       contactName: '',
       contactPhone: '',
       contactEmail: '',
-      isPremium: expoIsPremium || false,
+      isPremium: false,
       displayRank: '',
     };
   }
@@ -24,8 +24,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
   useEffect(() => {
     if (editingBooth) {
       setForm({
-        ...editingBooth,
-        isPremium: expoIsPremium ? editingBooth.isPremium : false
+        ...editingBooth
       });
     } else {
       setForm(initForm());
@@ -37,6 +36,17 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleToggleChange = (name, value) => {
+    setForm((prev) => {
+      const updated = { ...prev, [name]: value };
+      // 프리미엄이 아닌 경우 순위 초기화
+      if (name === 'isPremium' && !value) {
+        updated.displayRank = '';
+      }
+      return updated;
+    });
+  };
+
 
   const handleImageUploadSuccess = (imageUrl) => {
     setForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
@@ -46,46 +56,13 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
     console.error('이미지 업로드 실패:', error);
   };
 
-  const validateForm = () => {
-    const requiredFields = ['name', 'boothNumber', 'contactName', 'contactPhone', 'contactEmail'];
-    
-    for (const field of requiredFields) {
-      if (!form[field] || form[field].trim() === '') {
-        return false;
-      }
-    }
-
-    // 이메일 형식 검증
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.contactEmail)) {
-      return false;
-    }
-
-    // 전화번호 형식 검증 (숫자와 하이픈만 허용)
-    const phoneRegex = /^[0-9-]+$/;
-    if (!phoneRegex.test(form.contactPhone)) {
-      return false;
-    }
-
-    // 프리미엄 박람회인 경우 노출 순위 검증
-    if (expoIsPremium && form.isPremium && (!form.displayRank || form.displayRank <= 0 || form.displayRank > 3)) {
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
     const payload = {
       ...form,
-      isPremium: expoIsPremium || false,
-      displayRank: (expoIsPremium && form.displayRank)
-        ? parseInt(form.displayRank || '0', 10)
-        : null,
+      isPremium: expoIsPremium ? Boolean(form.isPremium) : false,
+      displayRank: (expoIsPremium && form.isPremium && form.displayRank)
+        ? parseInt(form.displayRank, 10)
+        : 0,
     };
 
     const success = await onSubmit(payload);
@@ -103,6 +80,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
     <div className={styles.container}>
       <div className={styles.posterWrapper}>
         <ImageUpload
+          key={form.mainImageUrl || 'empty'}
           initialImageUrl={form.mainImageUrl}
           onUploadSuccess={handleImageUploadSuccess}
           onUploadError={handleImageUploadError}
@@ -141,7 +119,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>부스 설명</label>
+            <label className={styles.label}>부스 설명 <span style={{color: 'red'}}>*</span></label>
             <input
               name="description"
               value={form.description}
@@ -197,19 +175,34 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
           </div>
 
           {expoIsPremium && (
-            <div className={styles.formGroup}>
-              <label className={styles.label}>노출 순위</label>
-              <input
-                type="number"
-                name="displayRank"
-                value={form.displayRank}
-                onChange={handleChange}
-                placeholder="노출 순위 (1~3)"
-                className={styles.inputField}
-                min="1"
-                max="3"
-              />
-            </div>
+            <>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>프리미엄 부스</label>
+                <ToggleSwitch
+                  checked={form.isPremium}
+                  onChange={(value) => handleToggleChange('isPremium', value)}
+                />
+              </div>
+              
+              {form.isPremium && (
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    노출 순위 <span style={{color: 'red'}}>*</span>
+                  </label>
+                  <select
+                    name="displayRank"
+                    value={form.displayRank}
+                    onChange={handleChange}
+                    className={styles.inputField}
+                  >
+                    <option value="">순위 선택</option>
+                    <option value="1">1위</option>
+                    <option value="2">2위</option>
+                    <option value="3">3위</option>
+                  </select>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -218,7 +211,6 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!validateForm()}
           className={`${styles.actionBtn} ${styles.submitBtn}`}
         >
           <FaCheckCircle />

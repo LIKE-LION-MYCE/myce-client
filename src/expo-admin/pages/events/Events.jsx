@@ -8,6 +8,7 @@ import EventSettingForm from '../../components/eventSettingForm/EventSettingForm
 import Pagination from '../../../common/components/pagination/Pagination';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import { usePermission } from '../../permission/PermissionContext';
 import {
   getEvents,
   addEvent,
@@ -18,6 +19,7 @@ import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoS
 
 function Events() {
   const { expoId } = useParams();
+  const { perm } = usePermission();
   const [eventList, setEventList] = useState([]);
   const [filteredEventList, setFilteredEventList] = useState([]);
   const [page, setPage] = useState(0);
@@ -179,23 +181,26 @@ function Events() {
 
         <EventTable
           data={filteredEventList.slice(page * size, page * size + size)}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
+          onUpdate={perm?.isScheduleUpdate ? handleUpdate : null}
+          onDelete={perm?.isScheduleUpdate ? handleDelete : null}
           expoStartDate={expoInfo?.startDate}
           expoEndDate={expoInfo?.endDate}
+          hasPermission={perm?.isScheduleUpdate}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
 
       {/* 행사 등록 */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>행사 등록</h4>
-        <EventSettingForm 
-          onSubmit={handleAdd} 
-          expoStartDate={expoInfo?.startDate}
-          expoEndDate={expoInfo?.endDate}
-        />
-      </div>
+      {perm?.isScheduleUpdate && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>행사 등록</h4>
+          <EventSettingForm 
+            onSubmit={handleAdd} 
+            expoStartDate={expoInfo?.startDate}
+            expoEndDate={expoInfo?.endDate}
+          />
+        </div>
+      )}
     </div>
   );
 }
