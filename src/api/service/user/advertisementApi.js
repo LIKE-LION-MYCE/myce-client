@@ -14,10 +14,3 @@ export const saveAdvertisement = async (adData) => {
   const response = await instance.post("/ads", adData);
   return response;
 };
-
-export const updateAdStatus = async (adId, advertisementStatus) => {
-  const { data } = await instance.patch(`/platform/ads/${adId}/status`, {
-    advertisementStatus,
-  });
-  return data;
-};
