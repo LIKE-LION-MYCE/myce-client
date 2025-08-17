@@ -14,3 +14,11 @@ export const requestRefund = async (
   };
   await instance.post("/payment/refund", payload);
 };
+
+export const getImpUid = async (paymentTargetType, targetId) => {
+  const res = await instance.post("/payment/imp-uid", {
+    paymentTargetType,
+    targetId,
+  });
+  return res.data;
+};
