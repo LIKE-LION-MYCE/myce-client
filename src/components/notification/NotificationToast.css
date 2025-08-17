@@ -1,7 +1,7 @@
 /* 알림 토스트 스타일 */
 .notification-toast {
   position: fixed;
-  bottom: 100px;
+  top: 80px;
   right: 20px;
   min-width: 300px;
   max-width: 400px;
@@ -81,7 +81,7 @@
 /* 모바일 대응 */
 @media (max-width: 768px) {
   .notification-toast {
-    bottom: 80px;
+    top: 70px;
     right: 10px;
     left: 10px;
     min-width: auto;

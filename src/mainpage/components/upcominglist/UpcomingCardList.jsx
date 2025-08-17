@@ -26,8 +26,6 @@ const UpcomingCardList = ({
       setError(null);
       const data = await getPendingPublishExpos();
       
-      console.log("Pending publish expos API response:", data);
-      
       // 백엔드 데이터를 기존 카드 형식에 맞게 변환
       let transformedExpos = [];
       
@@ -35,7 +33,7 @@ const UpcomingCardList = ({
         transformedExpos = data.content.map(expo => ({
           id: expo.expoId || expo.expo_id,
           title: expo.title,
-          image: expo.thumbnailImageUrl || expo.thumbnail_url || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
           location: expo.location,
           category: expo.category || "박람회"
@@ -44,14 +42,12 @@ const UpcomingCardList = ({
         transformedExpos = data.map(expo => ({
           id: expo.expoId || expo.expo_id,
           title: expo.title,
-          image: expo.thumbnailImageUrl || expo.thumbnail_url || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
           location: expo.location,
           category: expo.category || "박람회"
         }));
       }
-      
-      console.log("Transformed expos:", transformedExpos);
       setExpos(transformedExpos);
     } catch (err) {
       console.error("Failed to fetch pending publish expos:", err);
