@@ -1,126 +1,339 @@
+/* 기본 컨테이너 */
 .container {
-  min-height: 100vh;
-  width: 1000px;
-}
-
-.card {
-  background-color: white;
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 2rem;
-  border-radius: 12px;
+  background: #ffffff;
 }
 
-.topRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+/* 헤더 */
+.header {
+  margin-bottom: 2.5rem;
 }
 
 .titleWithBack {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
+}
+
+.backArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.backArrow:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* 섹션 공통 */
+.section {
+  margin-bottom: 2rem;
+}
+
+/* 인라인 섹션 (가로 정렬) */
+.inlineSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.inlineItem {
+  /* 개별 인라인 아이템 스타일링 */
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+/* 제목 섹션 */
+.titleBox {
+  /* 프레임 제거 */
 }
 
 .templateTitle {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: #111827;
   margin: 0;
 }
 
-.backArrow {
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.2s ease;
+/* 발송 타입 */
+.sendTypeContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 1;
 }
 
-.backArrow:hover {
-  color: #999;
+.sendTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid;
 }
 
-.actionButtons {
+.sendTypeBadge.active {
+  background: #f3f4f6;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.sendTypeBadge.inactive {
+  background: #f9fafb;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 토글 스위치 */
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toggle {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  background: #d1d5db;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.toggle.toggleActive {
+  background: #374151;
+}
+
+.toggleSlider {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggleActive .toggleSlider {
+  transform: translateX(1.25rem);
+}
+
+.toggleLabel {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* 내용 섹션 */
+.contentTabs {
   display: flex;
   gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.editButton {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
+.tabButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #f9fafb;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.tabButton.tabActive {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+.contentBox {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  min-height: 12rem;
+}
+
+.codeContent {
+  width: 100%;
+  height: 12rem;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #374151;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.preview {
+  width: 100%;
+  height: 24rem;
+  border: none;
+  background: white;
+}
+
+/* 날짜 섹션 */
+.dateSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dateItem {
+  /* 개별 날짜 아이템 스타일링 필요시 추가 */
+}
+
+.dateBox {
+  /* 프레임 제거 */
+}
+
+.dateText {
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+/* 이메일 정보 */
+.emailInfo {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.emailInfoContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emailIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.emailInfoTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.emailInfoDesc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* 액션 버튼 */
+.actionSection {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .deleteButton {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: #374151;
-}
-
-.textarea {
-  width: 100%;
-  height: 160px;
-  padding: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  resize: none;
-  background-color: #f9fafb;
-  color: #374151;
-}
-
-.buttonRow {
-  margin-top: 1rem;
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.metaRow {
-  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
-  display: flex;
-  gap: 1.5rem;
+  font-weight: 500;
+  color: #374151;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.tagActive {
-  background-color: black;
+.deleteButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+  background: #111827;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.tagInactive {
-  background-color: #d1d5db;
-  color: #6b7280;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+.editButton:hover {
+  background: #374151;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 이메일 에디터 관련 스타일 */
+.buttonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* 에디터 관련 스타일 */
 .editorContainer {
   min-height: 100vh;
   background: #f5f5f5;
@@ -135,20 +348,6 @@
   gap: 1rem;
 }
 
-.backButton {
-  background: none;
-  border: none;
-  color: #0369a1;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.backButton:hover {
-  background-color: #e0f2fe;
-}
-
 .editorHeader h2 {
   margin: 0;
   font-size: 1.25rem;
@@ -156,16 +355,23 @@
   color: #333;
 }
 
-.emailInfo {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #e0f2fe;
-  border-radius: 8px;
-  border-left: 4px solid #0369a1;
-}
-
-.emailInfoText {
-  margin: 0;
-  color: #0369a1;
-  font-size: 0.9rem;
+/* 반응형 */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .dateSection,
+  .inlineSection {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .actionSection {
+    flex-direction: column;
+  }
+  
+  .pageTitle {
+    font-size: 1.5rem;
+  }
 }
