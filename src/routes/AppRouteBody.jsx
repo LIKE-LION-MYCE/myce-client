@@ -7,11 +7,11 @@ import PlatformAdminRoutes from './PlatformAdminRoutes';
 
 function AppRouteBody() {
 
-  const matchAdmin = useMatch("/expos/:expoId/admin/*");
+  const matchExpoAdmin = useMatch("/expos/:expoId/admin/*");
 
   return (
     <> 
-      {matchAdmin ? <ExpoAdminRoutes /> : null}
+      {matchExpoAdmin ? <ExpoAdminRoutes /> : null}
       <PlatformAdminRoutes/>
       <MainPageRoutes />
       <AuthPageRoutes />
