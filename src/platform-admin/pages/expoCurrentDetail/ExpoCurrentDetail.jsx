@@ -22,7 +22,7 @@ const statusClassMap = {
 
 const statusTextMap = {
   취소_대기: '취소 대기',
-  결제_대기: '승인 완료',
+  결제_대기: '결제 대기',
   게시_대기: '게시 대기',
   게시중: '게시 중',
   게시_종료: '게시 종료',
@@ -143,9 +143,19 @@ function ExpoCurrentDetail() {
 
   let buttonGroup = null;
 
+  // 승인 대기와 승인 거절을 제외한 모든 상태에서 결제 정보 표시
+  const showPaymentInfo = expo?.status && 
+    !['PENDING_APPROVAL', 'REJECTED'].includes(expo.status);
+
   if (expo?.status === 'PENDING_CANCEL') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
+        <button
+          className={styles.infoBtn}
+          onClick={handlePaymentDetailOpen}
+        >
+          결제 정보
+        </button>
         <button
           className={styles.approveBtn}
           onClick={handleCancelDetailView}
@@ -154,7 +164,7 @@ function ExpoCurrentDetail() {
         </button>
       </div>
     );
-  } else if (expo?.status === 'PENDING_PAYMENT') {
+  } else if (expo?.status === 'CANCELLED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button
@@ -163,16 +173,11 @@ function ExpoCurrentDetail() {
         >
           결제 정보
         </button>
-      </div>
-    );
-  } else if (expo?.status === 'PUBLISHED') {
-    buttonGroup = (
-      <div className={styles.buttonGroup}>
         <button
           className={styles.infoBtn}
-          onClick={handlePaymentDetailOpen}
+          onClick={handleCancelDetailOpen}
         >
-          결제 정보
+          취소/환불 정보
         </button>
       </div>
     );
@@ -210,17 +215,6 @@ function ExpoCurrentDetail() {
         </button>
       </div>
     );
-  } else if (expo?.status === 'CANCELLED') {
-    buttonGroup = (
-      <div className={styles.buttonGroup}>
-        <button
-          className={styles.infoBtn}
-          onClick={handleCancelDetailOpen}
-        >
-          취소/환불 정보
-        </button>
-      </div>
-    );
   } else if (expo?.status === 'PUBLISH_ENDED') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
@@ -235,6 +229,18 @@ function ExpoCurrentDetail() {
           onClick={() => setShowSettlementDetail(true)}
         >
           정산 정보 조회
+        </button>
+      </div>
+    );
+  } else if (showPaymentInfo) {
+    // 나머지 모든 결제 완료 상태들 (PENDING_PAYMENT, PENDING_PUBLISH, PUBLISHED 등)
+    buttonGroup = (
+      <div className={styles.buttonGroup}>
+        <button
+          className={styles.infoBtn}
+          onClick={handlePaymentDetailOpen}
+        >
+          결제 정보
         </button>
       </div>
     );

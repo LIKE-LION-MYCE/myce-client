@@ -18,11 +18,43 @@ function SettlementForm() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [inputWarning, setInputWarning] = useState({ accountNumber: '', accountHolder: '' });
   const [isPending, setIsPending] = useState(false); // 정산 대기 상태
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    
+    // 유효성 검사 및 경고 메시지 처리
+    let filteredValue = value;
+    let warningMessage = '';
+    
+    if (name === 'accountNumber') {
+      // 숫자와 하이픈이 아닌 문자가 포함된 경우 경고
+      if (/[^0-9-]/.test(value)) {
+        warningMessage = '계좌번호는 숫자와 하이픈(-)만 입력 가능합니다.';
+      }
+      // 계좌번호: 숫자만 허용 (하이픈 포함)
+      filteredValue = value.replace(/[^0-9-]/g, '');
+    } else if (name === 'accountHolder') {
+      // 한글, 영어, 공백이 아닌 문자가 포함된 경우 경고
+      if (/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s]/.test(value)) {
+        warningMessage = '예금주는 한글, 영어, 공백만 입력 가능합니다.';
+      }
+      // 예금주: 한글, 영어, 공백만 허용 (자모 포함)
+      filteredValue = value.replace(/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s]/g, '');
+    }
+    
+    // 경고 메시지 업데이트
+    setInputWarning(prev => ({ ...prev, [name]: warningMessage }));
+    
+    // 경고 메시지가 있으면 3초 후 자동 제거
+    if (warningMessage) {
+      setTimeout(() => {
+        setInputWarning(prev => ({ ...prev, [name]: '' }));
+      }, 3000);
+    }
+    
+    setForm((prev) => ({ ...prev, [name]: filteredValue }));
   };
 
   const triggerSuccessToast = () => {
@@ -39,6 +71,27 @@ function SettlementForm() {
   const handleSubmit = async () => {
     if (!form.bank || !form.accountNumber || !form.accountHolder) {
       triggerFailToast('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    // 추가 유효성 검사
+    if (!/^[0-9-]+$/.test(form.accountNumber)) {
+      triggerFailToast('계좌번호는 숫자와 하이픈(-)만 입력 가능합니다.');
+      return;
+    }
+
+    if (!/^[가-힣a-zA-Z\s]+$/.test(form.accountHolder)) {
+      triggerFailToast('예금주는 한글, 영어, 공백만 입력 가능합니다.');
+      return;
+    }
+
+    if (form.accountNumber.length < 10) {
+      triggerFailToast('계좌번호는 최소 10자리 이상 입력해주세요.');
+      return;
+    }
+
+    if (form.accountHolder.trim().length < 2) {
+      triggerFailToast('예금주는 최소 2글자 이상 입력해주세요.');
       return;
     }
 
@@ -103,9 +156,14 @@ function SettlementForm() {
             name="accountNumber"
             value={form.accountNumber}
             onChange={handleChange}
-            placeholder="계좌번호 입력"
+            placeholder="계좌번호 입력 (숫자와 하이픈만)"
             disabled={isPending}
           />
+          {inputWarning.accountNumber && (
+            <div style={{ color: '#ff4757', fontSize: '12px', marginTop: '4px' }}>
+              {inputWarning.accountNumber}
+            </div>
+          )}
         </div>
 
         {/* 예금주 */}
@@ -116,9 +174,14 @@ function SettlementForm() {
             name="accountHolder"
             value={form.accountHolder}
             onChange={handleChange}
-            placeholder="예금주 입력"
+            placeholder="예금주 입력 (한글, 영어만)"
             disabled={isPending}
           />
+          {inputWarning.accountHolder && (
+            <div style={{ color: '#ff4757', fontSize: '12px', marginTop: '4px' }}>
+              {inputWarning.accountHolder}
+            </div>
+          )}
         </div>
       </div>
 
