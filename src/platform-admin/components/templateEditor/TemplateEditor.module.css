@@ -1,0 +1,482 @@
+/* TemplateEditor.module.css */
+
+.templateEditor {
+  display: flex;
+  height: 100vh;
+  gap: 16px;
+  padding: 16px 8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.editorPanel {
+  flex: 1;
+  background: #ffffff;
+  padding: 24px 16px;
+  border-radius: 8px;
+  overflow-y: auto;
+  border: 1px solid #e9ecef;
+}
+
+.previewPanel {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px 16px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.panelTitle {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #212529;
+  letter-spacing: -0.02em;
+}
+
+.previewTitle {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #212529;
+  letter-spacing: -0.02em;
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.btnBack {
+  background: #343a40;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.btnBack:hover {
+  background: #212529;
+  transform: translateY(-1px);
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  box-sizing: border-box;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  outline: none;
+  color: #212529;
+}
+
+.input:hover {
+  border-color: #adb5bd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.input:focus {
+  border-color: #6c757d;
+  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+  background: #ffffff;
+}
+
+.input::placeholder {
+  color: #adb5bd;
+  font-weight: 400;
+}
+
+.textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  resize: vertical;
+  box-sizing: border-box;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  outline: none;
+  min-height: 60px;
+  color: #212529;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.textarea:hover {
+  border-color: #adb5bd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.textarea:focus {
+  border-color: #6c757d;
+  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+  background: #ffffff;
+}
+
+.textarea::placeholder {
+  color: #adb5bd;
+  font-weight: 400;
+}
+
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  box-sizing: border-box;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 36px;
+  color: #212529;
+  cursor: pointer;
+}
+
+.select:hover {
+  border-color: #adb5bd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.select:focus {
+  border-color: #6c757d;
+  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+}
+
+.variableSection {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  position: relative;
+  overflow: hidden;
+}
+
+.variableSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #343a40, #6c757d, #adb5bd);
+}
+
+.sectionTitle {
+  margin: 0 0 12px 0;
+  color: #343a40;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.variableItem {
+  margin-bottom: 12px;
+}
+
+.variableItem:last-child {
+  margin-bottom: 0;
+}
+
+.variableLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btnSave {
+  flex: 1;
+  background: #343a40;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btnSave::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s;
+}
+
+.btnSave:hover {
+  background: #212529;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 58, 64, 0.3);
+}
+
+.btnSave:hover::before {
+  left: 100%;
+}
+
+.btnSave:active {
+  transform: translateY(0);
+}
+
+.btnTest {
+  flex: 1;
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btnTest::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s;
+}
+
+.btnTest:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btnTest:hover::before {
+  left: 100%;
+}
+
+.btnTest:active {
+  transform: translateY(0);
+}
+
+.previewContainer {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.emailHeader {
+  background: #343a40;
+  padding: 12px 16px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: -0.01em;
+}
+
+.emailContent {
+  max-height: 83vh;
+  overflow: auto;
+  background: #ffffff;
+}
+
+.emailScale {
+  transform: scale(1.1);
+  transform-origin: top left;
+  width: 90.9%;
+  overflow: hidden;
+}
+
+/* 스크롤바 스타일링 */
+.editorPanel::-webkit-scrollbar,
+.emailContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.editorPanel::-webkit-scrollbar-track,
+.emailContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editorPanel::-webkit-scrollbar-thumb {
+  background: rgba(108, 117, 125, 0.3);
+  border-radius: 3px;
+}
+
+.editorPanel::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 117, 125, 0.5);
+}
+
+.emailContent::-webkit-scrollbar-thumb {
+  background: rgba(173, 181, 189, 0.4);
+  border-radius: 3px;
+}
+
+.emailContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(173, 181, 189, 0.6);
+}
+
+/* 애니메이션 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.variableSection {
+  animation: slideInUp 0.4s ease;
+}
+
+.formGroup {
+  animation: slideInUp 0.4s ease;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1280px) {
+  .templateEditor {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: 12px 6px;
+  }
+  
+  .editorPanel,
+  .previewPanel {
+    flex: none;
+    width: 100%;
+    padding: 20px 12px;
+  }
+  
+  .emailScale {
+    transform: scale(0.9);
+    width: 111.1%;
+  }
+  
+  .emailContent {
+    max-height: 60vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .templateEditor {
+    padding: 8px 4px;
+    gap: 12px;
+  }
+  
+  .editorPanel,
+  .previewPanel {
+    padding: 16px 8px;
+    border-radius: 6px;
+  }
+  
+  .panelTitle,
+  .previewTitle {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .previewHeader {
+    margin-bottom: 16px;
+    padding: 10px 12px;
+  }
+  
+  .variableSection {
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+  }
+  
+  .buttonGroup {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  
+  .btnSave,
+  .btnTest {
+    width: 100%;
+    padding: 10px 16px;
+  }
+  
+  .input,
+  .textarea,
+  .select {
+    padding: 8px 10px;
+    border-radius: 4px;
+  }
+  
+  .emailScale {
+    transform: scale(1);
+    width: 100%;
+  }
+  
+  .emailContent {
+    max-height: 50vh;
+  }
+}

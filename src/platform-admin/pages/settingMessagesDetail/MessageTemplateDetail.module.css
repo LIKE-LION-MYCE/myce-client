@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  width : 1000px;
+  width: 1000px;
 }
 
 .card {
@@ -118,4 +118,54 @@
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.7rem;
+}
+
+/* 이메일 에디터 관련 스타일 */
+.editorContainer {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.editorHeader {
+  background: white;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e1e5e9;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #0369a1;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: #e0f2fe;
+}
+
+.editorHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.emailInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #e0f2fe;
+  border-radius: 8px;
+  border-left: 4px solid #0369a1;
+}
+
+.emailInfoText {
+  margin: 0;
+  color: #0369a1;
+  font-size: 0.9rem;
 }
