@@ -41,12 +41,12 @@
   cursor: pointer;
 }
 
-/* 본문이 긴 컬럼에만 좌측 정렬 + 말줄임 */
 .bodyCell {
   text-align: left;
   width: 400px;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .groupStart {
@@ -60,7 +60,6 @@
   text-align: left;
 }
 
-/* ===== 상세(펼침) 영역 ===== */
 .detailRow {
   background-color: #fafcff;
 }
@@ -93,7 +92,6 @@
   word-break: break-word;
 }
 
-/* 상세 내 테이블 */
 .detailTableWrapper {
   width: 100%;
   overflow-x: auto;
@@ -118,7 +116,6 @@
   font-size: 13px;
 }
 
-/* 메타 표 전용 */
 .metaLabel {
   width: 140px;
   font-weight: 600;
@@ -142,12 +139,46 @@
   text-align: left;
 }
 
+/* 접힘: 내용 길이에 맞춰 높이 축소, 단 최대 220px까지만 표시 */
 .recipientsScroll {
   position: relative;
   max-height: 220px;
-  overflow: auto;
+  overflow: hidden;
   padding-right: 6px;
   background: #fff;
+  scrollbar-gutter: stable;
+  pointer-events: none;
+  -webkit-overflow-scrolling: auto;
+  touch-action: none;
+}
+
+/* 펼침: 최대 220px까지 내부 스크롤, 내용이 적으면 자연히 낮아짐 */
+.recipientsExpanded {
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: auto;
+}
+
+/* 접힘 상태에서 스크롤바 숨김 */
+.recipientsScroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.recipientsScroll {
+  scrollbar-width: none;
+}
+
+/* 펼침 상태: 스크롤바(필요 시) 스타일 */
+.recipientsExpanded::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.recipientsExpanded {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c7d0 transparent;
 }
 
 .fadeOverlay {
@@ -160,8 +191,6 @@
   background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #ffffff 70%);
 }
 
-.recipientsExpanded {}
-
 .recipientsList {
   margin: 0;
   padding: 10px 16px 12px 22px;
@@ -171,14 +200,12 @@
   color: #6b7280;
 }
 
-/* 유틸 */
 .emptyCell {
   text-align: center;
   color: #6b7280;
   padding: 16px;
 }
 
-/* 버튼 */
 .moreBtn {
   margin-top: 8px;
   padding: 6px 10px;
