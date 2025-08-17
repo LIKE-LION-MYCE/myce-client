@@ -13,8 +13,10 @@ function ExpoAdminSideBar() {
   const navigate = useNavigate();
   const { expoId } = useParams();
   const { perm } = usePermission();
+
   const currentPath = location.pathname;
   const [selectedMenu, setSelectedMenu] = useState('');
+  // 하나만 열리도록: ['expo'] | ['reservation'] | []
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
   const basePath = `/expos/${expoId}/admin`;
@@ -32,17 +34,12 @@ function ExpoAdminSideBar() {
     }
   }, [currentPath, basePath]);
 
+  // 한 번에 하나만 열리도록 토글
   const toggleSubMenu = (menuKey) => {
-    setOpenSubMenus((prev) =>
-      prev.includes(menuKey)
-        ? prev.filter((key) => key !== menuKey)
-        : [...prev, menuKey]
-    );
+    setOpenSubMenus((prev) => (prev.includes(menuKey) ? [] : [menuKey]));
   };
 
-  const go = (path) => () => {
-    navigate(path);
-  };
+  const go = (path) => () => navigate(path);
 
   const can = {
     dashboard: true,
@@ -57,10 +54,7 @@ function ExpoAdminSideBar() {
     inquiry: !!perm?.isInquiryView,
   };
 
-  const disabledStyle = {
-    cursor: 'not-allowed',
-    color : '#838383ff'
-  };
+  const disabledStyle = { cursor: 'not-allowed', color: '#838383ff' };
 
   return (
     <Sidebar
@@ -93,7 +87,7 @@ function ExpoAdminSideBar() {
             backgroundColor: '#2c3e50',
           },
           [`.${menuClasses.active}`]: {
-            backgroundColor: '#2c3e50',
+            backgroundColor: '#2c3e50'
           },
           [`.${menuClasses.subMenuRoot}`]: {
             backgroundColor: '#1e2a38',
@@ -117,7 +111,7 @@ function ExpoAdminSideBar() {
         </MenuItem>
 
         <MenuItem
-          icon={<FaQrcode/>}
+          icon={<FaQrcode />}
           onClick={go(`${basePath}/qrcheckin`)}
           active={selectedMenu === `${basePath}/qrcheckin`}
         >
