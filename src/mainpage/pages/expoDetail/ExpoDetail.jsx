@@ -17,13 +17,13 @@ import ExpoInfo from '../../components/expoInfo/ExpoInfo';
 import ExpoTickets from '../../components/expoTickets/ExpoTickets';
 import ExpoBooths from '../../components/expoBooths/ExpoBooths';
 import ExpoEvents from '../../components/expoEvents/ExpoEvents';
-import ExpoReviews from '../../components/expoReviews/ExpoReviews';
+import ReviewList from '../../components/review/ReviewList';
 import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
 
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/nonMemberPurchaseModal";
 import ChatModal from "../../../components/shared/chat/ChatModal";
 import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
-import { isTokenExpired } from "../../../api/utils/jwtUtils";
+import { isTokenExpired, decodeJWT } from "../../../api/utils/jwtUtils";
 import { getOrCreateExpoChatRoom } from "../../../api/service/chat/chatService";
 
 export default function ExpoDetail() {
@@ -37,6 +37,7 @@ export default function ExpoDetail() {
   const [booths, setBooths] = useState(null);
   const [businessProfile, setBusinessProfile] = useState(null);
   const [events, setEvents] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [activeTab, setActiveTab] = useState("info"); // info, tickets, booths, events, reviews, location
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,6 +53,20 @@ export default function ExpoDetail() {
   useEffect(() => {
     if (expoId) {
       loadExpoDetails();
+    }
+    
+    // 사용자 정보 확인
+    const token = localStorage.getItem('access_token');
+    if (token && !isTokenExpired(token)) {
+      try {
+        const decoded = decodeJWT(token);
+        setUserInfo({
+          id: decoded.memberId,
+          name: decoded.name
+        });
+      } catch (error) {
+        console.error('토큰 디코딩 실패:', error);
+      }
     }
   }, [expoId]);
 
@@ -322,7 +337,7 @@ export default function ExpoDetail() {
             className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
             onClick={() => setActiveTab('reviews')}
           >
-            리뷰 ({reviews?.totalReviews || 0})
+            리뷰
           </button>
         </div>
 
@@ -352,7 +367,7 @@ export default function ExpoDetail() {
           )}
           
           {activeTab === 'reviews' && (
-            <ExpoReviews reviews={reviews} />
+            <ReviewList expoId={expoId} userInfo={userInfo} />
           )}
         </div>
 
