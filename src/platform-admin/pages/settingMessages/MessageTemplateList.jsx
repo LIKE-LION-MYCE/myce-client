@@ -1,136 +1,168 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './MessageTemplateList.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Pagination from '../../../common/components/pagination/Pagination';
-import { FiSearch } from 'react-icons/fi';
-import { MdAddCircle } from 'react-icons/md';
+import { FiSearch, FiChevronDown } from 'react-icons/fi';
+import { getMessageTemplateList } from '../../../api/service/system/settings/messageFormat/MessageFormatService';
 
-const dummyTemplates = [
-  {
-    id: 1,
-    title: '박람회 신청 승인 알림',
-    content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
-    createdAt: '2024-01-15',
-    updatedAt: '2025-07-30',
-    useImage: true,
-    sendEmail: false,
-    sendAlarm: true,
-  },
-  {
-    id: 2,
-    title: '박람회 신청 승인 알림',
-    content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
-    createdAt: '2024-01-15',
-    updatedAt: '2025-07-30',
-    useImage: false,
-    sendEmail: false,
-    sendAlarm: true,
-  },
-  {
-    id: 3,
-    title: '박람회 신청 승인 알림',
-    content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
-    createdAt: '2024-01-15',
-    updatedAt: '2025-07-30',
-    useImage: true,
-    sendEmail: true,
-    sendAlarm: true,
-  },
-  {
-    id: 4,
-    title: '박람회 신청 승인 알림',
-    content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
-    createdAt: '2024-01-15',
-    updatedAt: '2025-07-30',
-    useImage: true,
-    sendEmail: false,
-    sendAlarm: true,
-  },
-  {
-    id: 5,
-    title: '박람회 신청 승인 알림',
-    content: '안녕하세요. 귀하의 박람회 신청이 승인되었습니다. 자세한 내용은 첨부파일을 확인해주세요.',
-    createdAt: '2024-01-15',
-    updatedAt: '2025-07-30',
-    useImage: true,
-    sendEmail: false,
-    sendAlarm: true,
-  },
+
+const sendTypeOptions = [
+  { value: 'ALL', label: '전체' },
+  { value: 'EMAIL', label: '이메일' },
+  { value: 'NOTIFICATION', label: '알림' }
 ];
 
 export default function MessageTemplateList() {
+  const navigate = useNavigate();
+  const [templates, setTemplates] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState('');
+  const [selectedSendType, setSelectedSendType] = useState('all');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const pageSize = 10;
-  const pageInfo = {
-    content: dummyTemplates,
-    totalPages: 1,
-    number: currentPage,
-    size: pageSize,
-    totalElements: dummyTemplates.length,
+
+  useEffect(() => {
+    getMessageTemplateList(currentPage).then((res) => {
+      console.log("success to get message templage");
+      const data = res.data;
+      console.log(data);
+      setTemplates(data.templates);
+      setTotalPages(data.totalPage);
+    })
+    .catch((err) => {
+      console.log("Fail to get message templates.", err);
+    })
+  }, [currentPage]);
+
+  // 발송 타입 결정
+  const getSendType = (type) => {
+    const res = sendTypeOptions.find((option) => option.value === type);
+    return res.label || null; // 찾지 못했을 때 null 반환
   };
+
+    // 테이블 행 클릭 핸들러
+  const handleRowClick = (templateId) => {
+    navigate(`/platform/admin/settingMessage/${templateId}`);
+  };
+
+  // 페이지네이션을 위한 템플릿 슬라이싱
+  const startIndex = currentPage * pageSize;
+  const endIndex = startIndex + pageSize;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  const handleSendTypeSelect = (value) => {
+    setSelectedSendType(value);
+    setCurrentPage(0); // 필터 변경 시 첫 페이지로
+    setIsDropdownOpen(false);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+    setCurrentPage(0); // 검색 시 첫 페이지로
+  };
+
+  const selectedSendTypeLabel = sendTypeOptions.find(option => option.value === selectedSendType)?.label || '전체';
+
   return (
     <main className={styles.container}>
+      {/* 검색 필터 */}
       <div className={styles.topControls}>
         <div className={styles.filters}>
+          {/* 제목 검색 */}
           <div className={styles.filterGroup}>
             <input
               type="text"
               className={styles.input}
-              placeholder="템플릿 검색..."
+              placeholder="제목 검색..."
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={handleSearchChange}
             />
             <FiSearch className={styles.searchIcon} />
           </div>
+
+          {/* 발송 타입 드롭다운 */}
+          <div className={styles.dropdown}>
+            <button 
+              className={styles.dropdownButton}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {selectedSendTypeLabel}
+              <FiChevronDown className={`${styles.chevronIcon} ${isDropdownOpen ? styles.rotated : ''}`} />
+            </button>
+            {isDropdownOpen && (
+              <div className={styles.dropdownMenu}>
+                {sendTypeOptions.map(option => (
+                  <button
+                    key={option.value}
+                    className={`${styles.dropdownItem} ${selectedSendType === option.value ? styles.selected : ''}`}
+                    onClick={() => handleSendTypeSelect(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <Link to="/platform/admin/settingMessage/new">
-          <button className={`${styles.actionBtn} ${styles.createButton}`}>
-            <MdAddCircle className={styles.icon} />
-            새 템플릿 생성
-          </button>
-        </Link>
+        {/* 결과 수 표시 */}
+        <div className={styles.resultCount}>
+          총 {templates.length}개 템플릿
+        </div>
       </div>
 
-      <div className={styles.listSection}>
-        {dummyTemplates.map((template) => (
-          <Link key={template.id} to={`/platform/admin/settingMessage/${template.id}`}>
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>{template.title}</h2>
-              <p className={styles.cardContent}>{template.content}</p>
-              <div className={styles.buttonRow}>
-                <span className={template.useImage ? styles.tagActive : styles.tagInactive}>이미지 사용</span>
-                <span className={template.sendEmail ? styles.tagActive : styles.tagInactive}>이메일 발송</span>
-                <span className={template.sendAlarm ? styles.tagActive : styles.tagInactive}>알림 발송</span>
-              </div>
-              <div className={styles.metaRow}>
-                <span>생성: {template.createdAt}</span>
-                <span>수정: {template.updatedAt}</span>
-              </div>
-              <div className={styles.editRow}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/platform/admin/settingMessage/${template.id}/edit`);
-                  }}
-                  className={styles.editButton}
-                >
-                  편집
-                </button>
-                <button className={styles.deleteButton}>삭제</button>
-              </div>
-            </div>
-          </Link>
-        ))}
-        <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+      {/* 테이블 */}
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tableHeader}>
+              <th className={styles.headerCell}>발송 타입</th>
+              <th className={styles.headerCell}>템플릿명</th>
+              <th className={styles.headerCell}>메일 제목</th>
+              <th className={styles.headerCell}>생성날짜</th>
+              <th className={styles.headerCell}>수정날짜</th>
+            </tr>
+          </thead>
+          <tbody>
+            {templates.map((template) => (
+              <tr key={template.id} className={styles.tableRow} onClick={() => handleRowClick(template.id)}>
+                <td className={styles.typeCell}>
+                  <span className={`${styles.sendTypeBadge}`}>
+                    {getSendType(template.channelType)}
+                  </span>
+                </td>
+                <td className={styles.titleCell}>
+                    {template.name}
+                </td>
+                <td className={styles.subjectCell}>
+                  {template.subject}
+                </td>
+                <td className={styles.dateCell}>{template.createdAt}</td>
+                <td className={styles.dateCell}>{template.updatedAt}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* 데이터가 없을 때 */}
+        {templates.length === 0 && (
+          <div className={styles.emptyState}>
+            <p>검색 조건에 맞는 템플릿이 없습니다.</p>
+          </div>
+        )}
       </div>
+
+      {/* 페이지네이션 */}
+      {totalPages > 0 && (
+        <div className={styles.paginationWrapper}>
+          <Pagination pageInfo={{totalPages, number: currentPage}} onPageChange={handlePageChange} />
+        </div>
+      )}
     </main>
   );
 }

@@ -1,121 +1,276 @@
+/* MessageTemplateDetail.module.css - 메인 컴포넌트용 */
+
 .container {
+  width: 100%;
+  margin: 0;
+  padding: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #ffffff;
   min-height: 100vh;
-  width : 1000px;
 }
 
-.card {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 12px;
-}
-
-.topRow {
+/* 상단 헤더 */
+.topHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 32px;
+  padding: 20px 0;
 }
 
-.titleWithBack {
+.headerLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
-.templateTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
+.headerRight {
+  display: flex;
+  gap: 12px;
 }
 
 .backArrow {
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #6b7280;
+  transition: all 0.2s ease;
 }
 
 .backArrow:hover {
-  color: #999;
+  color: #374151;
 }
 
-.actionButtons {
-  display: flex;
-  gap: 0.5rem;
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.editButton {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  cursor: pointer;
+/* 날짜 섹션 */
+.dateSection {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  animation: slideInUp 0.4s ease;
 }
 
-.deleteButton {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  cursor: pointer;
+.dateSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #6b7280;
+}
+
+.sectionTitle {
+  margin: 0 0 20px 0;
+  color: #374151;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
   display: block;
-  color: #374151;
-}
-
-.textarea {
-  width: 100%;
-  height: 160px;
-  padding: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  resize: none;
-  background-color: #f9fafb;
-  color: #374151;
-}
-
-.buttonRow {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.metaRow {
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
+  margin-bottom: 8px;
+  font-size: 12px;
   color: #6b7280;
-  display: flex;
-  gap: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.tagActive {
-  background-color: black;
+.dateGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dateItem {
+  /* 개별 날짜 아이템 */
+}
+
+.dateValue {
+  padding: 14px 16px;
+  background: #f8f9fa;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+/* 버튼 그룹 (헤더 오른쪽) */
+.btnEdit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+  background: #374151;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.tagInactive {
-  background-color: #d1d5db;
+.btnEdit:hover {
+  background: #111827;
+}
+
+.btnCancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
   color: #6b7280;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btnCancel:hover {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.btnSave {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: #374151;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btnSave:hover {
+  background: #111827;
+}
+
+.btnEdit:active,
+.btnCancel:active,
+.btnSave:active {
+  transform: translateY(0);
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 에디터 컨테이너 */
+.editorContainer {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.editorHeader {
+  background: white;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.editorHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #212529;
+  letter-spacing: -0.02em;
+}
+
+/* 애니메이션 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .topHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+  }
+  
+  .headerRight {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+  
+  .btnEdit,
+  .btnCancel,
+  .btnSave {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .pageTitle {
+    font-size: 24px;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+  }
+  
+  .dateSection {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .dateGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
