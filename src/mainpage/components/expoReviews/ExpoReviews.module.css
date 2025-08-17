@@ -5,6 +5,74 @@
   font-size: 24px;
 }
 
+/* 리뷰 헤더 */
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* 정렬 버튼 */
+.sortButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.sortBtn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: #666;
+}
+
+.sortBtn:hover {
+  background: #f5f5f5;
+}
+
+.sortBtn.active {
+  background: #f39c12;
+  color: #fff;
+  border-color: #f39c12;
+}
+
+/* 리뷰 작성 버튼 */
+.writeBtn {
+  padding: 10px 20px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.writeBtn:hover {
+  background: #2980b9;
+}
+
+/* 로딩 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
 .reviewStats {
   background: #fff9e6;
   padding: 15px;
@@ -70,7 +138,7 @@
   transform: translateY(-1px);
 }
 
-.reviewHeader {
+.reviewCard .reviewHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,9 +171,43 @@
   font-size: 16px;
 }
 
+.reviewMeta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .reviewDate {
   color: #999;
   font-size: 14px;
+}
+
+/* 리뷰 액션 버튼 */
+.reviewActions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  padding: 4px 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.editBtn:hover {
+  background: #3498db;
+  color: #fff;
+  border-color: #3498db;
+}
+
+.deleteBtn:hover {
+  background: #e74c3c;
+  color: #fff;
+  border-color: #e74c3c;
 }
 
 .reviewContent {
@@ -134,6 +236,28 @@
     font-size: 20px;
   }
   
+  .reviewHeader {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .sortButtons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .writeBtn {
+    width: 100%;
+    text-align: center;
+  }
+  
   .reviewStats {
     padding: 12px;
   }
@@ -142,10 +266,22 @@
     padding: 15px;
   }
   
-  .reviewHeader {
+  .reviewCard .reviewHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+  
+  .reviewMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .reviewActions {
+    width: 100%;
+    justify-content: flex-end;
   }
   
   .reviewerInfo {

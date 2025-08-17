@@ -17,7 +17,7 @@ import ExpoInfo from '../../components/expoInfo/ExpoInfo';
 import ExpoTickets from '../../components/expoTickets/ExpoTickets';
 import ExpoBooths from '../../components/expoBooths/ExpoBooths';
 import ExpoEvents from '../../components/expoEvents/ExpoEvents';
-import ReviewList from '../../components/review/ReviewList';
+import ExpoReviews from '../../components/expoReviews/ExpoReviews';
 import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
 
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/nonMemberPurchaseModal";
@@ -367,7 +367,7 @@ export default function ExpoDetail() {
           )}
           
           {activeTab === 'reviews' && (
-            <ReviewList expoId={expoId} userInfo={userInfo} />
+            <ExpoReviews expoId={expoId} userInfo={userInfo} />
           )}
         </div>
 
