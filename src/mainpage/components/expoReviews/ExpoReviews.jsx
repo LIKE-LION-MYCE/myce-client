@@ -38,7 +38,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const response = await reviewAPI.getReviewsByExpo(expoId, sortBy, currentPage, 10);
+      const response = await reviewAPI.getReviewsByExpo(expoId, sortBy, currentPage, 5);
       if (response.success) {
         setReviews(response.data.reviews);
         setCurrentPage(response.data.currentPage);
@@ -282,8 +282,10 @@ const ExpoReviews = ({ expoId, userInfo }) => {
 
               {totalPages > 1 && (
                 <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
+                  pageInfo={{
+                    totalPages: totalPages,
+                    number: currentPage
+                  }}
                   onPageChange={handlePageChange}
                 />
               )}
