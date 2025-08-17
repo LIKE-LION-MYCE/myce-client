@@ -254,9 +254,21 @@ export default function ExpoDetail() {
     );
   }
 
+  const formatDisplayDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ko-KR", {
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    });
+  };
+
+  const isPendingPublish = basicInfo?.status === 'PENDING_PUBLISH';
+
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isPendingPublish ? styles.pendingPublish : ''}`}>
         {/* 뒤로가기 버튼 */}
         <div className={styles.backButtonSection}>
           <button className={styles.backButton} onClick={handleGoBack}>
@@ -373,6 +385,30 @@ export default function ExpoDetail() {
           onClose={handleLoginPromptClose}
         />
       </div>
+
+      {/* PENDING_PUBLISH 상태 오버레이 - container 밖으로 이동 */}
+      {isPendingPublish && (
+        <div className={styles.pendingOverlay}>
+          <div className={styles.pendingMessage}>
+            <h2 className={styles.pendingTitle}>COMING SOON</h2>
+            <p className={styles.pendingText}>
+              {basicInfo.displayStartDate 
+                ? `${formatDisplayDate(basicInfo.displayStartDate)}에 찾아옵니다.` 
+                : '곧 공개될 예정입니다.'
+              }
+            </p>
+            <div className={styles.pendingSubtext}>
+              현재 준비 중인 박람회입니다
+            </div>
+            <button 
+              className={styles.homeButton}
+              onClick={() => navigate('/')}
+            >
+              홈으로
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
