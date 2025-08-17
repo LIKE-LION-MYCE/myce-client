@@ -49,13 +49,34 @@
   white-space: nowrap;
 }
 
-/* 상태별 뱃지 */
-.badgeTerminated {
-  background-color: #ebf9f1;
-  color: #2a9c68;
+/* SettlementHistoryTable.module.css */
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: #fff;
 }
 
-.badgeCanceled {
-  background-color: #ffecec;
-  color: #e74c3c;
+.badgeSuccess {
+  background-color: #28a745;
+}
+
+.badgePending {
+  background-color: #ffc107;
+}
+
+.badgeFailed {
+  background-color: #dc3545;
+}
+
+.badgeRefunded {
+  background-color: #6c757d;
+}
+
+.badgePartialRefunded {
+  background-color: #ffc107;
 }
