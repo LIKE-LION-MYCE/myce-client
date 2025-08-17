@@ -25,19 +25,19 @@
   margin-bottom: 4px;
 }
 
-/* 인풋 + 아이콘 */
 .inputWrap {
   position: relative;
 }
 
 .inputField {
-  padding: 10px 32px 10px 0; /* 오른쪽 padding 고정 */
+  padding: 10px 32px 10px 0;
   font-size: 14px;
   color: #333;
   border: none;
   border-bottom: 1px solid #ccc;
   outline: none;
   width: 100%;
+  background: #fff;
 }
 
 .inputField:focus {
@@ -52,6 +52,28 @@
   pointer-events: none;
   color: #9aa0a6;
   font-size: 14px;
+}
+
+/* 보기 모드에서도 아이콘 표시 */
+.readOnlyWrap {
+  position: relative;
+}
+
+.readOnlyBox {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  font-size: 14px;
+  padding: 8px 32px 8px 0; /* 아이콘 자리 확보(오른쪽) */
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: transparent;
+}
+
+.readOnlyText {
+  line-height: 1.5;
 }
 
 .half {
