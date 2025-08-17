@@ -1,10 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import styles from "./AdCancelSummaryModal.module.css";
-import { requestRefund } from "../../../api/service/payment/RefundService";
-import { getImpUid } from "../../../api/service/payment/RefundService";
-import { updateAdStatus } from "../../../api/service/user/advertisementApi";
-import { updateAdPaymentInfoStatus } from "../../../api/service/payment/PaymentService";
+import { processAdRefund } from "../../../api/service/payment/AdRefundService";
 
 function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const { id } = useParams(); // URL 경로에서 {id} 부분을 가져옴
@@ -13,43 +10,34 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
 
   if (!isOpen) return null;
 
+  // 부분환불 여부 판단: 게시 시작일이 현재보다 이전이면 부분환불
+  const today = new Date();
+  const startDate = cancelForm?.startAt ? new Date(cancelForm.startAt) : null;
+  const isPartialRefund = startDate && startDate <= today;
+
   // '환불 승인' 버튼 클릭 시 실행될 내부 함수
   const handleRefundSubmit = async () => {
-    const impUid = await getImpUid("AD", id);
-    // cancelForm prop에 API 호출에 필요한 ID가 포함되어 있어야 합니다.
-    // // 예: cancelForm.adId, cancelForm.paymentId
-    // if (!cancelForm?.adId || !cancelForm?.paymentId) {
-    //   alert("환불 처리에 필요한 정보가 부족합니다.");
-    //   return;
-    // }
-
     setIsLoading(true);
-    setError(null); // 이전 에러 메시지 초기화
+    setError(null);
 
     try {
-      // 전체 환불 API 호출
-      await requestRefund({
-        impUid: impUid,
-        reason: "광고 게시 대기 중 전체 환불",
-      });
-      // Advertisement 상태 변경 API 호출
-      await updateAdStatus(id, {
-        advertisementStatus: "CANCELLED",
-      });
-      // AdPaymentInfoStatus 상태 변경 API 호출
-      await updateAdPaymentInfoStatus(id, {
-        paymentStatus: "REFUNDED",
-      });
+      const refundData = {
+        adId: parseInt(id),
+        reason: isPartialRefund
+          ? "게시 중 부분 환불"
+          : "광고 게시 대기 중 전체 환불",
+        cancelAmount: isPartialRefund ? cancelForm.totalAmount : null,
+      };
 
-      // 모든 API 호출 성공 시
+      await processAdRefund(refundData);
+
       alert("환불 처리가 성공적으로 완료되었습니다.");
-      if (onSuccess) {
-        onSuccess(); // 부모 컴포넌트에 성공을 알림 (모달 닫기, 목록 새로고침 등)
+      onClose();
+      if (onSubmit) {
+        onSubmit();
       }
     } catch (err) {
       console.error("환불 처리 중 오류 발생:", err);
-      console.error("에러 응답:", err.response?.data);
-      console.error("에러 상태:", err.response?.status);
       setError("환불 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       setIsLoading(false);
@@ -59,7 +47,9 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h2 className={styles.title}>환불 승인</h2>
+        <h2 className={styles.title}>
+          {isPartialRefund ? "부분 환불 승인" : "전체 환불 승인"}
+        </h2>
 
         {/* 박람회/신청자 정보 */}
         <div className={styles.infoBox}>
@@ -119,7 +109,7 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
             취소
           </button>
           <button className={styles.submitBtn} onClick={handleRefundSubmit}>
-            환불 승인
+            {isPartialRefund ? "부분 환불 승인" : "전체 환불 승인"}
           </button>
         </div>
       </div>
