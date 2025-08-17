@@ -68,7 +68,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
     }
 
     // 프리미엄 박람회인 경우 노출 순위 검증
-    if (expoIsPremium && form.isPremium && (!form.displayRank || form.displayRank <= 0)) {
+    if (expoIsPremium && form.isPremium && (!form.displayRank || form.displayRank <= 0 || form.displayRank > 3)) {
       return false;
     }
 
@@ -204,10 +204,10 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
                 name="displayRank"
                 value={form.displayRank}
                 onChange={handleChange}
-                placeholder="노출 순위 (1~100)"
+                placeholder="노출 순위 (1~3)"
                 className={styles.inputField}
                 min="1"
-                max="100"
+                max="3"
               />
             </div>
           )}

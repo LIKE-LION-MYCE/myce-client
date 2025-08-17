@@ -184,7 +184,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
                                   name="displayRank"
                                   value={editForm.displayRank || ''}
                                   onChange={handleChange}
-                                  placeholder="노출 순위 (1~100)"
+                                  placeholder="노출 순위 (1~3)"
                                   className={styles.inputField}
                                 />
                               </div>
