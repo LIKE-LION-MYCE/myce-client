@@ -9,7 +9,7 @@ import TicketTable from '../../components/ticketTable/TicketTable';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
 
 import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 import {
@@ -128,6 +128,15 @@ function Setting() {
       </div>
 
       <div className={styles.divider} />
+
+              
+      <div className={styles.alertBox}>
+        <FaInfoCircle className={styles.alertIcon} />
+          <span className={styles.alertText}>
+            <strong>안내 : </strong>&nbsp;
+             티켓 판매 시작일 이후에는 티켓 정보를 수정할 수 없습니다. 
+          </span>
+      </div>
 
       <div className={styles.ticketSection}>
         <div className={styles.titleRow}>

@@ -20,6 +20,20 @@ const ticketFieldsLeft = ['name', 'type', 'description'];
 const ticketFieldsRightTop = ['price', 'totalQuantity'];
 const rightFieldIsNumber = (key) => key === 'price' || key === 'totalQuantity';
 
+function toLocalDateOnly(d) {
+  const dt = new Date(d);
+  if (Number.isNaN(dt.getTime())) return null;
+  return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+}
+function isSaleStarted(dateStr) {
+  if (!dateStr) return false;
+  const start = toLocalDateOnly(dateStr);
+  if (!start) return false;
+  const today = new Date();
+  const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return start.getTime() <= today0.getTime();
+}
+
 function TicketTable({ data = [], onUpdate, onDelete }) {
   const { expoId } = useParams();
 
@@ -264,6 +278,7 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
   };
 
   const handleEditStart = () => {
+    if (isSaleStarted(editForm?.saleStartDate)) return;
     setIsEditing(true);
     setErrors({});
   };
@@ -325,6 +340,7 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
             const isExpanded = expandedId === row.ticketId;
             const saleRange = `${row.saleStartDate ?? ''} ~ ${row.saleEndDate ?? ''}`;
             const useRange = `${row.useStartDate ?? ''} ~ ${row.useEndDate ?? ''}`;
+            const saleStarted = isSaleStarted(row.saleStartDate);
 
             return (
               <React.Fragment key={row.ticketId}>
@@ -535,31 +551,37 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                           </div>
                         </div>
 
-                        <div className={styles.buttonGroupBottom}>
-                          {!isEditing ? (
-                            <>
-                              <button className={styles.editBtn} onClick={handleEditStart}>
-                                수정
-                              </button>
-                              <button
-                                className={styles.deleteBtn}
-                                onClick={() => handleDelete(editForm.ticketId)}
-                              >
-                                삭제
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button className={styles.editBtn} onClick={handleSave}>
-                                저장
-                              </button>
-                              <button className={styles.cancelBtn} onClick={handleCancel}>
-                                취소
-                              </button>
-                              {/* 편집 중에는 삭제 버튼 표시 안 함 */}
-                            </>
-                          )}
-                        </div>
+                        {(
+                          // 버튼 그룹(구분선 포함) 렌더 조건:
+                          // 1) 편집 중이거나
+                          // 2) 편집 전인데 판매 시작 전일 때만
+                          (isEditing) || (!isEditing && !saleStarted)
+                        ) && (
+                          <div className={styles.buttonGroupBottom}>
+                            {!isEditing ? (
+                              <>
+                                <button className={styles.editBtn} onClick={handleEditStart}>
+                                  수정
+                                </button>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={() => handleDelete(editForm.ticketId)}
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button className={styles.editBtn} onClick={handleSave}>
+                                  저장
+                                </button>
+                                <button className={styles.cancelBtn} onClick={handleCancel}>
+                                  취소
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
