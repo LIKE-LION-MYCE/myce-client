@@ -27,3 +27,13 @@ export const getExpos = async (filters) => {
     throw error;
   }
 };
+
+export const getPendingPublishExpos = async () => {
+  try {
+    const response = await instance.get("/expos?status=PENDING_PUBLISH");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching pending publish expos:", error);
+    throw error;
+  }
+};

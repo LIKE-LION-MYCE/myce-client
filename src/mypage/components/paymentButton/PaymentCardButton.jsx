@@ -45,7 +45,7 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
-                if (targetType === "RESERVATION") {
+                if (targetType === "EXPO") {
                   alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
                   navigate(`/mypage/expo-status/${id}`);
                 } else {
@@ -78,7 +78,7 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
             }
           } else {
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
-            if (targetType === "RESERVATION") {
+            if (targetType === "EXPO") {
               navigate(`/mypage/expo-status/${id}`);
             } else {
               navigate(`/mypage/ads-status/${id}`);

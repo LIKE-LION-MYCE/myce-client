@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
+import RefundModal from "../refundModal/RefundModal";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
@@ -17,6 +18,8 @@ const ReservationDetailPage = () => {
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrImgUrl, setQrImgUrl] = useState("");
   const [selectedReserver, setSelectedReserver] = useState(null);
+  
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -438,7 +441,12 @@ const ReservationDetailPage = () => {
         <div
           style={{ display: "flex", justifyContent: "center", marginTop: 40 }}
         >
-          <button className={styles.neutralCancelBtn}>예약 취소</button>
+          <button 
+            className={styles.neutralCancelBtn}
+            onClick={() => setIsRefundModalOpen(true)}
+          >
+            예약 취소
+          </button>
         </div>
       </div>
       </div>
@@ -453,6 +461,16 @@ const ReservationDetailPage = () => {
         expoInfo={expoInfo}
         reservationInfo={reservationInfo}
         reserver={selectedReserver}
+      />
+      
+      <RefundModal
+        isOpen={isRefundModalOpen}
+        onClose={() => setIsRefundModalOpen(false)}
+        reservationId={id}
+        onRefundComplete={() => {
+          setIsRefundModalOpen(false);
+          navigate('/mypage/reservation', { replace: true });
+        }}
       />
     </div>
   );

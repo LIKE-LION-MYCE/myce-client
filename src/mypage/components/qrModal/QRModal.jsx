@@ -63,33 +63,31 @@ const QRModal = ({
           <div className={styles.leftSection}>
             <div className={styles.expoInfo}>
               <h3 className={styles.expoTitle}>{expoInfo?.title}</h3>
+            </div>
+
+            <div className={styles.ticketDetails}>
+              <h4 className={styles.detailsTitle}>티켓 상세 정보</h4>
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>개최 기간</span>
+                  <span className={styles.infoLabel}>티켓명</span>
+                  <span className={styles.infoValue}>{reservationInfo?.ticketName || 'N/A'}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>티켓 타입</span>
                   <span className={styles.infoValue}>
-                    {formatDateRange(expoInfo?.startDate, expoInfo?.endDate)}
+                    {reservationInfo?.ticketType === 'GENERAL' ? '일반' : 
+                     reservationInfo?.ticketType === 'EARLY_BIRD' ? '얼리버드' : 
+                     reservationInfo?.ticketType || 'N/A'}
                   </span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>운영 시간</span>
-                  <span className={styles.infoValue}>
-                    {formatTimeRange(expoInfo?.startTime, expoInfo?.endTime)}
-                  </span>
+                  <span className={styles.infoLabel}>사용 시작일</span>
+                  <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>장소</span>
-                  <span className={styles.infoValue}>
-                    {expoInfo?.location}
-                  </span>
+                  <span className={styles.infoLabel}>사용 종료일</span>
+                  <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
                 </div>
-                {expoInfo?.locationDetail && (
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>상세 위치</span>
-                    <span className={styles.infoValue}>
-                      {expoInfo.locationDetail}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -132,32 +130,6 @@ const QRModal = ({
           </div>
         </div>
 
-        {/* 상세 티켓 정보 */}
-        <div className={styles.ticketDetails}>
-          <h4 className={styles.detailsTitle}>티켓 상세 정보</h4>
-          <div className={styles.detailsGrid}>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>티켓명</span>
-              <span className={styles.detailValue}>{reservationInfo?.ticketName || 'N/A'}</span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>티켓 타입</span>
-              <span className={styles.detailValue}>
-                {reservationInfo?.ticketType === 'GENERAL' ? '일반' : 
-                 reservationInfo?.ticketType === 'EARLY_BIRD' ? '얼리버드' : 
-                 reservationInfo?.ticketType || 'N/A'}
-              </span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>사용 시작일</span>
-              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>사용 종료일</span>
-              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
-            </div>
-          </div>
-        </div>
 
         {/* 티켓 푸터 */}
         <div className={styles.ticketFooter}>
