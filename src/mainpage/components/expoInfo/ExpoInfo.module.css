@@ -106,10 +106,12 @@
   border-left: 4px solid #3498db;
 }
 
-.coordinates p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
+.coordinates {
+  margin-top: 15px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
 }
 
 /* 반응형 디자인 */

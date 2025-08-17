@@ -1,4 +1,5 @@
 import styles from './ExpoInfo.module.css';
+import GoogleMap from '../../../common/components/googleMap/GoogleMap';
 
 const ExpoInfo = ({ basicInfo, location }) => {
   return (
@@ -67,8 +68,16 @@ const ExpoInfo = ({ basicInfo, location }) => {
             )}
             {location.latitude && location.longitude && (
               <div className={styles.coordinates}>
-                <p>위도: {location.latitude}, 경도: {location.longitude}</p>
-                {/* TODO: 지도 컴포넌트 추가 */}
+                <GoogleMap 
+                  latitude={location.latitude}
+                  longitude={location.longitude}
+                  address={location.location}
+                  markerIcon={{
+                    url: '/images/marker/MYCE_MARKER.png',
+                    size: { width: 60, height: 60 },
+                    anchor: { x: 30, y: 60 }
+                  }}
+                />
               </div>
             )}
           </div>
