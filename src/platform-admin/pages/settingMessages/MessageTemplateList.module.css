@@ -2,164 +2,294 @@
 .container {
   padding: 2rem;
   min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-a {
-  text-decoration: none;
-  color: black;
-}
-
-/* 필터 + 버튼 섹션 */
+/* 필터 + 결과 수 섹션 */
 .topControls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .filters {
   display: flex;
-  gap: 12px;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
 .filterGroup {
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   background-color: #fff;
-  padding: 7px 10px;
+  border-radius: 6px;
+  padding: 8px 12px;
   gap: 8px;
+  min-width: 200px;
 }
 
 .input {
   border: none;
   background: transparent;
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
-  width: 200px;
+  flex: 1;
 }
 
 .searchIcon {
-  color: #888;
+  color: #6b7280;
   font-size: 16px;
-  cursor: pointer;
 }
 
-.actionBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
+/* 드롭다운 */
+.dropdown {
+  position: relative;
+  min-width: 150px;
 }
 
-.createButton {
+.dropdownButton {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
   font-size: 14px;
-  font-weight: 500;
-  border: none;
-  border-radius: 20px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
+  transition: border-color 0.2s ease;
+}
+
+.dropdownButton:hover {
+  border-color: #9ca3af;
+}
+
+.chevronIcon {
+  font-size: 16px;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+}
+
+.chevronIcon.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  margin-top: 4px;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.createButton:hover {
-  background-color: #ececec;
+.dropdownItem:hover {
+  background-color: #f3f4f6;
 }
 
-.icon {
-  font-size: 16px;
-  margin-right: 4px;
-}
-
-.listSection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.card {
-  background-color: white;
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.cardTitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.cardContent {
-  color: #4b5563;
-  font-size : 0.9rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.buttonRow {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.tagActive {
-  background-color: black;
+.dropdownItem.selected {
+  background-color: #111827;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
 }
 
-.tagInactive {
-  background-color: #d1d5db;
+.dropdownItem:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.dropdownItem:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.resultCount {
+  font-size: 14px;
   color: #6b7280;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+  font-weight: 500;
 }
 
-.metaRow {
-  font-size: 0.875rem;
-  color: #6b7280;
-  display: flex;
-  gap: 1rem;
+/* 테이블 */
+.tableContainer {
+  background: white;
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
 
-.editRow {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.editButton {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
+.tableHeader {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.headerCell {
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.headerCell:last-child {
+  /* 마지막 헤더 셀 스타일 */
+}
+
+.tableRow {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.1s ease;
   cursor: pointer;
 }
 
-.deleteButton {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  cursor: pointer;
+.tableRow:hover {
+  background-color: #f8f9fa;
+}
+
+.tableRow:last-child {
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* 테이블 셀 */
+.typeCell {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.titleCell {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.titleLink {
+  color: #212529;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.titleLink:hover {
+  color: #495057;
+  text-decoration: underline;
+}
+
+.subjectCell {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #495057;
+  text-align: center;
+}
+
+.sendTypeBadge {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.sendTypeBadge.active {
+  color: #212529;
+}
+
+.sendTypeBadge.inactive {
+  color: #6c757d;
+}
+
+.statusDot {
+  display: none;
+}
+
+.dateCell {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #495057;
+  text-align: center;
+}
+
+/* 빈 상태 */
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+  color: #6b7280;
+  background: #fafafa;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* 페이지네이션 래퍼 */
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .topControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .filterGroup {
+    min-width: auto;
+  }
+  
+  .dropdown {
+    min-width: auto;
+  }
+  
+  .resultCount {
+    text-align: center;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 600px;
+  }
+  
+  .headerCell,
+  .titleCell,
+  .typeCell,
+  .dateCell {
+    padding: 12px;
+  }
 }
