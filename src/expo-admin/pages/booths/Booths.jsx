@@ -8,6 +8,7 @@ import Pagination from '../../../common/components/pagination/Pagination';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { getBooths, deleteBooth, updateBooth, registerBooth } from '../../../api/service/expo-admin/setting/BoothService';
+import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 
 function Booths() {
   const { expoId } = useParams();
@@ -17,6 +18,7 @@ function Booths() {
   const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState('latest');
   const [toast, setToast] = useState(null);
+  const [expoInfo, setExpoInfo] = useState(null);
   const size = 5;
 
   const showToast = (type, message) => {
@@ -28,6 +30,16 @@ function Booths() {
     totalPages: Math.ceil(filteredBoothList.length / size),
     number: page,
   };
+
+  const fetchExpoInfo = useCallback(async () => {
+    if (!expoId) return;
+    try {
+      const response = await getMyExpoInfo(expoId);
+      setExpoInfo(response);
+    } catch (error) {
+      showToast('fail', '박람회 정보 로딩 실패: ' + error.message);
+    }
+  }, [expoId]);
 
   const fetchBooths = useCallback(async () => {
     if (!expoId) return;
@@ -59,8 +71,9 @@ function Booths() {
   }, [expoId]);
 
   useEffect(() => {
+    fetchExpoInfo();
     fetchBooths();
-  }, [fetchBooths]);
+  }, [fetchExpoInfo, fetchBooths]);
 
   useEffect(() => {
     let processedList = [...boothList];
@@ -174,6 +187,7 @@ function Booths() {
           data={filteredBoothList.slice(page * size, page * size + size)}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+          expoIsPremium={expoInfo?.isPremium}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
@@ -181,7 +195,7 @@ function Booths() {
       {/* 부스 등록 */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>부스 등록</h4>
-        <BoothSettingForm onSubmit={handleAdd} />
+        <BoothSettingForm onSubmit={handleAdd} expoIsPremium={expoInfo?.isPremium} />
       </div>
     </div>
   );

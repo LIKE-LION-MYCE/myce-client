@@ -29,18 +29,26 @@ const managerFields = [
   'contactEmail',
 ];
 
-function EventTable({ data = [], onUpdate, onDelete }) {
+function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate }) {
   const [expandedId, setExpandedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
+      setEditingId(null);
       setEditForm(null);
     } else {
       setExpandedId(row.id);
-      setEditForm(row);
+      setEditingId(null);
+      setEditForm(null);
     }
+  };
+
+  const handleEditClick = (row) => {
+    setEditingId(row.id);
+    setEditForm(row);
   };
 
   const handleChange = (e) => {
@@ -50,7 +58,9 @@ function EventTable({ data = [], onUpdate, onDelete }) {
 
   const handleSave = () => {
     onUpdate(editForm);
-    // 부모에서 토스트 관리하므로 여기서는 토스트 띄우지 않음
+    // 수정 모드 종료 - 상세보기로 돌아감
+    setEditingId(null);
+    setEditForm(null);
   };
 
   const handleDeleteClick = (e, id) => {
@@ -62,7 +72,14 @@ function EventTable({ data = [], onUpdate, onDelete }) {
   };
 
   const handleCancel = () => {
+    // 원래 데이터로 복원하고 상세보기로 돌아감
+    setEditingId(null);
+    setEditForm(null);
+  };
+
+  const handleDetailCancel = () => {
     setExpandedId(null);
+    setEditingId(null);
     setEditForm(null);
   };
 
@@ -86,7 +103,6 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                 {col.header}
               </th>
             ))}
-            <th className={styles.th}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -104,23 +120,18 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                       {row[col.key]}
                     </td>
                   ))}
-                  <td className={styles.td}>
-                    <div className={styles.buttonGroupInline}>
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={(e) => handleDeleteClick(e, row.id)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
                 </tr>
 
-                {isExpanded && editForm && (
+                {isExpanded && (
                   <tr key={`detail-${row.id}`} className={styles.detailRow}>
-                    <td colSpan={columns.length + 1}>
+                    <td colSpan={columns.length}>
                       <div className={styles.detailBox}>
-                        <div className={styles.detailGrid}>
+                        <button className={styles.closeBtn} onClick={handleDetailCancel}>
+                          ×
+                        </button>
+                        {editingId === row.id && editForm ? (
+                          <>
+                            <div className={styles.detailGrid}>
                           {/* 행사 정보 */}
                           <div className={styles.column}>
                             {eventFields.map((key) => {
@@ -161,6 +172,8 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                                     value={editForm[key] || ''}
                                     onChange={handleChange}
                                     className={styles.inputField}
+                                    min={key === 'eventDate' && expoStartDate ? expoStartDate.split('T')[0] : undefined}
+                                    max={key === 'eventDate' && expoEndDate ? expoEndDate.split('T')[0] : undefined}
                                   />
                                 </div>
                               );
@@ -183,16 +196,75 @@ function EventTable({ data = [], onUpdate, onDelete }) {
                               </div>
                             ))}
                           </div>
-                        </div>
+                            </div>
 
-                        <div className={styles.buttonGroupBottom}>
-                          <button className={styles.editBtn} onClick={handleSave}>
-                            저장
-                          </button>
-                          <button className={styles.cancelBtn} onClick={handleCancel}>
-                            취소
-                          </button>
-                        </div>
+                            <div className={styles.buttonGroupBottom}>
+                            <button className={styles.editBtn} onClick={handleSave}>
+                              저장
+                            </button>
+                            <button className={styles.cancelBtn} onClick={handleCancel}>
+                              취소
+                            </button>
+                            </div>
+                          </>
+                        ) : (
+                          // 읽기 전용 상세 뷰
+                          <>
+                            <div className={styles.detailGrid}>
+                              <div className={styles.column}>
+                                {eventFields.map((key) => {
+                                  if (key === 'startTime') return null;
+                                  if (key === 'endTime') {
+                                    return (
+                                      <div key="eventTimeGroup" className={styles.detailItem}>
+                                        <div className={styles.detailLabel}>행사 시간</div>
+                                        <div className={styles.detailValue}>
+                                          {row.startTime && row.endTime 
+                                            ? `${row.startTime} ~ ${row.endTime}`
+                                            : '-'
+                                          }
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
+                                      <div className={styles.detailValue}>
+                                        {row[key] || '-'}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              <div className={styles.column}>
+                                {managerFields.map((key) => (
+                                  <div key={key} className={styles.detailItem}>
+                                    <div className={styles.detailLabel}>
+                                      {fieldLabelMap[key]}
+                                    </div>
+                                    <div className={styles.detailValue}>
+                                      {row[key] || '-'}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className={styles.buttonGroupBottom}>
+                              <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                수정
+                              </button>
+                              <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                삭제
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

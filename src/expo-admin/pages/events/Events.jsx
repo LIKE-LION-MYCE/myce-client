@@ -14,6 +14,7 @@ import {
   updateEvent,
   deleteEvent,
 } from '../../../api/service/expo-admin/setting/EventService';
+import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 
 function Events() {
   const { expoId } = useParams();
@@ -23,6 +24,7 @@ function Events() {
   const [sortOrder, setSortOrder] = useState('desc');
   const [selectedDate, setSelectedDate] = useState('');
   const [toast, setToast] = useState(null);
+  const [expoInfo, setExpoInfo] = useState(null);
   const size = 4;
 
   const showToast = (type, message) => {
@@ -37,7 +39,18 @@ function Events() {
 
   useEffect(() => {
     fetchEvents();
+    fetchExpoInfo();
   }, [expoId]);
+
+  const fetchExpoInfo = async () => {
+    if (!expoId) return;
+    try {
+      const data = await getMyExpoInfo(expoId);
+      setExpoInfo(data);
+    } catch (error) {
+      console.error('박람회 정보 로딩 실패:', error);
+    }
+  };
 
   useEffect(() => {
     let processedList = [...eventList];
@@ -147,6 +160,8 @@ function Events() {
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className={styles.dateInput}
+              min={expoInfo?.startDate ? expoInfo.startDate.split('T')[0] : undefined}
+              max={expoInfo?.endDate ? expoInfo.endDate.split('T')[0] : undefined}
             />
           
             <select
@@ -166,6 +181,8 @@ function Events() {
           data={filteredEventList.slice(page * size, page * size + size)}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+          expoStartDate={expoInfo?.startDate}
+          expoEndDate={expoInfo?.endDate}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
@@ -173,7 +190,11 @@ function Events() {
       {/* 행사 등록 */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>행사 등록</h4>
-        <EventSettingForm onSubmit={handleAdd} />
+        <EventSettingForm 
+          onSubmit={handleAdd} 
+          expoStartDate={expoInfo?.startDate}
+          expoEndDate={expoInfo?.endDate}
+        />
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
-function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
+function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
   const [form, setForm] = useState(initForm());
 
   function initForm() {
@@ -16,31 +16,27 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
       contactName: '',
       contactPhone: '',
       contactEmail: '',
-      isPremium: false,
+      isPremium: expoIsPremium || false,
       displayRank: '',
     };
   }
 
   useEffect(() => {
     if (editingBooth) {
-      setForm(editingBooth);
+      setForm({
+        ...editingBooth,
+        isPremium: expoIsPremium ? editingBooth.isPremium : false
+      });
     } else {
       setForm(initForm());
     }
-  }, [editingBooth]);
+  }, [editingBooth, expoIsPremium]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleToggle = (checked) => {
-    setForm((prev) => ({
-      ...prev,
-      isPremium: checked,
-      displayRank: checked ? prev.displayRank : '',
-    }));
-  };
 
   const handleImageUploadSuccess = (imageUrl) => {
     setForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
@@ -71,8 +67,8 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
       return false;
     }
 
-    // 프리미엄 부스인 경우 노출 순위 검증
-    if (form.isPremium && (!form.displayRank || form.displayRank <= 0)) {
+    // 프리미엄 박람회인 경우 노출 순위 검증
+    if (expoIsPremium && form.isPremium && (!form.displayRank || form.displayRank <= 0)) {
       return false;
     }
 
@@ -86,7 +82,8 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
 
     const payload = {
       ...form,
-      displayRank: form.isPremium
+      isPremium: expoIsPremium || false,
+      displayRank: (expoIsPremium && form.displayRank)
         ? parseInt(form.displayRank || '0', 10)
         : null,
     };
@@ -199,29 +196,21 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth }) {
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>프리미엄 부스</label>
-            <div className={styles.booleanGroup}>
-              <ToggleSwitch
-                checked={form.isPremium}
-                onChange={handleToggle}
+          {expoIsPremium && (
+            <div className={styles.formGroup}>
+              <label className={styles.label}>노출 순위</label>
+              <input
+                type="number"
+                name="displayRank"
+                value={form.displayRank}
+                onChange={handleChange}
+                placeholder="노출 순위 (1~100)"
+                className={styles.inputField}
+                min="1"
+                max="100"
               />
             </div>
-            {form.isPremium && (
-              <div className={styles.formGroup} style={{marginTop: '10px'}}>
-                <input
-                  type="number"
-                  name="displayRank"
-                  value={form.displayRank}
-                  onChange={handleChange}
-                  placeholder="노출 순위 (1~100)"
-                  className={styles.inputField}
-                  min="1"
-                  max="100"
-                />
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 

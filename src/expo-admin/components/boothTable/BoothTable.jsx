@@ -26,18 +26,26 @@ const contactFields = [
   'contactEmail',
 ];
 
-function BoothTable({ data = [], onDelete, onUpdate }) {
+function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium }) {
   const [expandedId, setExpandedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
+      setEditingId(null);
       setEditForm(null);
     } else {
       setExpandedId(row.id);
-      setEditForm(row);
+      setEditingId(null);
+      setEditForm(null);
     }
+  };
+
+  const handleEditClick = (row) => {
+    setEditingId(row.id);
+    setEditForm(row);
   };
 
   const handleChange = (e) => {
@@ -53,25 +61,21 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
     console.error('이미지 업로드 실패:', error);
   };
 
-  const handlePremiumToggle = (checked) => {
-    setEditForm((prev) => ({
-      ...prev,
-      isPremium: checked,
-      displayRank: checked ? prev.displayRank : '',
-    }));
-  };
 
   const handleSave = () => {
-    // 프리미엄 부스가 아닌 경우 displayRank를 null로 설정
+    // 프리미엄 박람회가 아닌 경우 displayRank를 null로 설정
     const payload = {
       ...editForm,
-      displayRank: editForm.isPremium 
+      isPremium: expoIsPremium || false,
+      displayRank: (expoIsPremium && editForm.displayRank) 
         ? parseInt(editForm.displayRank || '0', 10) 
         : null,
     };
     
     onUpdate(payload);
-    // 부모에서 토스트 관리하므로 여기서는 토스트 띄우지 않음
+    // 수정 모드 종료 - 상세보기로 돌아감
+    setEditingId(null);
+    setEditForm(null);
   };
 
   const handleDeleteClick = (e, id) => {
@@ -82,7 +86,14 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
   };
 
   const handleCancel = () => {
+    // 원래 데이터로 복원하고 상세보기로 돌아감
+    setEditingId(null);
+    setEditForm(null);
+  };
+
+  const handleDetailCancel = () => {
     setExpandedId(null);
+    setEditingId(null);
     setEditForm(null);
   };
 
@@ -104,7 +115,6 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                 {col.header}
               </th>
             ))}
-            <th className={styles.th}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -126,23 +136,18 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                         : row[col.key]}
                     </td>
                   ))}
-                  <td className={styles.td}>
-                    <div className={styles.buttonGroupInline}>
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={(e) => handleDeleteClick(e, row.id)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
                 </tr>
 
-                {isExpanded && editForm && (
+                {isExpanded && (
                   <tr key={`detail-${row.id}`} className={styles.detailRow}>
-                    <td colSpan={columns.length + 1}>
+                    <td colSpan={columns.length}>
                       <div className={styles.detailBox}>
-                        <div className={styles.topRow}>
+                        <button className={styles.closeBtn} onClick={handleDetailCancel}>
+                          ×
+                        </button>
+                        {editingId === row.id && editForm ? (
+                          <>
+                            <div className={styles.topRow}>
                           {/* 썸네일 이미지 */}
                           <div className={styles.imageWrapper}>
                             <ImageUpload
@@ -170,19 +175,8 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                               </div>
                             ))}
                             
-                            {/* 프리미엄 부스 토글 */}
-                            <div className={styles.detailItem}>
-                              <div className={styles.detailLabel}>프리미엄 부스</div>
-                              <div className={styles.booleanGroup}>
-                                <ToggleSwitch
-                                  checked={editForm.isPremium || false}
-                                  onChange={handlePremiumToggle}
-                                />
-                              </div>
-                            </div>
-                            
-                            {/* 조건부 노출 순위 */}
-                            {editForm.isPremium && (
+                            {/* 프리미엄 박람회인 경우에만 노출 순위 수정 가능 */}
+                            {expoIsPremium && (
                               <div className={styles.detailItem}>
                                 <div className={styles.detailLabel}>노출 순위</div>
                                 <input
@@ -216,14 +210,77 @@ function BoothTable({ data = [], onDelete, onUpdate }) {
                           </div>
                         </div>
 
-                        <div className={styles.buttonGroupBottom}>
-                          <button className={styles.editBtn} onClick={handleSave}>
-                            저장
-                          </button>
-                          <button className={styles.cancelBtn} onClick={handleCancel}>
-                            취소
-                          </button>
-                        </div>
+                            <div className={styles.buttonGroupBottom}>
+                              <button className={styles.editBtn} onClick={handleSave}>
+                                저장
+                              </button>
+                              <button className={styles.cancelBtn} onClick={handleCancel}>
+                                취소
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          // 읽기 전용 상세 뷰
+                          <>
+                            <div className={styles.topRow}>
+                              <div className={styles.imageWrapper}>
+                                {row.mainImageUrl && (
+                                  <img 
+                                    src={row.mainImageUrl} 
+                                    alt="부스 이미지" 
+                                    className={styles.detailImage}
+                                  />
+                                )}
+                              </div>
+                              
+                              <div className={styles.detailGrid}>
+                                <div className={styles.column}>
+                                  {boothFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
+                                      <div className={styles.detailValue}>
+                                        {row[key] || '-'}
+                                      </div>
+                                    </div>
+                                  ))}
+                                  
+                                  {expoIsPremium && (
+                                    <div className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>노출 순위</div>
+                                      <div className={styles.detailValue}>
+                                        {row.displayRank || '-'}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className={styles.column}>
+                                  {contactFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
+                                      <div className={styles.detailValue}>
+                                        {row[key] || '-'}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className={styles.buttonGroupBottom}>
+                              <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                수정
+                              </button>
+                              <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                삭제
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
