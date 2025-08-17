@@ -29,7 +29,7 @@ const managerFields = [
   'contactEmail',
 ];
 
-function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate }) {
+function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate, hasPermission = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
@@ -256,12 +256,16 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate 
                             </div>
 
                             <div className={styles.buttonGroupBottom}>
-                              <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
-                                수정
-                              </button>
-                              <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
-                                삭제
-                              </button>
+                              {hasPermission && onUpdate && (
+                                <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                  수정
+                                </button>
+                              )}
+                              {hasPermission && onDelete && (
+                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                  삭제
+                                </button>
+                              )}
                             </div>
                           </>
                         )}

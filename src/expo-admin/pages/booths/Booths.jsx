@@ -7,16 +7,18 @@ import BoothSettingForm from '../../components/boothSettingForm/BoothSettingForm
 import Pagination from '../../../common/components/pagination/Pagination';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import { usePermission } from '../../permission/PermissionContext';
 import { getBooths, deleteBooth, updateBooth, registerBooth } from '../../../api/service/expo-admin/setting/BoothService';
 import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 
 function Booths() {
   const { expoId } = useParams();
+  const { perm } = usePermission();
   const [boothList, setBoothList] = useState([]);
   const [filteredBoothList, setFilteredBoothList] = useState([]);
   const [page, setPage] = useState(0);
   const [searchText, setSearchText] = useState('');
-  const [sortOrder, setSortOrder] = useState('latest');
+  const [sortOrder, setSortOrder] = useState('rank');
   const [toast, setToast] = useState(null);
   const [expoInfo, setExpoInfo] = useState(null);
   const size = 5;
@@ -113,23 +115,72 @@ function Booths() {
 
   const handleAdd = async (booth) => {
     try {
+      // 프리미엄 부스 순위 중복 체크
+      if (expoInfo?.isPremium && booth.isPremium && booth.displayRank) {
+        const isDuplicate = boothList.some(existingBooth => 
+          existingBooth.isPremium && 
+          existingBooth.displayRank === parseInt(booth.displayRank)
+        );
+        
+        if (isDuplicate) {
+          showToast('fail', `${booth.displayRank}위는 이미 다른 프리미엄 부스에서 사용중입니다.`);
+          return false;
+        }
+      }
+
       await registerBooth(expoId, booth);
       showToast('success', '부스가 성공적으로 등록되었습니다.');
       fetchBooths();
       return true;
     } catch (error) {
-      showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+      // 백엔드에서 오는 중복 순위 에러 처리
+      if (error.message.includes('BOOTH_PREMIUM_RANK_DUPLICATED')) {
+        showToast('fail', '이미 사용중인 프리미엄 부스 노출 순위입니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_MAX_CAPACITY_REACHED')) {
+        showToast('fail', '프리미엄 부스는 최대 3개까지만 등록할 수 있습니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_RANK_REQUIRED')) {
+        showToast('fail', '프리미엄 부스는 노출 순위가 필수입니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_RANK_INVALID')) {
+        showToast('fail', '프리미엄 부스 노출 순위는 1에서 3 사이여야 합니다.');
+      } else {
+        showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+      }
       return false;
     }
   };
 
   const handleUpdate = async (updatedBooth) => {
     try {
+      // 프리미엄 부스 순위 중복 체크
+      if (expoInfo?.isPremium && updatedBooth.isPremium && updatedBooth.displayRank) {
+        const isDuplicate = boothList.some(booth => 
+          booth.id !== updatedBooth.id && 
+          booth.isPremium && 
+          booth.displayRank === parseInt(updatedBooth.displayRank)
+        );
+        
+        if (isDuplicate) {
+          showToast('fail', `${updatedBooth.displayRank}위는 이미 다른 프리미엄 부스에서 사용중입니다.`);
+          return;
+        }
+      }
+
       await updateBooth(expoId, updatedBooth.id, updatedBooth);
       showToast('success', '부스가 성공적으로 수정되었습니다.');
       fetchBooths();
     } catch (error) {
-      showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+      // 백엔드에서 오는 중복 순위 에러 처리
+      if (error.message.includes('BOOTH_PREMIUM_RANK_DUPLICATED')) {
+        showToast('fail', '이미 사용중인 프리미엄 부스 노출 순위입니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_MAX_CAPACITY_REACHED')) {
+        showToast('fail', '프리미엄 부스는 최대 3개까지만 등록할 수 있습니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_RANK_REQUIRED')) {
+        showToast('fail', '프리미엄 부스는 노출 순위가 필수입니다.');
+      } else if (error.message.includes('BOOTH_PREMIUM_RANK_INVALID')) {
+        showToast('fail', '프리미엄 부스 노출 순위는 1에서 3 사이여야 합니다.');
+      } else {
+        showToast('fail', error.message || '알 수 없는 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -185,18 +236,21 @@ function Booths() {
 
         <BoothTable
           data={filteredBoothList.slice(page * size, page * size + size)}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
+          onUpdate={perm?.isBoothInfoUpdate ? handleUpdate : null}
+          onDelete={perm?.isBoothInfoUpdate ? handleDelete : null}
           expoIsPremium={expoInfo?.isPremium}
+          hasPermission={perm?.isBoothInfoUpdate}
         />
         <Pagination pageInfo={pageInfo} onPageChange={setPage} />
       </div>
 
       {/* 부스 등록 */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>부스 등록</h4>
-        <BoothSettingForm onSubmit={handleAdd} expoIsPremium={expoInfo?.isPremium} />
-      </div>
+      {perm?.isBoothInfoUpdate && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>부스 등록</h4>
+          <BoothSettingForm onSubmit={handleAdd} expoIsPremium={expoInfo?.isPremium} />
+        </div>
+      )}
     </div>
   );
 }
