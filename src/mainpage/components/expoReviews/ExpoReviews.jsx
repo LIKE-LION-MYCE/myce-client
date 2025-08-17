@@ -16,17 +16,15 @@ const ExpoReviews = ({ expoId, userInfo }) => {
   const [canWriteReview, setCanWriteReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   
-  // 평균 평점과 별점 분포 계산
-  const averageRating = reviews.length > 0 ? 
-    reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
-  
-  const ratingSummary = {
-    fiveStars: reviews.filter(r => r.rating === 5).length,
-    fourStars: reviews.filter(r => r.rating === 4).length,
-    threeStars: reviews.filter(r => r.rating === 3).length,
-    twoStars: reviews.filter(r => r.rating === 2).length,
-    oneStars: reviews.filter(r => r.rating === 1).length,
-  };
+  // 백엔드에서 제공하는 전체 통계
+  const [averageRating, setAverageRating] = useState(0);
+  const [ratingSummary, setRatingSummary] = useState({
+    fiveStars: 0,
+    fourStars: 0,
+    threeStars: 0,
+    twoStars: 0,
+    oneStars: 0,
+  });
 
   useEffect(() => {
     fetchReviews();
@@ -44,6 +42,16 @@ const ExpoReviews = ({ expoId, userInfo }) => {
         setCurrentPage(response.data.currentPage);
         setTotalPages(response.data.totalPages);
         setTotalElements(response.data.totalElements);
+        
+        // 전체 통계 설정
+        setAverageRating(response.data.averageRating || 0);
+        setRatingSummary(response.data.ratingSummary || {
+          fiveStars: 0,
+          fourStars: 0,
+          threeStars: 0,
+          twoStars: 0,
+          oneStars: 0,
+        });
       }
     } catch (error) {
       console.error('리뷰 조회 실패:', error);
