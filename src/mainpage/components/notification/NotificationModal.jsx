@@ -77,6 +77,8 @@ export default function NotificationModal({ onClose }) {
         return { icon: '🎯', color: '#8b5cf6' };
       case 'QR_ISSUED':
         return { icon: '🎫', color: '#10b981' };
+      case 'PAYMENT_COMPLETE':
+        return { icon: '💳', color: '#3b82f6' };
       default:
         return { icon: '📢', color: '#6b7280' };
     }
@@ -168,7 +170,8 @@ export default function NotificationModal({ onClose }) {
                     <span className={styles.typeBadge}>
                       {notification.type === 'EXPO_REMINDER' ? '박람회' : 
                        notification.type === 'EVENT_REMINDER' ? '행사' : 
-                       notification.type === 'QR_ISSUED' ? 'QR발급' : '알림'}
+                       notification.type === 'QR_ISSUED' ? 'QR발급' : 
+                       notification.type === 'PAYMENT_COMPLETE' ? '결제완료' : '알림'}
                     </span>
                     <span className={styles.timeAgo}>{formatTimeAgo(notification.createdAt)}</span>
                     {!notification.isRead && <span className={styles.unreadDot} />}
