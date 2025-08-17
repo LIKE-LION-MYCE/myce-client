@@ -25,7 +25,8 @@ function QRCheckIn() {
           <div className={styles.scanIcon}>📱</div>
           <h2>QR 코드 스캔</h2>
           <p>입장객의 QR 티켓을 스캔하여 체크인하세요</p>
-          <button 
+          <button
+            type="button"
             className={styles.scanBtn}
             onClick={handleOpenQRScanner}
           >
@@ -46,9 +47,7 @@ function QRCheckIn() {
 
       {/* QR 스캐너 모달 */}
       {showQRScanner && (
-        <QRScannerComponent
-          onClose={handleCloseQRScanner}
-        />
+        <QRScannerComponent onClose={handleCloseQRScanner} />
       )}
     </div>
   );
