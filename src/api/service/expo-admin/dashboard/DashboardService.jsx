@@ -25,6 +25,18 @@ const DashboardService = {
     }
   },
 
+  // 모든 캐시 완전 삭제
+  async clearAllCache(expoId) {
+    try {
+      const API_BASE_URL = `/expos/${expoId}/dashboard`;
+      const response = await axios.delete(`${API_BASE_URL}/cache/clear`);
+      return response.data;
+    } catch (error) {
+      console.error('전체 캐시 삭제 실패:', error);
+      throw error;
+    }
+  },
+
   // 개별 캐시 갱신들 (통합된 엔드포인트로 리다이렉트)
   async refreshReservationCache(expoId) {
     return this.refreshAllCache(expoId);

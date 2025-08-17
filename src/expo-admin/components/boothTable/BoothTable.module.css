@@ -51,6 +51,7 @@
   flex-direction: column;
   gap: 24px;
   font-size: 14px;
+  position: relative;
 }
 
 .topRow {
@@ -201,4 +202,40 @@
 
 .deleteBtn:hover {
   background-color: #ef4444;
+}
+
+.detailValue {
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  min-height: 20px;
+}
+
+.detailImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeBtn:hover {
+  color: #333;
 }

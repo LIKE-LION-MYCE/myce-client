@@ -1,77 +1,92 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './UpcomingCardList.module.css';
 import UpcomingCard from '../upcomingcard/UpcomingCard';
+import { getPendingPublishExpos } from '../../../api/service/user/expoApi';
 
 const UpcomingCardList = ({ 
   events: propEvents, 
-  loading = false, 
-  error = null
+  loading: propLoading = false, 
+  error: propError = null
 }) => {
-  // 기본 데이터 (props로 전달되지 않은 경우)
-  const defaultEvents = [
-    {
-      id: 1,
-      category: "추후공지",
-      title: "월드 오브 스테일 올림 파이터 [THE REAL STAGE] TOUR - 울산",
-      image: "https://picsum.photos/300/400?random=1",
-    },
-    {
-      id: 2,
-      date: "08.20(수) 20:00",
-      title: "XIUMIN FAN CONCERT X Times ( ) ∞ ENCORE",
-      image: "https://picsum.photos/300/400?random=2",
-      location: "서울 올림픽공원",
-    },
-    {
-      id: 3,
-      date: "08.22(금) 18:00",
-      title: "램페라트리스 내한공연 (L'Imperatrice PULSAR ASIA...)",
-      image: "https://picsum.photos/300/400?random=3",
-      location: "서울 예스24 라이브홀",
-    },
-    {
-      id: 4,
-      date: "08.21(목) 20:00",
-      title: "[Play&Stay] 2025 ZEROBASEONE WORLD TOUR",
-      image: "https://picsum.photos/300/400?random=4",
-      location: "고척스카이돔",
-    },
-    {
-      id: 5,
-      date: "08.25(월) 20:00",
-      title: "2025-26 TREASURE TOUR [PULSE ON] IN SEOUL",
-      image: "https://picsum.photos/300/400?random=5",
-      location: "잠실실내체육관",
-    },
-    {
-      id: 6,
-      date: "09.19(금) 14:00",
-      title: "ENHYPEN WORLD TOUR 'WALK THE LINE' : FINAL",
-      image: "https://picsum.photos/300/400?random=6",
-      location: "KSPO DOME",
-    },
-    {
-      id: 7,
-      date: "09.05(목) 19:30",
-      title: "아이유 2025 CONCERT [The Golden Hour]",
-      image: "https://picsum.photos/300/400?random=7",
-      location: "서울 올림픽공원 체조경기장",
-    },
-    {
-      id: 8,
-      date: "09.12(금) 20:00",
-      title: "NewJeans Fan Meeting [Get Up]",
-      image: "https://picsum.photos/300/400?random=8",
-      status: "available",
-      location: "SK Olympic Handball Gymnasium",
-    }
-  ];
+  const navigate = useNavigate();
+  const [expos, setExpos] = useState([]);
+  const [loading, setLoading] = useState(propLoading);
+  const [error, setError] = useState(propError);
 
-  const events = propEvents || defaultEvents;
+  useEffect(() => {
+    if (!propEvents) {
+      fetchPendingExpos();
+    }
+  }, [propEvents]);
+
+  const fetchPendingExpos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPendingPublishExpos();
+      
+      console.log("Pending publish expos API response:", data);
+      
+      // 백엔드 데이터를 기존 카드 형식에 맞게 변환
+      let transformedExpos = [];
+      
+      if (data.content && Array.isArray(data.content)) {
+        transformedExpos = data.content.map(expo => ({
+          id: expo.expoId || expo.expo_id,
+          title: expo.title,
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
+          location: expo.location,
+          category: expo.category || "박람회"
+        }));
+      } else if (Array.isArray(data)) {
+        transformedExpos = data.map(expo => ({
+          id: expo.expoId || expo.expo_id,
+          title: expo.title,
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
+          location: expo.location,
+          category: expo.category || "박람회"
+        }));
+      }
+      
+      console.log("Transformed expos:", transformedExpos);
+      setExpos(transformedExpos);
+    } catch (err) {
+      console.error("Failed to fetch pending publish expos:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatExpoDate = (startDate, endDate) => {
+    if (!startDate) return "날짜 미정";
+    
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : null;
+    
+    const formatDate = (date) => {
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+      return `${month}.${day}(${weekday})`;
+    };
+    
+    if (end && start.toDateString() !== end.toDateString()) {
+      return `${formatDate(start)} - ${formatDate(end)}`;
+    }
+    return formatDate(start);
+  };
+
+  const events = propEvents || expos;
 
   const handleEventClick = (event) => {
     console.log('Event clicked:', event);
-    // 여기에 이벤트 클릭 핸들러 로직 추가
-    // 예: 상세페이지 이동, 모달 열기 등
+    if (event.id) {
+      navigate(`/detail/${event.id}`);
+    }
   };
 
   const handleViewAll = () => {

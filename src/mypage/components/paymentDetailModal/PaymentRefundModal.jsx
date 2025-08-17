@@ -17,16 +17,20 @@ function PaymentRefundModal({
   remainingDays,
   refundAmount,
   status,
+  refundReason,
   onRefund,
   onCancel,
   onClose,
   readOnly = false,
   isRefundCompleted = false, // 환불 완료 상태인지 구분하는 새로운 prop
 }) {
-  const [refundReason, setRefundReason] = useState("");
+  const [inputRefundReason, setInputRefundReason] = useState("");
   
   // 전액 환불 여부 확인 (게시 대기 상태)
   const isFullRefund = status === 'PENDING_PUBLISH';
+  
+  // 취소 대기 상태 여부 확인 (이미 취소 신청된 상태)
+  const isPendingCancel = status === 'PENDING_CANCEL';
   
   // 총 등록금 계산 (총 결제금액 - 총 이용료)
   const calculateTotalDeposit = () => {
@@ -39,17 +43,17 @@ function PaymentRefundModal({
   };
   
   const handleRefundClick = () => {
-    if (!refundReason.trim()) {
+    if (!inputRefundReason.trim()) {
       alert("환불 사유를 입력해주세요.");
       return;
     }
-    onRefund(refundReason);
+    onRefund(inputRefundReason);
   };
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
         <h2 className={styles.title}>
-          {isRefundCompleted ? "환불 완료 내역" : readOnly ? "환불 내역" : "환불 신청서"}{isFullRefund && !readOnly && " (전액 환불)"}
+          {isRefundCompleted ? "환불 완료 내역" : isPendingCancel ? "환불 신청 내역" : readOnly ? "환불 내역" : "환불 신청서"}{isFullRefund && !readOnly && !isPendingCancel && " (전액 환불)"}
         </h2>
         <div className={styles.twoColumnLayout}>
           {/* 좌측 컬럼 */}
@@ -80,7 +84,7 @@ function PaymentRefundModal({
             
             {/* 좌측 하단: 사용 정보 */}
             <div className={styles.leftBottomBox}>
-              {!isFullRefund && !isRefundCompleted && (
+              {!isFullRefund && !isRefundCompleted && !isPendingCancel && (
                 <>
                   <div className={styles.row}>
                     <span>게시 일수</span>
@@ -97,6 +101,30 @@ function PaymentRefundModal({
                   <div className={styles.row}>
                     <span>환불 계산식</span>
                     <span>{safeValue(remainingDays)}일 × {dailyUsageFee?.toLocaleString()}원</span>
+                  </div>
+                </>
+              )}
+              {isPendingCancel && (
+                <>
+                  <div className={styles.row}>
+                    <span>게시 일수</span>
+                    <span>{safeValue(usedDays)}일</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span>사용 금액</span>
+                    <span>{safeValue(usedAmount)?.toLocaleString()}원</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span>남은 일수</span>
+                    <span>{safeValue(remainingDays)}일</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span>등록금 환불</span>
+                    <span>{status === 'PUBLISHED' ? '0' : calculateTotalDeposit()?.toLocaleString()}원</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span>이용료 환불</span>
+                    <span>{status === 'PUBLISHED' ? refundAmount?.toLocaleString() : (refundAmount - calculateTotalDeposit())?.toLocaleString()}원</span>
                   </div>
                 </>
               )}
@@ -142,7 +170,16 @@ function PaymentRefundModal({
             </div>
             
             {/* 우측 하단: 환불 사유 */}
-            {!readOnly && (
+            {isPendingCancel ? (
+              <div className={styles.rightBottomBox}>
+                <label className={styles.refundReasonLabel}>
+                  환불 사유
+                </label>
+                <div className={styles.refundReasonDisplay}>
+                  {refundReason || "환불 사유가 없습니다."}
+                </div>
+              </div>
+            ) : !readOnly && (
               <div className={styles.rightBottomBox}>
                 <label htmlFor="refundReason" className={styles.refundReasonLabel}>
                   환불 사유 <span className={styles.required}>*</span>
@@ -150,14 +187,14 @@ function PaymentRefundModal({
                 <textarea
                   id="refundReason"
                   className={styles.refundReasonTextarea}
-                  value={refundReason}
-                  onChange={(e) => setRefundReason(e.target.value)}
+                  value={inputRefundReason}
+                  onChange={(e) => setInputRefundReason(e.target.value)}
                   placeholder="환불 사유를 입력해주세요."
                   maxLength={500}
                   rows={4}
                 />
                 <div className={styles.charCount}>
-                  {refundReason.length}/500
+                  {inputRefundReason.length}/500
                 </div>
               </div>
             )}
@@ -166,7 +203,7 @@ function PaymentRefundModal({
         
         {/* 하단 버튼 영역 */}
         <div className={styles.btnRow}>
-          {readOnly ? (
+          {readOnly || isPendingCancel ? (
             <button className={styles.blackBtn} onClick={onClose}>
               확인
             </button>

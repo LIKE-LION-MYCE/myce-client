@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './EventSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
-function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
+function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, expoEndDate }) {
   const [form, setForm] = useState(initForm());
 
   function initForm() {
@@ -50,7 +50,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
         {/* 왼쪽 컬럼 */}
         <div className={styles.column}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>행사 이름</label>
+            <label className={styles.label}>행사 이름 <span style={{color: 'red'}}>*</span></label>
             <input
               name="name"
               className={styles.inputField}
@@ -61,7 +61,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>행사 위치</label>
+            <label className={styles.label}>행사 위치 <span style={{color: 'red'}}>*</span></label>
             <input
               name="location"
               className={styles.inputField}
@@ -72,18 +72,20 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>행사 날짜</label>
+            <label className={styles.label}>행사 날짜 <span style={{color: 'red'}}>*</span></label>
             <input
               type="date"
               name="eventDate"
               className={styles.inputField}
               value={form.eventDate}
               onChange={handleChange}
+              min={expoStartDate ? expoStartDate.split('T')[0] : undefined}
+              max={expoEndDate ? expoEndDate.split('T')[0] : undefined}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>행사 시간</label>
+            <label className={styles.label}>행사 시간 <span style={{color: 'red'}}>*</span></label>
             <div className={styles.timeRange}>
               <input
                 type="time"
@@ -104,7 +106,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>행사 소개</label>
+            <label className={styles.label}>행사 소개 <span style={{color: 'red'}}>*</span></label>
             <input
               name="description"
               className={styles.inputField}
@@ -118,7 +120,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
         {/* 오른쪽 컬럼 */}
         <div className={styles.column}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>담당자명</label>
+            <label className={styles.label}>담당자명 <span style={{color: 'red'}}>*</span></label>
             <input
               name="contactName"
               className={styles.inputField}
@@ -129,7 +131,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>담당자 전화번호</label>
+            <label className={styles.label}>담당자 전화번호 <span style={{color: 'red'}}>*</span></label>
             <input
               name="contactPhone"
               className={styles.inputField}
@@ -140,7 +142,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>담당자 이메일</label>
+            <label className={styles.label}>담당자 이메일 <span style={{color: 'red'}}>*</span></label>
             <input
               name="contactEmail"
               className={styles.inputField}

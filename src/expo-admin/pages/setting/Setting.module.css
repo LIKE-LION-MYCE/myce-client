@@ -2,7 +2,7 @@
 .settingContainer {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 30px;
   padding: 32px;
   width : 100%;
 }
@@ -18,7 +18,12 @@
 }
 
 .ticketSection {
-    width : 100%;
+    width : 80%;
+    max-width : 1550px;
+}
+
+.ticketSettingFormSection{
+    width : 60%;
     max-width : 1550px;
 }
 
@@ -27,7 +32,7 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom : 3px;
 }
 
 /* --- Divider --- */
@@ -78,4 +83,61 @@
 
 .badgeCOMPLETED {
   background-color: #337ab7; /* 완료됨 - 파랑 */
+}
+
+/* 기존 내용 유지하고 아래만 추가 */
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  margin-bottom : 20px;
+}
+
+.addBtn {
+  margin-left : 10px;
+  background-color: #ececec;
+  color: #1e2a38;
+  font-weight: 400;
+  padding: 6px 15px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.addBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+.addIcon {
+  font-size: 12px;
+}
+
+.alertBox {
+  width : 80%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #fff8e1;
+  border: 1px solid #ffecb3;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #5c4300;
+  box-shadow: 0 2px 4px rgba(255, 212, 117, 0.2);
+}
+
+.alertIcon {
+  font-size: 18px;
+  margin-top: 2px;
+  color: #f9a825;
+}
+
+.alertText {
+  line-height: 1.5;
 }

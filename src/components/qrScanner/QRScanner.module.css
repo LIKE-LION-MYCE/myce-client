@@ -26,14 +26,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 13px 20px;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
 }
 
 .header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #111827;
 }
@@ -44,7 +44,6 @@
   font-size: 24px;
   color: #6b7280;
   cursor: pointer;
-  padding: 4px;
   border-radius: 4px;
   transition: all 0.2s;
 }

@@ -35,11 +35,19 @@
   gap: 15px;
 }
 
+/* 제목 섹션 */
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
 .title {
   font-size: 32px;
   font-weight: bold;
   color: #2c3e50;
-  margin: 0 0 20px 0;
+  margin: 0;
   line-height: 1.2;
 }
 
@@ -100,6 +108,78 @@
   font-weight: 500;
 }
 
+/* 액션 버튼 영역 */
+.actionSection {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  margin-top: auto;
+}
+
+/* 1:1 상담하기 버튼 */
+.chatButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  outline: none;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+  position: relative;
+  overflow: hidden;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.chatButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.chatButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.chatButton:hover::before {
+  left: 100%;
+}
+
+.chatButton:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+.chatButton:disabled {
+  background: #bdc3c7;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.chatIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .header {
@@ -141,5 +221,23 @@
   .category {
     font-size: 13px;
     padding: 5px 10px;
+  }
+  
+  .actionSection {
+    gap: 8px;
+    flex-direction: column;
+  }
+  
+  .chatButton {
+    width: 100%;
+    height: 50px;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: 6px;
+  }
+  
+  .chatIcon {
+    width: 14px;
+    height: 14px;
   }
 }

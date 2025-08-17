@@ -19,6 +19,7 @@ const MyPageSidebar = () => {
       try {
         const response = await getMyInfo();
         const data = response.data;
+        console.log('MyPageSidebar - 받은 데이터:', data);
         setUserInfo({
           name: data.name || "사용자",
           loginId: data.loginId || "",
@@ -26,6 +27,14 @@ const MyPageSidebar = () => {
           gradeImageUrl: data.gradeImageUrl || "",
           mileage: data.mileage || 0
         });
+        console.log('MyPageSidebar - 설정된 userInfo:', {
+          name: data.name || "사용자",
+          loginId: data.loginId || "",
+          gradeDescription: data.gradeDescription || "일반 회원",
+          gradeImageUrl: data.gradeImageUrl || "",
+          mileage: data.mileage || 0
+        });
+        console.log('생성된 이미지 경로:', getGradeImagePath(data.gradeImageUrl));
       } catch (error) {
         console.error('사용자 정보 조회 실패:', error);
         setUserInfo({
@@ -47,10 +56,13 @@ const MyPageSidebar = () => {
     <aside className={styles.sidebar}>
       <div className={styles.profileSection}>
         <img
-          src={getGradeImagePath(userInfo.gradeImageUrl)}
+          src={userInfo.gradeImageUrl ? `/images/grades/${userInfo.gradeImageUrl}` : '/images/grades/BRONZE.png'}
           alt="등급 이미지"
           className={styles.profileImg}
           onError={(e) => {
+            console.log('이미지 로드 실패:', e.target.src);
+            console.log('gradeImageUrl:', userInfo.gradeImageUrl);
+            console.log('gradeDescription:', userInfo.gradeDescription);
             // 이미지 로드 실패 시 기본 아이콘으로 대체
             e.target.style.display = 'none';
             e.target.nextSibling.style.display = 'flex';
@@ -67,7 +79,7 @@ const MyPageSidebar = () => {
         <p className={styles.grade}>{userInfo.gradeDescription}</p>
         <p className={styles.mileage}>
           <img src="/images/icons/mileage.png" alt="마일리지" className={styles.mileageIcon} />
-          마일리지 : {userInfo.mileage.toLocaleString()} point
+          마일리지 : {(userInfo.mileage || 0).toLocaleString()} point
         </p>
       </div>
       <nav className={styles.menu}>

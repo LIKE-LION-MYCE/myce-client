@@ -29,6 +29,8 @@ instance.interceptors.response.use(
   async (err) => {
     const originalRequest = err.config.url;
     const res = err.response;
+    
+    // 토큰 만료 처리
     if(err.status === HttpStatusCode.Unauthorized && res.data?.code === "EXPIRED_TOKEN") {
       try {
         const reissueResult = await reissue();
@@ -43,6 +45,12 @@ instance.interceptors.response.use(
           cookieStore.delete("refresh_token");
           return Promise.reject(e);
         };
+    }
+
+    // 권한 없음 에러 처리 - 사용자 친화적인 메시지로 변환
+    if (res?.status === 403 || res?.data?.code === "EXPO_ACCESS_DENIED" || 
+        res?.data?.code === "EXPO_ADMIN_PERMISSION_DENIED" || res?.data?.code === "EXPO_EDIT_DENIED") {
+      err.message = "접근 권한이 없습니다. 관리자에게 문의하세요.";
     }
 
     return Promise.reject(err);
