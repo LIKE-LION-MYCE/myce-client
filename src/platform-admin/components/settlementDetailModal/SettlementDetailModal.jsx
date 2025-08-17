@@ -92,18 +92,34 @@ function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSe
               </div>
 
               {settlementData.ticketSales && settlementData.ticketSales.length > 0 && (
-                <div className={styles.infoBox}>
-                  <h3>티켓 판매 내역</h3>
-                  {settlementData.ticketSales.map((ticket, index) => (
-                    <div key={index} className={styles.row}>
-                      <span className={styles.label}>
-                        {ticket.ticketName} ({ticket.ticketPrice?.toLocaleString()}원)
+                <div className={styles.ticketSalesSection}>
+                  <h3 className={styles.sectionTitle}>티켓 판매 내역</h3>
+                  <div className={styles.ticketTable}>
+                    <div className={styles.ticketHeader}>
+                      <span>티켓명</span>
+                      <span>단가</span>
+                      <span>판매 수량</span>
+                      <span>매출액</span>
+                    </div>
+                    {settlementData.ticketSales.map((ticket, index) => (
+                      <div key={index} className={styles.ticketRow}>
+                        <span className={styles.ticketName}>{ticket.ticketName}</span>
+                        <span className={styles.ticketPrice}>{ticket.ticketPrice?.toLocaleString()}원</span>
+                        <span className={styles.ticketCount}>{ticket.soldCount}매</span>
+                        <span className={styles.ticketSales}>{ticket.totalSales?.toLocaleString()}원</span>
+                      </div>
+                    ))}
+                    <div className={styles.ticketTotal}>
+                      <span>합계</span>
+                      <span></span>
+                      <span className={styles.totalCount}>
+                        {settlementData.ticketSales.reduce((sum, t) => sum + t.soldCount, 0)}매
                       </span>
-                      <span className={styles.value}>
-                        {ticket.soldCount}매 판매 (총 {ticket.totalSales?.toLocaleString()}원)
+                      <span className={styles.totalAmount}>
+                        {settlementData.ticketSales.reduce((sum, t) => sum + t.totalSales, 0).toLocaleString()}원
                       </span>
                     </div>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>

@@ -71,7 +71,7 @@
   color: #b28a15;
 }
 
-/* PENDING_PAYMENT: 승인 완료 - 맑은 하늘색 */
+/* PENDING_PAYMENT: 결제 대기 - 맑은 하늘색 */
 .waiting {
   background: #e8f4fd;
   color: #2563eb;

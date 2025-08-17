@@ -14,7 +14,7 @@ function ExpoApplicationTable({ data }) {
       case 'REJECTED':
         return styles.rejected; // 승인_거절 - 빨간색
       case 'PENDING_PAYMENT':
-        return styles.pendingPayment; // 승인_완료 - 녹색
+        return styles.pendingPayment; // 결제_대기 - 녹색
       default:
         return styles.defaultStatus;
     }
