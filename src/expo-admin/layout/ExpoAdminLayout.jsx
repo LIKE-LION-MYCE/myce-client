@@ -89,7 +89,6 @@ import { useEffect, useState } from "react";
     if (path === basePath || path === `${basePath}/`) return true;
 
     const rules = [
-      { match: `${basePath}/qrcheckin`,   allow: !!perm?.isSettlementView },
       { match: `${basePath}/setting`,      allow: !!perm?.isExpoDetailUpdate },
       { match: `${basePath}/booths`,       allow: !!perm?.isBoothInfoUpdate },
       { match: `${basePath}/events`,       allow: !!perm?.isScheduleUpdate },
