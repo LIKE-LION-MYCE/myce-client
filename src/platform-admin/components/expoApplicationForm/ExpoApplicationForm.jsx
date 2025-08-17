@@ -28,9 +28,30 @@ function ExpoApplicationForm({ expoData }) {
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>카테고리</label>
             <div className={styles.badgeRow}>
-              <div className={styles.badge}>
-                {form.category || '카테고리 없음'}
-              </div>
+              {(() => {
+                // 카테고리가 배열인지 확인하고 처리
+                if (Array.isArray(form.category)) {
+                  return form.category.map((cat, index) => (
+                    <div key={index} className={styles.badge}>
+                      {cat}
+                    </div>
+                  ));
+                } else if (typeof form.category === 'string') {
+                  // 쉼표로 구분된 문자열인 경우 분리
+                  const categories = form.category.split(',').map(cat => cat.trim()).filter(cat => cat);
+                  return categories.map((cat, index) => (
+                    <div key={index} className={styles.badge}>
+                      {cat}
+                    </div>
+                  ));
+                } else {
+                  return (
+                    <div className={styles.badge}>
+                      카테고리 없음
+                    </div>
+                  );
+                }
+              })()}
             </div>
           </div>
 
