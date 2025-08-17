@@ -48,7 +48,7 @@ function TicketSettingForm() {
     return {
       ticketId: null,
       name: '',
-      type: '얼리버드',
+      type: '',
       description: '',
       price: '',
       totalQuantity: '',
