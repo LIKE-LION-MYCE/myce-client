@@ -17,11 +17,11 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const handleRefundSubmit = async () => {
     const impUid = await getImpUid("AD", id);
     // cancelForm prop에 API 호출에 필요한 ID가 포함되어 있어야 합니다.
-    // 예: cancelForm.adId, cancelForm.paymentId
-    if (!cancelForm?.adId || !cancelForm?.paymentId) {
-      alert("환불 처리에 필요한 정보가 부족합니다.");
-      return;
-    }
+    // // 예: cancelForm.adId, cancelForm.paymentId
+    // if (!cancelForm?.adId || !cancelForm?.paymentId) {
+    //   alert("환불 처리에 필요한 정보가 부족합니다.");
+    //   return;
+    // }
 
     setIsLoading(true);
     setError(null); // 이전 에러 메시지 초기화
@@ -34,7 +34,7 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
       });
       // Advertisement 상태 변경 API 호출
       await updateAdStatus(id, {
-        advertisementStatus: "CANCELED",
+        advertisementStatus: "CANCELLED",
       });
       // AdPaymentInfoStatus 상태 변경 API 호출
       await updateAdPaymentInfoStatus(id, {
@@ -48,6 +48,8 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
       }
     } catch (err) {
       console.error("환불 처리 중 오류 발생:", err);
+      console.error("에러 응답:", err.response?.data);
+      console.error("에러 상태:", err.response?.status);
       setError("환불 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       setIsLoading(false);
