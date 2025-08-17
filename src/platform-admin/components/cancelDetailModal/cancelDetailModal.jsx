@@ -5,14 +5,6 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  if (!isOpen) return null;
-
-  // 총 등록금 계산 (총 결제금액 - 총 이용료)
-  const calculateTotalDeposit = () => {
-    if (!cancelDetail) return 0;
-    return (cancelDetail.totalAmount || 0) - (cancelDetail.totalUsageFee || 0);
-  };
-
   // 검색어에 따른 예약자 필터링
   const filteredReservations = useMemo(() => {
     if (!cancelDetail?.reservationRefunds) return [];
@@ -36,6 +28,14 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
     }
     return filteredReservations.slice(0, 5);
   }, [filteredReservations, isExpanded]);
+
+  if (!isOpen) return null;
+
+  // 총 등록금 계산 (총 결제금액 - 총 이용료)
+  const calculateTotalDeposit = () => {
+    if (!cancelDetail) return 0;
+    return (cancelDetail.totalAmount || 0) - (cancelDetail.totalUsageFee || 0);
+  };
 
   // 검색어 초기화 함수
   const handleSearchClear = () => {
