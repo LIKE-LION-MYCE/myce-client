@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './EventSettingForm.module.css';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
-function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
+function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, expoEndDate }) {
   const [form, setForm] = useState(initForm());
 
   function initForm() {
@@ -79,6 +79,8 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent }) {
               className={styles.inputField}
               value={form.eventDate}
               onChange={handleChange}
+              min={expoStartDate ? expoStartDate.split('T')[0] : undefined}
+              max={expoEndDate ? expoEndDate.split('T')[0] : undefined}
             />
           </div>
 

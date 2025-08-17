@@ -208,3 +208,15 @@
 .half {
   flex: 0 0 calc(50% - 10px);
 }
+
+.premiumBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #5cb85c;
+  display: inline-block;
+  margin-top: 6px;
+  width: fit-content;
+}
