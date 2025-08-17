@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import styles from './notificationTemplateView.module.css';
+import styles from './NotificationTemplateView.module.css';
 
 export default function NotificationTemplateView({ template, editData, isEditing, onChange }) {
   return (
