@@ -2,7 +2,7 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './TicketTable.module.css';
-import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService'; // 경로 확인
+import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 
 const fieldLabelMap = {
   name: '티켓 이름',
@@ -16,10 +16,23 @@ const fieldLabelMap = {
   useEndDate: '사용 종료일',
 };
 
-// 왼쪽: 기본 정보(설명까지) / 오른쪽: 가격, 수량, 기간들
 const ticketFieldsLeft = ['name', 'type', 'description'];
 const ticketFieldsRightTop = ['price', 'totalQuantity'];
 const rightFieldIsNumber = (key) => key === 'price' || key === 'totalQuantity';
+
+function toLocalDateOnly(d) {
+  const dt = new Date(d);
+  if (Number.isNaN(dt.getTime())) return null;
+  return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+}
+function isSaleStarted(dateStr) {
+  if (!dateStr) return false;
+  const start = toLocalDateOnly(dateStr);
+  if (!start) return false;
+  const today = new Date();
+  const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return start.getTime() <= today0.getTime();
+}
 
 function TicketTable({ data = [], onUpdate, onDelete }) {
   const { expoId } = useParams();
@@ -28,7 +41,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
   const [editForm, setEditForm] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // ===== TicketSettingForm 과 동일: 에러/포커스 =====
   const [errors, setErrors] = useState({});
   const refs = {
     name: useRef(null),
@@ -42,7 +54,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
     useEndDate: useRef(null),
   };
 
-  // ===== TicketSettingForm 과 동일: 제약 로드 (게시/행사 기간) =====
   const [expoLoaded, setExpoLoaded] = useState(false);
   const [displayStartDate, setDisplayStartDate] = useState('');
   const [displayEndDate, setDisplayEndDate] = useState('');
@@ -64,8 +75,8 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
         setExpoStartDate(expo?.startDate?.split('T')[0] || '');
         setExpoEndDate(expo?.endDate?.split('T')[0] || '');
         setExpoLoaded(true);
-      } catch (e) {
-        setExpoLoaded(true); // 실패해도 편집 가능
+      } catch {
+        setExpoLoaded(true);
       }
     })();
     return () => {
@@ -87,7 +98,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
     }
   };
 
-  // ===== TicketSettingForm 과 동일: 날짜 클램프 =====
   const clampDate = (v, min, max) => {
     if (!v) return v;
     let nv = v;
@@ -102,7 +112,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
     setEditForm((prev) => {
       let next = { ...prev, [name]: value };
 
-      // 판매 시작일: 게시기간 내 클램프 + 종속 필드 보정
       if (name === 'saleStartDate') {
         const clamped = expoLoaded
           ? clampDate(value, displayStartDate || undefined, displayEndDate || undefined)
@@ -119,7 +128,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
         }
       }
 
-      // 판매 종료일: [판매 시작일, 게시 종료일]
       if (name === 'saleEndDate') {
         const minStart = next.saleStartDate || prev.saleStartDate;
         next.saleEndDate = expoLoaded
@@ -127,7 +135,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
           : value;
       }
 
-      // 사용 시작일: [max(행사 시작일, 판매 시작일), 행사 종료일]
       if (name === 'useStartDate') {
         const minBySale = next.saleStartDate || prev.saleStartDate;
         let min = expoStartDate || undefined;
@@ -141,7 +148,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
         }
       }
 
-      // 사용 종료일: [사용 시작일, 행사 종료일]
       if (name === 'useEndDate') {
         const minUseStart = next.useStartDate || prev.useStartDate || expoStartDate || undefined;
         next.useEndDate = expoLoaded
@@ -149,7 +155,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
           : value;
       }
 
-      // 안전장치
       if (name === 'saleStartDate' && next.saleEndDate && next.saleEndDate < next.saleStartDate) {
         next.saleEndDate = next.saleStartDate;
       }
@@ -160,11 +165,9 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
       return next;
     });
 
-    // 수정한 필드 에러 제거
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // 사용 시작일 input용 min 계산 (행사 시작 vs 판매 시작 중 늦은 날짜)
   const minUseStart = useMemo(() => {
     if (!editForm) return undefined;
     const cands = [];
@@ -174,14 +177,12 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
     return cands.sort()[cands.length - 1];
   }, [expoStartDate, editForm]);
 
-  // ===== TicketSettingForm 과 동일: 유효성 검사 =====
   const isBlank = (s) => !s || String(s).trim() === '';
 
   const runValidation = () => {
     const e = {};
     const f = editForm || {};
 
-    // 왼쪽: 이름 → 타입 → 설명
     if (isBlank(f.name)) e.name = '티켓 이름은 필수입니다.';
     else if (f.name.length > 100) e.name = '티켓 이름은 100자 이하여야 합니다.';
 
@@ -193,7 +194,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
       if (isBlank(f.description)) e.description = '티켓 설명은 필수입니다.';
     }
 
-    // 오른쪽: 가격 → 수량 → 판매기간 → 사용기간
     if (isBlank(e.name) && isBlank(e.type) && isBlank(e.description)) {
       if (f.price === '' || f.price === null || typeof f.price === 'undefined')
         e.price = '티켓 가격은 필수입니다.';
@@ -278,6 +278,7 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
   };
 
   const handleEditStart = () => {
+    if (isSaleStarted(editForm?.saleStartDate)) return;
     setIsEditing(true);
     setErrors({});
   };
@@ -298,8 +299,7 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
     setIsEditing(false);
   };
 
-  const handleDeleteClick = (e, ticketId) => {
-    e.stopPropagation();
+  const handleDelete = (ticketId) => {
     onDelete(ticketId);
     setExpandedId(null);
     setEditForm(null);
@@ -333,7 +333,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                 {col.header}
               </th>
             ))}
-            <th className={styles.th}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -341,6 +340,7 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
             const isExpanded = expandedId === row.ticketId;
             const saleRange = `${row.saleStartDate ?? ''} ~ ${row.saleEndDate ?? ''}`;
             const useRange = `${row.useStartDate ?? ''} ~ ${row.useEndDate ?? ''}`;
+            const saleStarted = isSaleStarted(row.saleStartDate);
 
             return (
               <React.Fragment key={row.ticketId}>
@@ -351,24 +351,13 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                   <td className={styles.td}>{String(row.totalQuantity ?? '')}</td>
                   <td className={styles.td}>{saleRange}</td>
                   <td className={styles.td}>{useRange}</td>
-                  <td className={styles.td}>
-                    <div className={styles.buttonGroupInline}>
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={(e) => handleDeleteClick(e, row.ticketId)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
                 </tr>
 
                 {isExpanded && editForm && (
                   <tr key={`detail-${row.ticketId}`} className={styles.detailRow}>
-                    <td colSpan={columns.length + 1}>
+                    <td colSpan={columns.length}>
                       <div className={styles.detailBox} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.detailGrid}>
-                          {/* 왼쪽: 기본 정보 */}
                           <div className={styles.column}>
                             {ticketFieldsLeft.map((key) => (
                               <div key={key} className={styles.detailItem}>
@@ -425,7 +414,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                             ))}
                           </div>
 
-                          {/* 오른쪽: 가격/수량 + 기간 */}
                           <div className={styles.column}>
                             {ticketFieldsRightTop.map((key) => (
                               <div key={key} className={styles.detailItem}>
@@ -456,7 +444,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                               </div>
                             ))}
 
-                            {/* 판매 기간 */}
                             <div className={styles.detailItem}>
                               <div className={styles.detailLabel}>판매 기간</div>
 
@@ -510,7 +497,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                               )}
                             </div>
 
-                            {/* 사용 기간 */}
                             <div className={styles.detailItem}>
                               <div className={styles.detailLabel}>사용 기간</div>
 
@@ -565,22 +551,37 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                           </div>
                         </div>
 
-                        <div className={styles.buttonGroupBottom}>
-                          {!isEditing ? (
-                            <button className={styles.editBtn} onClick={handleEditStart}>
-                              수정
-                            </button>
-                          ) : (
-                            <>
-                              <button className={styles.editBtn} onClick={handleSave}>
-                                저장
-                              </button>
-                              <button className={styles.cancelBtn} onClick={handleCancel}>
-                                취소
-                              </button>
-                            </>
-                          )}
-                        </div>
+                        {(
+                          // 버튼 그룹(구분선 포함) 렌더 조건:
+                          // 1) 편집 중이거나
+                          // 2) 편집 전인데 판매 시작 전일 때만
+                          (isEditing) || (!isEditing && !saleStarted)
+                        ) && (
+                          <div className={styles.buttonGroupBottom}>
+                            {!isEditing ? (
+                              <>
+                                <button className={styles.editBtn} onClick={handleEditStart}>
+                                  수정
+                                </button>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={() => handleDelete(editForm.ticketId)}
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button className={styles.editBtn} onClick={handleSave}>
+                                  저장
+                                </button>
+                                <button className={styles.cancelBtn} onClick={handleCancel}>
+                                  취소
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>

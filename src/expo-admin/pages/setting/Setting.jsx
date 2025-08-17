@@ -8,9 +8,8 @@ import TicketTable from '../../components/ticketTable/TicketTable';
 
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-
 import { usePermission } from '../../permission/PermissionContext';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
 
 import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 import {
@@ -131,20 +130,27 @@ function Setting() {
 
       <div className={styles.divider} />
 
-      <div className={styles.ticketSection}>
+              
+      <div className={styles.alertBox}>
+        <FaInfoCircle className={styles.alertIcon} />
+          <span className={styles.alertText}>
+            <strong>안내 : </strong>&nbsp;
+             티켓 판매 시작일 이후에는 티켓 정보를 수정할 수 없습니다. 
+          </span>
+      </div>
+
+       <div className={styles.ticketSection}>
         <div className={styles.titleRow}>
           <h4 className={styles.sectionTitle}>티켓 목록</h4>
-          {perm?.isExpoDetailUpdate && (
-            <button className={styles.addBtn} onClick={() => setOpenCreate(true)}>
-              <FaCheckCircle className={styles.addIcon} /> 티켓 등록
-            </button>
-          )}
+          <button className={styles.addBtn} onClick={() => setOpenCreate(true)}>
+            <FaCheckCircle className={styles.addIcon} /> 티켓 등록
+          </button>
         </div>
 
-        <TicketTable
+         <TicketTable
           data={tickets}
-          onUpdate={perm?.isExpoDetailUpdate ? handleUpdateTicket : null}
-          onDelete={perm?.isExpoDetailUpdate ? handleDeleteTicket : null}
+          onUpdate={handleUpdateTicket}
+          onDelete={handleDeleteTicket}
         />
       </div>
 

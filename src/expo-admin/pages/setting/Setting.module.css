@@ -117,3 +117,27 @@
 .addIcon {
   font-size: 12px;
 }
+
+.alertBox {
+  width : 80%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #fff8e1;
+  border: 1px solid #ffecb3;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #5c4300;
+  box-shadow: 0 2px 4px rgba(255, 212, 117, 0.2);
+}
+
+.alertIcon {
+  font-size: 18px;
+  margin-top: 2px;
+  color: #f9a825;
+}
+
+.alertText {
+  line-height: 1.5;
+}
