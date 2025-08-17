@@ -5,6 +5,7 @@ import { FaCheckCircle, FaTimesCircle, FaEdit } from 'react-icons/fa';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
+import { usePermission } from '../../permission/PermissionContext';
 import {
   getMyExpoInfo,
   updateMyExpoInfo,
@@ -14,12 +15,14 @@ import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 
 function ExpoSettingForm() {
   const { expoId } = useParams();
+  const { perm } = usePermission();
   const [form, setForm] = useState(initForm());
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [categories, setCategories] = useState([]);
+  const [expoStatus, setExpoStatus] = useState('');
 
   function initForm() {
     return {
@@ -65,6 +68,7 @@ function ExpoSettingForm() {
           data.thumbnailUrl ||
           'https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg',
       });
+      setExpoStatus(data.status || '');
     } catch (error) {
       console.error('Failed to fetch expo info:', error);
     }
@@ -79,17 +83,19 @@ function ExpoSettingForm() {
     }
   };
 
-  const getCategoryNames = (categoryIds) => {
-    if (!categoryIds || categoryIds.length === 0) return '카테고리 없음';
+  const getCategoryBadges = (categoryIds) => {
+    if (!categoryIds || categoryIds.length === 0) {
+      return [{ id: 'empty', name: '카테고리 없음' }];
+    }
     
-    const categoryNames = categoryIds
+    const categoryBadges = categoryIds
       .map(id => {
         const category = categories.find(cat => cat.id === id);
-        return category ? category.name : `ID: ${id}`;
+        return category ? { id: category.id, name: category.name } : { id: id, name: `ID: ${id}` };
       })
-      .filter(name => name);
+      .filter(badge => badge);
     
-    return categoryNames.length > 0 ? categoryNames.join(', ') : '카테고리 없음';
+    return categoryBadges.length > 0 ? categoryBadges : [{ id: 'empty', name: '카테고리 없음' }];
   };
 
   useEffect(() => {
@@ -102,10 +108,6 @@ function ExpoSettingForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePremiumChange = (checked) => {
-    if (!isEditing) return;
-    setForm((prev) => ({ ...prev, isPremium: checked }));
-  };
 
   const handleImageUploadSuccess = (cdnUrl) => {
     setForm((prev) => ({ ...prev, thumbnailUrl: cdnUrl }));
@@ -122,29 +124,47 @@ function ExpoSettingForm() {
     setTimeout(() => setShowToast(false), 2000);
   };
 
+  // 수정 버튼 표시 여부 확인
+  const canShowEditButton = () => {
+    return perm?.isExpoDetailUpdate && expoStatus === 'PENDING_PUBLISH';
+  };
+
+  // 설명 필드만 수정 가능한지 확인
+  const canEditOnlyDescription = () => {
+    return expoStatus === 'PENDING_PUBLISH';
+  };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleSubmit = async () => {
     try {
-      // DTO에 정의된 필드만 포함하여 새로운 객체 생성
-      const dataToSend = {
-        categoryIds: form.categoryIds.map(id => Number(id)),
-        title: form.title,
-        thumbnailUrl: form.thumbnailUrl,
-        description: form.description,
-        location: form.location,
-        locationDetail: form.locationDetail,
-        maxReserverCount: parseInt(form.maxReserverCount, 10) || 0,
-        startDate: form.startDate,
-        endDate: form.endDate,
-        displayStartDate: form.displayStartDate,
-        displayEndDate: form.displayEndDate,
-        startTime: form.startTime,
-        endTime: form.endTime,
-        isPremium: form.isPremium,
-      };
+      let dataToSend;
+      
+      if (canEditOnlyDescription()) {
+        // 게시 대기 상태: 설명만 수정 가능
+        dataToSend = {
+          description: form.description,
+        };
+      } else {
+        // 다른 상태: 전체 필드 수정 가능 (현재는 이 경우가 없음)
+        dataToSend = {
+          categoryIds: form.categoryIds.map(id => Number(id)),
+          title: form.title,
+          thumbnailUrl: form.thumbnailUrl,
+          description: form.description,
+          location: form.location,
+          locationDetail: form.locationDetail,
+          maxReserverCount: parseInt(form.maxReserverCount, 10) || 0,
+          startDate: form.startDate,
+          endDate: form.endDate,
+          displayStartDate: form.displayStartDate,
+          displayEndDate: form.displayEndDate,
+          startTime: form.startTime,
+          endTime: form.endTime,
+        };
+      }
 
       await updateMyExpoInfo(expoId, dataToSend);
       setIsEditing(false);
@@ -187,6 +207,27 @@ function ExpoSettingForm() {
         </div>
 
         <div className={styles.formGrid}>
+          {/* 카테고리 선택 영역 */}
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>카테고리</label>
+            <div className={styles.badgeRow}>
+              {getCategoryBadges(form.categoryIds).map((category) => (
+                <div key={category.id} className={styles.badge}>
+                  {category.name}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {form.isPremium && (
+            <div className={`${styles.formGroup} ${styles.full}`}>
+              <label className={styles.label}>프리미엄 부스 상위 노출 서비스</label>
+              <div className={styles.premiumBadge}>
+                신청됨
+              </div>
+            </div>
+          )}
+
           {/* Input fields... */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
@@ -196,7 +237,7 @@ function ExpoSettingForm() {
               name="title"
               value={form.title}
               onChange={handleChange}
-              disabled={!isEditing}
+              disabled={!isEditing || (isEditing && canEditOnlyDescription())}
             />
           </div>
 
@@ -208,7 +249,7 @@ function ExpoSettingForm() {
               name="location"
               value={form.location}
               onChange={handleChange}
-              disabled={!isEditing}
+              disabled={!isEditing || (isEditing && canEditOnlyDescription())}
             />
           </div>
 
@@ -220,7 +261,7 @@ function ExpoSettingForm() {
               name="locationDetail"
               value={form.locationDetail}
               onChange={handleChange}
-              disabled={!isEditing}
+              disabled={!isEditing || (isEditing && canEditOnlyDescription())}
             />
           </div>
 
@@ -233,7 +274,7 @@ function ExpoSettingForm() {
               name="maxReserverCount"
               value={form.maxReserverCount}
               onChange={handleChange}
-              disabled={!isEditing}
+              disabled={!isEditing || (isEditing && canEditOnlyDescription())}
             />
           </div>
 
@@ -246,7 +287,7 @@ function ExpoSettingForm() {
                 name="startDate"
                 value={form.startDate}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
               <input
                 type="date"
@@ -254,7 +295,7 @@ function ExpoSettingForm() {
                 name="endDate"
                 value={form.endDate}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
             </div>
           </div>
@@ -268,7 +309,7 @@ function ExpoSettingForm() {
                 name="startTime"
                 value={form.startTime}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
               <input
                 type="time"
@@ -276,7 +317,7 @@ function ExpoSettingForm() {
                 name="endTime"
                 value={form.endTime}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
             </div>
           </div>
@@ -290,7 +331,7 @@ function ExpoSettingForm() {
                 name="displayStartDate"
                 value={form.displayStartDate}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
               <input
                 type="date"
@@ -298,30 +339,11 @@ function ExpoSettingForm() {
                 name="displayEndDate"
                 value={form.displayEndDate}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={!isEditing || (isEditing && canEditOnlyDescription())}
               />
             </div>
           </div>
 
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
-            <div className={styles.toggleWrapper}>
-              <ToggleSwitch
-                checked={form.isPremium}
-                onChange={handlePremiumChange}
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>카테고리</label>
-            <div className={styles.badgeRow}>
-              <div className={styles.badge}>
-                {getCategoryNames(form.categoryIds)}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -354,12 +376,14 @@ function ExpoSettingForm() {
             </button>
           </>
         ) : (
-          <button
-            className={`${styles.actionBtn} ${styles.submitBtn}`}
-            onClick={handleEditClick}
-          >
-            <FaEdit className={styles.iconBtn} /> 수정
-          </button>
+          canShowEditButton() && (
+            <button
+              className={`${styles.actionBtn} ${styles.submitBtn}`}
+              onClick={handleEditClick}
+            >
+              <FaEdit className={styles.iconBtn} /> 수정
+            </button>
+          )
         )}
       </div>
     </div>

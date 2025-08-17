@@ -107,15 +107,6 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       errors.displayEndDate = "게시 종료일은 게시 시작일보다 이후여야 합니다.";
     }
 
-    // 게시 종료일이 개최 종료일보다 늦을 수 없음
-    if (
-      data.displayEndDate &&
-      data.endDate &&
-      data.displayEndDate > data.endDate
-    ) {
-      errors.displayEndDate = "게시 종료일은 개최 종료일보다 늦을 수 없습니다.";
-    }
-
     // 운영시간: 시작 >= 종료 불가
     if (data.startTime && data.endTime && data.startTime >= data.endTime) {
       errors.startTime = "운영 시작 시간은 종료 시간보다 이전이어야 합니다.";
@@ -233,7 +224,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       <form onSubmit={handleSubmit}>
         <h1 className={styles["title"]}>박람회 신청</h1>
         <p className={styles["subtitle"]}>박람회 기본정보를 입력해주세요.</p>
-        
+
         {/* 주의사항 및 요금제 안내 */}
         <UsageGuidelines type="expo" />
         <PricingInfo type="expo" />

@@ -1,96 +1,98 @@
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #ffffff; /* 흰색 배경 */
-  color: #121212; /* 텍스트 색상 변경 */
-  border-radius: 12px;
-  font-family: Arial, sans-serif;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+/* 전체 페이지 배경에 영향을 주기 위한 트릭 */
+:global(body) {
+  background-color: #f4f6f8;
 }
 
+/* 결제 페이지 컨테이너 */
+.container {
+  max-width: 520px;
+  margin: 60px auto;
+  padding: 32px 40px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+/* 페이지 제목 */
 .title {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 26px;
+  font-weight: 700;
   text-align: center;
   margin-bottom: 30px;
-  color: #121212;
+  color: #212529;
 }
 
+/* 섹션 (결제 정보, 결제 수단) */
 .section {
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
+/* 섹션 제목 */
 .sectionTitle {
   font-size: 16px;
-  color: #555;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 3px solid #212529; /* 포인트 컬러로 강조 */
+  border-bottom: none; 
+  padding-bottom: 0;
 }
 
-.paymentButton {
+/* 결제 정보 요약 박스 */
+.paymentSummary {
+  border: none;
+  border-radius: 12px;
+  padding: 0; /* 내부 패딩 제거 */
+  margin-bottom: 30px;
+  background-color: transparent; /* 배경 제거 */
+}
+
+/* 결제 정보 각 항목 */
+.summaryItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  padding: 15px 20px;
-  background-color: #f9f9f9; /* 밝은 배경 */
-  border: 1px solid #ccc; /* 회색 스트로크 */
-  border-radius: 8px;
-  color: #121212;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  margin-bottom: 10px;
-}
-
-.paymentButton:hover {
-  background-color: #f0f0f0;
-}
-
-.paymentButton.selected {
-  border-color: #4CAF50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
-  background-color: #f0f0f0;
-}
-
-.paymentButton:last-of-type {
+  font-size: 15px;
+  padding: 16px 8px; /* 상하 패딩 증가 */
+  border-bottom: 1px solid #f1f3f5; /* 옅은 구분선 */
   margin-bottom: 0;
 }
 
-.methodName {
-  font-weight: bold;
+.summaryItem:last-child {
+  border-bottom: none;
 }
 
-.logo {
-  color: #888;
-  font-size: 14px;
+.summaryItem span:first-child {
+  color: #868e96; /* 항목 이름 색상 */
 }
 
-.footer {
-  margin-top: 40px;
+.summaryItem span:last-child {
+  font-weight: 500;
+  color: #343a40;
 }
 
-.continueButton {
-  width: 100%;
-  padding: 18px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff; /* 흰색 텍스트 */
-  background-color: #888; /* 회색 배경 */
-  border: none;
+/* 총 결제 금액 - 라벨 */
+.totalAmountLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* 총 결제 금액 - 실제 금액 */
+.totalAmount {
+  font-size: 22px;
+  font-weight: 700;
+  color: #212529;
+}
+
+/* 에러 메시지 스타일 */
+.error {
+  color: #d93025;
+  text-align: center;
+  padding: 20px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.continueButton:hover {
-  background-color: #666;
-}
-
-.continueButton:disabled {
-  background-color: #ccc;
-  color: #888;
-  cursor: not-allowed;
 }

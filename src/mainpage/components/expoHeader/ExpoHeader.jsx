@@ -1,4 +1,4 @@
-import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers, FiCalendar } from 'react-icons/fi';
+import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
 import TicketDropdown from '../ticketdropdown/ticketDropdown'; // Fixed case sensitivity: ticketDropDown -> ticketDropdown
 import styles from './ExpoHeader.module.css';
 
@@ -10,6 +10,7 @@ const ExpoHeader = ({
   onTicketSelect,
   onPurchase,
   onBookmarkToggle,
+  onChatStart,
   formatDate,
   formatTime,
   loading 
@@ -50,7 +51,19 @@ const ExpoHeader = ({
             )}
           </div>
 
-          <h1 className={styles.title}>{basicInfo.title}</h1>
+          <div className={styles.titleSection}>
+            <h1 className={styles.title}>{basicInfo.title}</h1>
+            {/* 1:1 상담하기 버튼 */}
+            <button 
+              className={styles.chatButton}
+              onClick={onChatStart}
+              disabled={loading}
+              title="1:1 상담 채팅"
+            >
+              <FiMessageCircle className={styles.chatIcon} />
+              <span>1:1 상담하기</span>
+            </button>
+          </div>
           
           <div className={styles.basicDetails}>
             <div className={styles.detailItem}>
@@ -75,14 +88,17 @@ const ExpoHeader = ({
           </div>
         </div>
         
-        {/* 티켓 드롭다운 컴포넌트 */}
-        <TicketDropdown
-          tickets={tickets}
-          selectedTicketId={selectedTicketId}
-          onTicketSelect={onTicketSelect}
-          onPurchase={onPurchase}
-          disabled={loading}
-        />
+        {/* 액션 버튼 영역 */}
+        <div className={styles.actionSection}>
+          {/* 티켓 드롭다운 컴포넌트 */}
+          <TicketDropdown
+            tickets={tickets}
+            selectedTicketId={selectedTicketId}
+            onTicketSelect={onTicketSelect}
+            onPurchase={onPurchase}
+            disabled={loading}
+          />
+        </div>
       </div>
     </div>
   );

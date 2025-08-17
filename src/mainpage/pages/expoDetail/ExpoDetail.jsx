@@ -21,7 +21,10 @@ import ExpoReviews from '../../components/expoReviews/ExpoReviews';
 import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurchaseModal";
 
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/nonMemberPurchaseModal";
+import ChatModal from "../../../components/shared/chat/ChatModal";
+import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
+import { getOrCreateExpoChatRoom } from "../../../api/service/chat/chatService";
 
 export default function ExpoDetail() {
   const { expoId } = useParams();
@@ -41,6 +44,10 @@ export default function ExpoDetail() {
   const [showNonMemberModal, setShowNonMemberModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState("");
+  
+  // 채팅 관련 상태
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     if (expoId) {
@@ -116,6 +123,54 @@ export default function ExpoDetail() {
       console.error("찜하기 토글 실패:", err);
       alert("찜하기 처리에 실패했습니다.");
     }
+  };
+
+  // 채팅 시작 핸들러
+  const handleChatStart = async () => {
+    const token = localStorage.getItem('access_token');
+    
+    // 로그인 체크
+    if (!token || isTokenExpired(token)) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log('🟡 박람회 채팅방 생성 요청 - expoId:', expoId);
+      
+      // 채팅방 생성 또는 조회
+      const response = await getOrCreateExpoChatRoom(expoId);
+      console.log('✅ 채팅방 생성/조회 성공:', response.data);
+      
+      // 채팅 모달 열기
+      setShowChatModal(true);
+      
+    } catch (error) {
+      console.error('❌ 채팅방 생성 실패:', error);
+      
+      if (error.response?.status === 401) {
+        // 토큰이 유효하지 않은 경우
+        localStorage.removeItem('access_token');
+        setShowLoginPrompt(true);
+      } else if (error.response?.status === 404) {
+        alert('박람회 정보를 찾을 수 없습니다.');
+      } else {
+        alert('채팅을 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 채팅 모달 닫기
+  const handleChatClose = () => {
+    setShowChatModal(false);
+  };
+
+  // 로그인 프롬프트 닫기
+  const handleLoginPromptClose = () => {
+    setShowLoginPrompt(false);
   };
 
   const formatDate = (dateString) => {
@@ -199,9 +254,21 @@ export default function ExpoDetail() {
     );
   }
 
+  const formatDisplayDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ko-KR", {
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    });
+  };
+
+  const isPendingPublish = basicInfo?.status === 'PENDING_PUBLISH';
+
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isPendingPublish ? styles.pendingPublish : ''}`}>
         {/* 뒤로가기 버튼 */}
         <div className={styles.backButtonSection}>
           <button className={styles.backButton} onClick={handleGoBack}>
@@ -219,6 +286,7 @@ export default function ExpoDetail() {
           onTicketSelect={setSelectedTicketId}
           onPurchase={handleDropdownPurchase}
           onBookmarkToggle={handleBookmarkToggle}
+          onChatStart={handleChatStart}
           formatDate={formatDate}
           formatTime={formatTime}
           loading={loading}
@@ -304,7 +372,43 @@ export default function ExpoDetail() {
           isOpen={showNonMemberModal}
           onClose={handleCloseNonMemberModal}
         />
+
+        {/* 채팅 모달 */}
+        <ChatModal 
+          isOpen={showChatModal} 
+          onClose={handleChatClose}
+        />
+
+        {/* 로그인 프롬프트 모달 */}
+        <LoginPromptModal 
+          isOpen={showLoginPrompt} 
+          onClose={handleLoginPromptClose}
+        />
       </div>
+
+      {/* PENDING_PUBLISH 상태 오버레이 - container 밖으로 이동 */}
+      {isPendingPublish && (
+        <div className={styles.pendingOverlay}>
+          <div className={styles.pendingMessage}>
+            <h2 className={styles.pendingTitle}>COMING SOON</h2>
+            <p className={styles.pendingText}>
+              {basicInfo.displayStartDate 
+                ? `${formatDisplayDate(basicInfo.displayStartDate)}에 찾아옵니다.` 
+                : '곧 공개될 예정입니다.'
+              }
+            </p>
+            <div className={styles.pendingSubtext}>
+              현재 준비 중인 박람회입니다
+            </div>
+            <button 
+              className={styles.homeButton}
+              onClick={() => navigate('/')}
+            >
+              홈으로
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

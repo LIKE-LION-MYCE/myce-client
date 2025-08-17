@@ -13,7 +13,9 @@
 
 .modal {
   background: #fff;
-  width: 480px;
+  width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 28px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   font-family: 'Pretendard', sans-serif;
@@ -94,4 +96,294 @@
   background-color: #ffffff;
   border: 1px solid #ccc;
   color: #333;
+}
+
+.approveBtn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.approveBtn:hover {
+  background-color: #0056b3;
+}
+
+.reasonBox {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.reasonTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.reasonContent {
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* 개별 예약자 환불 정보 섹션 */
+.reservationBox {
+  background-color: #f0f7ff;
+  border: 1px solid #cce7ff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0066cc;
+  margin-bottom: 12px;
+}
+
+.reservationSummary {
+  background-color: #ffffff;
+  border: 1px solid #e1f1ff;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.summaryText {
+  font-size: 14px;
+  color: #333;
+}
+
+.reservationList {
+  background-color: #ffffff;
+  border: 1px solid #e1f1ff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.listHeader {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.6fr 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #f8faff;
+  border-bottom: 1px solid #e1f1ff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.listRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.6fr 1fr;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f1f7ff;
+  font-size: 13px;
+  align-items: center;
+}
+
+.listRow:last-child {
+  border-bottom: none;
+}
+
+.reservationCode {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.reserverName {
+  color: #333;
+  font-weight: 500;
+}
+
+.ticketName {
+  color: #666;
+}
+
+.quantity {
+  color: #333;
+  text-align: center;
+}
+
+.amount {
+  color: #d63384;
+  font-weight: 600;
+  text-align: right;
+}
+
+.moreIndicator {
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #6c757d;
+  background-color: #f8faff;
+  border-top: 1px solid #e1f1ff;
+}
+
+/* 새로운 레이아웃 스타일 */
+.contentLayout {
+  display: flex;
+  gap: 48px;
+  margin-bottom: 25px;
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  flex: 1;
+}
+
+.reservationSummaryBox {
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: #f8f9fa;
+}
+
+.summaryTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.reservationDetailBox {
+  border: 1px solid #e1f1ff;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 24px;
+  background-color: #fafbff;
+}
+
+.reservationListContainer {
+  background-color: #ffffff;
+  border: 1px solid #e1f1ff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.scrollableList {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.scrollableList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollableList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollableList::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.scrollableList::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 검색 및 펼치기/접기 컨트롤 스타일 */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 20px;
+}
+
+.controlsContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  width: 280px;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Pretendard', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.clearButton {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 2px;
+  transition: color 0.2s;
+}
+
+.clearButton:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.expandButton {
+  background-color: #f8faff;
+  border: 1px solid #e1f1ff;
+  color: #0066cc;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.expandButton:hover {
+  background-color: #e1f1ff;
+  border-color: #b3d9ff;
+}
+
+.basicList {
+  /* 기본 리스트는 스크롤 없음 */
+}
+
+.noResults {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  margin: 8px;
 }

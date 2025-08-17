@@ -26,10 +26,15 @@ const markAsRead = async (roomCode, expoId = null) => {
     return await instance.post(`${CHAT_PREFIX}/rooms/${roomCode}/read`, {});
 }
 
+const getOrCreateExpoChatRoom = async (expoId) => {
+    return await instance.post(`${CHAT_PREFIX}/expo/${expoId}/room`);
+}
+
 export {
     getChatRooms,
     getChatMessages,
     getUnreadCount,
     getAllUnreadCounts,
-    markAsRead
+    markAsRead,
+    getOrCreateExpoChatRoom
 };

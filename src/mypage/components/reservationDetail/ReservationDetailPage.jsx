@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
+import RefundModal from "../refundModal/RefundModal";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
@@ -17,6 +18,8 @@ const ReservationDetailPage = () => {
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrImgUrl, setQrImgUrl] = useState("");
   const [selectedReserver, setSelectedReserver] = useState(null);
+  
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -94,7 +97,7 @@ const ReservationDetailPage = () => {
     setEditMembers(updated);
   };
 
-  // 박람회 기간 체크 함수
+  // QR 코드 접근 가능 기간 체크 함수
   const isExpoActive = () => {
     if (!reservationData?.expoInfo?.startDate || !reservationData?.expoInfo?.endDate) {
       return false;
@@ -109,7 +112,11 @@ const ReservationDetailPage = () => {
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
     
-    return today >= startDate && today <= endDate;
+    // QR 코드는 박람회 시작 2일 전부터 박람회 종료일까지 접근 가능
+    const qrAvailableDate = new Date(startDate);
+    qrAvailableDate.setDate(qrAvailableDate.getDate() - 2);
+    
+    return today >= qrAvailableDate && today <= endDate;
   };
 
   // 상세보기 버튼 클릭 시
@@ -434,7 +441,12 @@ const ReservationDetailPage = () => {
         <div
           style={{ display: "flex", justifyContent: "center", marginTop: 40 }}
         >
-          <button className={styles.neutralCancelBtn}>예약 취소</button>
+          <button 
+            className={styles.neutralCancelBtn}
+            onClick={() => setIsRefundModalOpen(true)}
+          >
+            예약 취소
+          </button>
         </div>
       </div>
       </div>
@@ -449,6 +461,16 @@ const ReservationDetailPage = () => {
         expoInfo={expoInfo}
         reservationInfo={reservationInfo}
         reserver={selectedReserver}
+      />
+      
+      <RefundModal
+        isOpen={isRefundModalOpen}
+        onClose={() => setIsRefundModalOpen(false)}
+        reservationId={id}
+        onRefundComplete={() => {
+          setIsRefundModalOpen(false);
+          navigate('/mypage/reservation', { replace: true });
+        }}
       />
     </div>
   );

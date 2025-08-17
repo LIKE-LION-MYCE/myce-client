@@ -5,15 +5,22 @@ import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
 import { createSseInstance } from '../../../api/service/system/sse/SseListener'
 import { logout } from '../../../api/service/auth/AuthService';
+import { useNotification } from '../../../context/NotificationContext';
 
 const MemberMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const { incrementUnreadCount } = useNotification();
 
   useEffect(() => {
     const sse = createSseInstance(
       (event) => {
         console.log('📩 SSE 메시지:', event.data);
+        // 새로운 알림이 왔을 때 읽지 않은 개수 증가
+        incrementUnreadCount();
+        
+        // 선택적으로 토스트 알림 등 추가 UI 표시 가능
+        // showToast(event.data);
       },
       (error) => {
         console.error('❌ SSE 에러:', error);

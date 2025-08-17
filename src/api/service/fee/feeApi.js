@@ -10,7 +10,7 @@ export const getExpoFeeList = async (page = 0, name = null) => {
   const params = { page };
   if (name) params.name = name;
   
-  return await instance.get('/api/settings/expo-fee', { params });
+  return await instance.get('/settings/expo-fee', { params });
 };
 
 /**
@@ -25,23 +25,15 @@ export const getAdFeeList = async (page = 0, positionId = null, name = null) => 
   if (positionId) params.position = positionId;
   if (name) params.name = name;
   
-  return await instance.get('/api/settings/ad-fee', { params });
-};
-
-/**
- * 단일 박람회 요금제 조회 (is_active=1인 요금제)
- * @returns {Promise} 현재 활성화된 박람회 요금제
- */
-export const getActiveExpoFee = async () => {
-  return await instance.get('/expo/fees/active');
+  return await instance.get('/settings/ad-fee', { params });
 };
 
 /**
  * 활성화된 박람회 요금제 조회 (단일 요금제)
  * @returns {Promise} 활성화된 요금제
  */
-export const getActiveExpoFees = async () => {
-  return await instance.get('/api/settings/expo-fee/active');
+export const getActiveExpoFee = async () => {
+  return await instance.get('/settings/expo-fee/active');
 };
 
 /**
@@ -49,5 +41,5 @@ export const getActiveExpoFees = async () => {
  * @returns {Promise} 활성화된 요금제 목록
  */
 export const getActiveAdFees = async () => {
-  return await instance.get('/ad/fees/active');
+  return await instance.get('/settings/ad-fee/active');
 };

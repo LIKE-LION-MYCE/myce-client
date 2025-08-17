@@ -57,7 +57,6 @@ function ReservationCard({ reservation }) {
           >
             예매 상세
           </button>
-          <button className={styles.secondaryBtn}>예매 취소</button>
         </div>
       </div>
       <img
@@ -65,6 +64,7 @@ function ReservationCard({ reservation }) {
         alt={reservation.title + " 포스터"}
         className={styles.poster}
       />
+      
     </div>
   );
 }
@@ -183,7 +183,10 @@ const MyReservationPage = () => {
         <>
           <div className={styles.list}>
             {reservations.map((reservation) => (
-              <ReservationCard key={reservation.reservationId} reservation={reservation} />
+              <ReservationCard 
+                key={reservation.reservationId} 
+                reservation={reservation}
+              />
             ))}
           </div>
           {renderPagination()}
