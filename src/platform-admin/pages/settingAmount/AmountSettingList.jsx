@@ -13,11 +13,11 @@ const cardData = [
     name: 'expoRegistrationFee',
     desc: '박람회 등록비 정산 금액을 설정합니다',
   },
-  {
-    title: '박람회 환불 수수료',
-    name: 'expoRefundFee',
-    desc: '박람회 참가비 환불 시 적용되는 수수료입니다',
-  },
+  // {
+  //   title: '박람회 환불 수수료',
+  //   name: 'expoRefundFee',
+  //   desc: '박람회 참가비 환불 시 적용되는 수수료입니다',
+  // },
   {
     title: '사용자 환불 수수료',
     name: 'userRefundFee',
