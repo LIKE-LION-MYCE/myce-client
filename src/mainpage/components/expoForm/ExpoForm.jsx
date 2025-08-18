@@ -96,6 +96,14 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       errors.endDate = "종료일은 시작일보다 이후여야 합니다.";
     }
 
+    // 게시기간 유효성 검사
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 게시 시작일은 오늘 이후여야 함
+    if (data.displayStartDate && data.displayStartDate < today) {
+      errors.displayStartDate = "게시 시작일은 오늘 이후여야 합니다.";
+    }
+    
     // 게시기간: 시작 > 종료 불가
     if (
       data.displayStartDate &&
@@ -105,6 +113,45 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       errors.displayStartDate =
         "게시 시작일은 게시 종료일보다 이전이어야 합니다.";
       errors.displayEndDate = "게시 종료일은 게시 시작일보다 이후여야 합니다.";
+    }
+    
+    // 개최 시작일은 게시 시작일과 같거나 이후여야 함
+    if (
+      data.startDate &&
+      data.displayStartDate &&
+      data.startDate < data.displayStartDate
+    ) {
+      errors.startDate = "개최 시작일은 게시 시작일과 같거나 이후여야 합니다.";
+    }
+    
+    // 개최 시작일은 게시 종료일보다 이전이어야 함
+    if (
+      data.startDate &&
+      data.displayEndDate &&
+      data.startDate >= data.displayEndDate
+    ) {
+      errors.startDate = "개최 시작일은 게시 종료일보다 이전이어야 합니다.";
+    }
+    
+    // 개최 종료일은 개최 시작일보다 최소 하루 이후여야 함
+    if (data.startDate && data.endDate) {
+      const startDate = new Date(data.startDate);
+      const endDate = new Date(data.endDate);
+      const nextDay = new Date(startDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      if (endDate <= startDate) {
+        errors.endDate = "개최 종료일은 시작일보다 최소 하루 이후여야 합니다.";
+      }
+    }
+    
+    // 개최 종료일은 게시 종료일과 같거나 이전이어야 함
+    if (
+      data.endDate &&
+      data.displayEndDate &&
+      data.endDate > data.displayEndDate
+    ) {
+      errors.endDate = "개최 종료일은 게시 종료일과 같거나 이전이어야 합니다.";
     }
 
     // 운영시간: 시작 >= 종료 불가
@@ -169,6 +216,22 @@ const ExpoForm = ({ onNextPage, initialData }) => {
       ...prev,
       [name]: value,
     }));
+    // 시작 시간 변경 시 종료 시간 초기화 처리
+    if (name === "startTime" && formData.endTime) {
+      const startHour = parseInt(value.split(':')[0]);
+      const endHour = parseInt(formData.endTime.split(':')[0]);
+      
+      if (endHour <= startHour) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+          endTime: "", // 종료 시간 초기화
+        }));
+        validateField("endTime", "");
+        return;
+      }
+    }
+    
     validateField(name, value);
 
     // 주소 변경 시 위도/경도 자동 변환
@@ -213,6 +276,18 @@ const ExpoForm = ({ onNextPage, initialData }) => {
   const generateTimeOptions = () => {
     const times = [];
     for (let hour = 8; hour <= 22; hour++) {
+      const time = hour.toString().padStart(2, "0") + ":00";
+      times.push(time);
+    }
+    return times;
+  };
+  
+  // 종료 시간 옵션 (시작 시간 이후만 표시)
+  const generateEndTimeOptions = () => {
+    const times = [];
+    const startHour = formData.startTime ? parseInt(formData.startTime.split(':')[0]) : 8;
+    
+    for (let hour = startHour + 1; hour <= 22; hour++) {
       const time = hour.toString().padStart(2, "0") + ":00";
       times.push(time);
     }
@@ -275,33 +350,6 @@ const ExpoForm = ({ onNextPage, initialData }) => {
           )}
         </div>
 
-        {/* ========== 개최기간(시작/종료) ========== */}
-        <div className={styles["form-group"]}>
-          <label>박람회 개최기간</label>
-          <div className={styles["date-range-group"]}>
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              className={styles["input-field"]}
-            />
-            <span>-</span>
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              className={styles["input-field"]}
-            />
-          </div>
-          {(formErrors.startDate || formErrors.endDate) && (
-            <p className={styles["error-text"]}>
-              {formErrors.startDate || formErrors.endDate}
-            </p>
-          )}
-        </div>
-
         {/* ========== 게시기간(시작/종료) ========== */}
         <div className={styles["form-group"]}>
           <label>박람회 게시기간</label>
@@ -311,6 +359,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
               name="displayStartDate"
               value={formData.displayStartDate}
               onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
               className={styles["input-field"]}
             />
             <span>-</span>
@@ -319,12 +368,52 @@ const ExpoForm = ({ onNextPage, initialData }) => {
               name="displayEndDate"
               value={formData.displayEndDate}
               onChange={handleChange}
+              min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
               className={styles["input-field"]}
             />
           </div>
           {(formErrors.displayStartDate || formErrors.displayEndDate) && (
             <p className={styles["error-text"]}>
               {formErrors.displayStartDate || formErrors.displayEndDate}
+            </p>
+          )}
+        </div>
+
+        {/* ========== 개최기간(시작/종료) ========== */}
+        <div className={styles["form-group"]}>
+          <label>박람회 개최기간</label>
+          <div className={styles["date-range-group"]}>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
+              max={formData.displayEndDate ? (() => {
+                const prevDay = new Date(formData.displayEndDate);
+                prevDay.setDate(prevDay.getDate() - 1);
+                return prevDay.toISOString().split('T')[0];
+              })() : undefined}
+              className={styles["input-field"]}
+            />
+            <span>-</span>
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              min={formData.startDate ? (() => {
+                const nextDay = new Date(formData.startDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                return nextDay.toISOString().split('T')[0];
+              })() : new Date().toISOString().split('T')[0]}
+              max={formData.displayEndDate || undefined}
+              className={styles["input-field"]}
+            />
+          </div>
+          {(formErrors.startDate || formErrors.endDate) && (
+            <p className={styles["error-text"]}>
+              {formErrors.startDate || formErrors.endDate}
             </p>
           )}
         </div>
@@ -436,7 +525,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
                 className={styles["select-button"]}
               >
                 <option value="">종료 시간</option>
-                {generateTimeOptions().map((time) => (
+                {generateEndTimeOptions().map((time) => (
                   <option key={time} value={time}>
                     {time}
                   </option>

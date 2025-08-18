@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MyInfoPage.module.css";
 import ChangePasswordModal from "../../components/changePasswordModal/changePasswordModal";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import DateInput from "../../../common/components/dateInput/DateInput";
 import { getMemberInfo, updateMemberInfo, withdrawMember } from "../../../api/service/user/memberApi";
 
 const MyInfoPage = () => {
@@ -92,19 +94,20 @@ const MyInfoPage = () => {
             <input 
               type="text" 
               value={memberInfo.name} 
-              disabled={!isEditMode} 
-              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, name: e.target.value})}
-              className={`${styles.inputText} ${!isEditMode ? styles.disabled : ''}`} 
+              disabled={true} 
+              className={`${styles.inputText} ${styles.disabled}`} 
             />
           </div>
           <div className={styles.formGroup}>
             <label>생년월일</label>
-            <input 
-              type="date" 
-              value={memberInfo.birth} 
-              disabled={!isEditMode} 
-              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, birth: e.target.value})}
-              className={`${styles.inputDate} ${!isEditMode ? styles.disabled : ''}`} 
+            <DateInput
+              name="birth"
+              value={memberInfo.birth}
+              onChange={() => {}} // 읽기 전용이므로 빈 함수
+              disabled={true} // 항상 비활성화
+              format="YYYY-MM-DD"
+              showError={false}
+              className={styles.inputText} // 다른 input과 크기 통일
             />
           </div>
           <div className={styles.formGroup}>
@@ -113,15 +116,20 @@ const MyInfoPage = () => {
           </div>
           <div className={styles.formGroup}>
             <label>전화번호</label>
-            <input 
-              type="tel" 
-              value={memberInfo.phone} 
+            <PhoneInput
+              name="phone"
+              value={memberInfo.phone}
+              onChange={(e) => {
+                if (isEditMode) {
+                  setMemberInfo({...memberInfo, phone: e.target.value});
+                }
+              }}
               disabled={!isEditMode}
-              onChange={(e) => isEditMode && setMemberInfo({...memberInfo, phone: e.target.value})}
-              className={`${styles.inputTel} ${!isEditMode ? styles.disabled : ''}`} 
+              showError={false}
+              className={styles.inputText} // 다른 input과 크기 통일
             />
           </div>
-          <div className={styles.formGroupFull}>
+          <div className={styles.formGroup}>
             <label>이메일</label>
             <input 
               type="email" 

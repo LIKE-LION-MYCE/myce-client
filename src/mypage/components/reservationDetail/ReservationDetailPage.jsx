@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
 import QRModal from "../qrModal/QRModal";
 import RefundModal from "../refundModal/RefundModal";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
@@ -299,12 +300,13 @@ const ReservationDetailPage = () => {
                     </td>
                     <td>
                       {isEditMode ? (
-                        <input
+                        <PhoneInput
+                          name={`phone-${idx}`}
                           value={member.phone || ''}
                           onChange={(e) =>
                             handleChange(idx, "phone", e.target.value)
                           }
-                          className={styles.input}
+                          showError={false}
                         />
                       ) : (
                         member.phone || 'N/A'
