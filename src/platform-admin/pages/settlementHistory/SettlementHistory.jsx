@@ -11,7 +11,7 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import { fetchAllPaymentInfo, fetchFilteredPaymentInfo, callExcelDownload } from '../../../api/service/platform-admin/settlement-history/SettlementHistoryService';
 
 
-const typeMap = ['전체', 'EXPO', 'AD'];
+const typeMap = [null, 'EXPO', 'AD'];
 
 function SettlementHistory() {
   const [pageInfo, setPageInfo] = useState(null);
@@ -123,7 +123,7 @@ function SettlementHistory() {
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['전체', '박람회', '배너']}
+        tabs={['전체', '박람회', '광고']}
         currentTab={currentTab}
         onTabChange={(tab) => {
           setCurrentTab(tab);
