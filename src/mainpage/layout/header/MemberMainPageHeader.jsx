@@ -6,6 +6,7 @@ import NotificationButton from '../../components/notification/NotificationButton
 import { createSseInstance } from '../../../api/service/system/sse/SseListener'
 import { logout } from '../../../api/service/auth/AuthService';
 import { useNotification } from '../../../context/NotificationContext';
+import { getUserInfoFromToken } from '../../../api/utils/jwtUtils';
 
 const MemberMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
@@ -32,10 +33,16 @@ const MemberMainPageHeader = () => {
     };
   }, []);
 
+  // 사용자 권한 확인
+  const token = localStorage.getItem('access_token');
+  const userInfo = getUserInfoFromToken(token);
+  const isPlatformAdmin = userInfo?.role === 'PLATFORM_ADMIN';
+
   const menuItems = [
     { name: '박람회 목록', path: '/expo-list' },
     { name: '박람회 신청', path: '/expo-apply' },
-    { name: '광고 신청', path: '/ad-apply' }
+    { name: '광고 신청', path: '/ad-apply' },
+    ...(isPlatformAdmin ? [{ name: '플랫폼 관리', path: '/platform/admin/dashboard/revenue' }] : [])
   ];
 
   const handleMenuClick = (item) => {
