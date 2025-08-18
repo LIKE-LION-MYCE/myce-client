@@ -44,9 +44,9 @@ const ExpoHeader = ({
               title={bookmarkStatus?.isBookmarked ? "북마크 제거" : "북마크 추가"}
             >
               {bookmarkStatus?.isBookmarked ? (
-                <MdBookmark size={20} style={{color: '#000000'}} />
+                <MdBookmark size={24} style={{ color: '#000000' }} />
               ) : (
-                <FiBookmark size={20} />
+                <FiBookmark size={24} />
               )}
             </button>
           </div>
