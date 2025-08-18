@@ -301,3 +301,16 @@
     font-size: 13px;
   }
 }
+
+/* 권한 없음 메시지 */
+.noPermissionMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}

@@ -135,7 +135,7 @@ const ReviewList = ({ expoId, userInfo }) => {
             </button>
           </div>
 
-          {userInfo && (
+          {userInfo && canWriteReview && (
             <button 
               className={styles.writeBtn}
               onClick={() => {
@@ -149,13 +149,11 @@ const ReviewList = ({ expoId, userInfo }) => {
         </div>
       </div>
 
-      {/* 임시로 주석 처리 - 테스트용
       {userInfo && !canWriteReview && !hasReviewed && (
         <div className={styles.noPermissionMessage}>
           박람회에 참석한 후 리뷰를 작성할 수 있습니다.
         </div>
       )}
-      */}
 
       {showForm && (
         <ReviewForm
