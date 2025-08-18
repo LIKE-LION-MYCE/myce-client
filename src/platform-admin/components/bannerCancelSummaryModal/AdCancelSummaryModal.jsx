@@ -1,10 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import styles from "./AdCancelSummaryModal.module.css";
 import { processAdRefund } from "../../../api/service/payment/AdRefundService";
+import { denyCancelBanner } from "../../../api/service/platform-admin/banner/BannerService";
 
 function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const { id } = useParams(); // URL 경로에서 {id} 부분을 가져옴
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -14,6 +16,17 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const today = new Date();
   const startDate = cancelForm?.startAt ? new Date(cancelForm.startAt) : null;
   const isPartialRefund = startDate && startDate <= today;
+
+  const handleCancelDeny = async () => {
+    try {
+      await denyCancelBanner(id);
+      alert("취소 거절에 성공했습니다.");
+      onClose;
+      navigate(-1);
+    } catch (err) {
+      console.log("취소 거부 실패 : ", err);
+    }
+  }
 
   // '환불 승인' 버튼 클릭 시 실행될 내부 함수
   const handleRefundSubmit = async () => {
@@ -96,7 +109,7 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
         {/* 금액 정보 */}
         <div className={styles.feeBox}>
           <div className={styles.row}>
-            <span className={styles.label}>총 결제 금액</span>
+            <span className={styles.label}>총 환불 금액</span>
             <span className={styles.amount}>
               {cancelForm?.totalAmount?.toLocaleString()}원
             </span>
@@ -105,11 +118,14 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
 
         {/* 버튼 */}
         <div className={styles.actionBox}>
-          <button className={styles.cancelBtn} onClick={onClose}>
-            취소
-          </button>
           <button className={styles.submitBtn} onClick={handleRefundSubmit}>
             {isPartialRefund ? "부분 환불 승인" : "전체 환불 승인"}
+          </button>
+          <button className={styles.submitBtn} onClick={handleCancelDeny}>
+            환불 거부
+          </button>
+          <button className={styles.cancelBtn} onClick={onClose}>
+            취소
           </button>
         </div>
       </div>
