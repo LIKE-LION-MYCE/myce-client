@@ -1,108 +1,349 @@
-.centerBox {
-  margin: 64px auto 0 auto;
-  width: 400px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.08);
-  padding: 38px 30px 32px 30px;
-}
-.tabRow {
+.wrapper {
+  min-height: calc(100vh - 120px);
   display: flex;
-  border-bottom: 2px solid #eee;
-  margin-bottom: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #fafafa;
 }
-.tabRow button {
-  flex: 1;
-  font-size: 22px;
-  font-weight: 700;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  padding-bottom: 12px;
-  color: #444;
-  cursor: pointer;
-  transition: border-color 0.18s;
+
+.centerBox {
+  width: 480px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.04);
+  padding: 48px 40px;
+  border: 1px solid #f0f0f0;
+  position: relative;
 }
-.tabRow .active {
-  border-bottom: 3px solid #222;
-  color: #111;
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 36px;
+  letter-spacing: -0.8px;
+  position: relative;
 }
+
+.pageTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #000 0%, #333 100%);
+  border-radius: 2px;
+}
+
 .formSection {
-  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 각 입력 영역(라벨+입력창) 간 간격 */
+  gap: 24px;
 }
+
+.emailGuide {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  text-align: center;
+  padding: 16px 20px;
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border-left: 4px solid #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .label {
-  font-size: 15px;
-  color: #666;
-  margin-bottom: 12px;
-  display: block;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
 }
+
 .input {
   width: 100%;
-  padding: 13px 12px;
-  border: 1.4px solid #e0e0e0;
-  border-radius: 7px;
-  margin-bottom: 0px; /* 각 입력창 아래 기본 마진 제거 */
+  padding: 16px 18px;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
   font-size: 15px;
-}
-.btnRow {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;    /* ★ 버튼 위 간격을 최소화 */
-}
-.cancelBtn, .confirmBtn {
-  flex: 1;
-  padding: 12px 0;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-}
-.cancelBtn {
+  font-weight: 500;
+  transition: all 0.3s ease;
   background: #fff;
-  color: #888;
-  border: 1.2px solid #e0e0e0;
+  color: #2d2d2d;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
-.confirmBtn {
-  background: #222;
-  color: #fff;
-  border: none;
+
+.input:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow: 
+    0 0 0 3px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.input:disabled {
+  background: #f5f5f5;
+  color: #999;
+  border-color: #ddd;
+}
+
+.input::placeholder {
+  color: #aaa;
 }
 
 .sendCodeBtn {
-  background: #222;
+  background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
   color: #fff;
   border: none;
-  border-radius: 7px;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 0 18px;
-  height: 43px;
-  margin-left: 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 16px 24px;
   cursor: pointer;
-  transition: background 0.16s;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  box-sizing: border-box;
-}
-.sendCodeBtn:hover {
-  background: #111;
-}
-
-.codeInputRow {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 2px;
+  min-width: 120px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  letter-spacing: -0.2px;
 }
 
-/* 유효시간 스타일 */
+.sendCodeBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sendCodeBtn:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.sendCodeBtn:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sendCodeBtn.loading {
+  background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.verifyBtn {
+  background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 100px;
+  box-shadow: 0 4px 12px rgba(74, 74, 74, 0.3);
+  letter-spacing: -0.2px;
+}
+
+.verifyBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a5a5a 0%, #3d3d3d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 74, 74, 0.4);
+}
+
+.verifyBtn:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.verifyBtn:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.verifyBtn.loading {
+  background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .codeExpire {
   font-size: 13px;
-  color: #999;
-  margin-top: 3px;
-  margin-left: 2px;
+  color: #666;
+  margin-top: 6px;
+  margin-left: 4px;
+  font-weight: 500;
 }
 
+.btnRow {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 18px 0;
+  font-size: 16px;
+  border-radius: 14px;
+  border: 2px solid #e0e0e0;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fff;
+  color: #666;
+  transition: all 0.3s ease;
+  letter-spacing: -0.2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.cancelBtn:hover {
+  border-color: #bbb;
+  background: #f8f8f8;
+  color: #555;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.confirmBtn {
+  flex: 1;
+  padding: 18px 0;
+  font-size: 16px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+  color: #fff;
+  transition: all 0.3s ease;
+  letter-spacing: -0.2px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.confirmBtn:hover {
+  background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+
+.confirmBtn:active {
+  transform: translateY(-1px);
+}
+
+/* 로딩 애니메이션 */
+.loadingContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 버튼 로딩 상태에서 텍스트 애니메이션 */
+.loading .loadingContent {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .wrapper {
+    padding: 20px 16px;
+  }
+  
+  .centerBox {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 28px;
+    border-radius: 16px;
+  }
+  
+  .pageTitle {
+    font-size: 24px;
+    margin-bottom: 28px;
+  }
+  
+  .pageTitle::after {
+    width: 40px;
+    height: 2px;
+  }
+  
+  .formSection {
+    gap: 20px;
+  }
+  
+  .emailGuide {
+    font-size: 13px;
+    padding: 14px 18px;
+  }
+  
+  .btnRow {
+    margin-top: 28px;
+    gap: 12px;
+  }
+  
+  .input {
+    padding: 14px 16px;
+    border-radius: 10px;
+  }
+  
+  .sendCodeBtn,
+  .verifyBtn {
+    padding: 14px 20px;
+    font-size: 13px;
+    border-radius: 10px;
+    min-width: 100px;
+  }
+  
+  .cancelBtn,
+  .confirmBtn {
+    padding: 16px 0;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+  
+  .spinner {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .loadingContent {
+    gap: 6px;
+  }
+}

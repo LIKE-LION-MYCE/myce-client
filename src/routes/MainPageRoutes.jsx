@@ -12,7 +12,7 @@ import ReservationSuccess from "../mainpage/pages/reservationsuccess/Reservation
 import ReservationPending from "../mainpage/pages/reservationPending/ReservationPending";
 import Chat from "../mainpage/pages/chat/Chat";
 import NonMemberReservationCheckPage from "../mainpage/pages/nonMemberReservation/NonMemberReservationCheckPage";
-import ReservationDetailPage from "../mypage/components/reservationDetail/ReservationDetailPage";
+import NonMemberReservationDetailPage from "../mainpage/pages/nonMemberReservation/NonMemberReservationDetailPage";
 
 function MainPageRoutes() {
   return (
@@ -37,8 +37,8 @@ function MainPageRoutes() {
         <Route path="chat" element={<Chat />} />
         <Route path="non-member" element={<NonMemberReservationCheckPage />} />
         <Route
-          path="/non-member/reservation/:id"
-          element={<ReservationDetailPage />}
+          path="non-member/reservation/:id"
+          element={<NonMemberReservationDetailPage />}
         />
       </Route>
     </Routes>
