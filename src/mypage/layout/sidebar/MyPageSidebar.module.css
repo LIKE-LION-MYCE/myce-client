@@ -106,6 +106,16 @@
   color: #fff;             /* 흰색 텍스트 */
 }
 
+/* 비활성화된 메뉴 스타일 */
+.menu .disabled {
+  color: #ccc;
+  padding: 6px 12px;
+  display: block;
+  border-radius: 6px;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .sectionLabel {
   font-size: 14px;
   color: #999;

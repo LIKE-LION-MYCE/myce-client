@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyAdvertisements } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusPage.module.css";
+import settingStyles from "../../../expo-admin/pages/setting/Setting.module.css";
 
 // 상태 라벨 및 스타일 맵
 const STATUS_MAP = {
-  PENDING_APPROVAL: { label: "승인 대기", className: "pending" },
-  PENDING_PAYMENT: { label: "결제 대기", className: "waiting" },
-  PENDING_PUBLISH: { label: "게시 대기", className: "waiting" },
-  PENDING_CANCEL: { label: "취소 대기", className: "pending" },
-  PUBLISHED: { label: "게시 중", className: "active" },
-  REJECTED: { label: "승인 거절", className: "canceled" },
-  CANCELLED: { label: "취소 완료", className: "canceled" },
-  COMPLETED: { label: "종료됨", className: "finished" },
+  PENDING_APPROVAL: { label: "승인 대기", className: "badgePENDING_APPROVAL" },
+  PENDING_PAYMENT: { label: "결제 대기", className: "badgePENDING_PAYMENT" },
+  PENDING_PUBLISH: { label: "게시 대기", className: "badgePENDING_PUBLISH" },
+  PENDING_CANCEL: { label: "취소 대기", className: "badgePENDING_CANCEL" },
+  PUBLISHED: { label: "게시 중", className: "badgePUBLISHED" },
+  REJECTED: { label: "승인 거절", className: "badgeREJECTED" },
+  CANCELLED: { label: "취소 완료", className: "badgeCANCELLED" },
+  COMPLETED: { label: "종료됨", className: "badgeCOMPLETED" },
 };
 
 const ITEMS_PER_PAGE = 5;
@@ -49,7 +50,7 @@ const formatDate = (date) => {
 function StatusBadge({ status }) {
   const info = STATUS_MAP[status] || { label: status, className: "" };
   return (
-    <span className={`${styles.statusBadge} ${styles[info.className]}`}>
+    <span className={`${settingStyles.badge} ${settingStyles[info.className]} ${styles.statusBadge}`}>
       {info.label}
     </span>
   );
