@@ -9,7 +9,8 @@ const useRealtimeNotification = () => {
     try {
       console.log('SSE 알림 수신:', event.data);
       
-      if (event.data.includes('SSE connected') || event.data.includes('keep-alive')) {
+      // SSE 연결 확인 메시지는 무시
+      if (event.data.includes('SSE connected')) {
         return;
       }
 
@@ -29,6 +30,13 @@ const useRealtimeNotification = () => {
 
   const handleError = useCallback((error) => {
     console.error('SSE 연결 오류:', error);
+    console.error('오류 상세 정보:', {
+      type: error.type,
+      target: error.target,
+      readyState: error.target?.readyState,
+      status: error.target?.status,
+      url: error.target?.url
+    });
   }, []);
 
   useEffect(() => {
