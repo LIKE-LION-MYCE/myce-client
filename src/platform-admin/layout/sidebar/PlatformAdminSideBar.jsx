@@ -14,7 +14,7 @@ import { MdEventNote, MdOutlineOndemandVideo } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
 
-import PlatformAdminInfoBox from '../../components/platformAdminInfoBox/PlatformAdminInfoBox';
+import PlatformAdminInfoBox from '../../components/InfoBox/PlatformAdminInfoBox';
 
 function PlatformAdminSideBar() {
   const location = useLocation();
