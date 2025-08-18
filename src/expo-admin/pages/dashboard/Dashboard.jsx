@@ -49,13 +49,15 @@ function Dashboard() {
   const [isCustomCheckinMode, setIsCustomCheckinMode] = useState(false);
   
   // 캐시 삭제 버튼 표시 여부
-  const [showClearCacheBtn, setShowClearCacheBtn] = useState(false);
+  const [showClearCacheBtn, setShowClearCacheBtn] = useState(true);
 
   const columns = [
-    { key: 'ticketType', header: '티켓명' },
+    { key: 'ticketType', header: '티켓이름' },
+    { key: 'totalQuantity', header: '전체수량' },
     { key: 'soldCount', header: '판매수량' },
+    { key: 'remainingCount', header: '남은수량' },
     { key: 'unitPrice', header: '단가' },
-    { key: 'totalRevenue', header: '총 판매금액' },
+    { key: 'totalRevenue', header: '총판매금액' },
   ];
 
   // 차트 색상 설정
@@ -241,14 +243,18 @@ function Dashboard() {
   // 테이블 데이터 변환
   const tableData = paymentStats?.ticketSalesDetail?.map(ticket => ({
     ticketType: ticket.ticketType,
+    totalQuantity: ticket.totalQuantity?.toLocaleString(),
     soldCount: ticket.soldCount?.toLocaleString(),
+    remainingCount: ticket.remainingCount?.toLocaleString(),
     unitPrice: `₩${ticket.unitPrice?.toLocaleString()}`,
     totalRevenue: `₩${ticket.totalRevenue?.toLocaleString()}`
   })) || [];
 
   const summaryRow = {
     ticketType: '합계',
+    totalQuantity: tableData.reduce((sum, item) => sum + parseInt(item.totalQuantity?.replace(/,/g, '') || 0), 0).toLocaleString(),
     soldCount: tableData.reduce((sum, item) => sum + parseInt(item.soldCount?.replace(/,/g, '') || 0), 0).toLocaleString(),
+    remainingCount: tableData.reduce((sum, item) => sum + parseInt(item.remainingCount?.replace(/,/g, '') || 0), 0).toLocaleString(),
     unitPrice: '',
     totalRevenue: `₩${paymentStats?.totalRevenue?.toLocaleString() || 0}`
   };
@@ -284,110 +290,31 @@ function Dashboard() {
         )}
       </div>
 
-      {/* 예약 */}
+      {/* 예매 현황 */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h4 className={styles.sectionTitle}>예약</h4>
+          <h4 className={styles.sectionTitle}>예매 현황</h4>
         </div>
         <div className={styles.cardGroup}>
           <div className={styles.card}>
-            <p className={styles.cardLabel}>누적 예약수</p>
+            <p className={styles.cardLabel}>누적 판매 개수</p>
             <p className={styles.cardValue}>
               {reservationStats?.totalReservations?.toLocaleString() || 0}
             </p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardLabel}>오늘 예약수</p>
+            <p className={styles.cardLabel}>오늘 판매 개수</p>
             <p className={styles.cardValue}>
               {reservationStats?.todayReservations?.toLocaleString() || 0}
             </p>
           </div>
         </div>
-        
-        <div className={styles.chartGrid}>
-          {/* 성별 통계 파이 차트 */}
-          <div className={styles.chartContainer}>
-            <h5 className={styles.chartTitle}>성별 예약 현황</h5>
-            <div className={styles.chartWrapper}>
-              <Pie
-                data={{
-                  labels: ['남성', '여성'],
-                  datasets: [{
-                    data: [
-                      reservationStats?.genderStats?.maleCount || 0,
-                      reservationStats?.genderStats?.femaleCount || 0
-                    ],
-                    backgroundColor: [
-                      '#0088FE',
-                      '#00C49F'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'bottom'
-                    },
-                    tooltip: {
-                      callbacks: {
-                        label: function(context) {
-                          const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                          const percentage = ((context.raw / total) * 100).toFixed(1);
-                          return `${context.label}: ${context.raw}명 (${percentage}%)`;
-                        }
-                      }
-                    }
-                  }
-                }}
-                height={200}
-              />
-            </div>
-          </div>
 
-          {/* 연령대 통계 바 차트 */}
-          <div className={styles.chartContainer}>
-            <h5 className={styles.chartTitle}>연령대별 예약 현황</h5>
-            <div className={styles.chartWrapper}>
-              <Bar
-                data={{
-                  labels: reservationStats?.ageGroupStats?.ageGroups?.map(age => age.ageRange) || [],
-                  datasets: [{
-                    label: '예약 수',
-                    data: reservationStats?.ageGroupStats?.ageGroups?.map(age => age.count) || [],
-                    backgroundColor: '#8884d8',
-                    borderColor: '#6366f1',
-                    borderWidth: 1
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: false
-                    }
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true
-                    }
-                  }
-                }}
-                height={200}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* 주간 예약 현황 라인 차트 */}
+        {/* 날짜별 판매 현황 라인 차트 */}
         <div className={styles.fullWidthChart}>
           <div className={styles.chartHeader}>
             <h5 className={styles.chartTitle}>
-              날짜별 예약 현황
+              날짜별 판매 현황
             </h5>
             
             {/* 날짜 선택 컨트롤 */}
@@ -475,7 +402,7 @@ function Dashboard() {
                   data={{
                     labels,
                     datasets: [{
-                      label: '예약 수',
+                      label: '판매 수',
                       data: dataValues,
                       borderColor: '#8884d8',
                       backgroundColor: 'rgba(136, 132, 216, 0.1)',
@@ -533,10 +460,96 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* 입장 */}
+      {/* 예매자 현황 */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h4 className={styles.sectionTitle}>입장</h4>
+          <h4 className={styles.sectionTitle}>예매자 현황</h4>
+        </div>
+        
+        <div className={styles.chartGrid}>
+          {/* 성별 통계 파이 차트 */}
+          <div className={styles.chartContainer}>
+            <h5 className={styles.chartTitle}>성별 통계</h5>
+            <div className={styles.chartWrapper}>
+              <Pie
+                data={{
+                  labels: ['남성', '여성'],
+                  datasets: [{
+                    data: [
+                      reservationStats?.genderStats?.maleCount || 0,
+                      reservationStats?.genderStats?.femaleCount || 0
+                    ],
+                    backgroundColor: [
+                      '#0088FE',
+                      '#00C49F'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom'
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                          const percentage = ((context.raw / total) * 100).toFixed(1);
+                          return `${context.label}: ${context.raw}명 (${percentage}%)`;
+                        }
+                      }
+                    }
+                  }
+                }}
+                height={200}
+              />
+            </div>
+          </div>
+
+          {/* 연령대 통계 바 차트 */}
+          <div className={styles.chartContainer}>
+            <h5 className={styles.chartTitle}>연령대별 통계</h5>
+            <div className={styles.chartWrapper}>
+              <Bar
+                data={{
+                  labels: reservationStats?.ageGroupStats?.ageGroups?.map(age => age.ageRange) || [],
+                  datasets: [{
+                    label: '구매 수',
+                    data: reservationStats?.ageGroupStats?.ageGroups?.map(age => age.count) || [],
+                    backgroundColor: '#8884d8',
+                    borderColor: '#6366f1',
+                    borderWidth: 1
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true
+                    }
+                  }
+                }}
+                height={200}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 입장 현황 */}
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h4 className={styles.sectionTitle}>입장 현황</h4>
         </div>
         
         <div className={styles.checkinContainer}>
@@ -550,7 +563,7 @@ function Dashboard() {
             </div>
             <div>
               <h2>{checkinStats?.reservedTickets?.toLocaleString() || 0}</h2>
-              <p className={styles.checkinSub}>누적 예약수</p>
+              <p className={styles.checkinSub}>누적 판매 개수</p>
             </div>
           </div>
           <div className={styles.checkinRate}>
@@ -642,10 +655,10 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* 결제 */}
+      {/* 결제 현황 */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h4 className={styles.sectionTitle}>결제</h4>
+          <h4 className={styles.sectionTitle}>결제 현황</h4>
         </div>
         
         <div className={styles.cardGroup}>
@@ -683,7 +696,7 @@ function Dashboard() {
 
         {/* 티켓 판매 상세 테이블 */}
         <div className={styles.tableContainer}>
-          <h5 className={styles.tableTitle}>티켓 종류별 판매 현황</h5>
+          <h4 className={styles.sectionTitle}>티켓 현황</h4>
           <DashboardTable 
             columns={columns} 
             data={tableData} 

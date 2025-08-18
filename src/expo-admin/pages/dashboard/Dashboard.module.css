@@ -430,3 +430,8 @@
     min-width: 120px;
   }
 }
+
+/* 티켓 테이블 스타일 */
+.ticketTableLeft {
+  text-align: left !important;
+}
