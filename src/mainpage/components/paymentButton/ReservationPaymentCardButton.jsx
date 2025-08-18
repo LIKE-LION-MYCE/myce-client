@@ -3,16 +3,11 @@ import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { saveReservers } from "../../../api/service/reservation/ReserverService";
 import {
-  updateReservationStatusConfirm,
   updateGuestId,
   deleteReservationPending,
 } from "../../../api/service/reservation/reservationApi";
-import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
-import { updateGrade } from "../../../api/service/user/memberApi";
-import { generateQrForReservation } from "../../../api/service/qr/qrApi";
 import { requestRefund } from "../../../api/service/payment/RefundService";
 
 function ReservationPaymentCardButton({
@@ -88,7 +83,8 @@ function ReservationPaymentCardButton({
         async function (rsp) {
           if (rsp.success) {
             try {
-              const res = await instance.post("/payment/verify", {
+              // 새로운 통합 API 사용
+              const res = await instance.post("/payment/reservation/verify", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
@@ -96,33 +92,15 @@ function ReservationPaymentCardButton({
                 targetId: reservationId,
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
+                reserverInfos: reserverInfos,
+                ticketId: ticketId,
+                quantity: quantity
               });
-
-              await updateReservationStatusConfirm(reservationId);
-
-              await saveReservers(reservationId, reserverInfos);
-
-              await updateRemainingQuantity(ticketId, quantity);
-
-              // 회원 등급 업데이트 member_grade의 base_amount
-              // reservation에서 회원 ID로 reservation_payment_info 조회해서 그동안의 결제 금액 계산
-              // 비교에 따라 업데이트
-              if (userType === "MEMBER") {
-                await updateGrade();
-              }
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
-                // QR 코드 즉시 생성 시도
-                try {
-                  await generateQrForReservation(reservationId);
-                  console.log("QR 코드 생성 완료");
-                } catch (qrError) {
-                  console.warn("QR 코드 생성 실패 (스케줄러에서 생성됨):", qrError);
-                }
-                
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
                 navigate(`/reservation-success/${reservationId}`);
               } else {

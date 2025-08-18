@@ -3,15 +3,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { saveReservers } from "../../../api/service/reservation/ReserverService";
 import {
-  updateReservationStatusConfirm,
   updateGuestId,
   deleteReservationPending,
 } from "../../../api/service/reservation/reservationApi";
-import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
-import { updateGrade } from "../../../api/service/user/memberApi";
 
 function PaymentVirtualBankButton({
   targetType,
@@ -86,7 +82,8 @@ function PaymentVirtualBankButton({
           if (rsp.success) {
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
-              const res = await instance.post("/payment/verify-vbank", {
+              // 새로운 통합 API 사용
+              const res = await instance.post("/payment/reservation/verify-vbank", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
@@ -94,17 +91,10 @@ function PaymentVirtualBankButton({
                 targetId: reservationId,
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
+                reserverInfos: reserverInfos,
+                ticketId: ticketId,
+                quantity: quantity
               });
-              await saveReservers(reservationId, reserverInfos);
-
-              await updateRemainingQuantity(ticketId, quantity);
-
-              // // 회원 등급 업데이트 member_grade의 base_amount
-              // // reservation에서 회원 ID로 reservation_payment_info 조회해서 그동안의 결제 금액 계산
-              // // 비교에 따라 업데이트
-              // if (userType === "MEMBER") {
-              //   await updateGrade();
-              // }
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
