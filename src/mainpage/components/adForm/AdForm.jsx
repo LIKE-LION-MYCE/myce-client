@@ -7,6 +7,8 @@ import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 import DaumPostcode from "react-daum-postcode";
 import UsageGuidelines from "../../../common/components/usageGuidelines/UsageGuidelines";
 import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   // 서버에 보낼 정보만 유지
@@ -55,9 +57,13 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         setIsFormValid(false);
         setErrorMessage("시작일은 종료일보다 이전이어야 합니다.");
         return;
+      }else if(formData.displayStartDate < localeDate) {
+        setIsFormValid(false);
+        setErrorMessage("시작일은 오늘 이후여야 합니다.");
+        return;
       }else if(formData.displayEndDate < localeDate) {
         setIsFormValid(false);
-        setErrorMessage("예약일은 오늘 이후여야 합니다.");
+        setErrorMessage("종료일은 오늘 이후여야 합니다.");
         return;
       }
 
@@ -316,6 +322,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               name="displayStartDate"
               value={formData.displayStartDate}
               onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
               className={styles["input-field"]}
               required
             />
@@ -324,6 +331,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               name="displayEndDate"
               value={formData.displayEndDate}
               onChange={handleChange}
+              min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
               className={styles["input-field"]}
               required
             />
@@ -349,14 +357,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             </div>
             <div className={styles["inline-input-item"]}>
               <label htmlFor="businessRegistrationNumber">사업자 번호</label>
-              <input
-                type="text"
-                id="businessRegistrationNumber"
+              <BusinessNumberInput
                 name="businessRegistrationNumber"
                 value={formData.businessRegistrationNumber}
                 onChange={handleChange}
-                className={styles["input-field"]}
-                placeholder="숫자만 입력하세요"
                 required
               />
             </div>
@@ -419,14 +423,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             </div>
             <div className={styles["inline-input-item"]}>
               <label htmlFor="contactPhone">대표자 연락처</label>
-              <input
-                type="text"
-                id="contactPhone"
+              <PhoneInput
                 name="contactPhone"
                 value={formData.contactPhone}
                 onChange={handleChange}
-                className={styles["input-field"]}
-                placeholder="숫자만 입력하세요"
                 required
               />
             </div>

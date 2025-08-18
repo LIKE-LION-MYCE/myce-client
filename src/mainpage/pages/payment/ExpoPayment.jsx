@@ -8,6 +8,8 @@ import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
 import { getExpoBasicInfo } from "../../../api/service/expo/expoDetailApi";
 import { getPaymentSummary } from "../../../api/service/reservation/reservationApi";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import DateInput from "../../../common/components/dateInput/DateInput";
 
 export default function ExpoPayment() {
   const SERVICE_FEE_PER_TICKET = 1000;
@@ -308,9 +310,8 @@ export default function ExpoPayment() {
                   </div>
                   <div className={styles.inputField}>
                     <label htmlFor={`birthdate-${index}`}>생년월일</label>
-                    <input
-                      type="text"
-                      id={`birthdate-${index}`}
+                    <DateInput
+                      name={`birthdate-${index}`}
                       value={personalInfo[index]?.birthdate || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(
@@ -319,19 +320,19 @@ export default function ExpoPayment() {
                           e.target.value
                         )
                       }
-                      placeholder="YYYY-MM-DD"
+                      format="YYYY-MM-DD"
+                      required
                     />
                   </div>
                   <div className={styles.inputField}>
                     <label htmlFor={`phone-${index}`}>전화번호</label>
-                    <input
-                      type="tel"
-                      id={`phone-${index}`}
+                    <PhoneInput
+                      name={`phone-${index}`}
                       value={personalInfo[index]?.phone || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "phone", e.target.value)
                       }
-                      placeholder="010-1234-5678"
+                      required
                     />
                   </div>
                 </div>

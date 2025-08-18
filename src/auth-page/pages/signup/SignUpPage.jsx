@@ -10,6 +10,9 @@ import { checkDuplicateLoginId,
 import { HttpStatusCode } from "axios";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import DateInput from "../../../common/components/dateInput/DateInput";
+import { validatePhoneNumber } from "../../../utils/phoneFormatter";
 
 const SignUpPage = () => {
   const [form, setForm] = useState({
@@ -95,9 +98,8 @@ const SignUpPage = () => {
 
     if(!validEmailFormat()) return;
 
-    var phone = /^\d{2,3}-\d{3,4}-\d{4}$/;
-    if(!form.phone || !phone.test(form.phone)) {
-      triggerToastFail('전화번호 형식이 올바르지 않습니다.');
+    if(!form.phone || !validatePhoneNumber(form.phone)) {
+      triggerToastFail('전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)');
       return;
     }
 
@@ -304,11 +306,12 @@ const SignUpPage = () => {
         </label>
         <label>
           생년월일
-          <input
+          <DateInput
             name="birth"
-            placeholder="예: 20011231"
             value={form.birth}
             onChange={handleChange}
+            format="YYYYMMDD"
+            required
           />
         </label>
         <div className={styles.genderGroup}>
@@ -337,11 +340,11 @@ const SignUpPage = () => {
         </div>
         <label>
           핸드폰번호
-          <input
+          <PhoneInput
             name="phone"
-            placeholder="010-0000-0000"
             value={form.phone}
             onChange={handleChange}
+            required
           />
         </label>
         <button type="submit" className={styles.submitButton}>

@@ -4,6 +4,8 @@ import { saveExpo } from "../../../api/service/user/expoApi";
 import { useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
 import { getCategories } from "../../../api/service/user/categoryApi";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
 
 const ExpoApply2 = () => {
   const navigate = useNavigate();
@@ -309,14 +311,11 @@ const ExpoApply2 = () => {
 
               <div className={styles["inline-input-item"]}>
                 <label htmlFor="businessNumber">사업자 번호</label>
-                <input
-                  type="text"
-                  id="businessNumber"
+                <BusinessNumberInput
                   name="businessNumber"
                   value={formData.businessNumber}
                   onChange={handleChange}
-                  className={styles["input-field"]}
-                  placeholder="숫자만 입력하세요"
+                  required
                 />
                 {/* [유효성 검사 추가] */}
                 {formErrors.businessNumber && (
@@ -396,14 +395,11 @@ const ExpoApply2 = () => {
 
               <div className={styles["inline-input-item"]}>
                 <label htmlFor="representativeContact">대표자 연락처</label>
-                <input
-                  type="text"
-                  id="representativeContact"
+                <PhoneInput
                   name="representativeContact"
                   value={formData.representativeContact}
                   onChange={handleChange}
-                  className={styles["input-field"]}
-                  placeholder="숫자만 입력하세요"
+                  required
                 />
                 {/* [유효성 검사 추가] */}
                 {formErrors.representativeContact && (
