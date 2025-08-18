@@ -142,7 +142,7 @@ function BannerCurrentDetail() {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
-        <button className={styles.approveBtn} onClick={() => setShowSettlementSummary(true)}>취소 확인</button>
+        <button className={styles.approveBtn} onClick={() => setShowSettlementSummary(true)}>취소 내용 확인</button>
       </div>
     );
   } else if (rawStatus === 'PUBLISHED') {
