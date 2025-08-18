@@ -1,4 +1,5 @@
-import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
+import { FiBookmark, FiMapPin, FiClock, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
+import { MdBookmark } from 'react-icons/md';
 import TicketDropdown from '../ticketdropdown/ticketDropdown'; // Fixed case sensitivity: ticketDropDown -> ticketDropdown
 import styles from './ExpoHeader.module.css';
 
@@ -37,18 +38,17 @@ const ExpoHeader = ({
               ))}
             </div>
             
-            {bookmarkStatus && (
-              <button 
-                className={styles.bookmarkBtn}
-                onClick={onBookmarkToggle}
-              >
-                {bookmarkStatus.isBookmarked ? (
-                  <FiBookmarkFill size={20} />
-                ) : (
-                  <FiBookmark size={20} />
-                )}
-              </button>
-            )}
+            <button 
+              className={styles.bookmarkBtn}
+              onClick={onBookmarkToggle}
+              title={bookmarkStatus?.isBookmarked ? "북마크 제거" : "북마크 추가"}
+            >
+              {bookmarkStatus?.isBookmarked ? (
+                <MdBookmark size={20} style={{color: '#000000'}} />
+              ) : (
+                <FiBookmark size={20} />
+              )}
+            </button>
           </div>
 
           <div className={styles.titleSection}>
