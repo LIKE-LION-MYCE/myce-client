@@ -5,7 +5,7 @@ import AmountSettingDetailTable from '../../components/amountSettingDetailTable/
 import Pagination from '../../../common/components/pagination/Pagination';
 import AdFeeSettingTable from '../../components/adFeeSettingTable/AdFeeSettingTable';
 import ExpoFeeSettingTable from '../../components/expoFeeSettingTable/ExpoFeeSettingTable';
-import RefundFeeSettingTable from '../../components/refundFeeSettingTable/refundFeeSettingTable';
+import RefundFeeSettingTable from '../../components/refundFeeSettingTable/RefundFeeSettingTable';
 
 const cardData = [
   {
