@@ -87,14 +87,12 @@ function ExpoSettingForm() {
     if (!categoryIds || categoryIds.length === 0) {
       return [{ id: 'empty', name: '카테고리 없음' }];
     }
-    
     const categoryBadges = categoryIds
-      .map(id => {
-        const category = categories.find(cat => cat.id === id);
-        return category ? { id: category.id, name: category.name } : { id: id, name: `ID: ${id}` };
+      .map((id) => {
+        const category = categories.find((cat) => cat.id === id);
+        return category ? { id: category.id, name: category.name } : { id, name: `ID: ${id}` };
       })
-      .filter(badge => badge);
-    
+      .filter(Boolean);
     return categoryBadges.length > 0 ? categoryBadges : [{ id: 'empty', name: '카테고리 없음' }];
   };
 
@@ -107,7 +105,6 @@ function ExpoSettingForm() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleImageUploadSuccess = (cdnUrl) => {
     setForm((prev) => ({ ...prev, thumbnailUrl: cdnUrl }));
@@ -124,15 +121,13 @@ function ExpoSettingForm() {
     setTimeout(() => setShowToast(false), 2000);
   };
 
-  // 수정 버튼 표시 여부 확인
+  // 수정 버튼 표시 여부 (게시 대기 상태에서만 노출)
   const canShowEditButton = () => {
     return perm?.isExpoDetailUpdate && expoStatus === 'PENDING_PUBLISH';
   };
 
-  // 설명 필드만 수정 가능한지 확인
-  const canEditOnlyDescription = () => {
-    return expoStatus === 'PENDING_PUBLISH';
-  };
+  // 게시 대기 상태: 설명만 수정 가능
+  const canEditOnlyDescription = () => expoStatus === 'PENDING_PUBLISH';
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -141,16 +136,16 @@ function ExpoSettingForm() {
   const handleSubmit = async () => {
     try {
       let dataToSend;
-      
+
       if (canEditOnlyDescription()) {
         // 게시 대기 상태: 설명만 수정 가능
         dataToSend = {
           description: form.description,
         };
       } else {
-        // 다른 상태: 전체 필드 수정 가능 (현재는 이 경우가 없음)
+        // (향후 확장) 다른 상태: 전체 수정 가능 시
         dataToSend = {
-          categoryIds: form.categoryIds.map(id => Number(id)),
+          categoryIds: form.categoryIds.map((id) => Number(id)),
           title: form.title,
           thumbnailUrl: form.thumbnailUrl,
           description: form.description,
@@ -163,15 +158,16 @@ function ExpoSettingForm() {
           displayEndDate: form.displayEndDate,
           startTime: form.startTime,
           endTime: form.endTime,
+          isPremium: !!form.isPremium,
         };
       }
 
       await updateMyExpoInfo(expoId, dataToSend);
       setIsEditing(false);
       triggerToast();
-      fetchExpoInfo(); // Re-fetch data after successful update
+      fetchExpoInfo();
     } catch (error) {
-      const message = error.response?.data?.message || error.message;
+      const message = error?.response?.data?.message || error.message;
       setErrorMessage(message);
       setShowFailToast(true);
       setTimeout(() => setShowFailToast(false), 2000);
@@ -180,9 +176,12 @@ function ExpoSettingForm() {
   };
 
   const handleCancel = () => {
-    fetchExpoInfo(); // Re-fetch original data
+    fetchExpoInfo();
     setIsEditing(false);
   };
+
+  // 토글 활성화 여부: 편집 중이면서 "설명만 수정" 상황이 아닐 때만 토글 가능
+  const premiumToggleDisabled = !isEditing || canEditOnlyDescription();
 
   return (
     <div className={styles.container}>
@@ -191,23 +190,19 @@ function ExpoSettingForm() {
 
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
-          {isEditing ? (
+          {isEditing && !canEditOnlyDescription() ? (
             <ImageUpload
               initialImageUrl={form.thumbnailUrl}
               onUploadSuccess={handleImageUploadSuccess}
               onUploadError={handleImageUploadError}
             />
           ) : (
-            <img
-              src={form.thumbnailUrl}
-              alt="포스터"
-              className={styles.profileImage}
-            />
+            <img src={form.thumbnailUrl} alt="포스터" className={styles.profileImage} />
           )}
         </div>
 
         <div className={styles.formGrid}>
-          {/* 카테고리 선택 영역 */}
+          {/* 카테고리 */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>카테고리</label>
             <div className={styles.badgeRow}>
@@ -219,16 +214,22 @@ function ExpoSettingForm() {
             </div>
           </div>
 
-          {form.isPremium && (
-            <div className={`${styles.formGroup} ${styles.full}`}>
-              <label className={styles.label}>프리미엄 부스 상위 노출 서비스</label>
-              <div className={styles.premiumBadge}>
-                신청됨
-              </div>
+          {/* 🔔 프리미엄 부스 상위 노출: 토글로 표시 (읽기 전에는 disabled) */}
+          <div className={`${styles.formGroup} ${styles.full}`}>
+            <label className={styles.label}>프리미엄 부스 상위 노출</label>
+            <div className={styles.premiumRow}>
+              <ToggleSwitch
+                checked={!!form.isPremium}
+                onChange={(v) => setForm((prev) => ({ ...prev, isPremium: v }))}
+                disabled={premiumToggleDisabled}
+              />
+              {premiumToggleDisabled && (
+                <span className={styles.hintText}>현재 단계에서는 변경할 수 없습니다.</span>
+              )}
             </div>
-          )}
+          </div>
 
-          {/* Input fields... */}
+          {/* 기본 정보 입력들 */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
             <input
@@ -343,7 +344,6 @@ function ExpoSettingForm() {
               />
             </div>
           </div>
-
         </div>
       </div>
 
@@ -362,25 +362,16 @@ function ExpoSettingForm() {
       <div className={styles.buttonGroup}>
         {isEditing ? (
           <>
-            <button
-              className={`${styles.actionBtn} ${styles.submitBtn}`}
-              onClick={handleSubmit}
-            >
+            <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleSubmit}>
               <FaCheckCircle className={styles.iconBtn} /> 저장
             </button>
-            <button
-              className={`${styles.actionBtn} ${styles.cancelBtn}`}
-              onClick={handleCancel}
-            >
+            <button className={`${styles.actionBtn} ${styles.cancelBtn}`} onClick={handleCancel}>
               <FaTimesCircle className={styles.iconBtn} /> 취소
             </button>
           </>
         ) : (
           canShowEditButton() && (
-            <button
-              className={`${styles.actionBtn} ${styles.submitBtn}`}
-              onClick={handleEditClick}
-            >
+            <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleEditClick}>
               <FaEdit className={styles.iconBtn} /> 수정
             </button>
           )

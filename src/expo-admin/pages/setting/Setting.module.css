@@ -13,7 +13,6 @@
   max-width: 1000px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   text-align: left;
 }
 
@@ -32,7 +31,7 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom : 3px;
+
 }
 
 /* --- Divider --- */
@@ -45,47 +44,56 @@
 
 /* --- Status Badge --- */
 .badge {
+  margin-left : 10px;
+  margin-bottom : 20px;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-  margin-left: 12px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
 }
 
+/* 상태별 뱃지 (결제 상태 색감과 통일) */
 .badgePENDING_APPROVAL {
-  background-color: #f0ad4e; /* 승인대기 - 주황 */
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .badgePENDING_PAYMENT {
-  background-color: #d9534f; /* 결제대기 - 빨강 */
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c; /* 진한 주황 */
 }
 
 .badgePENDING_PUBLISH {
-  background-color: #5bc0de; /* 게시대기 - 하늘 */
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .badgePUBLISHED {
-  background-color: #5cb85c; /* 게시중 - 초록 */
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
 }
 
 .badgePUBLISH_ENDED {
-  background-color: #777; /* 게시종료 - 회색 */
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }
 
 .badgeCANCELLED {
-  background-color: #666; /* 취소됨 - 짙은 회색 */
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .badgeREJECTED {
-  background-color: #d9534f; /* 거절됨 - 빨강 */
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .badgeCOMPLETED {
-  background-color: #337ab7; /* 완료됨 - 파랑 */
+  background-color: #ecf2ff; /* 연한 파랑 */
+  color: #3366cc;            /* 진한 파랑 */
 }
-
-/* 기존 내용 유지하고 아래만 추가 */
 
 .titleRow {
   display: flex;

@@ -119,10 +119,16 @@
   line-height: 1.6;
 }
 
+/* ✅ 토글/설명 같이 놓는 줄 */
 .booleanGroup {
   display: flex;
   gap: 12px;
   align-items: center;
+}
+
+.hintText {
+  font-size: 12px;
+  color: #777;
 }
 
 .buttonDivider {
@@ -134,7 +140,7 @@
   display: flex;
   gap: 12px;
   justify-content: flex-start;
-  margin-top : 5px;
+  margin-top: 5px;
 }
 
 .editBtn {

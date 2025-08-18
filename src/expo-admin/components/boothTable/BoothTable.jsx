@@ -164,10 +164,15 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                     <>
                                       <div className={styles.detailItem}>
                                         <div className={styles.detailLabel}>프리미엄 부스</div>
-                                        <ToggleSwitch
-                                          checked={!!editForm.isPremium}
-                                          onChange={handlePremiumToggle}
-                                        />
+                                        <div className={styles.booleanGroup}>
+                                          <ToggleSwitch
+                                            checked={!!editForm.isPremium}
+                                            onChange={handlePremiumToggle}
+                                          />
+                                          <span className={styles.hintText}>
+                                            프리미엄이면 노출 순위를 선택하세요.
+                                          </span>
+                                        </div>
                                       </div>
 
                                       {editForm.isPremium && (
@@ -242,7 +247,13 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                     <>
                                       <div className={styles.detailItem}>
                                         <div className={styles.detailLabel}>프리미엄 부스</div>
-                                        <div className={styles.valueText}>{row.isPremium ? '예' : '아니오'}</div>
+                                        <div className={styles.booleanGroup}>
+                                          <ToggleSwitch
+                                            checked={!!row.isPremium}
+                                            onChange={() => {}}
+                                            disabled
+                                          />
+                                        </div>
                                       </div>
                                       {row.isPremium && (
                                         <div className={styles.detailItem}>
