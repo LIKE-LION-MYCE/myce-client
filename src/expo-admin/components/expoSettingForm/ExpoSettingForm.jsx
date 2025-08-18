@@ -8,7 +8,7 @@ import ToastFail from '../../../common/components/toastFail/ToastFail';
 import { usePermission } from '../../permission/PermissionContext';
 import {
   getMyExpoInfo,
-  updateMyExpoInfo,
+  updateMyExpoDescription,
 } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 import { getCategories } from '../../../api/service/user/categoryApi';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
@@ -130,32 +130,12 @@ function ExpoSettingForm() {
 
   const handleSubmit = async () => {
     try {
-      let dataToSend;
+      // PENDING_PUBLISH 상태에서만 설명 수정 가능
+      const dataToSend = {
+        description: form.description,
+      };
+      await updateMyExpoDescription(expoId, dataToSend);
 
-      if (canEditOnlyDescription()) {
-        dataToSend = {
-          description: form.description,
-        };
-      } else {
-        dataToSend = {
-          categoryIds: form.categoryIds.map((id) => Number(id)),
-          title: form.title,
-          thumbnailUrl: form.thumbnailUrl,
-          description: form.description,
-          location: form.location,
-          locationDetail: form.locationDetail,
-          maxReserverCount: parseInt(form.maxReserverCount, 10) || 0,
-          startDate: form.startDate,
-          endDate: form.endDate,
-          displayStartDate: form.displayStartDate,
-          displayEndDate: form.displayEndDate,
-          startTime: form.startTime,
-          endTime: form.endTime,
-          isPremium: !!form.isPremium,
-        };
-      }
-
-      await updateMyExpoInfo(expoId, dataToSend);
       setIsEditing(false);
       triggerToast();
       fetchExpoInfo();
