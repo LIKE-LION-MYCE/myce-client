@@ -3,7 +3,9 @@ import { getExpos } from "../api/service/user/expoApi";
 
 export const useExpoData = () => {
   const [expos, setExpos] = useState([]);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    sort: 'startDate,asc'
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
