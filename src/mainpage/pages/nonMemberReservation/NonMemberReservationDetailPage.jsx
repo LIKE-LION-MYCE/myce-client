@@ -29,13 +29,23 @@ const NonMemberReservationDetailPage = () => {
     }
   }, [location.state, navigate]);
 
-  // QR 모달 열기
+  // QR 모달 열기 (회원 예매 상세와 동일한 로직)
   const handleQrOpen = (qrUrl, reserver) => {
-    if (qrUrl) {
-      setQrImgUrl(qrUrl);
-      setSelectedReserver(reserver);
-      setQrModalOpen(true);
+    console.log('QR 버튼 클릭:', { qrUrl, reserver, isActive: isExpoActive() });
+    
+    if (!isExpoActive()) {
+      alert('박람회 기간이 아닙니다.');
+      return;
     }
+    
+    if (!qrUrl) {
+      alert('QR 코드가 아직 생성되지 않았습니다.');
+      return;
+    }
+    
+    setQrImgUrl(qrUrl);
+    setSelectedReserver(reserver);
+    setQrModalOpen(true);
   };
 
   // 날짜 포맷팅
@@ -45,13 +55,26 @@ const NonMemberReservationDetailPage = () => {
     return date.toLocaleDateString('ko-KR');
   };
 
-  // 박람회 진행 중인지 확인
+  // QR 코드 접근 가능 기간 체크 함수 (회원 예매 상세와 동일한 로직)
   const isExpoActive = () => {
-    if (!reservationData?.expoInfo) return false;
-    const now = new Date();
-    const startDate = new Date(reservationData.expoInfo.displayStartDate);
-    const endDate = new Date(reservationData.expoInfo.displayEndDate);
-    return now >= startDate && now <= endDate;
+    if (!reservationData?.expoInfo?.startDate || !reservationData?.expoInfo?.endDate) {
+      return false;
+    }
+    
+    const today = new Date();
+    const startDate = new Date(reservationData.expoInfo.startDate);
+    const endDate = new Date(reservationData.expoInfo.endDate);
+    
+    // 시간을 제거하고 날짜만 비교
+    today.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    
+    // QR 코드는 박람회 시작 2일 전부터 박람회 종료일까지 접근 가능
+    const qrAvailableDate = new Date(startDate);
+    qrAvailableDate.setDate(qrAvailableDate.getDate() - 2);
+    
+    return today >= qrAvailableDate && today <= endDate;
   };
 
   // 날짜 범위 포맷팅
