@@ -30,6 +30,26 @@
   border-radius: 2px;
 }
 
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+.loading {
+  background-color: #f8f9fa;
+  color: #666;
+  font-size: 1rem;
+}
+
+.error {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  font-size: 1rem;
+}
+
 .reviewsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

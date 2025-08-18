@@ -273,6 +273,98 @@
   box-shadow: none;
 }
 
+/* 구매 유의사항 섹션 */
+.noticesSection {
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.noticesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  color: #495057;
+}
+
+.noticesHeader:hover {
+  background: #f8f9fa;
+}
+
+.noticesContent {
+  padding: 20px 22px;
+  background: #ffffff;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}
+
+.noticeItem {
+  margin-bottom: 20px;
+}
+
+.noticeItem:last-child {
+  margin-bottom: 0;
+}
+
+.noticeItem strong {
+  display: block;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #3498db;
+}
+
+.noticeItem ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.noticeItem li {
+  position: relative;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+  padding-left: 15px;
+}
+
+.noticeItem li:before {
+  content: "•";
+  color: #3498db;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.noticeItem li:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 480px) {
   .modal {
     width: 100%;
