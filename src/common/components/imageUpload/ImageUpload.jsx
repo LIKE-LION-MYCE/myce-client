@@ -145,7 +145,7 @@ const ImageUpload = ({ onUploadSuccess, onUploadError, accept = "image/*", maxSi
             ) : (
               <>
                 <div className={styles.uploadIcon}>📷</div>
-                <p>이미지를 드래그하거나 클릭하여 업로드</p>
+                <p>이미지를 드래그하거나<br></br> 클릭하여 업로드</p>
                 <small>최대 10MB, JPG, PNG, GIF 지원</small>
               </>
             )}

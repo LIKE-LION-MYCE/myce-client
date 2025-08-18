@@ -1,3 +1,4 @@
+// EventTable.jsx
 import React, { useState } from 'react';
 import styles from './EventTable.module.css';
 
@@ -20,16 +21,19 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [errors, setErrors] = useState({}); // ✅ 필드별 에러 상태
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
       setEditingId(null);
       setEditForm(null);
+      setErrors({});
     } else {
       setExpandedId(row.id);
       setEditingId(null);
       setEditForm(null);
+      setErrors({});
     }
   };
 
@@ -37,33 +41,112 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
     e.stopPropagation();
     setEditingId(row.id);
     setEditForm(row);
+    setErrors({});
+  };
+
+  // 전화번호 자동 하이픈
+  const formatPhoneNumber = (value) => {
+    const onlyNums = String(value || '').replace(/[^0-9]/g, '');
+    if (onlyNums.startsWith('02')) {
+      if (onlyNums.length <= 2) return onlyNums;
+      if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+      if (onlyNums.length <= 9) return onlyNums.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+      return onlyNums.replace(/(\d{2})(\d{4})(\d{4}).*/, '$1-$2-$3');
+    }
+    if (onlyNums.length <= 3) return onlyNums;
+    if (onlyNums.length <= 6) return onlyNums.replace(/(\d{3})(\d{1,3})/, '$1-$2');
+    if (onlyNums.length <= 10) return onlyNums.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return onlyNums.replace(/(\d{3})(\d{4})(\d{4}).*/, '$1-$2-$3');
   };
 
   const handleChange = (e) => {
     e.stopPropagation();
     const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+    setEditForm((prev) => ({
+      ...prev,
+      [name]: name === 'contactPhone' ? formatPhoneNumber(value) : value,
+    }));
+    setErrors((prev) => ({ ...prev, [name]: '' })); // 필드 수정 시 해당 에러 제거
+  };
+
+  // ✅ 유효성 검사 (EventRequest DTO와 동일)
+  const runValidation = () => {
+    const e = {};
+    const f = editForm || {};
+    const isBlank = (v) => !v || String(v).trim() === '';
+
+    // @NotBlank
+    if (isBlank(f.name)) e.name = '행사명을 입력해주세요.';
+    if (isBlank(f.location)) e.location = '장소를 입력해주세요.';
+    if (isBlank(f.description)) e.description = '행사 설명을 입력해주세요.';
+    if (isBlank(f.contactName)) e.contactName = '담당자 이름을 입력해주세요.';
+    if (isBlank(f.contactPhone)) e.contactPhone = '담당자 연락처를 입력해주세요.';
+    if (isBlank(f.contactEmail)) e.contactEmail = '담당자 이메일을 입력해주세요.';
+
+    // @NotNull
+    if (isBlank(f.eventDate)) e.eventDate = '행사 날짜를 입력해주세요.';
+    if (isBlank(f.startTime)) e.startTime = '시작 시간을 입력해주세요.';
+    if (isBlank(f.endTime)) e.endTime = '종료 시간을 입력해주세요.';
+
+    // 전화번호 패턴
+    if (!e.contactPhone && !/^[0-9-]+$/.test(f.contactPhone || '')) {
+      e.contactPhone = '올바른 전화번호 형식을 입력하세요. (숫자와 하이픈만 허용)';
+    }
+    // 이메일 형식
+    if (!e.contactEmail) {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRe.test(f.contactEmail || '')) {
+        e.contactEmail = '이메일 형식이 올바르지 않습니다.';
+      }
+    }
+    // 시간 범위 (start < end)
+    if (!e.startTime && !e.endTime && f.startTime && f.endTime) {
+      const [sh, sm] = f.startTime.split(':').map(Number);
+      const [eh, em] = f.endTime.split(':').map(Number);
+      if (!(sh * 60 + sm < eh * 60 + em)) {
+        e.endTime = '시작시간은 종료시간보다 빨라야 합니다.';
+      }
+    }
+    // 행사 날짜 박람회 기간 내 (존재할 때만)
+    const expoStart = expoStartDate ? expoStartDate.split('T')[0] : null;
+    const expoEnd = expoEndDate ? expoEndDate.split('T')[0] : null;
+    if (!e.eventDate && f.eventDate && (expoStart || expoEnd)) {
+      if (expoStart && f.eventDate < expoStart) {
+        e.eventDate = '행사 날짜는 박람회 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoEnd && f.eventDate > expoEnd) {
+        e.eventDate = '행사 날짜는 박람회 종료일과 같거나 이전이어야 합니다.';
+      }
+    }
+
+    return e;
   };
 
   const handleSave = (e) => {
     e.stopPropagation();
-    onUpdate(editForm);
+    const v = runValidation();
+    setErrors(v);
+    if (Object.values(v).some(Boolean)) return; // 에러 있으면 저장 중단
+    onUpdate?.(editForm);
     setEditingId(null);
     setEditForm(null);
+    setErrors({});
   };
 
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
-    onDelete(id);
+    onDelete?.(id);
     setExpandedId(null);
     setEditForm(null);
     setEditingId(null);
+    setErrors({});
   };
 
   const handleCancel = (e) => {
     e.stopPropagation();
     setEditingId(null);
     setEditForm(null);
+    setErrors({});
   };
 
   const columns = [
@@ -124,6 +207,7 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                             value={editForm.startTime || ''}
                                             onChange={handleChange}
                                             className={styles.inputField}
+                                            aria-invalid={!!errors.startTime}
                                           />
                                           <span className={styles.tilde}>~</span>
                                           <input
@@ -132,8 +216,14 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                             value={editForm.endTime || ''}
                                             onChange={handleChange}
                                             className={styles.inputField}
+                                            aria-invalid={!!errors.endTime}
                                           />
                                         </div>
+                                        {(errors.startTime || errors.endTime) && (
+                                          <p className={styles.errorText}>
+                                            {errors.startTime || errors.endTime}
+                                          </p>
+                                        )}
                                       </div>
                                     );
                                   }
@@ -157,7 +247,9 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                             ? expoEndDate.split('T')[0]
                                             : undefined
                                         }
+                                        aria-invalid={!!errors[key]}
                                       />
+                                      {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
                                     </div>
                                   );
                                 })}
@@ -173,7 +265,13 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                       value={editForm[key] || ''}
                                       onChange={handleChange}
                                       className={styles.inputField}
+                                      aria-invalid={!!errors[key]}
+                                      placeholder={
+                                        key === 'contactPhone' ? '예: 010-1234-5678' : undefined
+                                      }
+                                      inputMode={key === 'contactPhone' ? 'numeric' : undefined}
                                     />
+                                    {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
                                   </div>
                                 ))}
                               </div>
@@ -181,12 +279,8 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
 
                             <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
-                              <button className={styles.editBtn} onClick={handleSave}>
-                                저장
-                              </button>
-                              <button className={styles.cancelBtn} onClick={handleCancel}>
-                                취소
-                              </button>
+                              <button className={styles.editBtn} onClick={handleSave}>저장</button>
+                              <button className={styles.cancelBtn} onClick={handleCancel}>취소</button>
                             </div>
                           </>
                         ) : (
@@ -207,7 +301,6 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                       </div>
                                     );
                                   }
-
                                   return (
                                     <div key={key} className={styles.detailItem}>
                                       <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>

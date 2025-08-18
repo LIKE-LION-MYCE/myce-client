@@ -1,3 +1,4 @@
+// BoothTable.jsx
 import React, { useState } from 'react';
 import styles from './BoothTable.module.css';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
@@ -20,49 +21,143 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [errors, setErrors] = useState({}); // ✅ 인라인 에러 상태
+
+  // 전화번호 자동 하이픈
+  const formatPhoneNumber = (value) => {
+    const onlyNums = String(value || '').replace(/[^0-9]/g, '');
+    // 02로 시작 (서울)
+    if (onlyNums.startsWith('02')) {
+      if (onlyNums.length <= 2) return onlyNums;
+      if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+      if (onlyNums.length <= 9) return onlyNums.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+      return onlyNums.replace(/(\d{2})(\d{4})(\d{4}).*/, '$1-$2-$3');
+    }
+    // 기타 (010, 031 등)
+    if (onlyNums.length <= 3) return onlyNums;
+    if (onlyNums.length <= 6) return onlyNums.replace(/(\d{3})(\d{1,3})/, '$1-$2');
+    if (onlyNums.length <= 10) return onlyNums.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return onlyNums.replace(/(\d{3})(\d{4})(\d{4}).*/, '$1-$2-$3');
+  };
+
+  const clearAll = () => {
+    setEditingId(null);
+    setEditForm(null);
+    setErrors({});
+  };
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
-      setEditingId(null);
-      setEditForm(null);
+      clearAll();
     } else {
       setExpandedId(row.id);
-      setEditingId(null);
-      setEditForm(null);
+      clearAll();
     }
   };
 
   const handleEditClick = (e, row) => {
     e.stopPropagation();
     setEditingId(row.id);
-    setEditForm(row);
+    // ✅ 편집 폼 기본값 안전하게
+    setEditForm({
+      id: row.id,
+      mainImageUrl: row.mainImageUrl || '',
+      name: row.name || '',
+      description: row.description || '',
+      boothNumber: row.boothNumber || '',
+      contactName: row.contactName || '',
+      contactPhone: row.contactPhone || '',
+      contactEmail: row.contactEmail || '',
+      isPremium: !!row.isPremium,
+      displayRank: row.displayRank ?? '', // 빈 문자열 허용
+    });
+    setErrors({});
   };
 
   const handleChange = (e) => {
     e.stopPropagation();
     const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+    setEditForm((prev) => {
+      if (!prev) return prev;
+      // 연락처는 자동 하이픈
+      if (name === 'contactPhone') {
+        const formatted = formatPhoneNumber(value);
+        return { ...prev, contactPhone: formatted };
+      }
+      return { ...prev, [name]: value };
+    });
+    setErrors((prev) => ({ ...prev, [name]: '' })); // 해당 필드 에러 제거
   };
 
   const handlePremiumToggle = (value) => {
-    setEditForm((prev) => ({
-      ...prev,
-      isPremium: value,
-      displayRank: value ? prev.displayRank : null,
-    }));
+    setEditForm((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        isPremium: value,
+        displayRank: value ? prev.displayRank || '' : '', // 꺼지면 순위 초기화
+      };
+    });
+    setErrors((prev) => ({ ...prev, isPremium: '', displayRank: '' }));
   };
 
   const handleImageUploadSuccess = (imageUrl) => {
-    setEditForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
+    setEditForm((prev) => (prev ? { ...prev, mainImageUrl: imageUrl } : prev));
   };
 
   const handleImageUploadError = (error) => {
     console.error('이미지 업로드 실패:', error);
   };
 
+  // ✅ BoothSettingForm과 동일한 유효성 검사
+  const runValidation = () => {
+    const e = {};
+    const f = editForm || {};
+    const isBlank = (v) => !v || String(v).trim() === '';
+
+    // boothNumber: required, max 30
+    if (isBlank(f.boothNumber)) e.boothNumber = '부스 위치(번호)는 필수입니다.';
+    else if (f.boothNumber.length > 30) e.boothNumber = '부스 위치(번호)는 30자 이하여야 합니다.';
+
+    // name: required, max 100
+    if (isBlank(f.name)) e.name = '부스명은 필수입니다.';
+    else if (f.name.length > 100) e.name = '부스명은 100자 이하여야 합니다.';
+
+    // description: required
+    if (isBlank(f.description)) e.description = '부스 설명은 필수입니다.';
+
+    // contactName: required, max 30
+    if (isBlank(f.contactName)) e.contactName = '담당자명은 필수입니다.';
+    else if (f.contactName.length > 30) e.contactName = '담당자명은 30자 이하여야 합니다.';
+
+    // contactPhone: required, pattern
+    const phoneRe = /^\d{2,3}-\d{3,4}-\d{4}$/;
+    if (isBlank(f.contactPhone)) e.contactPhone = '담당자 연락처는 필수입니다.';
+    else if (!phoneRe.test(f.contactPhone))
+      e.contactPhone = '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)';
+
+    // contactEmail: required, email, max 100
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (isBlank(f.contactEmail)) e.contactEmail = '담당자 이메일은 필수입니다.';
+    else if (!emailRe.test(f.contactEmail)) e.contactEmail = '유효한 이메일 형식이 아닙니다.';
+    else if (f.contactEmail.length > 100) e.contactEmail = '담당자 이메일은 100자 이하여야 합니다.';
+
+    // displayRank: 프리미엄 + isPremium=true일 때 필수 숫자
+    if (expoIsPremium && f.isPremium) {
+      if (isBlank(f.displayRank)) e.displayRank = '노출 순위를 선택해주세요.';
+      else if (!/^\d+$/.test(String(f.displayRank))) e.displayRank = '노출 순위는 숫자여야 합니다.';
+    }
+
+    return e;
+  };
+
   const handleSave = (e) => {
     e.stopPropagation();
+    const v = runValidation();
+    setErrors(v);
+    if (Object.values(v).some(Boolean)) return; // 에러 있으면 저장 중단
+
     const payload = {
       ...editForm,
       isPremium: expoIsPremium ? !!editForm.isPremium : false,
@@ -72,22 +167,19 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
           : null,
     };
     onUpdate?.(payload);
-    setEditingId(null);
-    setEditForm(null);
+    clearAll();
   };
 
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
     onDelete?.(id);
     setExpandedId(null);
-    setEditForm(null);
-    setEditingId(null);
+    clearAll();
   };
 
   const handleCancel = (e) => {
     e.stopPropagation();
-    setEditingId(null);
-    setEditForm(null);
+    clearAll();
   };
 
   const columns = [
@@ -148,7 +240,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                   {boothFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
                                       <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]} <span className={styles.required}>*</span>
+                                        {fieldLabelMap[key]}
                                       </div>
                                       <input
                                         type="text"
@@ -157,6 +249,9 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                         onChange={handleChange}
                                         className={styles.inputField}
                                       />
+                                      {errors[key] && (
+                                        <p className={styles.errorText}>{errors[key]}</p>
+                                      )}
                                     </div>
                                   ))}
 
@@ -177,9 +272,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
 
                                       {editForm.isPremium && (
                                         <div className={styles.detailItem}>
-                                          <div className={styles.detailLabel}>
-                                            노출 순위 <span className={styles.required}>*</span>
-                                          </div>
+                                          <div className={styles.detailLabel}>노출 순위</div>
                                           <select
                                             name="displayRank"
                                             value={editForm.displayRank || ''}
@@ -191,6 +284,9 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                             <option value="2">2위</option>
                                             <option value="3">3위</option>
                                           </select>
+                                          {errors.displayRank && (
+                                            <p className={styles.errorText}>{errors.displayRank}</p>
+                                          )}
                                         </div>
                                       )}
                                     </>
@@ -201,14 +297,18 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                   {contactFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
                                       <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]} <span className={styles.required}>*</span>
+                                        {fieldLabelMap[key]}
                                       </div>
                                       <input
                                         name={key}
                                         value={editForm[key] || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
+                                        inputMode={key === 'contactPhone' ? 'numeric' : undefined}
                                       />
+                                      {errors[key] && (
+                                        <p className={styles.errorText}>{errors[key]}</p>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -230,7 +330,11 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                             <div className={styles.topRow}>
                               <div className={styles.imageWrapper}>
                                 {row.mainImageUrl && (
-                                  <img src={row.mainImageUrl} alt="부스 이미지" className={styles.detailImage} />
+                                  <img
+                                    src={row.mainImageUrl}
+                                    alt="부스 이미지"
+                                    className={styles.detailImage}
+                                  />
                                 )}
                               </div>
 
@@ -238,7 +342,9 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {boothFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
                                       <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
@@ -270,7 +376,9 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {contactFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
                                       <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
@@ -281,12 +389,18 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                             <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               {hasPermission && onUpdate && (
-                                <button className={styles.editBtn} onClick={(e) => handleEditClick(e, row)}>
+                                <button
+                                  className={styles.editBtn}
+                                  onClick={(e) => handleEditClick(e, row)}
+                                >
                                   수정
                                 </button>
                               )}
                               {hasPermission && onDelete && (
-                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={(e) => handleDeleteClick(e, row.id)}
+                                >
                                   삭제
                                 </button>
                               )}
