@@ -29,7 +29,9 @@ function MainPageLayout() {
     <NotificationProvider>
       <div className={styles.layout}>
         {/* 헤더 (네비게이션 바) */}
-        <MainPageHeader />
+        <MainPageHeader
+          notification={currentNotification}
+        />
 
         {/* 메인 콘텐츠 영역 - Outlet이 자식 라우트들을 렌더링합니다. */}
         <main className={styles.mainContent}>

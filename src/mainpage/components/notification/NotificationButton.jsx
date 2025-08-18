@@ -5,13 +5,13 @@ import NotificationModal from './NotificationModal';
 import { getNotifications } from '../../../api/service/notification/notificationApi';
 import { useNotification } from '../../../context/NotificationContext';
 
-export default function NotificationButton() {
+export default function NotificationButton({notification}) {
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount, updateUnreadCount } = useNotification();
 
   useEffect(() => {
     fetchUnreadCount();
-  }, []);
+  }, [notification]);
 
   const fetchUnreadCount = async () => {
     try {
