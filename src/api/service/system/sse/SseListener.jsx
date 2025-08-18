@@ -23,8 +23,15 @@ export const createSseInstance = (onMessage, onError) => {
     });
 
     eventSource.onmessage = (event) => {
-      console.log(event);
-      if (onMessage) onMessage(event);
+      console.log('SSE 메시지 수신:', event);
+      
+      // keep-alive나 빈 메시지가 아닌 경우에만 콜백 호출
+      if (event.data && 
+          event.data.trim() !== 'keep-alive' && 
+          !event.data.includes('keep-alive') &&
+          event.data.trim() !== '') {
+        if (onMessage) onMessage(event);
+      }
     };
 
     eventSource.onerror = async (err) => {

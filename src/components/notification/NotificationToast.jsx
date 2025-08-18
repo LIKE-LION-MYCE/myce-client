@@ -33,6 +33,8 @@ const NotificationToast = ({ notification, onClose }) => {
         return '🔄';
       case 'EXPO_REMINDER':
         return '📅';
+      case 'EVENT_REMINDER':
+        return '⏰';
       case 'GENERAL':
         return '🔔';
       default:
@@ -48,6 +50,8 @@ const NotificationToast = ({ notification, onClose }) => {
         return 'QR 재발급';
       case 'EXPO_REMINDER':
         return '박람회 알림';
+      case 'EVENT_REMINDER':
+        return '이벤트 알림';
       case 'GENERAL':
         return '일반 알림';
       default:
