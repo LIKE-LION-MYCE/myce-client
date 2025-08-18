@@ -15,6 +15,8 @@ function NonMemberReservationCheckPage() {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const navigate = useNavigate();
 
   // 인증번호 발송
@@ -24,6 +26,7 @@ function NonMemberReservationCheckPage() {
       return;
     }
 
+    setIsSendingEmail(true);
     try {
       await sendVerificatiionEmail(VERIFICATION_TYPE.NONMEMBER_VERIFY, email);
       setIsCodeSent(true);
@@ -44,6 +47,8 @@ function NonMemberReservationCheckPage() {
     } catch (error) {
       console.error("인증번호 발송 실패:", error);
       alert("인증번호 발송에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -54,6 +59,7 @@ function NonMemberReservationCheckPage() {
       return;
     }
 
+    setIsVerifyingCode(true);
     try {
       await verifyVerificationEmail(
         VERIFICATION_TYPE.NONMEMBER_VERIFY,
@@ -65,6 +71,8 @@ function NonMemberReservationCheckPage() {
     } catch (error) {
       console.error("인증번호 검증 실패:", error);
       alert("인증번호가 올바르지 않습니다. 다시 확인해주세요.");
+    } finally {
+      setIsVerifyingCode(false);
     }
   };
 
@@ -132,15 +140,22 @@ function NonMemberReservationCheckPage() {
               />
               <button
                 type="button"
-                className={styles.sendCodeBtn}
+                className={`${styles.sendCodeBtn} ${isSendingEmail ? styles.loading : ''}`}
                 onClick={handleSendCode}
-                disabled={isEmailVerified || isCodeSent}
+                disabled={isEmailVerified || isCodeSent || isSendingEmail}
               >
-                {isEmailVerified
-                  ? "인증완료"
-                  : isCodeSent
-                  ? "발송완료"
-                  : "인증번호 발송"}
+                {isSendingEmail ? (
+                  <span className={styles.loadingContent}>
+                    <span className={styles.spinner}></span>
+                    발송 중...
+                  </span>
+                ) : isEmailVerified ? (
+                  "인증완료"
+                ) : isCodeSent ? (
+                  "발송완료"
+                ) : (
+                  "인증번호 발송"
+                )}
               </button>
             </div>
           </div>
@@ -159,11 +174,18 @@ function NonMemberReservationCheckPage() {
               {!isEmailVerified && isCodeSent && (
                 <button
                   type="button"
-                  className={styles.verifyBtn}
+                  className={`${styles.verifyBtn} ${isVerifyingCode ? styles.loading : ''}`}
                   onClick={handleVerifyCode}
-                  disabled={code.length !== 6}
+                  disabled={code.length !== 6 || isVerifyingCode}
                 >
-                  인증확인
+                  {isVerifyingCode ? (
+                    <span className={styles.loadingContent}>
+                      <span className={styles.spinner}></span>
+                      확인 중...
+                    </span>
+                  ) : (
+                    "인증확인"
+                  )}
                 </button>
               )}
             </div>
