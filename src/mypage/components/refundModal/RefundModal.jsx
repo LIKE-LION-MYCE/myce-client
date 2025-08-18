@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './RefundModal.module.css';
+import instance from '../../../api/lib/axios';
 
 const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
   const [refundInfo, setRefundInfo] = useState(null);
@@ -11,19 +12,10 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
   const getRefundPreview = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`/api/refund/reservation/${reservationId}/preview`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setRefundInfo(data);
-      } else {
-        throw new Error('환불 정보를 가져올 수 없습니다.');
-      }
+      const response = await instance.get(`/refund/reservation/${reservationId}/preview`);
+      setRefundInfo(response.data);
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || '환불 정보를 가져올 수 없습니다.');
       onClose();
     } finally {
       setLoading(false);
@@ -36,22 +28,12 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
     
     try {
       setProcessing(true);
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`/api/refund/reservation/${reservationId}?reason=${encodeURIComponent(reason)}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        alert('환불이 완료되었습니다.');
-        onRefundComplete();
-        onClose();
-      } else {
-        const errorText = await response.text();
-        throw new Error(errorText || '환불 처리 중 오류가 발생했습니다.');
-      }
+      await instance.post(`/refund/reservation/${reservationId}?reason=${encodeURIComponent(reason)}`);
+      alert('환불이 완료되었습니다.');
+      onRefundComplete();
+      onClose();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || '환불 처리 중 오류가 발생했습니다.');
     } finally {
       setProcessing(false);
     }
