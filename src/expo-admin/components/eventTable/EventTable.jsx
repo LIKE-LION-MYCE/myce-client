@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+// EventTable.jsx
+import React, { useState } from 'react';
 import styles from './EventTable.module.css';
 
 const fieldLabelMap = {
@@ -14,73 +14,139 @@ const fieldLabelMap = {
   contactEmail: '담당자 이메일',
 };
 
-const eventFields = [
-  'name',
-  'location',
-  'eventDate',
-  'startTime',
-  'endTime',
-  'description',
-];
-
-const managerFields = [
-  'contactName',
-  'contactPhone',
-  'contactEmail',
-];
+const eventFields = ['name', 'location', 'eventDate', 'startTime', 'endTime', 'description'];
+const managerFields = ['contactName', 'contactPhone', 'contactEmail'];
 
 function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate, hasPermission = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [errors, setErrors] = useState({}); // ✅ 필드별 에러 상태
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
       setEditingId(null);
       setEditForm(null);
+      setErrors({});
     } else {
       setExpandedId(row.id);
       setEditingId(null);
       setEditForm(null);
+      setErrors({});
     }
   };
 
-  const handleEditClick = (row) => {
+  const handleEditClick = (e, row) => {
+    e.stopPropagation();
     setEditingId(row.id);
     setEditForm(row);
+    setErrors({});
+  };
+
+  // 전화번호 자동 하이픈
+  const formatPhoneNumber = (value) => {
+    const onlyNums = String(value || '').replace(/[^0-9]/g, '');
+    if (onlyNums.startsWith('02')) {
+      if (onlyNums.length <= 2) return onlyNums;
+      if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+      if (onlyNums.length <= 9) return onlyNums.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+      return onlyNums.replace(/(\d{2})(\d{4})(\d{4}).*/, '$1-$2-$3');
+    }
+    if (onlyNums.length <= 3) return onlyNums;
+    if (onlyNums.length <= 6) return onlyNums.replace(/(\d{3})(\d{1,3})/, '$1-$2');
+    if (onlyNums.length <= 10) return onlyNums.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return onlyNums.replace(/(\d{3})(\d{4})(\d{4}).*/, '$1-$2-$3');
   };
 
   const handleChange = (e) => {
+    e.stopPropagation();
     const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+    setEditForm((prev) => ({
+      ...prev,
+      [name]: name === 'contactPhone' ? formatPhoneNumber(value) : value,
+    }));
+    setErrors((prev) => ({ ...prev, [name]: '' })); // 필드 수정 시 해당 에러 제거
   };
 
-  const handleSave = () => {
-    onUpdate(editForm);
-    // 수정 모드 종료 - 상세보기로 돌아감
+  // ✅ 유효성 검사 (EventRequest DTO와 동일)
+  const runValidation = () => {
+    const e = {};
+    const f = editForm || {};
+    const isBlank = (v) => !v || String(v).trim() === '';
+
+    // @NotBlank
+    if (isBlank(f.name)) e.name = '행사명을 입력해주세요.';
+    if (isBlank(f.location)) e.location = '장소를 입력해주세요.';
+    if (isBlank(f.description)) e.description = '행사 설명을 입력해주세요.';
+    if (isBlank(f.contactName)) e.contactName = '담당자 이름을 입력해주세요.';
+    if (isBlank(f.contactPhone)) e.contactPhone = '담당자 연락처를 입력해주세요.';
+    if (isBlank(f.contactEmail)) e.contactEmail = '담당자 이메일을 입력해주세요.';
+
+    // @NotNull
+    if (isBlank(f.eventDate)) e.eventDate = '행사 날짜를 입력해주세요.';
+    if (isBlank(f.startTime)) e.startTime = '시작 시간을 입력해주세요.';
+    if (isBlank(f.endTime)) e.endTime = '종료 시간을 입력해주세요.';
+
+    // 전화번호 패턴
+    if (!e.contactPhone && !/^[0-9-]+$/.test(f.contactPhone || '')) {
+      e.contactPhone = '올바른 전화번호 형식을 입력하세요. (숫자와 하이픈만 허용)';
+    }
+    // 이메일 형식
+    if (!e.contactEmail) {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRe.test(f.contactEmail || '')) {
+        e.contactEmail = '이메일 형식이 올바르지 않습니다.';
+      }
+    }
+    // 시간 범위 (start < end)
+    if (!e.startTime && !e.endTime && f.startTime && f.endTime) {
+      const [sh, sm] = f.startTime.split(':').map(Number);
+      const [eh, em] = f.endTime.split(':').map(Number);
+      if (!(sh * 60 + sm < eh * 60 + em)) {
+        e.endTime = '시작시간은 종료시간보다 빨라야 합니다.';
+      }
+    }
+    // 행사 날짜 박람회 기간 내 (존재할 때만)
+    const expoStart = expoStartDate ? expoStartDate.split('T')[0] : null;
+    const expoEnd = expoEndDate ? expoEndDate.split('T')[0] : null;
+    if (!e.eventDate && f.eventDate && (expoStart || expoEnd)) {
+      if (expoStart && f.eventDate < expoStart) {
+        e.eventDate = '행사 날짜는 박람회 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoEnd && f.eventDate > expoEnd) {
+        e.eventDate = '행사 날짜는 박람회 종료일과 같거나 이전이어야 합니다.';
+      }
+    }
+
+    return e;
+  };
+
+  const handleSave = (e) => {
+    e.stopPropagation();
+    const v = runValidation();
+    setErrors(v);
+    if (Object.values(v).some(Boolean)) return; // 에러 있으면 저장 중단
+    onUpdate?.(editForm);
     setEditingId(null);
     setEditForm(null);
+    setErrors({});
   };
 
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
-    onDelete(id);
+    onDelete?.(id);
     setExpandedId(null);
     setEditForm(null);
-    // 삭제 시에는 toast 띄우지 않음
+    setEditingId(null);
+    setErrors({});
   };
 
-  const handleCancel = () => {
-    // 원래 데이터로 복원하고 상세보기로 돌아감
+  const handleCancel = (e) => {
+    e.stopPropagation();
     setEditingId(null);
     setEditForm(null);
-  };
-
-  const handleDetailCancel = () => {
-    setExpandedId(null);
-    setEditingId(null);
-    setEditForm(null);
+    setErrors({});
   };
 
   const columns = [
@@ -111,10 +177,7 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
 
             return (
               <React.Fragment key={row.id}>
-                <tr
-                  className={styles.row}
-                  onClick={() => handleRowClick(row)}
-                >
+                <tr className={styles.row} onClick={() => handleRowClick(row)}>
                   {columns.map((col) => (
                     <td key={col.key} className={styles.td}>
                       {row[col.key]}
@@ -123,92 +186,104 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                 </tr>
 
                 {isExpanded && (
-                  <tr key={`detail-${row.id}`} className={styles.detailRow}>
+                  <tr className={styles.detailRow} onClick={(e) => e.stopPropagation()}>
                     <td colSpan={columns.length}>
                       <div className={styles.detailBox}>
-                        <button className={styles.closeBtn} onClick={handleDetailCancel}>
-                          ×
-                        </button>
                         {editingId === row.id && editForm ? (
                           <>
                             <div className={styles.detailGrid}>
-                          {/* 행사 정보 */}
-                          <div className={styles.column}>
-                            {eventFields.map((key) => {
-                              if (key === 'startTime') return null;
-                              if (key === 'endTime') {
-                                return (
-                                  <div key="eventTimeGroup" className={styles.detailItem}>
-                                    <div className={styles.detailLabel}>행사 시간</div>
-                                    <div className={styles.timeGroup}>
+                              {/* 행사 정보 */}
+                              <div className={styles.column}>
+                                {eventFields.map((key) => {
+                                  if (key === 'startTime') return null;
+                                  if (key === 'endTime') {
+                                    return (
+                                      <div key="eventTimeGroup" className={styles.detailItem}>
+                                        <div className={styles.detailLabel}>행사 시간</div>
+                                        <div className={styles.timeGroup}>
+                                          <input
+                                            type="time"
+                                            name="startTime"
+                                            value={editForm.startTime || ''}
+                                            onChange={handleChange}
+                                            className={styles.inputField}
+                                            aria-invalid={!!errors.startTime}
+                                          />
+                                          <span className={styles.tilde}>~</span>
+                                          <input
+                                            type="time"
+                                            name="endTime"
+                                            value={editForm.endTime || ''}
+                                            onChange={handleChange}
+                                            className={styles.inputField}
+                                            aria-invalid={!!errors.endTime}
+                                          />
+                                        </div>
+                                        {(errors.startTime || errors.endTime) && (
+                                          <p className={styles.errorText}>
+                                            {errors.startTime || errors.endTime}
+                                          </p>
+                                        )}
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
                                       <input
-                                        type="time"
-                                        name="startTime"
-                                        value={editForm.startTime || ''}
+                                        type={key === 'eventDate' ? 'date' : 'text'}
+                                        name={key}
+                                        value={editForm[key] || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
+                                        min={
+                                          key === 'eventDate' && expoStartDate
+                                            ? expoStartDate.split('T')[0]
+                                            : undefined
+                                        }
+                                        max={
+                                          key === 'eventDate' && expoEndDate
+                                            ? expoEndDate.split('T')[0]
+                                            : undefined
+                                        }
+                                        aria-invalid={!!errors[key]}
                                       />
-                                      <span className={styles.tilde}>~</span>
-                                      <input
-                                        type="time"
-                                        name="endTime"
-                                        value={editForm.endTime || ''}
-                                        onChange={handleChange}
-                                        className={styles.inputField}
-                                      />
+                                      {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
                                     </div>
-                                  </div>
-                                );
-                              }
-
-                              return (
-                                <div key={key} className={styles.detailItem}>
-                                  <div className={styles.detailLabel}>
-                                    {fieldLabelMap[key]}
-                                  </div>
-                                  <input
-                                    type={key === 'eventDate' ? 'date' : 'text'}
-                                    name={key}
-                                    value={editForm[key] || ''}
-                                    onChange={handleChange}
-                                    className={styles.inputField}
-                                    min={key === 'eventDate' && expoStartDate ? expoStartDate.split('T')[0] : undefined}
-                                    max={key === 'eventDate' && expoEndDate ? expoEndDate.split('T')[0] : undefined}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* 담당자 정보 */}
-                          <div className={styles.column}>
-                            {managerFields.map((key) => (
-                              <div key={key} className={styles.detailItem}>
-                                <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]}
-                                </div>
-                                <input
-                                  name={key}
-                                  value={editForm[key] || ''}
-                                  onChange={handleChange}
-                                  className={styles.inputField}
-                                />
+                                  );
+                                })}
                               </div>
-                            ))}
-                          </div>
+
+                              {/* 담당자 정보 */}
+                              <div className={styles.column}>
+                                {managerFields.map((key) => (
+                                  <div key={key} className={styles.detailItem}>
+                                    <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                    <input
+                                      name={key}
+                                      value={editForm[key] || ''}
+                                      onChange={handleChange}
+                                      className={styles.inputField}
+                                      aria-invalid={!!errors[key]}
+                                      placeholder={
+                                        key === 'contactPhone' ? '예: 010-1234-5678' : undefined
+                                      }
+                                      inputMode={key === 'contactPhone' ? 'numeric' : undefined}
+                                    />
+                                    {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
-                            <button className={styles.editBtn} onClick={handleSave}>
-                              저장
-                            </button>
-                            <button className={styles.cancelBtn} onClick={handleCancel}>
-                              취소
-                            </button>
+                              <button className={styles.editBtn} onClick={handleSave}>저장</button>
+                              <button className={styles.cancelBtn} onClick={handleCancel}>취소</button>
                             </div>
                           </>
                         ) : (
-                          // 읽기 전용 상세 뷰
                           <>
                             <div className={styles.detailGrid}>
                               <div className={styles.column}>
@@ -218,24 +293,18 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                                     return (
                                       <div key="eventTimeGroup" className={styles.detailItem}>
                                         <div className={styles.detailLabel}>행사 시간</div>
-                                        <div className={styles.detailValue}>
-                                          {row.startTime && row.endTime 
+                                        <div className={styles.valueText}>
+                                          {row.startTime && row.endTime
                                             ? `${row.startTime} ~ ${row.endTime}`
-                                            : '-'
-                                          }
+                                            : '-'}
                                         </div>
                                       </div>
                                     );
                                   }
-
                                   return (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
-                                      <div className={styles.detailValue}>
-                                        {row[key] || '-'}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                      <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   );
                                 })}
@@ -244,25 +313,25 @@ function EventTable({ data = [], onUpdate, onDelete, expoStartDate, expoEndDate,
                               <div className={styles.column}>
                                 {managerFields.map((key) => (
                                   <div key={key} className={styles.detailItem}>
-                                    <div className={styles.detailLabel}>
-                                      {fieldLabelMap[key]}
-                                    </div>
-                                    <div className={styles.detailValue}>
-                                      {row[key] || '-'}
-                                    </div>
+                                    <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                    <div className={styles.valueText}>{row[key] || '-'}</div>
                                   </div>
                                 ))}
                               </div>
                             </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               {hasPermission && onUpdate && (
-                                <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                <button className={styles.editBtn} onClick={(e) => handleEditClick(e, row)}>
                                   수정
                                 </button>
                               )}
                               {hasPermission && onDelete && (
-                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={(e) => handleDeleteClick(e, row.id)}
+                                >
                                   삭제
                                 </button>
                               )}
