@@ -57,15 +57,15 @@ function PlatformAdminInfoBox() {
     };
 
     return (
-        <div className={styles.expoInfoBoxContainer} ref={dropdownRef}>
+        <div className={styles.platformInfoBoxContainer} ref={dropdownRef}>
             <button
-                className={styles.expoInfoBox}
+                className={styles.platformInfoBox}
                 onClick={handleProfileClick}
                 type="button"
                 aria-expanded={isDropdownOpen}
                 aria-haspopup="menu"
             >
-                <span className={styles.expoName} title = {memberInfo?.name || "관리자 닉네임"}>
+                <span className={styles.adminName} title = {memberInfo?.name || "관리자 닉네임"}>
                     {memberInfo?.name || "관리자 닉네임"}
                 </span>
             </button>
