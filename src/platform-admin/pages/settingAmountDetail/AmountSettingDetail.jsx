@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './AmountSettingDetail.module.css';
 import AmountSettingDetailTable from '../../components/amountSettingDetailTable/AmountSettingDetailTable';
 import Pagination from '../../../common/components/pagination/Pagination';
+import AdFeeSettingTable from '../../components/adFeeSettingTable/AdFeeSettingTable';
+import ExpoFeeSettingTable from '../../components/expoFeeSettingTable/ExpoFeeSettingTable';
+import RefundFeeSettingTable from '../../components/refundFeeSettingTable/refundFeeSettingTable';
 
 const cardData = [
   {
@@ -14,11 +17,6 @@ const cardData = [
     title: '박람회 등록비',
     name: 'expoRegistrationFee',
     desc: '박람회 등록비 정산 금액을 설정합니다',
-  },
-  {
-    title: '박람회 환불 수수료',
-    name: 'expoRefundFee',
-    desc: '박람회 참가비 환불 시 적용되는 수수료입니다',
   },
   {
     title: '사용자 환불 수수료',
@@ -97,6 +95,15 @@ export default function AmountSettingDetail() {
   };
 
   return (
+    name === cardData[0].name ?
+    <AdFeeSettingTable card={cardData[0]} navigate={navigate}/>
+    :
+    name === cardData[1].name ?
+    <ExpoFeeSettingTable card={cardData[1]} navigate={navigate}/>
+    :
+    name === cardData[2].name ?
+    <RefundFeeSettingTable card={cardData[2]} navigate={navigate}/>
+    :
     <main className={styles.container}>
       <div className={styles.headerBox}>
         <div className={styles.titleWithBack}>
