@@ -82,28 +82,33 @@
 
 /* 상태 뱃지 (상세 페이지와 동일한 스타일) */
 .statusBadge {
+  margin-left : 10px;
+  padding: 4px 10px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: 400;
-  padding: 4px 10px 6px 10px;
-  border-radius: 20px;
-  color: white;
+  font-weight: 500;
+  display: inline-block;
   white-space: nowrap;
 }
 
 /* 상태별 색상 (상세 페이지와 정확히 동일) */
 .pendingApproval {
-  background-color: #f0ad4e; /* 승인_대기 - 주황색 */
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .rejected {
-  background-color: #d9534f; /* 승인_거절 - 빨간색 */
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .pendingPayment {
-  background-color: #5cb85c; /* 결제_대기 - 녹색 */
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c; /* 진한 주황 */
 }
 
 .defaultStatus {
-  background-color: #6c757d; /* 취소_완료 - 회색 */
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
