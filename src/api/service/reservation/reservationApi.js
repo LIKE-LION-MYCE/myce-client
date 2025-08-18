@@ -65,7 +65,7 @@ export const deleteReservationPending = async (reservationId) => {
 
 // 비회원 예매 조회 (이메일 + 예매번호)
 export const getNonMemberReservation = async (email, reservationCode) => {
-  const { data } = await instance.get("/reservations/non-member", {
+  const { data } = await instance.get("/reservations/guest", {
     params: {
       email,
       reservationCode

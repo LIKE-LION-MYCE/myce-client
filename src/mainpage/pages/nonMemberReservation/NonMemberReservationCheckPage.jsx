@@ -94,7 +94,7 @@ function NonMemberReservationCheckPage() {
       );
       // 비회원 예매 상세 페이지로 이동하면서 데이터 전달
       navigate(
-        `/non-member/reservation/${reservationData.reservationInfo.reservationId}`,
+        `/guest-reservation/detail/${reservationData.reservationInfo.reservationId}`,
         {
           state: { reservationData },
         }
