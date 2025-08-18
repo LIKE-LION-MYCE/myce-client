@@ -24,7 +24,7 @@ const NonMemberReservationDetailPage = () => {
       // 데이터가 없으면 이전 페이지로 이동
       setError('예매 정보를 찾을 수 없습니다.');
       setTimeout(() => {
-        navigate('/non-member/reservation-check');
+        navigate('/guest-reservation');
       }, 2000);
     }
   }, [location.state, navigate]);

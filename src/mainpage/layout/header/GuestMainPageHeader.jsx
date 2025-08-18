@@ -22,7 +22,7 @@ const GuestMainPageHeader = () => {
 
   const goToStudy = () => {
     console.log('예매 확인 페이지로 이동');
-    navigate('/non-member'); // 예매 확인 페이지로 이동
+    navigate('/guest-reservation'); // 예매 확인 페이지로 이동
   };
 
   return (

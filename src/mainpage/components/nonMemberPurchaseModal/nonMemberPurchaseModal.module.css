@@ -163,6 +163,46 @@
   color: #6c757d;
 }
 
+.sendCodeBtn.loading, .verifyBtn.loading {
+  background-color: #4a4a4a;
+  color: #fff;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 로딩 애니메이션 */
+.loadingContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 버튼 로딩 상태에서 텍스트 애니메이션 */
+.loading .loadingContent {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .summary {
   display: flex;
   justify-content: space-between;

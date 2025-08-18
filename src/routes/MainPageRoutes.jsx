@@ -35,9 +35,9 @@ function MainPageRoutes() {
         <Route path="expo-apply2" element={<ExpoApply2 />} />
         <Route path="ad-apply" element={<AdApply />} />
         <Route path="chat" element={<Chat />} />
-        <Route path="non-member" element={<NonMemberReservationCheckPage />} />
+        <Route path="guest-reservation" element={<NonMemberReservationCheckPage />} />
         <Route
-          path="non-member/reservation/:id"
+          path="guest-reservation/detail/:id"
           element={<NonMemberReservationDetailPage />}
         />
       </Route>
