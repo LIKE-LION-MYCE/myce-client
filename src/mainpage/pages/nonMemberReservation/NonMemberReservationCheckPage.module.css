@@ -6,32 +6,22 @@
   box-shadow: 0 6px 32px rgba(0,0,0,0.08);
   padding: 38px 30px 32px 30px;
 }
-.tabRow {
-  display: flex;
-  border-bottom: 2px solid #eee;
-  margin-bottom: 32px;
-}
-.tabRow button {
-  flex: 1;
-  font-size: 22px;
-  font-weight: 700;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  padding-bottom: 12px;
-  color: #444;
-  cursor: pointer;
-  transition: border-color 0.18s;
-}
-.tabRow .active {
-  border-bottom: 3px solid #222;
-  color: #111;
-}
 .formSection {
-  margin-top: 18px;
   display: flex;
   flex-direction: column;
   gap: 15px; /* 각 입력 영역(라벨+입력창) 간 간격 */
+}
+
+.emailGuide {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
 }
 .label {
   font-size: 15px;
@@ -89,6 +79,36 @@
 }
 .sendCodeBtn:hover {
   background: #111;
+}
+
+.sendCodeBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.verifyBtn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 18px;
+  height: 43px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.16s;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.verifyBtn:hover {
+  background: #2563eb;
+}
+
+.verifyBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .codeInputRow {
