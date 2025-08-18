@@ -24,6 +24,7 @@
           }
         }catch(error){
           console.log(error);
+          setHasExpoAccess(false);
         }
       }
 
