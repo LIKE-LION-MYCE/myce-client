@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./NonMemberReservationCheckPage.module.css";
 import { useNavigate } from "react-router-dom";
 import { sendVerificatiionEmail, verifyVerificationEmail, VERIFICATION_TYPE } from "../../../api/service/auth/AuthService";
+import { getNonMemberReservation } from "../../../api/service/reservation/reservationApi";
 
 function NonMemberReservationCheckPage() {
   const [reservationNum, setReservationNum] = useState("");
@@ -60,7 +61,7 @@ function NonMemberReservationCheckPage() {
   };
 
   // 예매 확인 처리 (이메일 인증 + 예매번호)
-  const handleCheck = () => {
+  const handleCheck = async () => {
     if (!isEmailVerified) {
       alert("이메일 인증을 먼저 완료해주세요.");
       return;
@@ -70,7 +71,20 @@ function NonMemberReservationCheckPage() {
       return;
     }
 
-    navigate(`/non-member/reservation/${reservationNum}`);
+    try {
+      const reservationData = await getNonMemberReservation(email, reservationNum);
+      // 비회원 예매 상세 페이지로 이동하면서 데이터 전달
+      navigate(`/non-member/reservation/${reservationData.reservationInfo.reservationId}`, {
+        state: { reservationData }
+      });
+    } catch (error) {
+      console.error("예매 조회 실패:", error);
+      if (error.response?.status === 404) {
+        alert("입력하신 이메일과 예매번호에 해당하는 예매 정보를 찾을 수 없습니다.");
+      } else {
+        alert("예매 조회 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    }
   };
 
   // 타이머 포맷팅 (MM:SS)
