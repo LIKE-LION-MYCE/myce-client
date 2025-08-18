@@ -226,3 +226,15 @@
 .half {
   flex: 0 0 calc(50% - 10px);
 }
+
+.loadingText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  padding : 20px;
+  margin-top : 20px;
+}

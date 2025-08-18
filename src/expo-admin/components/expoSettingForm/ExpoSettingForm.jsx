@@ -40,8 +40,7 @@ function ExpoSettingForm() {
       categoryIds: [],
       description: '',
       isPremium: false,
-      thumbnailUrl:
-        'https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg',
+      thumbnailUrl: '로딩중', // ✅ 기본은 로딩중
     };
   }
 
@@ -64,9 +63,7 @@ function ExpoSettingForm() {
         categoryIds: data.categoryIds || [],
         description: data.description || '',
         isPremium: data.isPremium || false,
-        thumbnailUrl:
-          data.thumbnailUrl ||
-          'https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg',
+        thumbnailUrl: data.thumbnailUrl || '로딩중', // ✅ fallback도 로딩중
       });
       setExpoStatus(data.status || '');
     } catch (error) {
@@ -121,12 +118,10 @@ function ExpoSettingForm() {
     setTimeout(() => setShowToast(false), 2000);
   };
 
-  // 수정 버튼 표시 여부 (게시 대기 상태에서만 노출)
   const canShowEditButton = () => {
     return perm?.isExpoDetailUpdate && expoStatus === 'PENDING_PUBLISH';
   };
 
-  // 게시 대기 상태: 설명만 수정 가능
   const canEditOnlyDescription = () => expoStatus === 'PENDING_PUBLISH';
 
   const handleEditClick = () => {
@@ -138,12 +133,10 @@ function ExpoSettingForm() {
       let dataToSend;
 
       if (canEditOnlyDescription()) {
-        // 게시 대기 상태: 설명만 수정 가능
         dataToSend = {
           description: form.description,
         };
       } else {
-        // (향후 확장) 다른 상태: 전체 수정 가능 시
         dataToSend = {
           categoryIds: form.categoryIds.map((id) => Number(id)),
           title: form.title,
@@ -180,7 +173,6 @@ function ExpoSettingForm() {
     setIsEditing(false);
   };
 
-  // 토글 활성화 여부: 편집 중이면서 "설명만 수정" 상황이 아닐 때만 토글 가능
   const premiumToggleDisabled = !isEditing || canEditOnlyDescription();
 
   return (
@@ -192,10 +184,12 @@ function ExpoSettingForm() {
         <div className={styles.profileWrapper}>
           {isEditing && !canEditOnlyDescription() ? (
             <ImageUpload
-              initialImageUrl={form.thumbnailUrl}
+              initialImageUrl={form.thumbnailUrl === '로딩중' ? '' : form.thumbnailUrl}
               onUploadSuccess={handleImageUploadSuccess}
               onUploadError={handleImageUploadError}
             />
+          ) : form.thumbnailUrl === '로딩중' ? (
+            <span className={styles.loadingText}>로딩중</span>
           ) : (
             <img src={form.thumbnailUrl} alt="포스터" className={styles.profileImage} />
           )}
@@ -214,7 +208,7 @@ function ExpoSettingForm() {
             </div>
           </div>
 
-          {/* 🔔 프리미엄 부스 상위 노출: 토글로 표시 (읽기 전에는 disabled) */}
+          {/* 프리미엄 부스 */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>프리미엄 부스 상위 노출</label>
             <div className={styles.premiumRow}>
@@ -229,7 +223,7 @@ function ExpoSettingForm() {
             </div>
           </div>
 
-          {/* 기본 정보 입력들 */}
+          {/* 기본 입력들 */}
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
             <input
