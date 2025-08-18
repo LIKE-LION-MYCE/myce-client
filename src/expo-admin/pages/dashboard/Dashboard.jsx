@@ -48,8 +48,8 @@ function Dashboard() {
   const [customHourlyData, setCustomHourlyData] = useState(null);
   const [isCustomCheckinMode, setIsCustomCheckinMode] = useState(false);
   
-  // 캐시 삭제 버튼 표시 여부
-  const [showClearCacheBtn, setShowClearCacheBtn] = useState(true);
+  // 캐시 삭제 버튼 표시 여부 -> 필요시 true로 변경
+  const [showClearCacheBtn, setShowClearCacheBtn] = useState(false);
 
   const columns = [
     { key: 'ticketType', header: '티켓이름' },
