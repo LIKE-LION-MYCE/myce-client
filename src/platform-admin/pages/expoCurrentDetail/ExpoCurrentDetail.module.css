@@ -149,3 +149,20 @@
   background-color: #f9f9f9;
   border-color: #999;
 }
+
+.infoBtnShort {
+  padding: 10px 30px;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+  
+.infoBtnShort:hover {
+  background-color: #f9f9f9;
+  border-color: #999;
+}
