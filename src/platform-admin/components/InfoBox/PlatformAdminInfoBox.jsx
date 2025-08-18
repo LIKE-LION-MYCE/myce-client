@@ -66,7 +66,7 @@ function PlatformAdminInfoBox() {
                 aria-haspopup="menu"
             >
                 <span className={styles.adminName} title = {memberInfo?.name || "관리자 닉네임"}>
-                    {memberInfo?.name || "관리자 닉네임"}
+                    {memberInfo?.name || "-"}
                 </span>
             </button>
 
