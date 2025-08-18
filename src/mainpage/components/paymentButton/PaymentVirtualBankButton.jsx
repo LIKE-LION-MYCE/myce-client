@@ -21,6 +21,7 @@ function PaymentVirtualBankButton({
   reserverInfos,
 }) {
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -80,6 +81,7 @@ function PaymentVirtualBankButton({
         },
         async function (rsp) {
           if (rsp.success) {
+            setIsVerifying(true);
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
               // 새로운 통합 API 사용
@@ -99,6 +101,7 @@ function PaymentVirtualBankButton({
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
+              setIsVerifying(false);
               if (res.status === 200 && res.data.status === "PENDING") {
                 alert(
                   "결제 검증 성공! 예매가 완료되었습니다. 금일까지 가상 계좌에 입금해주세요."
@@ -110,6 +113,7 @@ function PaymentVirtualBankButton({
                 );
               }
             } catch (err) {
+              setIsVerifying(false);
               alert("결제 처리 중 오류가 발생했습니다.");
               // reservation 데이터 삭제
               await deleteReservationPending(reservationId);
@@ -142,13 +146,35 @@ function PaymentVirtualBankButton({
   };
 
   return (
-    <button
-      onClick={handlePay}
-      className={styles.paymentButton}
-      disabled={loading} // 이 부분을 추가
-    >
-      {loading ? "처리 중..." : "가상 계좌"}
-    </button>
+    <>
+      <button
+        onClick={handlePay}
+        className={`${styles.paymentButton} ${loading ? styles.loading : ''}`}
+        disabled={loading}
+      >
+        {loading ? (
+          <span className={styles.loadingContent}>
+            <span className={styles.spinner}></span>
+            처리 중...
+          </span>
+        ) : (
+          "가상 계좌"
+        )}
+      </button>
+      
+      {isVerifying && (
+        <div className={styles.verificationOverlay}>
+          <div className={styles.verificationModal}>
+            <div className={styles.verificationSpinner}></div>
+            <div className={styles.verificationTitle}>가상계좌 발급 중</div>
+            <div className={styles.verificationMessage}>
+              가상계좌 발급이 완료되었습니다.<br/>
+              서버에서 결제 내역을 확인하고 있습니다...
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

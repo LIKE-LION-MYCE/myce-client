@@ -22,6 +22,7 @@ function ReservationPaymentCardButton({
   reserverInfos,
 }) {
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -82,6 +83,7 @@ function ReservationPaymentCardButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
+            setIsVerifying(true); // 결제 검증 시작
             try {
               // 새로운 통합 API 사용
               const res = await instance.post("/payment/reservation/verify", {
@@ -100,6 +102,7 @@ function ReservationPaymentCardButton({
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
+              setIsVerifying(false); // 검증 완료
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
                 navigate(`/reservation-success/${reservationId}`);
@@ -109,6 +112,7 @@ function ReservationPaymentCardButton({
                 );
               }
             } catch (err) {
+              setIsVerifying(false); // 검증 실패시도 오버레이 숨김
               // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황
               // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 함.
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
@@ -159,14 +163,35 @@ function ReservationPaymentCardButton({
   };
 
   return (
-    <button
-      onClick={handlePay}
-      className={styles.paymentButton}
-      disabled={loading}
-    >
-      {/* 로딩 중일 때 버튼 내용을 변경하여 사용자에게 상태를 알려주고, 중복 클릭을 방지합니다. */}
-      {loading ? "결제 진행 중..." : "카드 결제"}
-    </button>
+    <>
+      <button
+        onClick={handlePay}
+        className={`${styles.paymentButton} ${loading ? styles.loading : ''}`}
+        disabled={loading}
+      >
+        {loading ? (
+          <span className={styles.loadingContent}>
+            <span className={styles.spinner}></span>
+            결제 진행 중...
+          </span>
+        ) : (
+          "카드 결제"
+        )}
+      </button>
+      
+      {isVerifying && (
+        <div className={styles.verificationOverlay}>
+          <div className={styles.verificationModal}>
+            <div className={styles.verificationSpinner}></div>
+            <div className={styles.verificationTitle}>결제 검증 중</div>
+            <div className={styles.verificationMessage}>
+              결제가 완료되었습니다.<br/>
+              서버에서 결제 내역을 확인하고 있습니다...
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
