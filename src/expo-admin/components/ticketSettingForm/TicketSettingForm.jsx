@@ -179,93 +179,69 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
     return cands.sort()[cands.length - 1];
   }, [expoStartDate, form.saleStartDate]);
 
-  // ============== 유효성 검사 (백엔드 DTO 매칭) ==============
+  // ============== 유효성 검사(모든 에러 한 번에) ==============
   const isBlank = (s) => !s || String(s).trim() === '';
 
   const runValidation = () => {
     const e = {};
 
-    // 왼쪽 컬럼 순서(이름 → 타입 → 설명)
+    // 왼쪽 컬럼: 이름/타입/설명 (각각 독립적으로 검사)
     if (isBlank(form.name)) e.name = '티켓 이름은 필수입니다.';
     else if (form.name.length > 100) e.name = '티켓 이름은 100자 이하여야 합니다.';
 
-    if (isBlank(e.name)) {
-      if (isBlank(form.type)) e.type = '티켓 타입은 필수입니다.';
-    }
+    if (isBlank(form.type)) e.type = '티켓 타입은 필수입니다.';
 
-    if (isBlank(e.name) && isBlank(e.type)) {
-      if (isBlank(form.description)) e.description = '티켓 설명은 필수입니다.';
-    }
+    if (isBlank(form.description)) e.description = '티켓 설명은 필수입니다.';
 
-    // 오른쪽 컬럼 순서(가격 → 수량 → 판매기간 → 사용기간)
-    if (isBlank(e.name) && isBlank(e.type) && isBlank(e.description)) {
-      if (form.price === '' || form.price === null) e.price = '티켓 가격은 필수입니다.';
-      else if (isNaN(Number(form.price))) e.price = '가격은 숫자여야 합니다.';
-      else if (Number(form.price) < 0) e.price = '가격은 0원 이상이어야 합니다.';
-    }
+    // 오른쪽: 가격/수량
+    if (form.price === '' || form.price === null) e.price = '티켓 가격은 필수입니다.';
+    else if (isNaN(Number(form.price))) e.price = '가격은 숫자여야 합니다.';
+    else if (Number(form.price) < 0) e.price = '가격은 0원 이상이어야 합니다.';
 
-    if (isBlank(e.name) && isBlank(e.type) && isBlank(e.description) && isBlank(e.price)) {
-      if (form.totalQuantity === '' || form.totalQuantity === null)
-        e.totalQuantity = '티켓 수량은 필수입니다.';
-      else if (isNaN(Number(form.totalQuantity)))
-        e.totalQuantity = '티켓 수량은 숫자여야 합니다.';
-      else if (Number(form.totalQuantity) < 1)
-        e.totalQuantity = '티켓 수량은 1장 이상이어야 합니다.';
-    }
+    if (form.totalQuantity === '' || form.totalQuantity === null)
+      e.totalQuantity = '티켓 수량은 필수입니다.';
+    else if (isNaN(Number(form.totalQuantity)))
+      e.totalQuantity = '티켓 수량은 숫자여야 합니다.';
+    else if (Number(form.totalQuantity) < 1)
+      e.totalQuantity = '티켓 수량은 1장 이상이어야 합니다.';
 
-    if (
-      isBlank(e.name) &&
-      isBlank(e.type) &&
-      isBlank(e.description) &&
-      isBlank(e.price) &&
-      isBlank(e.totalQuantity)
-    ) {
-      if (isBlank(form.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
-      if (isBlank(form.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
+    // 판매기간: 둘 다 필수
+    if (isBlank(form.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
+    if (isBlank(form.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
 
-      if (isBlank(e.saleStartDate) && isBlank(e.saleEndDate)) {
-        if (form.saleEndDate < form.saleStartDate) {
-          e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
-        }
-        // 게시기간 제약(있을 때만)
-        if (displayStartDate && form.saleStartDate && form.saleStartDate < displayStartDate) {
-          e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
-        }
-        if (displayEndDate && form.saleStartDate && form.saleStartDate > displayEndDate) {
-          e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
-        }
-        if (displayEndDate && form.saleEndDate && form.saleEndDate > displayEndDate) {
-          e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
-        }
+    // 판매기간 제약(두 값이 있을 때만 비교)
+    if (!e.saleStartDate && !e.saleEndDate && form.saleStartDate && form.saleEndDate) {
+      if (form.saleEndDate < form.saleStartDate) {
+        e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
+      }
+      if (displayStartDate && form.saleStartDate < displayStartDate) {
+        e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
+      }
+      if (displayEndDate && form.saleStartDate > displayEndDate) {
+        e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
+      }
+      if (displayEndDate && form.saleEndDate > displayEndDate) {
+        e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
       }
     }
 
-    if (
-      isBlank(e.name) &&
-      isBlank(e.type) &&
-      isBlank(e.description) &&
-      isBlank(e.price) &&
-      isBlank(e.totalQuantity) &&
-      isBlank(e.saleStartDate) &&
-      isBlank(e.saleEndDate)
-    ) {
-      if (isBlank(form.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
-      if (isBlank(form.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
+    // 사용기간: 둘 다 필수
+    if (isBlank(form.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
+    if (isBlank(form.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
 
-      if (isBlank(e.useStartDate) && isBlank(e.useEndDate)) {
-        if (form.useEndDate < form.useStartDate) {
-          e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
-        }
-        if (form.useStartDate < form.saleStartDate) {
-          e.useStartDate = '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
-        }
-        // 행사기간 제약(있을 때만)
-        if (expoStartDate && form.useStartDate && form.useStartDate < expoStartDate) {
-          e.useStartDate = '사용 시작일은 행사 시작일과 같거나 이후여야 합니다.';
-        }
-        if (expoEndDate && form.useEndDate && form.useEndDate > expoEndDate) {
-          e.useEndDate = '사용 종료일은 행사 종료일과 같거나 이전이어야 합니다.';
-        }
+    // 사용기간 제약(두 값이 있을 때만 비교)
+    if (!e.useStartDate && !e.useEndDate && form.useStartDate && form.useEndDate) {
+      if (form.useEndDate < form.useStartDate) {
+        e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
+      }
+      if (form.saleStartDate && form.useStartDate < form.saleStartDate) {
+        e.useStartDate = '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoStartDate && form.useStartDate < expoStartDate) {
+        e.useStartDate = '사용 시작일은 행사 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoEndDate && form.useEndDate > expoEndDate) {
+        e.useEndDate = '사용 종료일은 행사 종료일과 같거나 이전이어야 합니다.';
       }
     }
 
@@ -299,7 +275,6 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
       focusFirstError(e);
       return;
     }
-
     const payload = {
       ...form,
       price: form.price === '' ? '' : Number(form.price),

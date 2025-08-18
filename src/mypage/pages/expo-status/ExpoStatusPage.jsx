@@ -94,11 +94,11 @@ const ExpoStatusPage = () => {
     return statusClassMap[status] || '';
   };
 
-  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 승인완료 제외)
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
   const canViewPaymentInfo = (statusKey) => {
     const excludedStatuses = [
       'PENDING_APPROVAL', // 승인대기
-      'PENDING_PAYMENT'   // 승인완료 
+      'PENDING_PAYMENT'   // 결제대기 
     ];
     return !excludedStatuses.includes(statusKey);
   };

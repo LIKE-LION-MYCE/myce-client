@@ -10,6 +10,7 @@ export default function NotificationModal({ onClose }) {
   const [loading, setLoading] = useState(true);
   const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('general'); // 'general' 또는 'status'
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,6 +65,12 @@ export default function NotificationModal({ onClose }) {
       case 'QR_ISSUED':
         navigate(`/mypage/reservation/${targetId}`);
         break;
+      case 'EXPO_STATUS':
+        navigate(`/mypage/expo-status/${targetId}`);
+        break;
+      case 'AD_STATUS':
+        navigate(`/mypage/ads-status/${targetId}`);
+        break;
       default:
         console.warn('알 수 없는 알림 타입:', targetType);
     }
@@ -78,7 +85,12 @@ export default function NotificationModal({ onClose }) {
       case 'QR_ISSUED':
         return { icon: '🎫', color: '#10b981' };
       case 'PAYMENT_COMPLETE':
+      case 'RESERVATION_CONFIRM':
         return { icon: '💳', color: '#3b82f6' };
+      case 'EXPO_STATUS_CHANGE':
+        return { icon: '🏢', color: '#ef4444' };
+      case 'AD_STATUS_CHANGE':
+        return { icon: '📢', color: '#f59e0b' };
       default:
         return { icon: '📢', color: '#6b7280' };
     }
@@ -105,7 +117,38 @@ export default function NotificationModal({ onClose }) {
     }
   };
 
-  const hasUnreadNotifications = notifications.some(notification => !notification.isRead);
+  // 알림을 일반/상태변경으로 분류
+  const getFilteredNotifications = () => {
+    const statusChangeTypes = ['EXPO_STATUS_CHANGE', 'AD_STATUS_CHANGE'];
+    
+    if (activeTab === 'status') {
+      return notifications.filter(notification => 
+        statusChangeTypes.includes(notification.type)
+      );
+    } else {
+      return notifications.filter(notification => 
+        !statusChangeTypes.includes(notification.type)
+      );
+    }
+  };
+
+  const filteredNotifications = getFilteredNotifications();
+  const hasUnreadNotifications = filteredNotifications.some(notification => !notification.isRead);
+
+  // 각 탭별 읽지 않은 알림 수
+  const getUnreadCount = (tabType) => {
+    const statusChangeTypes = ['EXPO_STATUS_CHANGE', 'AD_STATUS_CHANGE'];
+    
+    if (tabType === 'status') {
+      return notifications.filter(n => 
+        statusChangeTypes.includes(n.type) && !n.isRead
+      ).length;
+    } else {
+      return notifications.filter(n => 
+        !statusChangeTypes.includes(n.type) && !n.isRead
+      ).length;
+    }
+  };
 
   const formatTimeAgo = (createdAt) => {
     const now = new Date();
@@ -120,6 +163,27 @@ export default function NotificationModal({ onClose }) {
     
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays}일 전`;
+  };
+
+  // 상태 텍스트에 하이라이트 적용
+  const highlightStatusText = (content) => {
+    const statusKeywords = [
+      '승인 대기', '승인 완료', '결제 대기', '게시 대기', '게시 중', 
+      '게시 종료', '정산 요청', '종료됨', '승인 거절', '취소 완료',
+      '취소 대기', '승인됨', '거절됨', '완료됨'
+    ];
+    
+    let highlightedContent = content;
+    
+    statusKeywords.forEach(keyword => {
+      const regex = new RegExp(`(${keyword})`, 'g');
+      highlightedContent = highlightedContent.replace(
+        regex, 
+        `<span class="${styles.statusHighlight}">$1</span>`
+      );
+    });
+    
+    return highlightedContent;
   };
 
   return (
@@ -142,13 +206,38 @@ export default function NotificationModal({ onClose }) {
           </button>
         </div>
       </div>
+      
+      {/* 탭 네비게이션 */}
+      <div className={styles.tabNavigation}>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'general' ? styles.active : ''}`}
+          onClick={() => setActiveTab('general')}
+        >
+          일반 알림
+          {getUnreadCount('general') > 0 && (
+            <span className={styles.tabBadge}>{getUnreadCount('general')}</span>
+          )}
+        </button>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'status' ? styles.active : ''}`}
+          onClick={() => setActiveTab('status')}
+        >
+          관리자 알림
+          {getUnreadCount('status') > 0 && (
+            <span className={styles.tabBadge}>{getUnreadCount('status')}</span>
+          )}
+        </button>
+      </div>
+      
       <ul className={styles.notificationList}>
         {loading ? (
           <li className={styles.loadingItem}>알림을 불러오는 중...</li>
-        ) : notifications.length === 0 ? (
-          <li className={styles.emptyItem}>알림이 없습니다.</li>
+        ) : filteredNotifications.length === 0 ? (
+          <li className={styles.emptyItem}>
+            {activeTab === 'general' ? '일반 알림이 없습니다.' : '관리자 알림이 없습니다.'}
+          </li>
         ) : (
-          notifications.map((notification) => {
+          filteredNotifications.map((notification) => {
             const iconInfo = getNotificationIcon(notification.type);
             return (
               <li 
@@ -165,13 +254,21 @@ export default function NotificationModal({ onClose }) {
                 </div>
                 <div className={styles.notificationContent}>
                   <div className={styles.notificationTitle}>{notification.title}</div>
-                  <div className={styles.notificationDesc}>{notification.content}</div>
+                  <div 
+                    className={styles.notificationDesc}
+                    dangerouslySetInnerHTML={{ 
+                      __html: highlightStatusText(notification.content) 
+                    }}
+                  />
                   <div className={styles.notificationMeta}>
                     <span className={styles.typeBadge}>
                       {notification.type === 'EXPO_REMINDER' ? '박람회' : 
                        notification.type === 'EVENT_REMINDER' ? '행사' : 
                        notification.type === 'QR_ISSUED' ? 'QR발급' : 
-                       notification.type === 'PAYMENT_COMPLETE' ? '결제완료' : '알림'}
+                       notification.type === 'PAYMENT_COMPLETE' ? '결제완료' : 
+                       notification.type === 'RESERVATION_CONFIRM' ? '예매확정' :
+                       notification.type === 'EXPO_STATUS_CHANGE' ? '박람회' :
+                       notification.type === 'AD_STATUS_CHANGE' ? '광고' : '알림'}
                     </span>
                     <span className={styles.timeAgo}>{formatTimeAgo(notification.createdAt)}</span>
                     {!notification.isRead && <span className={styles.unreadDot} />}

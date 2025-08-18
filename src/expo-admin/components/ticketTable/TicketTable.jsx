@@ -179,79 +179,60 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
 
   const isBlank = (s) => !s || String(s).trim() === '';
 
+  // ✅ 모든 필드를 독립적으로 검사해 한 번에 에러 노출
   const runValidation = () => {
     const e = {};
     const f = editForm || {};
 
+    // 기본 정보
     if (isBlank(f.name)) e.name = '티켓 이름은 필수입니다.';
     else if (f.name.length > 100) e.name = '티켓 이름은 100자 이하여야 합니다.';
 
-    if (isBlank(e.name)) {
-      if (isBlank(f.type)) e.type = '티켓 타입은 필수입니다.';
+    if (isBlank(f.type)) e.type = '티켓 타입은 필수입니다.';
+
+    if (isBlank(f.description)) e.description = '티켓 설명은 필수입니다.';
+
+    // 숫자 필드
+    if (f.price === '' || f.price === null || typeof f.price === 'undefined')
+      e.price = '티켓 가격은 필수입니다.';
+    else if (isNaN(Number(f.price))) e.price = '가격은 숫자여야 합니다.';
+    else if (Number(f.price) < 0) e.price = '가격은 0원 이상이어야 합니다.';
+
+    if (f.totalQuantity === '' || f.totalQuantity === null || typeof f.totalQuantity === 'undefined')
+      e.totalQuantity = '티켓 수량은 필수입니다.';
+    else if (isNaN(Number(f.totalQuantity))) e.totalQuantity = '티켓 수량은 숫자여야 합니다.';
+    else if (Number(f.totalQuantity) < 1) e.totalQuantity = '티켓 수량은 1장 이상이어야 합니다.';
+
+    // 판매 기간: 개별 필수
+    if (isBlank(f.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
+    if (isBlank(f.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
+
+    // 판매 기간: 상호 제약 (둘 다 있을 때만 비교)
+    if (!e.saleStartDate && !e.saleEndDate && f.saleStartDate && f.saleEndDate) {
+      if (f.saleEndDate < f.saleStartDate)
+        e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
+      if (displayStartDate && f.saleStartDate < displayStartDate)
+        e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
+      if (displayEndDate && f.saleStartDate > displayEndDate)
+        e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
+      if (displayEndDate && f.saleEndDate > displayEndDate)
+        e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
     }
 
-    if (isBlank(e.name) && isBlank(e.type)) {
-      if (isBlank(f.description)) e.description = '티켓 설명은 필수입니다.';
-    }
+    // 사용 기간: 개별 필수
+    if (isBlank(f.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
+    if (isBlank(f.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
 
-    if (isBlank(e.name) && isBlank(e.type) && isBlank(e.description)) {
-      if (f.price === '' || f.price === null || typeof f.price === 'undefined')
-        e.price = '티켓 가격은 필수입니다.';
-      else if (isNaN(Number(f.price))) e.price = '가격은 숫자여야 합니다.';
-      else if (Number(f.price) < 0) e.price = '가격은 0원 이상이어야 합니다.';
-    }
-
-    if (isBlank(e.name) && isBlank(e.type) && isBlank(e.description) && isBlank(e.price)) {
-      if (f.totalQuantity === '' || f.totalQuantity === null || typeof f.totalQuantity === 'undefined')
-        e.totalQuantity = '티켓 수량은 필수입니다.';
-      else if (isNaN(Number(f.totalQuantity))) e.totalQuantity = '티켓 수량은 숫자여야 합니다.';
-      else if (Number(f.totalQuantity) < 1) e.totalQuantity = '티켓 수량은 1장 이상이어야 합니다.';
-    }
-
-    if (
-      isBlank(e.name) &&
-      isBlank(e.type) &&
-      isBlank(e.description) &&
-      isBlank(e.price) &&
-      isBlank(e.totalQuantity)
-    ) {
-      if (isBlank(f.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
-      if (isBlank(f.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
-
-      if (isBlank(e.saleStartDate) && isBlank(e.saleEndDate)) {
-        if (f.saleEndDate < f.saleStartDate)
-          e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
-        if (displayStartDate && f.saleStartDate && f.saleStartDate < displayStartDate)
-          e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
-        if (displayEndDate && f.saleStartDate && f.saleStartDate > displayEndDate)
-          e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
-        if (displayEndDate && f.saleEndDate && f.saleEndDate > displayEndDate)
-          e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
-      }
-    }
-
-    if (
-      isBlank(e.name) &&
-      isBlank(e.type) &&
-      isBlank(e.description) &&
-      isBlank(e.price) &&
-      isBlank(e.totalQuantity) &&
-      isBlank(e.saleStartDate) &&
-      isBlank(e.saleEndDate)
-    ) {
-      if (isBlank(f.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
-      if (isBlank(f.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
-
-      if (isBlank(e.useStartDate) && isBlank(e.useEndDate)) {
-        if (f.useEndDate < f.useStartDate)
-          e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
-        if (f.useStartDate < f.saleStartDate)
-          e.useStartDate = '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
-        if (expoStartDate && f.useStartDate && f.useStartDate < expoStartDate)
-          e.useStartDate = '사용 시작일은 행사 시작일과 같거나 이후여야 합니다.';
-        if (expoEndDate && f.useEndDate && f.useEndDate > expoEndDate)
-          e.useEndDate = '사용 종료일은 행사 종료일과 같거나 이전이어야 합니다.';
-      }
+    // 사용 기간: 상호/제약 (둘 다 있을 때만 비교)
+    if (!e.useStartDate && !e.useEndDate && f.useStartDate && f.useEndDate) {
+      if (f.useEndDate < f.useStartDate)
+        e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
+      if (f.saleStartDate && f.useStartDate < f.saleStartDate)
+        e.useStartDate = '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
+      if (expoStartDate && f.useStartDate < expoStartDate)
+        e.useStartDate = '사용 시작일은 행사 시작일과 같거나 이후여야 합니다.';
+      if (expoEndDate && f.useEndDate > expoEndDate)
+        e.useEndDate = '사용 종료일은 행사 종료일과 같거나 이전이어야 합니다.';
     }
 
     return e;
@@ -552,9 +533,6 @@ function TicketTable({ data = [], onUpdate, onDelete }) {
                         </div>
 
                         {(
-                          // 버튼 그룹(구분선 포함) 렌더 조건:
-                          // 1) 편집 중이거나
-                          // 2) 편집 전인데 판매 시작 전일 때만
                           (isEditing) || (!isEditing && !saleStarted)
                         ) && (
                           <div className={styles.buttonGroupBottom}>

@@ -100,7 +100,7 @@
 }
 
 .pendingPayment {
-  background-color: #5cb85c; /* 승인_완료 - 녹색 */
+  background-color: #5cb85c; /* 결제_대기 - 녹색 */
 }
 
 .defaultStatus {

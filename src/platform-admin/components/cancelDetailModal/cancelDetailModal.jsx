@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import styles from './cancelDetailModal.module.css';
 
 function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPendingCancel = false }) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   // 검색어에 따른 예약자 필터링
@@ -21,21 +20,12 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
     );
   }, [cancelDetail?.reservationRefunds, searchTerm]);
 
-  // 표시할 예약자 목록 (펼치기/접기에 따라)
-  const displayedReservations = useMemo(() => {
-    if (isExpanded) {
-      return filteredReservations;
-    }
-    return filteredReservations.slice(0, 5);
-  }, [filteredReservations, isExpanded]);
+  // 표시할 예약자 목록 (스크롤로 모든 항목 표시)
+  const displayedReservations = filteredReservations;
 
   if (!isOpen) return null;
 
-  // 총 등록금 계산 (총 결제금액 - 총 이용료)
-  const calculateTotalDeposit = () => {
-    if (!cancelDetail) return 0;
-    return (cancelDetail.totalAmount || 0) - (cancelDetail.totalUsageFee || 0);
-  };
+  // 백엔드에서 계산된 등록금/이용료 환불 금액 사용
 
   // 검색어 초기화 함수
   const handleSearchClear = () => {
@@ -104,11 +94,11 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
             <div className={styles.feeBox}>
               <div className={styles.row}>
                 <span className={styles.label}>등록금 환불</span>
-                <span className={styles.amount}>{calculateTotalDeposit()?.toLocaleString() || 0}원</span>
+                <span className={styles.amount}>{cancelDetail.depositRefundAmount?.toLocaleString() || 0}원</span>
               </div>
               <div className={styles.row}>
                 <span className={styles.label}>이용료 환불</span>
-                <span className={styles.amount}>{(cancelDetail.refundAmount - calculateTotalDeposit())?.toLocaleString() || 0}원</span>
+                <span className={styles.amount}>{cancelDetail.usageFeeRefundAmount?.toLocaleString() || 0}원</span>
               </div>
               <div className={`${styles.row} ${styles.totalRow}`}>
                 <span className={styles.totalLabel}>총 환불 금액</span>
@@ -141,7 +131,7 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
                 개별 예약자 환불 상세 ({filteredReservations.length}명)
               </div>
               
-              {/* 검색 및 펼치기/접기 컨트롤 */}
+              {/* 검색 컨트롤 */}
               <div className={styles.controlsContainer}>
                 <div className={styles.searchContainer}>
                   <input
@@ -157,15 +147,6 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
                     </button>
                   )}
                 </div>
-                
-                {filteredReservations.length > 5 && (
-                  <button 
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className={styles.expandButton}
-                  >
-                    {isExpanded ? '접기 ▲' : `전체보기 (${filteredReservations.length}명) ▼`}
-                  </button>
-                )}
               </div>
             </div>
             
@@ -177,7 +158,7 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
                 <span>수량</span>
                 <span>환불금액</span>
               </div>
-              <div className={isExpanded ? styles.scrollableList : styles.basicList}>
+              <div className={styles.scrollableList}>
                 {displayedReservations.length > 0 ? (
                   displayedReservations.map((refund, index) => (
                     <div key={index} className={styles.listRow}>
@@ -194,13 +175,6 @@ function CancelDetailModal({ isOpen, onClose, cancelDetail, onApprove, isPending
                   </div>
                 )}
               </div>
-              
-              {/* 추가 정보 표시 */}
-              {!isExpanded && filteredReservations.length > 5 && (
-                <div className={styles.moreIndicator}>
-                  외 {filteredReservations.length - 5}명 (전체보기로 확인)
-                </div>
-              )}
             </div>
           </div>
         )}
