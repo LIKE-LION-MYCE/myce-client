@@ -20,7 +20,7 @@ export const getExpoBookmarkStatus = async (expoId) => {
 
 // 박람회 리뷰 정보 조회
 export const getExpoReviews = async (expoId, page = 0, size = 10) => {
-  const response = await instance.get(`/expos/${expoId}/reviews`, {
+  const response = await instance.get(`/reviews/expo/${expoId}`, {
     params: { page, size },
   });
   return response.data;

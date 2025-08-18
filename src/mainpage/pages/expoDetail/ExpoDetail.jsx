@@ -337,7 +337,7 @@ export default function ExpoDetail() {
             className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
             onClick={() => setActiveTab('reviews')}
           >
-            리뷰
+            리뷰 ({reviews?.totalElements || 0})
           </button>
         </div>
 

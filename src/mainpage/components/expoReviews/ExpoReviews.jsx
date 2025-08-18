@@ -37,7 +37,10 @@ const ExpoReviews = ({ expoId, userInfo }) => {
     setLoading(true);
     try {
       const response = await reviewAPI.getReviewsByExpo(expoId, sortBy, currentPage, 5);
+      console.log('리뷰 API 응답:', response);
       if (response.success) {
+        console.log('리뷰 데이터:', response.data);
+        console.log('총 리뷰 개수:', response.data.totalElements);
         setReviews(response.data.reviews);
         setCurrentPage(response.data.currentPage);
         setTotalPages(response.data.totalPages);
