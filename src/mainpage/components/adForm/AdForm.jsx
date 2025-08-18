@@ -32,6 +32,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   const [adPositions, setAdPositions] = useState([]); // 광고 위치 리스트 추가
   const [submitting, setSubmitting] = useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업
+  const [isPeriodValid, setIsPeriodValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false); // 폼 유효성 상태
   const [errorMessage, setErrorMessage] = useState(""); // 유효성 검사 오류 메시지 상태
   const navigate = useNavigate();
@@ -74,10 +75,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       });
 
       if (response.status === 200) {
-        setIsFormValid(true);
+        setIsPeriodValid(true);
         setErrorMessage(""); // 유효성 검사 성공 시 오류 메시지 초기화
       } else {
-        setIsFormValid(false);
+        setIsPeriodValid(false);
         setErrorMessage("유효하지 않은 날짜입니다."); // 유효하지 않은 날짜일 때 오류 메시지 표시
       }
     } catch (error) {
@@ -172,7 +173,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       ceoName &&
       contactPhone &&
       contactEmail &&
-      displayStartDate < displayEndDate; // 시작일이 종료일보다 이전이어야 함
+      displayStartDate < displayEndDate;// 시작일이 종료일보다 이전이어야 함
 
     setIsFormValid(isValid);
   };
@@ -459,8 +460,8 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           </button>
           <button
             type="submit"
-            className={`${styles["submit-button"]} ${!isFormValid ? styles["disabled"] : ""}`}
-            disabled={!isFormValid}
+            className={`${styles["submit-button"]} ${!(isFormValid && isPeriodValid) ? styles["disabled"] : ""}`}
+            disabled={!(isFormValid && isPeriodValid)}
           >
             등록
           </button>
