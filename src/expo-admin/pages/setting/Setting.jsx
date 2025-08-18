@@ -118,6 +118,14 @@ function Setting() {
       {toast?.type === 'success' && <ToastSuccess message={toast.message} />}
       {toast?.type === 'fail' && <ToastFail message={toast.message} />}
 
+      <div className={styles.alertBox}>
+        <FaInfoCircle className={styles.alertIcon} />
+        <span className={styles.alertText}>
+          <strong>안내 : </strong>&nbsp;
+          박람회 게시 이후에는 박람회 정보를 수정할 수 없습니다.
+        </span>
+      </div>
+
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>
           내 박람회 정보

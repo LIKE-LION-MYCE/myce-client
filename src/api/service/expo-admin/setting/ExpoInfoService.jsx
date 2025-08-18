@@ -10,12 +10,13 @@ export const getMyExpoInfo = async (expoId) => {
   }
 };
 
-export const updateMyExpoInfo = async (expoId, data) => {
+
+export const updateMyExpoDescription = async (expoId, data) => {
   try {
-    const response = await instance.put(`/expos/my/${expoId}`, data);
+    const response = await instance.patch(`/expos/my/${expoId}/description`, data);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || "박람회 정보 수정 중 오류 발생";
+    const message = error.response?.data?.message || "박람회 설명 수정 중 오류 발생";
     throw new Error(message);
   }
 };
