@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import styles from './BoothTable.module.css';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
@@ -14,17 +13,8 @@ const fieldLabelMap = {
   contactEmail: '담당자 이메일',
 };
 
-const boothFields = [
-  'name',
-  'description', 
-  'boothNumber',
-];
-
-const contactFields = [
-  'contactName',
-  'contactPhone',
-  'contactEmail',
-];
+const boothFields = ['name', 'description', 'boothNumber'];
+const contactFields = ['contactName', 'contactPhone', 'contactEmail'];
 
 function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermission = true }) {
   const [expandedId, setExpandedId] = useState(null);
@@ -43,22 +33,23 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
     }
   };
 
-  const handleEditClick = (row) => {
+  const handleEditClick = (e, row) => {
+    e.stopPropagation();
     setEditingId(row.id);
     setEditForm(row);
   };
 
   const handleChange = (e) => {
+    e.stopPropagation();
     const { name, value } = e.target;
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePremiumToggle = (isPremium) => {
+  const handlePremiumToggle = (value) => {
     setEditForm((prev) => ({
       ...prev,
-      isPremium,
-      // 프리미엄이 아닌 경우 순위를 null로 설정
-      displayRank: isPremium ? prev.displayRank : null
+      isPremium: value,
+      displayRank: value ? prev.displayRank : null,
     }));
   };
 
@@ -70,37 +61,31 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
     console.error('이미지 업로드 실패:', error);
   };
 
-
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.stopPropagation();
     const payload = {
       ...editForm,
-      isPremium: expoIsPremium ? (editForm.isPremium || false) : false,
-      displayRank: (expoIsPremium && editForm.isPremium && editForm.displayRank) 
-        ? parseInt(editForm.displayRank, 10) 
-        : null,
+      isPremium: expoIsPremium ? !!editForm.isPremium : false,
+      displayRank:
+        expoIsPremium && editForm.isPremium && editForm.displayRank
+          ? parseInt(editForm.displayRank, 10)
+          : null,
     };
-    
-    onUpdate(payload);
-    // 수정 모드 종료 - 상세보기로 돌아감
+    onUpdate?.(payload);
     setEditingId(null);
     setEditForm(null);
   };
 
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
-    onDelete(id);
+    onDelete?.(id);
     setExpandedId(null);
     setEditForm(null);
-  };
-
-  const handleCancel = () => {
-    // 원래 데이터로 복원하고 상세보기로 돌아감
     setEditingId(null);
-    setEditForm(null);
   };
 
-  const handleDetailCancel = () => {
-    setExpandedId(null);
+  const handleCancel = (e) => {
+    e.stopPropagation();
     setEditingId(null);
     setEditForm(null);
   };
@@ -131,109 +116,101 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
 
             return (
               <React.Fragment key={row.id}>
-                <tr
-                  className={styles.row}
-                  onClick={() => handleRowClick(row)}
-                >
+                <tr className={styles.row} onClick={() => handleRowClick(row)}>
                   {columns.map((col) => (
                     <td key={col.key} className={styles.td}>
                       {col.key === 'displayRank'
-                        ? row[col.key] === null
+                        ? row[col.key] === null || typeof row[col.key] === 'undefined'
                           ? ''
                           : row[col.key]
-                        : row[col.key]}
+                        : row[col.key] ?? ''}
                     </td>
                   ))}
                 </tr>
 
                 {isExpanded && (
-                  <tr key={`detail-${row.id}`} className={styles.detailRow}>
+                  <tr className={styles.detailRow} onClick={(e) => e.stopPropagation()}>
                     <td colSpan={columns.length}>
                       <div className={styles.detailBox}>
-                        <button className={styles.closeBtn} onClick={handleDetailCancel}>
-                          ×
-                        </button>
                         {editingId === row.id && editForm ? (
                           <>
                             <div className={styles.topRow}>
-                          {/* 썸네일 이미지 */}
-                          <div className={styles.imageWrapper}>
-                            <ImageUpload
-                              initialImageUrl={editForm.mainImageUrl}
-                              onUploadSuccess={handleImageUploadSuccess}
-                              onUploadError={handleImageUploadError}
-                            />
-                          </div>
-                        
-                          <div className={styles.detailGrid}>
-                            {/* 부스 정보 */}
-                            <div className={styles.column}>
-                            {boothFields.map((key) => (
-                              <div key={key} className={styles.detailItem}>
-                                <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
-                                </div>
-                                <input
-                                  type="text"
-                                  name={key}
-                                  value={editForm[key] || ''}
-                                  onChange={handleChange}
-                                  className={styles.inputField}
+                              <div className={styles.imageWrapper}>
+                                <ImageUpload
+                                  initialImageUrl={editForm.mainImageUrl}
+                                  onUploadSuccess={handleImageUploadSuccess}
+                                  onUploadError={handleImageUploadError}
                                 />
                               </div>
-                            ))}
-                            
-                            {/* 프리미엄 박람회인 경우에만 프리미엄 부스 설정 가능 */}
-                            {expoIsPremium && (
-                              <>
-                                <div className={styles.detailItem}>
-                                  <div className={styles.detailLabel}>프리미엄 부스</div>
-                                  <ToggleSwitch
-                                    checked={editForm.isPremium || false}
-                                    onChange={(value) => handlePremiumToggle(value)}
-                                  />
-                                </div>
-                                
-                                {/* 프리미엄 부스인 경우에만 순위 입력 */}
-                                {editForm.isPremium && (
-                                  <div className={styles.detailItem}>
-                                    <div className={styles.detailLabel}>노출 순위 <span style={{color: 'red'}}>*</span></div>
-                                    <select
-                                      name="displayRank"
-                                      value={editForm.displayRank || ''}
-                                      onChange={handleChange}
-                                      className={styles.inputField}
-                                    >
-                                      <option value="">순위 선택</option>
-                                      <option value="1">1위</option>
-                                      <option value="2">2위</option>
-                                      <option value="3">3위</option>
-                                    </select>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
 
-                          {/* 담당자 정보 */}
-                          <div className={styles.column}>
-                            {contactFields.map((key) => (
-                              <div key={key} className={styles.detailItem}>
-                                <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
+                              <div className={styles.detailGrid}>
+                                <div className={styles.column}>
+                                  {boothFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]} <span className={styles.required}>*</span>
+                                      </div>
+                                      <input
+                                        type="text"
+                                        name={key}
+                                        value={editForm[key] || ''}
+                                        onChange={handleChange}
+                                        className={styles.inputField}
+                                      />
+                                    </div>
+                                  ))}
+
+                                  {expoIsPremium && (
+                                    <>
+                                      <div className={styles.detailItem}>
+                                        <div className={styles.detailLabel}>프리미엄 부스</div>
+                                        <ToggleSwitch
+                                          checked={!!editForm.isPremium}
+                                          onChange={handlePremiumToggle}
+                                        />
+                                      </div>
+
+                                      {editForm.isPremium && (
+                                        <div className={styles.detailItem}>
+                                          <div className={styles.detailLabel}>
+                                            노출 순위 <span className={styles.required}>*</span>
+                                          </div>
+                                          <select
+                                            name="displayRank"
+                                            value={editForm.displayRank || ''}
+                                            onChange={handleChange}
+                                            className={styles.inputField}
+                                          >
+                                            <option value="">순위 선택</option>
+                                            <option value="1">1위</option>
+                                            <option value="2">2위</option>
+                                            <option value="3">3위</option>
+                                          </select>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
-                                <input
-                                  name={key}
-                                  value={editForm[key] || ''}
-                                  onChange={handleChange}
-                                  className={styles.inputField}
-                                />
+
+                                <div className={styles.column}>
+                                  {contactFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]} <span className={styles.required}>*</span>
+                                      </div>
+                                      <input
+                                        name={key}
+                                        value={editForm[key] || ''}
+                                        onChange={handleChange}
+                                        className={styles.inputField}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            ))}
                             </div>
-                          </div>
-                        </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               <button className={styles.editBtn} onClick={handleSave}>
                                 저장
@@ -244,44 +221,33 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                             </div>
                           </>
                         ) : (
-                          // 읽기 전용 상세 뷰
                           <>
                             <div className={styles.topRow}>
                               <div className={styles.imageWrapper}>
                                 {row.mainImageUrl && (
-                                  <img 
-                                    src={row.mainImageUrl} 
-                                    alt="부스 이미지" 
-                                    className={styles.detailImage}
-                                  />
+                                  <img src={row.mainImageUrl} alt="부스 이미지" className={styles.detailImage} />
                                 )}
                               </div>
-                              
+
                               <div className={styles.detailGrid}>
                                 <div className={styles.column}>
                                   {boothFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
-                                      <div className={styles.detailValue}>
-                                        {row[key] || '-'}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                      <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
-                                  
+
                                   {expoIsPremium && (
                                     <>
                                       <div className={styles.detailItem}>
                                         <div className={styles.detailLabel}>프리미엄 부스</div>
-                                        <div className={styles.detailValue}>
-                                          {row.isPremium ? '예' : '아니오'}
-                                        </div>
+                                        <div className={styles.valueText}>{row.isPremium ? '예' : '아니오'}</div>
                                       </div>
                                       {row.isPremium && (
                                         <div className={styles.detailItem}>
                                           <div className={styles.detailLabel}>노출 순위</div>
-                                          <div className={styles.detailValue}>
+                                          <div className={styles.valueText}>
                                             {row.displayRank ? `${row.displayRank}위` : '-'}
                                           </div>
                                         </div>
@@ -293,21 +259,18 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {contactFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
-                                      <div className={styles.detailValue}>
-                                        {row[key] || '-'}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
+                                      <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
                                 </div>
                               </div>
                             </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               {hasPermission && onUpdate && (
-                                <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                <button className={styles.editBtn} onClick={(e) => handleEditClick(e, row)}>
                                   수정
                                 </button>
                               )}
@@ -333,4 +296,3 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
 }
 
 export default BoothTable;
-

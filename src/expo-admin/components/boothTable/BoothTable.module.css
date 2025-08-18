@@ -27,13 +27,12 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .row:hover {
   background-color: #f5f8ff;
 }
 
 .td {
-  padding: 8px 16px;
+  padding: 10px 16px;
   font-size: 14px;
   color: #222;
   text-align: center;
@@ -49,7 +48,6 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
   font-size: 14px;
   position: relative;
 }
@@ -62,51 +60,27 @@
 
 .detailGrid {
   flex: 1;
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
 }
 
 .column {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .imageWrapper {
-  display: flex;
-  justify-content: flex-start;
+  width: 200px;
+  min-width: 200px;
 }
-
-.boothImage {
+.detailImage {
   width: 200px;
   height: 200px;
   object-fit: cover;
   border-radius: 8px;
-}
-
-.detailContent {
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
-  width: 100%;
-  align-items: flex-start;
-  box-sizing: border-box;
-}
-
-.leftColumn {
-  flex: 0 0 30%;
-  min-width: 250px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.rightColumn {
-  flex: 0 0 66%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  border: 1px solid #ddd;
 }
 
 .detailItem {
@@ -115,18 +89,14 @@
   gap: 6px;
   text-align: left;
 }
-
 .detailLabel {
   font-size: 13px;
   color: #888;
   font-weight: 500;
 }
 
-.booleanGroup {
-  display: flex;
-  gap: 12px;
-  margin-top: 9px;
-  align-items: center;
+.required {
+  color: #e53935;
 }
 
 .inputField {
@@ -136,29 +106,35 @@
   font-size: 14px;
   color: #333;
 }
-
 .inputField:focus {
   outline: none;
   border-color: #666;
   background-color: #f9f9ff;
 }
 
-.disabledInput {
-  background-color: #f2f2f2;
-  color: #888;
-  cursor: not-allowed;
+.valueText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.6;
 }
 
-.buttonGroupInline {
+.booleanGroup {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  gap: 12px;
+  align-items: center;
 }
 
+.buttonDivider {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  border-top: 1px dashed #ddd;
+}
 .buttonGroupBottom {
   display: flex;
-  justify-content: flex-end;
   gap: 12px;
+  justify-content: flex-start;
+  margin-top : 5px;
 }
 
 .editBtn {
@@ -169,13 +145,10 @@
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  margin-right: 10px;
 }
-
 .editBtn:hover {
   background-color: #2c3e50;
 }
-
 .cancelBtn {
   background-color: #ececec;
   color: #1e2a38;
@@ -185,57 +158,18 @@
   border-radius: 20px;
   cursor: pointer;
 }
-
 .cancelBtn:hover {
   background-color: #d9d9d9;
 }
-
 .deleteBtn {
   background-color: #f87171;
   color: white;
-  padding: 6px 20px;
+  padding: 8px 20px;
   font-size: 12px;
   border: none;
   border-radius: 20px;
   cursor: pointer;
 }
-
 .deleteBtn:hover {
   background-color: #ef4444;
-}
-
-.detailValue {
-  padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #333;
-  min-height: 20px;
-}
-
-.detailImage {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #999;
-  cursor: pointer;
-  padding: 4px 8px;
-  line-height: 1;
-  transition: color 0.2s ease;
-}
-
-.closeBtn:hover {
-  color: #333;
 }
