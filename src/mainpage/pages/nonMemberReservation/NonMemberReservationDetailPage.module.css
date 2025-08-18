@@ -1,0 +1,418 @@
+/* 전체 배경 */
+.wrapper {
+  min-height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 컨테이너 */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 메인 콘텐츠 영역 */
+.mainContent {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+  padding: 48px 56px 46px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 그리드 컨테이너 */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+/* 그리드 섹션 */
+.gridSection {
+  padding: 24px;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+/* 전체 너비 상단 - 참여 행사 정보 */
+.fullWidthTop {
+  grid-column: 1 / -1;
+}
+
+/* 전체 너비 중단 - 참여 인원 */
+.fullWidthMiddle {
+  grid-column: 1 / -1;
+}
+
+.pageTitle {
+  margin-bottom: 38px;
+  letter-spacing: -1.5px;
+}
+
+/* 소제목 크기 확장 + 강조 */
+.subTitle {
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 21px;
+  color: #222;
+  letter-spacing: -0.5px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 13px;
+}
+
+.congestionBtn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.congestionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.congestionBtn:active {
+  transform: translateY(0);
+}
+
+/* 편집/저장/취소 버튼들 */
+.editBtn {
+  background: #f5f6fa;
+  color: #222;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.editActionGroup {
+  display: flex;
+  gap: 10px;
+}
+.saveBtn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+.cancelBtn {
+  background: #f5f6fa;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+/* 행사 정보 */
+.expoBox {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 6px;
+}
+.poster {
+  width: 120px;
+  height: 160px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.poster:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+.expoTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.grayDotList {
+  color: #888;
+  font-size: 15px;
+}
+.eventDate, .eventPlace {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+/* 예매 정보 그리드 */
+.reservationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 48px;
+  margin-bottom: 8px;
+}
+
+.label {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+/* 테이블 */
+.memberTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 17px;
+}
+.memberTable th,
+.memberTable td {
+  border: 1px solid #e7e7e7;
+  padding: 13px 8px;
+  text-align: center;
+}
+.memberTable th {
+  background: #f3f4f7;
+  font-weight: 600;
+  color: #222;
+  font-size: 17px;
+}
+.memberTable td {
+  background: #fff;
+  color: #444;
+  font-size: 16px;
+}
+
+/* 인풋 크기 */
+.input {
+  border: 1.2px solid #e3e3e3;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 15px;
+  width: 110px;
+}
+
+/* QR 버튼 */
+.qrBtn {
+  background: #fff;
+  border: 1px solid #767676;
+  color: #222;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.qrBtn:hover:not(:disabled) {
+  background: #222;
+  color: #fff;
+}
+
+.qrBtnDisabled {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  cursor: not-allowed !important;
+}
+
+.qrBtnDisabled:hover {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+}
+
+/* 예약취소 버튼(가운데 정렬) */
+.neutralCancelBtn {
+  background: #fff;
+  color: #888;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 14px 140px;
+  font-size: 18px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  box-shadow: none;
+  transition: background 0.18s;
+}
+.neutralCancelBtn:hover {
+  background: #ececec;
+  color: #555;
+}
+
+
+.reservationInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.feeText {
+  color: #e17055;
+  font-weight: 600;
+}
+
+.totalPriceText {
+  font-weight: 700;
+  color: #0984e3;
+  font-size: 16px;
+}
+
+.paymentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.priceText {
+  font-weight: 700;
+  color: #007bff;
+  font-size: 16px;
+}
+
+.mileageUsed {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.mileageEarned {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.gradeText {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* 추가: 비회원 페이지에서 사용하는 요소들 */
+.mainBox {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.expoCard {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 6px;
+}
+
+.expoImage {
+  width: 120px;
+  height: 160px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.expoImage:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.expoDetails {
+  flex: 1;
+}
+
+.expoMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ticketGuide {
+  font-size: 15px;
+}
+
+.guideText {
+  margin-top: 12px;
+  line-height: 1.6;
+  color: #888;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 32px 24px;
+  }
+  
+  .gridContainer {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .gridSection {
+    padding: 20px;
+  }
+  
+  .paymentGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .reservationInfoGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .expoCard {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .expoImage {
+    width: 100%;
+    height: 200px;
+  }
+}
