@@ -81,32 +81,48 @@
 }
 
 .statusBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  color: #fff;
-  font-weight: bold;
+  margin-left: 10px;
+  margin-bottom: 0px;
+  padding: 4px 10px;
+  border-radius: 16px;
   font-size: 12px;
-  text-align: center;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
 }
 
-.status_게시중 { 
-  background-color: #5cb85c;
+.status_게시중 {
+  background-color: #ebf9f1;
+  /* 연한 초록 */
+  color: #2a9c68;
+  /* 진한 초록 */
 }
 
 .status_게시_대기 {
-  background-color: #5cb85c;
+  background-color: #fff5ec;
+  /* 연한 주황 */
+  color: #e79d3c;
+  /* 진한 주황 */
 }
 
 .status_취소_대기 {
-  background-color: #f0ad4e;
+  background-color: #fff5ec;
+  /* 연한 주황 */
+  color: #e79d3c;
+  /* 진한 주황 */
 }
 
 
 .status_취소됨 {
-  background-color: #d9534f; /* 회색 */
+  background-color: #ffecec;
+  /* 연한 빨강 */
+  color: #e74c3c;
+  /* 진한 빨강 */
 }
 
 .status_게시_종료 {
-  background-color: #6c757d; /* 초록색 */
+  background-color: #f2f2f2;
+  /* 연한 회색 */
+  color: #555;
+  /* 진한 회색 */
 }
