@@ -64,3 +64,7 @@
   background-color: #fafafa;
   text-align: left;
 }
+
+.leftAlign {
+  text-align: left !important;
+}

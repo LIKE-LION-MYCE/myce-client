@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./TicketPurchaseModal.module.css";
-import { FiX, FiMinus, FiPlus } from "react-icons/fi";
+import { FiX, FiMinus, FiPlus, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { getUserIdFromToken } from "../../../api/utils/jwtUtils";
 import { savePreReservation } from "../../../api/service/reservation/reservationApi";
+import { getActiveRefundPolicy, formatRefundPolicy } from "../../../api/service/system/refundPolicyApi";
 
 export default function TicketPurchaseModal({
   ticket,
@@ -15,6 +16,27 @@ export default function TicketPurchaseModal({
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [showNotices, setShowNotices] = useState(false);
+  const [refundPolicies, setRefundPolicies] = useState([]);
+
+  // 환불 정책 로드
+  useEffect(() => {
+    const loadRefundPolicy = async () => {
+      try {
+        const policyData = await getActiveRefundPolicy();
+        const formattedPolicies = formatRefundPolicy(policyData.policies || []);
+        setRefundPolicies(formattedPolicies);
+      } catch (error) {
+        console.error("환불 정책 로드 실패:", error);
+        // 에러 시에도 기본 정책을 표시
+        setRefundPolicies([]);
+      }
+    };
+
+    if (isOpen) {
+      loadRefundPolicy();
+    }
+  }, [isOpen]);
 
   if (!isOpen || !ticket) return null;
 
@@ -159,6 +181,53 @@ export default function TicketPurchaseModal({
               <span>총 결제 금액</span>
               <span className={styles.totalPrice}>{getTotalPrice()}원</span>
             </div>
+          </div>
+
+          <div className={styles.noticesSection}>
+            <div className={styles.noticesHeader} onClick={() => setShowNotices(!showNotices)}>
+              <span>구매 유의사항</span>
+              {showNotices ? <FiChevronUp /> : <FiChevronDown />}
+            </div>
+            {showNotices && (
+              <div className={styles.noticesContent}>
+                <div className={styles.noticeItem}>
+                  <strong>환불 및 취소 정책</strong>
+                  <ul>
+                    {refundPolicies.length > 0 ? (
+                      refundPolicies.map((policy) => (
+                        <li key={policy.id}>{policy.displayText}</li>
+                      ))
+                    ) : (
+                      <>
+                        <li>박람회 시작 7일 전까지: 100% 환불</li>
+                        <li>박람회 시작 3~6일 전까지: 80% 환불</li>
+                        <li>박람회 시작 1~2일 전까지: 50% 환불</li>
+                        <li>박람회 당일: 환불 불가</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+                <div className={styles.noticeItem}>
+                  <strong>티켓 사용 안내</strong>
+                  <ul>
+                    <li>구매 완료 후 박람회 개최 2일 전부터 QR 코드가 생성됩니다.</li>
+                    <li>티켓의 사용 개시 일자부터 QR 코드가 활성화 됩니다.</li>
+                    <li>박람회 당일 QR 코드를 제시해 주세요</li>
+                    <li>타인에게 양도/전매 시 입장이 제한될 수 있습니다</li>
+                    <li>분실 시 재발급이 불가능하니 주의해 주세요</li>
+                  </ul>
+                </div>
+                <div className={styles.noticeItem}>
+                  <strong>기타 안내</strong>
+                  <ul>
+                    <li>박람회 일정 변경 시 사전 공지됩니다</li>
+                    <li>1인당 최대 4매까지 구매 가능합니다</li>
+                    <li>결제 완료 후 예매 확인서를 이메일로 발송됩니다</li>
+                    <li>문의사항은 AI 상담사 찍찍이를 이용해 주세요</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className={styles.actions}>

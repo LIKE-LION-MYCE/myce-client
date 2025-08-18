@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+// BoothTable.jsx
+import React, { useState } from 'react';
 import styles from './BoothTable.module.css';
 import ImageUpload from '../../../common/components/imageUpload/ImageUpload';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
@@ -14,95 +14,172 @@ const fieldLabelMap = {
   contactEmail: '담당자 이메일',
 };
 
-const boothFields = [
-  'name',
-  'description', 
-  'boothNumber',
-];
-
-const contactFields = [
-  'contactName',
-  'contactPhone',
-  'contactEmail',
-];
+const boothFields = ['name', 'description', 'boothNumber'];
+const contactFields = ['contactName', 'contactPhone', 'contactEmail'];
 
 function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermission = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [errors, setErrors] = useState({}); // ✅ 인라인 에러 상태
+
+  // 전화번호 자동 하이픈
+  const formatPhoneNumber = (value) => {
+    const onlyNums = String(value || '').replace(/[^0-9]/g, '');
+    // 02로 시작 (서울)
+    if (onlyNums.startsWith('02')) {
+      if (onlyNums.length <= 2) return onlyNums;
+      if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+      if (onlyNums.length <= 9) return onlyNums.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+      return onlyNums.replace(/(\d{2})(\d{4})(\d{4}).*/, '$1-$2-$3');
+    }
+    // 기타 (010, 031 등)
+    if (onlyNums.length <= 3) return onlyNums;
+    if (onlyNums.length <= 6) return onlyNums.replace(/(\d{3})(\d{1,3})/, '$1-$2');
+    if (onlyNums.length <= 10) return onlyNums.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return onlyNums.replace(/(\d{3})(\d{4})(\d{4}).*/, '$1-$2-$3');
+  };
+
+  const clearAll = () => {
+    setEditingId(null);
+    setEditForm(null);
+    setErrors({});
+  };
 
   const handleRowClick = (row) => {
     if (expandedId === row.id) {
       setExpandedId(null);
-      setEditingId(null);
-      setEditForm(null);
+      clearAll();
     } else {
       setExpandedId(row.id);
-      setEditingId(null);
-      setEditForm(null);
+      clearAll();
     }
   };
 
-  const handleEditClick = (row) => {
+  const handleEditClick = (e, row) => {
+    e.stopPropagation();
     setEditingId(row.id);
-    setEditForm(row);
+    // ✅ 편집 폼 기본값 안전하게
+    setEditForm({
+      id: row.id,
+      mainImageUrl: row.mainImageUrl || '',
+      name: row.name || '',
+      description: row.description || '',
+      boothNumber: row.boothNumber || '',
+      contactName: row.contactName || '',
+      contactPhone: row.contactPhone || '',
+      contactEmail: row.contactEmail || '',
+      isPremium: !!row.isPremium,
+      displayRank: row.displayRank ?? '', // 빈 문자열 허용
+    });
+    setErrors({});
   };
 
   const handleChange = (e) => {
+    e.stopPropagation();
     const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+    setEditForm((prev) => {
+      if (!prev) return prev;
+      // 연락처는 자동 하이픈
+      if (name === 'contactPhone') {
+        const formatted = formatPhoneNumber(value);
+        return { ...prev, contactPhone: formatted };
+      }
+      return { ...prev, [name]: value };
+    });
+    setErrors((prev) => ({ ...prev, [name]: '' })); // 해당 필드 에러 제거
   };
 
-  const handlePremiumToggle = (isPremium) => {
-    setEditForm((prev) => ({
-      ...prev,
-      isPremium,
-      // 프리미엄이 아닌 경우 순위를 null로 설정
-      displayRank: isPremium ? prev.displayRank : null
-    }));
+  const handlePremiumToggle = (value) => {
+    setEditForm((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        isPremium: value,
+        displayRank: value ? prev.displayRank || '' : '', // 꺼지면 순위 초기화
+      };
+    });
+    setErrors((prev) => ({ ...prev, isPremium: '', displayRank: '' }));
   };
 
   const handleImageUploadSuccess = (imageUrl) => {
-    setEditForm((prev) => ({ ...prev, mainImageUrl: imageUrl }));
+    setEditForm((prev) => (prev ? { ...prev, mainImageUrl: imageUrl } : prev));
   };
 
   const handleImageUploadError = (error) => {
     console.error('이미지 업로드 실패:', error);
   };
 
+  // ✅ BoothSettingForm과 동일한 유효성 검사
+  const runValidation = () => {
+    const e = {};
+    const f = editForm || {};
+    const isBlank = (v) => !v || String(v).trim() === '';
 
-  const handleSave = () => {
+    // boothNumber: required, max 30
+    if (isBlank(f.boothNumber)) e.boothNumber = '부스 위치(번호)는 필수입니다.';
+    else if (f.boothNumber.length > 30) e.boothNumber = '부스 위치(번호)는 30자 이하여야 합니다.';
+
+    // name: required, max 100
+    if (isBlank(f.name)) e.name = '부스명은 필수입니다.';
+    else if (f.name.length > 100) e.name = '부스명은 100자 이하여야 합니다.';
+
+    // description: required
+    if (isBlank(f.description)) e.description = '부스 설명은 필수입니다.';
+
+    // contactName: required, max 30
+    if (isBlank(f.contactName)) e.contactName = '담당자명은 필수입니다.';
+    else if (f.contactName.length > 30) e.contactName = '담당자명은 30자 이하여야 합니다.';
+
+    // contactPhone: required, pattern
+    const phoneRe = /^\d{2,3}-\d{3,4}-\d{4}$/;
+    if (isBlank(f.contactPhone)) e.contactPhone = '담당자 연락처는 필수입니다.';
+    else if (!phoneRe.test(f.contactPhone))
+      e.contactPhone = '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)';
+
+    // contactEmail: required, email, max 100
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (isBlank(f.contactEmail)) e.contactEmail = '담당자 이메일은 필수입니다.';
+    else if (!emailRe.test(f.contactEmail)) e.contactEmail = '유효한 이메일 형식이 아닙니다.';
+    else if (f.contactEmail.length > 100) e.contactEmail = '담당자 이메일은 100자 이하여야 합니다.';
+
+    // displayRank: 프리미엄 + isPremium=true일 때 필수 숫자
+    if (expoIsPremium && f.isPremium) {
+      if (isBlank(f.displayRank)) e.displayRank = '노출 순위를 선택해주세요.';
+      else if (!/^\d+$/.test(String(f.displayRank))) e.displayRank = '노출 순위는 숫자여야 합니다.';
+    }
+
+    return e;
+  };
+
+  const handleSave = (e) => {
+    e.stopPropagation();
+    const v = runValidation();
+    setErrors(v);
+    if (Object.values(v).some(Boolean)) return; // 에러 있으면 저장 중단
+
     const payload = {
       ...editForm,
-      isPremium: expoIsPremium ? (editForm.isPremium || false) : false,
-      displayRank: (expoIsPremium && editForm.isPremium && editForm.displayRank) 
-        ? parseInt(editForm.displayRank, 10) 
-        : null,
+      isPremium: expoIsPremium ? !!editForm.isPremium : false,
+      displayRank:
+        expoIsPremium && editForm.isPremium && editForm.displayRank
+          ? parseInt(editForm.displayRank, 10)
+          : null,
     };
-    
-    onUpdate(payload);
-    // 수정 모드 종료 - 상세보기로 돌아감
-    setEditingId(null);
-    setEditForm(null);
+    onUpdate?.(payload);
+    clearAll();
   };
 
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
-    onDelete(id);
+    onDelete?.(id);
     setExpandedId(null);
-    setEditForm(null);
+    clearAll();
   };
 
-  const handleCancel = () => {
-    // 원래 데이터로 복원하고 상세보기로 돌아감
-    setEditingId(null);
-    setEditForm(null);
-  };
-
-  const handleDetailCancel = () => {
-    setExpandedId(null);
-    setEditingId(null);
-    setEditForm(null);
+  const handleCancel = (e) => {
+    e.stopPropagation();
+    clearAll();
   };
 
   const columns = [
@@ -131,109 +208,114 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
 
             return (
               <React.Fragment key={row.id}>
-                <tr
-                  className={styles.row}
-                  onClick={() => handleRowClick(row)}
-                >
+                <tr className={styles.row} onClick={() => handleRowClick(row)}>
                   {columns.map((col) => (
                     <td key={col.key} className={styles.td}>
                       {col.key === 'displayRank'
-                        ? row[col.key] === null
+                        ? row[col.key] === null || typeof row[col.key] === 'undefined'
                           ? ''
                           : row[col.key]
-                        : row[col.key]}
+                        : row[col.key] ?? ''}
                     </td>
                   ))}
                 </tr>
 
                 {isExpanded && (
-                  <tr key={`detail-${row.id}`} className={styles.detailRow}>
+                  <tr className={styles.detailRow} onClick={(e) => e.stopPropagation()}>
                     <td colSpan={columns.length}>
                       <div className={styles.detailBox}>
-                        <button className={styles.closeBtn} onClick={handleDetailCancel}>
-                          ×
-                        </button>
                         {editingId === row.id && editForm ? (
                           <>
                             <div className={styles.topRow}>
-                          {/* 썸네일 이미지 */}
-                          <div className={styles.imageWrapper}>
-                            <ImageUpload
-                              initialImageUrl={editForm.mainImageUrl}
-                              onUploadSuccess={handleImageUploadSuccess}
-                              onUploadError={handleImageUploadError}
-                            />
-                          </div>
-                        
-                          <div className={styles.detailGrid}>
-                            {/* 부스 정보 */}
-                            <div className={styles.column}>
-                            {boothFields.map((key) => (
-                              <div key={key} className={styles.detailItem}>
-                                <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
-                                </div>
-                                <input
-                                  type="text"
-                                  name={key}
-                                  value={editForm[key] || ''}
-                                  onChange={handleChange}
-                                  className={styles.inputField}
+                              <div className={styles.imageWrapper}>
+                                <ImageUpload
+                                  initialImageUrl={editForm.mainImageUrl}
+                                  onUploadSuccess={handleImageUploadSuccess}
+                                  onUploadError={handleImageUploadError}
                                 />
                               </div>
-                            ))}
-                            
-                            {/* 프리미엄 박람회인 경우에만 프리미엄 부스 설정 가능 */}
-                            {expoIsPremium && (
-                              <>
-                                <div className={styles.detailItem}>
-                                  <div className={styles.detailLabel}>프리미엄 부스</div>
-                                  <ToggleSwitch
-                                    checked={editForm.isPremium || false}
-                                    onChange={(value) => handlePremiumToggle(value)}
-                                  />
-                                </div>
-                                
-                                {/* 프리미엄 부스인 경우에만 순위 입력 */}
-                                {editForm.isPremium && (
-                                  <div className={styles.detailItem}>
-                                    <div className={styles.detailLabel}>노출 순위 <span style={{color: 'red'}}>*</span></div>
-                                    <select
-                                      name="displayRank"
-                                      value={editForm.displayRank || ''}
-                                      onChange={handleChange}
-                                      className={styles.inputField}
-                                    >
-                                      <option value="">순위 선택</option>
-                                      <option value="1">1위</option>
-                                      <option value="2">2위</option>
-                                      <option value="3">3위</option>
-                                    </select>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
 
-                          {/* 담당자 정보 */}
-                          <div className={styles.column}>
-                            {contactFields.map((key) => (
-                              <div key={key} className={styles.detailItem}>
-                                <div className={styles.detailLabel}>
-                                  {fieldLabelMap[key]} <span style={{color: 'red'}}>*</span>
+                              <div className={styles.detailGrid}>
+                                <div className={styles.column}>
+                                  {boothFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
+                                      <input
+                                        type="text"
+                                        name={key}
+                                        value={editForm[key] || ''}
+                                        onChange={handleChange}
+                                        className={styles.inputField}
+                                      />
+                                      {errors[key] && (
+                                        <p className={styles.errorText}>{errors[key]}</p>
+                                      )}
+                                    </div>
+                                  ))}
+
+                                  {expoIsPremium && (
+                                    <>
+                                      <div className={styles.detailItem}>
+                                        <div className={styles.detailLabel}>프리미엄 부스</div>
+                                        <div className={styles.booleanGroup}>
+                                          <ToggleSwitch
+                                            checked={!!editForm.isPremium}
+                                            onChange={handlePremiumToggle}
+                                          />
+                                          <span className={styles.hintText}>
+                                            프리미엄이면 노출 순위를 선택하세요.
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {editForm.isPremium && (
+                                        <div className={styles.detailItem}>
+                                          <div className={styles.detailLabel}>노출 순위</div>
+                                          <select
+                                            name="displayRank"
+                                            value={editForm.displayRank || ''}
+                                            onChange={handleChange}
+                                            className={styles.inputField}
+                                          >
+                                            <option value="">순위 선택</option>
+                                            <option value="1">1위</option>
+                                            <option value="2">2위</option>
+                                            <option value="3">3위</option>
+                                          </select>
+                                          {errors.displayRank && (
+                                            <p className={styles.errorText}>{errors.displayRank}</p>
+                                          )}
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
-                                <input
-                                  name={key}
-                                  value={editForm[key] || ''}
-                                  onChange={handleChange}
-                                  className={styles.inputField}
-                                />
+
+                                <div className={styles.column}>
+                                  {contactFields.map((key) => (
+                                    <div key={key} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>
+                                        {fieldLabelMap[key]}
+                                      </div>
+                                      <input
+                                        name={key}
+                                        value={editForm[key] || ''}
+                                        onChange={handleChange}
+                                        className={styles.inputField}
+                                        inputMode={key === 'contactPhone' ? 'numeric' : undefined}
+                                      />
+                                      {errors[key] && (
+                                        <p className={styles.errorText}>{errors[key]}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            ))}
                             </div>
-                          </div>
-                        </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               <button className={styles.editBtn} onClick={handleSave}>
                                 저장
@@ -244,19 +326,18 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                             </div>
                           </>
                         ) : (
-                          // 읽기 전용 상세 뷰
                           <>
                             <div className={styles.topRow}>
                               <div className={styles.imageWrapper}>
                                 {row.mainImageUrl && (
-                                  <img 
-                                    src={row.mainImageUrl} 
-                                    alt="부스 이미지" 
+                                  <img
+                                    src={row.mainImageUrl}
+                                    alt="부스 이미지"
                                     className={styles.detailImage}
                                   />
                                 )}
                               </div>
-                              
+
                               <div className={styles.detailGrid}>
                                 <div className={styles.column}>
                                   {boothFields.map((key) => (
@@ -264,24 +345,26 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                       <div className={styles.detailLabel}>
                                         {fieldLabelMap[key]}
                                       </div>
-                                      <div className={styles.detailValue}>
-                                        {row[key] || '-'}
-                                      </div>
+                                      <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
-                                  
+
                                   {expoIsPremium && (
                                     <>
                                       <div className={styles.detailItem}>
                                         <div className={styles.detailLabel}>프리미엄 부스</div>
-                                        <div className={styles.detailValue}>
-                                          {row.isPremium ? '예' : '아니오'}
+                                        <div className={styles.booleanGroup}>
+                                          <ToggleSwitch
+                                            checked={!!row.isPremium}
+                                            onChange={() => {}}
+                                            disabled
+                                          />
                                         </div>
                                       </div>
                                       {row.isPremium && (
                                         <div className={styles.detailItem}>
                                           <div className={styles.detailLabel}>노출 순위</div>
-                                          <div className={styles.detailValue}>
+                                          <div className={styles.valueText}>
                                             {row.displayRank ? `${row.displayRank}위` : '-'}
                                           </div>
                                         </div>
@@ -296,23 +379,28 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                       <div className={styles.detailLabel}>
                                         {fieldLabelMap[key]}
                                       </div>
-                                      <div className={styles.detailValue}>
-                                        {row[key] || '-'}
-                                      </div>
+                                      <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
                                 </div>
                               </div>
                             </div>
 
+                            <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               {hasPermission && onUpdate && (
-                                <button className={styles.editBtn} onClick={() => handleEditClick(row)}>
+                                <button
+                                  className={styles.editBtn}
+                                  onClick={(e) => handleEditClick(e, row)}
+                                >
                                   수정
                                 </button>
                               )}
                               {hasPermission && onDelete && (
-                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={(e) => handleDeleteClick(e, row.id)}
+                                >
                                   삭제
                                 </button>
                               )}
@@ -333,4 +421,3 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
 }
 
 export default BoothTable;
-

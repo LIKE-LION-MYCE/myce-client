@@ -1,3 +1,4 @@
+/* BoothSettingForm.module.css */
 .container {
   width: 100%;
   font-family: 'Pretendard', sans-serif;
@@ -81,59 +82,14 @@
 
 .inputField:disabled::placeholder {
   color: #ccc;
-  opacity: 1; /* ensure visibility */
+  opacity: 1;
 }
 
-/* 예/아니오 스위치 */
-.booleanGroup {
-  display: flex;
-  gap: 12px;
-  margin-top: 9px;
-}
-
-.booleanInput {
-  display: none;
-}
-
-.booleanLabel {
-  padding: 6px 16px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+/* 에러 메시지 (인풋 색은 변경하지 않음) */
+.errorText {
+  margin-top: 6px;
   font-size: 12px;
-  cursor: pointer;
-  background-color: #f9f9f9;
-  color: #555;
-  transition: all 0.2s ease;
-}
-
-.booleanInput:checked + .booleanLabel {
-  background-color: #1e2a38;
-  color: white;
-  border-color: #1e2a38;
-}
-
-/* 뱃지 */
-.badgeRow {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 9px;
-}
-
-.badge {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 20px;
-  background-color: #f0f0f0;
-  color: #333;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.badge.red {
-  background-color: #ffe5e5;
-  color: #c0392b;
+  color: #e53935;
 }
 
 /* 버튼 */
@@ -174,43 +130,4 @@
 .cancelBtn:hover {
   background-color: #d9d9d9;
   color: #1e2a38;
-}
-
-.iconBtn {
-  font-size: 14px;
-}
-
-/* booleanGroup 내 라디오 버튼 스타일 */
-.booleanGroup {
-  display: flex;
-  gap: 12px;
-  margin-top: 9px;
-  align-items: center;
-}
-
-/* 라디오 버튼 실제 input은 숨김 */
-.booleanInput {
-  display: none;
-}
-
-/* 커스텀 라벨 스타일 */
-.booleanLabel {
-  padding: 6px 16px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  background-color: #f9f9f9;
-  color: #555;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-/* 체크된 라벨에 강조 */
-.booleanInput:checked + .booleanLabel {
-  background-color: #1e2a38;
-  color: #fff;
-  border-color: #1e2a38;
-  font-weight: 500;
-  box-shadow: 0 0 0 2px rgba(30, 42, 56, 0.2);
 }

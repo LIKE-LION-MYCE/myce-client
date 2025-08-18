@@ -4,15 +4,23 @@ import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
 import { logout } from '../../../api/service/auth/AuthService';
+import { useNotification } from '../../../context/NotificationContext';
+import { getUserInfoFromToken } from '../../../api/utils/jwtUtils';
 
 const MemberMainPageHeader = ({notification}) => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
   const navigate = useNavigate(); // useNavigate 훅 사용
 
+  // 사용자 권한 확인
+  const token = localStorage.getItem('access_token');
+  const userInfo = getUserInfoFromToken(token);
+  const isPlatformAdmin = userInfo?.role === 'PLATFORM_ADMIN';
+
   const menuItems = [
     { name: '박람회 목록', path: '/expo-list' },
     { name: '박람회 신청', path: '/expo-apply' },
-    { name: '광고 신청', path: '/ad-apply' }
+    { name: '광고 신청', path: '/ad-apply' },
+    ...(isPlatformAdmin ? [{ name: '플랫폼 관리', path: '/platform/admin/dashboard/revenue' }] : [])
   ];
 
   const handleMenuClick = (item) => {

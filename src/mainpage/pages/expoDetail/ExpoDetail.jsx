@@ -23,7 +23,7 @@ import TicketPurchaseModal from "../../components/ticketPurchaseModal/TicketPurc
 import NonMemberPurchaseModal from "../../components/nonMemberPurchaseModal/nonMemberPurchaseModal";
 import ChatModal from "../../../components/shared/chat/ChatModal";
 import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
-import { isTokenExpired } from "../../../api/utils/jwtUtils";
+import { isTokenExpired, decodeJWT } from "../../../api/utils/jwtUtils";
 import { getOrCreateExpoChatRoom } from "../../../api/service/chat/chatService";
 
 export default function ExpoDetail() {
@@ -37,6 +37,7 @@ export default function ExpoDetail() {
   const [booths, setBooths] = useState(null);
   const [businessProfile, setBusinessProfile] = useState(null);
   const [events, setEvents] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [activeTab, setActiveTab] = useState("info"); // info, tickets, booths, events, reviews, location
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,6 +53,26 @@ export default function ExpoDetail() {
   useEffect(() => {
     if (expoId) {
       loadExpoDetails();
+    }
+    
+    // 사용자 정보 확인
+    const token = localStorage.getItem('access_token');
+    if (token && !isTokenExpired(token)) {
+      try {
+        const decoded = decodeJWT(token);
+        setUserInfo({
+          id: decoded.memberId,
+          name: decoded.name
+        });
+      } catch (error) {
+        console.error('토큰 디코딩 실패:', error);
+      }
+    }
+
+    // URL 해시를 확인하여 해당 탭으로 이동
+    const hash = window.location.hash;
+    if (hash === '#reviews') {
+      setActiveTab('reviews');
     }
   }, [expoId]);
 
@@ -79,7 +100,8 @@ export default function ExpoDetail() {
         }),
         getExpoBookmarkStatus(expoId).catch((err) => {
           console.error("찜하기 상태 로드 실패:", err);
-          return null;
+          // 로그인하지 않은 경우 기본값 반환
+          return { isBookmarked: false };
         }),
         getExpoReviews(expoId).catch((err) => {
           console.error("리뷰 정보 로드 실패:", err);
@@ -114,14 +136,38 @@ export default function ExpoDetail() {
   };
 
   const handleBookmarkToggle = async () => {
+    // 로그인 확인
+    const token = localStorage.getItem('access_token');
+    if (!token || isTokenExpired(token)) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
     try {
-      await toggleExpoBookmark(expoId);
-      // 찜하기 상태 다시 로드
-      const updatedBookmarkStatus = await getExpoBookmarkStatus(expoId);
-      setBookmarkStatus(updatedBookmarkStatus);
+      const result = await toggleExpoBookmark(expoId);
+      
+      // 상태 즉시 업데이트
+      setBookmarkStatus(prev => ({
+        ...prev,
+        isBookmarked: result.isBookmarked
+      }));
+      
+      // 성공 메시지
+      if (result.isBookmarked) {
+        alert('북마크에 추가되었습니다.');
+      } else {
+        alert('북마크에서 제거되었습니다.');
+      }
+      
     } catch (err) {
       console.error("찜하기 토글 실패:", err);
-      alert("찜하기 처리에 실패했습니다.");
+      
+      if (err.response?.status === 401) {
+        alert('로그인이 필요한 서비스입니다.');
+        localStorage.removeItem('access_token');
+      } else {
+        alert("찜하기 처리에 실패했습니다.");
+      }
     }
   };
 
@@ -322,7 +368,7 @@ export default function ExpoDetail() {
             className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
             onClick={() => setActiveTab('reviews')}
           >
-            리뷰 ({reviews?.totalReviews || 0})
+            리뷰 ({reviews?.totalElements || 0})
           </button>
         </div>
 
@@ -352,7 +398,7 @@ export default function ExpoDetail() {
           )}
           
           {activeTab === 'reviews' && (
-            <ExpoReviews reviews={reviews} />
+            <ExpoReviews expoId={expoId} userInfo={userInfo} />
           )}
         </div>
 
