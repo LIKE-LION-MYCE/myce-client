@@ -62,6 +62,20 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, exp
       if (name === 'contactPhone') {
         return { ...prev, contactPhone: formatPhoneNumber(value) };
       }
+      if (name === 'startTime') {
+        // 시작시간은 정각(00분) 또는 30분만 허용
+        if (value && value.includes(':')) {
+          const [hour, minute] = value.split(':');
+          if (minute !== '00' && minute !== '30') {
+            // 가장 가까운 유효한 시간으로 자동 조정
+            const adjustedMinute = parseInt(minute) < 15 ? '00' : 
+                                   parseInt(minute) < 45 ? '30' : '00';
+            const adjustedHour = adjustedMinute === '00' && parseInt(minute) >= 45 ? 
+                               String(parseInt(hour) + 1).padStart(2, '0') : hour;
+            return { ...prev, [name]: `${adjustedHour}:${adjustedMinute}` };
+          }
+        }
+      }
       return { ...prev, [name]: value };
     });
 
@@ -98,6 +112,14 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, exp
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRe.test(f.contactEmail)) {
         e.contactEmail = '이메일 형식이 올바르지 않습니다.';
+      }
+    }
+
+    // 시작시간 분 단위 검증 (정각 또는 30분만 허용)
+    if (!e.startTime && f.startTime) {
+      const [, minute] = f.startTime.split(':');
+      if (minute !== '00' && minute !== '30') {
+        e.startTime = '시작시간은 정각(00분) 또는 30분만 입력 가능합니다.';
       }
     }
 
@@ -202,6 +224,8 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, exp
                 value={form.startTime}
                 onChange={handleChange}
                 aria-invalid={!!errors.startTime}
+                step="1800"
+                title="정각(00분) 또는 30분만 선택 가능합니다"
               />
               <span className={styles.timeDivider}>~</span>
               <input
