@@ -3,35 +3,13 @@ import { IoNotifications } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
-import { createSseInstance } from '../../../api/service/system/sse/SseListener'
 import { logout } from '../../../api/service/auth/AuthService';
 import { useNotification } from '../../../context/NotificationContext';
 import { getUserInfoFromToken } from '../../../api/utils/jwtUtils';
 
-const MemberMainPageHeader = () => {
+const MemberMainPageHeader = ({notification}) => {
   const [activeMenu, setActiveMenu] = useState('박람회 목록');
   const navigate = useNavigate(); // useNavigate 훅 사용
-  const { incrementUnreadCount } = useNotification();
-
-  useEffect(() => {
-    const sse = createSseInstance(
-      (event) => {
-        console.log('📩 SSE 메시지:', event.data);
-        // 새로운 알림이 왔을 때 읽지 않은 개수 증가
-        incrementUnreadCount();
-        
-        // 선택적으로 토스트 알림 등 추가 UI 표시 가능
-        // showToast(event.data);
-      },
-      (error) => {
-        console.error('❌ SSE 에러:', error);
-      }
-    );
-
-    return () => {
-      sse.close(); // 컴포넌트 언마운트 시 연결 해제
-    };
-  }, []);
 
   // 사용자 권한 확인
   const token = localStorage.getItem('access_token');
@@ -103,7 +81,7 @@ const MemberMainPageHeader = () => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
-        <NotificationButton />
+        <NotificationButton notification = {notification}/>
 
         <button className={styles.logoutBtn} onClick={handleLogoutClick}>로그아웃</button>
         <button className={styles.mypageBtn} onClick={handleMypageClick}>마이페이지</button>
