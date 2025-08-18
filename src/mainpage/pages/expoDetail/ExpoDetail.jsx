@@ -68,6 +68,12 @@ export default function ExpoDetail() {
         console.error('토큰 디코딩 실패:', error);
       }
     }
+
+    // URL 해시를 확인하여 해당 탭으로 이동
+    const hash = window.location.hash;
+    if (hash === '#reviews') {
+      setActiveTab('reviews');
+    }
   }, [expoId]);
 
   const loadExpoDetails = async () => {

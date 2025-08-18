@@ -28,6 +28,7 @@
 /* 드롭다운 버튼 */
 .dropdownButton {
   width: 100%;
+  min-width: 600px;
   padding: 16px 20px;
   border: 1px solid #dee2e6;
   border-radius: 12px;
