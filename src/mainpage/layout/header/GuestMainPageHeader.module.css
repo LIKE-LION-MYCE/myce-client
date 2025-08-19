@@ -120,6 +120,11 @@
   color: #6b7280;
 }
 
+.topRightActions {
+  margin-left: auto;
+  margin-right: 8rem;
+}
+
 .topRightLinks {
   display: flex;
   align-items: center;
@@ -152,7 +157,7 @@
   background: none;
   border: none;
   padding: 0.75rem 1.5rem;
-  font-size: 25px;
+  font-size: 1.25rem;
   font-weight: 500;
   color: #29292d;
   cursor: pointer;
@@ -194,6 +199,7 @@
   gap: 0.5rem;
   margin-right: 8rem;
   height: 40px;
+  font-size: 1.0rem;
 }
 
 .loginButton {
@@ -224,7 +230,7 @@
 
 .loginText {
   font-weight: 600;
-  font-size: 18px;
+  font-size: 1.0rem;
   color: #29292d;
   font-family: 'GmarketSansMedium', sans-serif;
 }
@@ -247,7 +253,7 @@
 }
 
 .actionButton:hover {
-  background: #f8f9fa;
+  background: #e9ecef;
 }
 
 .actionIcon {
@@ -258,7 +264,7 @@
 
 .actionText {
   font-weight: 600;
-  font-size: 18px;
+  font-size: 1.0rem;
   color: #29292d;
   font-family: 'GmarketSansMedium', sans-serif;
   line-height: 1;

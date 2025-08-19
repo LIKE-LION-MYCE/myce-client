@@ -29,7 +29,6 @@ const LanguageSelector = () => {
         aria-label={t('common.selectLanguage', '언어 선택')}
       >
         <span className={styles.globeIcon}>🌐</span>
-        <span className={styles.languageName}>국제화</span>
       </button>
       
       {isOpen && (

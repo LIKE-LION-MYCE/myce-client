@@ -19,18 +19,17 @@
 }
 
 .notificationWrapper:hover {
-  background: #f8f9fa;
+  background: #e9ecef;
 }
 
 .notificationIcon {
   color: #29292d;
-  width: 20px;
-  height: 20px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .notificationText {
   font-weight: 600;
-  font-size: 18px;
   color: #29292d;
   font-family: 'GmarketSansMedium', sans-serif;
   line-height: 1;

@@ -10,7 +10,7 @@ const GuestMainPageHeader = () => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const menuItems = [
-    { name: '홈', path: '/' },
+    { name: t('nav.home'), path: '/' },
     { name: t('nav.expoList'), path: '/expo-list' },
     { name: t('nav.expoApply'), path: '/expo-apply' },
     { name: t('nav.adApply'), path: '/ad-apply' }
@@ -72,6 +72,9 @@ const GuestMainPageHeader = () => {
             <div>얼리버드 티켓 모음</div>
           </div>
         </div>
+        <div className={styles.topRightActions}>
+          <LanguageSelector />
+        </div>
       </div>
       
       {/* 하단 줄 */}
@@ -88,7 +91,6 @@ const GuestMainPageHeader = () => {
           ))}
         </nav>
         <div className={styles.rightActions}>
-          <LanguageSelector />
           <button className={styles.actionButton} onClick={goToLogin}>
             <svg className={styles.actionIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>

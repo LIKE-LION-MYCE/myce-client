@@ -20,7 +20,7 @@
 }
 
 .currentLanguage:hover {
-  background: #f8f9fa;
+  background: #e9ecef;
 }
 
 .languageFlag {
@@ -29,13 +29,12 @@
 }
 
 .globeIcon {
-  font-size: 20px;
+  font-size: 1.5rem;
   filter: grayscale(1) brightness(0.2);
 }
 
 .languageName {
   font-weight: 600;
-  font-size: 18px;
   color: #29292d;
   font-family: 'GmarketSansMedium', sans-serif;
   line-height: 1;
