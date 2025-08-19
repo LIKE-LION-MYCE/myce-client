@@ -22,7 +22,6 @@ function ReservationPaymentCardButton({
   sessionId,
 }) {
   const [loading, setLoading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -92,7 +91,6 @@ function ReservationPaymentCardButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
-            setIsVerifying(true); // 결제 검증 시작
             try {
               // 새로운 통합 API 사용
               const res = await instance.post("/payment/reservation/verify", {
@@ -113,7 +111,6 @@ function ReservationPaymentCardButton({
               console.log("merchant_uid:", rsp.merchant_uid);
               console.log("백엔드 응답 데이터:", res.data);
 
-              setIsVerifying(false); // 검증 완료
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
                 // 백엔드 응답의 실제 reservationId 사용
@@ -126,7 +123,6 @@ function ReservationPaymentCardButton({
                 );
               }
             } catch (err) {
-              setIsVerifying(false); // 검증 실패시도 오버레이 숨김
               // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황
               // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 함.
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
@@ -192,19 +188,6 @@ function ReservationPaymentCardButton({
           "카드 결제"
         )}
       </button>
-      
-      {isVerifying && (
-        <div className={styles.verificationOverlay}>
-          <div className={styles.verificationModal}>
-            <div className={styles.verificationSpinner}></div>
-            <div className={styles.verificationTitle}>결제 검증 중</div>
-            <div className={styles.verificationMessage}>
-              결제가 완료되었습니다.<br/>
-              서버에서 결제 내역을 확인하고 있습니다...
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
