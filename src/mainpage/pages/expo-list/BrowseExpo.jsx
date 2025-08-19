@@ -48,18 +48,48 @@ export default function BrowseExpo() {
             error={error}
             onBookmarkActionComplete={refresh}
           />
-          {/* Pagination Controls */}
+
+          {/* Simple Page Numbers */}
           <div className={styles.pagination}>
             <button
+              className={styles.paginationBtn}
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.first}
             >
               이전
             </button>
-            <span>
-              페이지 {pagination.number + 1} / {pagination.totalPages}
-            </span>
+
+            {Array.from({ length: pagination.totalPages }, (_, i) => i)
+              .filter((page) => {
+                const currentPage = pagination.number;
+                const totalPages = pagination.totalPages;
+
+                // 총 페이지가 5 이하면 모든 페이지 표시
+                if (totalPages <= 5) return true;
+
+                // 현재 페이지 기준으로 앞뒤 2개씩 (총 5개) 표시
+                const start = Math.max(
+                  0,
+                  Math.min(currentPage - 2, totalPages - 5)
+                );
+                const end = Math.min(totalPages - 1, start + 4);
+
+                return page >= start && page <= end;
+              })
+              .map((page) => (
+                <button
+                  key={page}
+                  className={`${styles.paginationBtn} ${styles.pageNumber} ${
+                    page === pagination.number ? styles.active : ""
+                  }`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page + 1}
+                </button>
+              ))}
+
             <button
+              className={styles.paginationBtn}
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.last}
             >
