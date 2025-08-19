@@ -47,18 +47,18 @@
 
 /* 각 입력 칸의 크기 조정 */
 .part1 {
-  width: 60px;  /* 3자리 */
-  min-width: 60px;
+  width: 70px;  /* 3자리 */
+  min-width: 70px;
 }
 
 .part2 {
-  width: 70px;  /* 4자리 */
-  min-width: 70px;
+  width: 85px;  /* 4자리 */
+  min-width: 85px;
 }
 
 .part3 {
-  width: 70px;  /* 4자리 */
-  min-width: 70px;
+  width: 85px;  /* 4자리 */
+  min-width: 85px;
 }
 
 .separator {

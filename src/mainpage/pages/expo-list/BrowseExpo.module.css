@@ -36,3 +36,50 @@
   font-weight: normal;
   color: #888;
 }
+
+/* Simple Page Numbers Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.paginationBtn {
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  border-color: #000000;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.paginationBtn:disabled {
+  cursor: not-allowed;
+  background-color: #f8f8f8;
+  color: #cccccc;
+  border-color: #f0f0f0;
+}
+
+.pageNumber {
+  min-width: 40px;
+  padding: 10px 12px;
+}
+
+.paginationBtn.active {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+

@@ -6,7 +6,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import homepageI18n from './i18n_homepage.js';
 import expoDetailI18n from './i18n_expodetail.js';
 import nonmemberI18n from './i18n_nonmember.js';
-import mypageI18n from './i18n_mypage.js';
+import mypageI18n from './i18n_mypaged.js';
 
 // 리소스 병합 함수
 const mergeResources = (mainResources, ...additionalResources) => {

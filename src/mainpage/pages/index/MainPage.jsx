@@ -16,7 +16,16 @@ export default function MainPage() {
   const [mainBanners, setMainBanners] = useState([]);
   const [subBanners, setSubBanners] = useState([]);
   const [footerBanners, setFooterBanners] = useState([]);
-  const { expos, setExpos, setFilters, isLoading, error } = useExpoData();
+  const {
+    expos,
+    setExpos,
+    setFilters,
+    isLoading,
+    error,
+    refresh,
+    pagination,
+    setPagination,
+  } = useExpoData(8);
   const {
     categories,
     isLoading: categoriesLoading,
@@ -88,10 +97,10 @@ export default function MainPage() {
       />
       <LoadMoreButton />
 
-      <UpcomingCardList/>
+      <UpcomingCardList />
 
       <FooterBanner banners={footerBanners} />
-      <BestReviews/>
+      <BestReviews />
       <SubBanners banners={subBanners} />
       <FloatingChatButton />
     </div>
