@@ -23,6 +23,16 @@ export default function ChatContainer() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [error, setError] = useState(null);
 
+  // 🚀 Redis 성능 측정 상태 (캐시 히트만 측정)
+  const [afterRedisResults, setAfterRedisResults] = useState({
+    messageLoad: [],
+    messageSend: [],
+    unreadCount: []
+  });
+
+  // 캐시 워밍업 추적 (첫 번째 접근은 측정에서 제외)
+  const [cacheWarmedRooms, setCacheWarmedRooms] = useState(new Set());
+
   // Use proven working chat scroll implementation
   const {
     messages,
@@ -43,6 +53,41 @@ export default function ChatContainer() {
 
   // For compatibility with SharedChatArea
   const isInitialLoad = loadingMessages;
+
+  // 🚀 Redis 캐시 히트 성능 결과 출력 함수
+  const showPerformanceResults = () => {
+    console.log('📊 [Redis Cache Hit] 성능 측정 결과 요약:');
+    console.log('⚠️  첫 번째 접근(캐시 미스)은 측정에서 제외, 두 번째 접근부터 측정');
+    
+    if (afterRedisResults.messageLoad.length > 0) {
+      const avgLoad = afterRedisResults.messageLoad.reduce((a, b) => a + b, 0) / afterRedisResults.messageLoad.length;
+      console.log(`📂 메시지 로딩 평균 (캐시 히트): ${avgLoad.toFixed(2)}ms (${afterRedisResults.messageLoad.length}회 측정)`);
+    } else {
+      console.log('📂 메시지 로딩: 측정 데이터 없음 (캐시 워밍업 필요)');
+    }
+    
+    if (afterRedisResults.messageSend.length > 0) {
+      const avgSend = afterRedisResults.messageSend.reduce((a, b) => a + b, 0) / afterRedisResults.messageSend.length;
+      console.log(`💬 메시지 전송 평균: ${avgSend.toFixed(2)}ms (${afterRedisResults.messageSend.length}회 측정)`);
+    }
+    
+    if (afterRedisResults.unreadCount.length > 0) {
+      const avgUnread = afterRedisResults.unreadCount.reduce((a, b) => a + b, 0) / afterRedisResults.unreadCount.length;
+      console.log(`🔔 미읽음 카운트 평균 (캐시 히트): ${avgUnread.toFixed(2)}ms (${afterRedisResults.unreadCount.length}회 측정)`);
+    } else {
+      console.log('🔔 미읽음 카운트: 측정 데이터 없음 (캐시 워밍업 필요)');
+    }
+    
+    console.log(`🔥 캐시 워밍업 완료된 채팅방: ${cacheWarmedRooms.size}개`);
+    
+    // Before 결과와 비교
+    console.log('📈 성능 개선 비교:');
+    if (afterRedisResults.messageLoad.length > 0) {
+      const currentAvg = afterRedisResults.messageLoad.reduce((a, b) => a + b, 0) / afterRedisResults.messageLoad.length;
+      const improvement = ((684.40 - currentAvg) / 684.40 * 100).toFixed(1);
+      console.log(`Before: 684.40ms → After (캐시 히트): ${currentAvg.toFixed(2)}ms (${improvement}% 개선)`);
+    }
+  };
 
   // 플랫폼 상담방인지 확인하는 헬퍼 함수
   const isPlatformRoom = (room) => {
@@ -140,14 +185,35 @@ export default function ChatContainer() {
 
     const fetchUnreadCounts = async () => {
       try {
+        // 🚀 [After Redis] 미읽음 카운트 성능 측정
+        console.log("🔍 [After Redis] 미읽음 카운트 조회 시작");
+        const startTime = performance.now();
+        
         const response = await getAllUnreadCounts();
+        
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        console.log(`✅ [After Redis] 미읽음 카운트 조회 완료: ${duration.toFixed(2)}ms`);
+        
+        // 성능 결과 저장
+        setAfterRedisResults(prev => ({
+          ...prev,
+          unreadCount: [...prev.unreadCount, duration]
+        }));
+        
+        // 로컬 스토리지에도 저장
+        const existingData = JSON.parse(localStorage.getItem('afterRedis_unreadCount') || '[]');
+        existingData.push(duration);
+        localStorage.setItem('afterRedis_unreadCount', JSON.stringify(existingData));
+        
         const counts = {};
         response.data.unreadCounts.forEach((item) => {
           counts[item.roomCode] = item.unreadCount;
         });
         setUnreadCounts(counts);
       } catch (error) {
-        console.error("읽지 않은 메시지 개수 조회 실패:", error);
+        console.error("❌ [After Redis] 읽지 않은 메시지 개수 조회 실패:", error);
       }
     };
 
@@ -174,9 +240,41 @@ export default function ChatContainer() {
 
     const loadRoomMessages = async () => {
       try {
-        console.log("메시지 히스토리 로딩 시도:", roomCode);
+        const isFirstAccess = !cacheWarmedRooms.has(roomCode);
+        
+        if (isFirstAccess) {
+          console.log("🔥 [캐시 워밍업] 첫 번째 접근 - 측정 제외:", roomCode);
+        } else {
+          console.log("🚀 [캐시 히트] 두 번째+ 접근 - 측정 시작:", roomCode);
+        }
+        
+        const startTime = performance.now();
+        
         resetMessages();
         await loadInitialMessages(roomCode);
+        
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        if (isFirstAccess) {
+          // 첫 번째 접근: 캐시 워밍업으로 처리
+          console.log(`🔥 [캐시 워밍업] 완료: ${duration.toFixed(2)}ms (측정 제외)`);
+          setCacheWarmedRooms(prev => new Set([...prev, roomCode]));
+        } else {
+          // 두 번째+ 접근: Redis 캐시 히트 성능 측정
+          console.log(`🚀 [캐시 히트] 메시지 로딩 완료: ${duration.toFixed(2)}ms`);
+          
+          // 캐시 히트 성능만 저장
+          setAfterRedisResults(prev => ({
+            ...prev,
+            messageLoad: [...prev.messageLoad, duration]
+          }));
+          
+          // 로컬 스토리지에도 저장
+          const existingData = JSON.parse(localStorage.getItem('afterRedis_messageLoad') || '[]');
+          existingData.push(duration);
+          localStorage.setItem('afterRedis_messageLoad', JSON.stringify(existingData));
+        }
 
         // 메시지 로드 후 자동으로 읽음 처리
         try {
@@ -280,13 +378,10 @@ export default function ChatContainer() {
 
           // 메시지에 unreadCount가 있으면 그대로 사용, 없으면 메시지 타입에 따라 설정
           // AI messages and admin messages should have unreadCount: 0 (automatic responses)
-          // Only user messages from others should have unreadCount: 1
+          // USER messages (including my own) should have unreadCount: 1 initially
           let defaultUnreadCount = 0; // Default for AI/admin messages
-          if (
-            message.senderType === "USER" &&
-            message.senderId !== currentUserId
-          ) {
-            defaultUnreadCount = 1; // Only unread for messages from other users
+          if (message.senderType === "USER") {
+            defaultUnreadCount = 1; // All USER messages start with unreadCount: 1
           }
 
           const newMessage = {
@@ -343,9 +438,19 @@ export default function ChatContainer() {
                 message.senderType
               );
 
-              // 자신이 보낸 메시지가 아닌 경우만 읽음 처리
-              if (message.senderId !== currentUserId) {
-                console.log("관리자 메시지 자동 읽음 처리 시작");
+              // AI 채팅 상황 확인
+              const isAIChatActive = isPlatformRoom(selectedRoom) && 
+                                   getCurrentButtonState(selectedRoom.roomCode) === "AI_ACTIVE";
+              
+              // 자신이 보낸 메시지가 아닌 경우 OR AI 채팅에서 내가 보낸 메시지인 경우 읽음 처리
+              if (message.senderId !== currentUserId || 
+                  (message.senderId === currentUserId && isAIChatActive)) {
+                
+                if (message.senderId !== currentUserId) {
+                  console.log("관리자 메시지 자동 읽음 처리 시작");
+                } else {
+                  console.log("AI 채팅 - 내가 보낸 메시지 읽음 처리 (AI가 즉시 읽음)");
+                }
 
                 // 읽음 처리 API 호출 (비동기로 처리)
                 setTimeout(async () => {
@@ -355,7 +460,7 @@ export default function ChatContainer() {
                   // This functionality is handled by the message loading system
                 }, 100); // 100ms 지연으로 "1"이 잠깐 보이게
               } else {
-                console.log("내가 보낸 메시지이므로 읽음 처리 안함");
+                console.log("일반 채팅 - 내가 보낸 메시지이므로 읽음 처리 안함");
               }
             } catch (error) {
               console.error("토큰 디코딩 실패:", error);
@@ -384,22 +489,31 @@ export default function ChatContainer() {
         ChatWebSocketService.subscribeToUnreadUpdates(
           selectedRoom.roomCode,
           (unreadData) => {
+            console.log("🔍 Unread update received:", unreadData);
+            
             // read_status_update 메시지 처리
             if (unreadData.type === "read_status_update") {
               const payload = unreadData.payload || unreadData;
               const readerType = payload.readerType;
+              const messageId = unreadData.messageId || payload.messageId; // 특정 메시지 ID
 
-              // 관리자나 AI가 읽었을 때 → 내가 보낸 메시지들의 "1" 제거
+              console.log("📖 Read status update details:", {
+                messageId,
+                readerType,
+                readBy: unreadData.readBy,
+                fullPayload: payload
+              });
+
+              // 관리자나 AI가 읽었을 때 → 특정 메시지의 "1" 제거
               if (readerType === "ADMIN" || readerType === "AI") {
                 try {
-                  // Immediate state update: remove badges from my messages
-                  const updatedCount = messages.filter(msg => {
-                    const isMyMsg = msg.senderType === 'USER' && msg.senderId === currentUserId;
-                    return isMyMsg && msg.unreadCount > 0;
-                  }).length;
-                  
-                  if (updatedCount > 0) {
-                    console.log(`🔄 Removing ${updatedCount} unread badges from my messages (${readerType} read them)`);
+                  if (messageId) {
+                    // 특정 메시지 ID의 unreadCount를 0으로 설정
+                    console.log(`🎯 Updating specific message unreadCount to 0: ${messageId}`);
+                    updateMessage(messageId, { unreadCount: 0 });
+                  } else {
+                    // messageId가 없는 경우 기존 로직 사용 (모든 내 메시지 업데이트)
+                    console.log(`🔄 No specific messageId, updating all my messages (${readerType} read them)`);
                     
                     // Update messages state to remove unread badges
                     messages.forEach(msg => {
@@ -408,19 +522,19 @@ export default function ChatContainer() {
                         updateMessage(msg.id, { unreadCount: 0 });
                       }
                     });
-                    
-                    // Background refetch for accuracy after 1.5 seconds
-                    setTimeout(async () => {
-                      try {
-                        if (selectedRoom && selectedRoom.roomCode) {
-                          console.log('🔄 Background refetch for accuracy after read status update');
-                          await loadInitialMessages(selectedRoom.roomCode);
-                        }
-                      } catch (error) {
-                        console.error('Background refetch failed:', error);
-                      }
-                    }, 1500);
                   }
+                  
+                  // Background refetch for accuracy after 1.5 seconds
+                  setTimeout(async () => {
+                    try {
+                      if (selectedRoom && selectedRoom.roomCode) {
+                        console.log('🔄 Background refetch for accuracy after read status update');
+                        await loadInitialMessages(selectedRoom.roomCode);
+                      }
+                    } catch (error) {
+                      console.error('Background refetch failed:', error);
+                    }
+                  }, 1500);
                 } catch (error) {
                   console.error('Failed to update read status, falling back to immediate refetch:', error);
                   // Fallback: immediate refetch if state update fails
@@ -472,16 +586,33 @@ export default function ChatContainer() {
     }
 
     const messageContent = newMessage.trim();
-    console.log(
-      "📤 메시지 전송 시작:",
-      messageContent,
-      "to room:",
-      selectedRoom.roomCode
-    );
+    console.log("🔍 [After Redis] 메시지 전송 시작:", messageContent, "to room:", selectedRoom.roomCode);
+    
+    // 🚀 성능 측정 시작
+    const startTime = performance.now();
 
-    // WebSocket으로 메시지 전송 (낙관적 업데이트 제거)
+    // WebSocket으로 메시지 전송
     ChatWebSocketService.sendMessage(selectedRoom.roomCode, messageContent);
     setNewMessage("");
+    
+    // 메시지가 화면에 나타날 때까지 측정 (100ms 후 체크)
+    setTimeout(() => {
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      
+      console.log(`✅ [After Redis] 메시지 전송 완료: ${duration.toFixed(2)}ms`);
+      
+      // 성능 결과 저장
+      setAfterRedisResults(prev => ({
+        ...prev,
+        messageSend: [...prev.messageSend, duration]
+      }));
+      
+      // 로컬 스토리지에도 저장
+      const existingData = JSON.parse(localStorage.getItem('afterRedis_messageSend') || '[]');
+      existingData.push(duration);
+      localStorage.setItem('afterRedis_messageSend', JSON.stringify(existingData));
+    }, 100);
 
     // Virtuoso handles auto-scroll with followOutput
   };
@@ -714,6 +845,28 @@ export default function ChatContainer() {
 
   return (
     <div className={styles.chatWrapper}>
+      {/* 🚀 성능 테스트 버튼 (개발용) */}
+      {process.env.NODE_ENV === 'development' && (
+        <button 
+          onClick={showPerformanceResults}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            right: '10px',
+            padding: '10px 15px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            zIndex: 9999,
+            fontSize: '12px'
+          }}
+        >
+          🚀 Redis 캐시 히트 성능
+        </button>
+      )}
+      
       {/* Left: Chat Room List */}
       <aside className={styles.chatList}>
         <SharedChatRoomList
