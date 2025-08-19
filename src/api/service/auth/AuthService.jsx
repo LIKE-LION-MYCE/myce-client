@@ -57,8 +57,7 @@ const logout = async () => {
 }
 
 
-// const SERVER_URL = 'http://localhost:8080/api';
-const SERVER_URL = 'https://api.myce.live/api';
+const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
 const googleLogin = () => {
     window.location.href = `${SERVER_URL}/oauth2/authorization/google`;
