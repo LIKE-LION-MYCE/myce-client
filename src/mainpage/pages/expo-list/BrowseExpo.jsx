@@ -7,6 +7,7 @@ import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
 
 export default function BrowseExpo() {
+  const { t } = useTranslation();
   const {
     expos,
     filters,
