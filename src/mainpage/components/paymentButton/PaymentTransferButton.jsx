@@ -20,6 +20,7 @@ function PaymentTransferButton({
   usedMileage,
   savedMileage,
   reserverInfos,
+  sessionId,
 }) {
   const [loading, setLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -95,7 +96,8 @@ function PaymentTransferButton({
                 savedMileage: savedMileage || 0,
                 reserverInfos: reserverInfos,
                 ticketId: ticketId,
-                quantity: quantity
+                quantity: quantity,
+                sessionId: sessionId
               });
 
               console.log("imp_uid:", rsp.imp_uid);
