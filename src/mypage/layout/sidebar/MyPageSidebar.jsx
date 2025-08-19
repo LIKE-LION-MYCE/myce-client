@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getMyInfo } from "../../../api/service/user/memberApi";
 import { getGradeImagePath } from "../../../utils/gradeImageMapper";
 import styles from "./MyPageSidebar.module.css";
 
 const MyPageSidebar = () => {
+  const { t } = useTranslation();
   const [userInfo, setUserInfo] = useState({
     name: "로딩 중...",
     loginId: "",
@@ -79,7 +81,7 @@ const MyPageSidebar = () => {
         <p className={styles.grade}>{userInfo.gradeDescription}</p>
         <p className={styles.mileage}>
           <img src="/images/icons/mileage.png" alt="마일리지" className={styles.mileageIcon} />
-          마일리지 : {(userInfo.mileage || 0).toLocaleString()} point
+          {t('mypage.mileage')} : {(userInfo.mileage || 0).toLocaleString()} point
         </p>
       </div>
       <nav className={styles.menu}>
@@ -91,7 +93,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              회원 정보
+              {t('mypage.userInfo')}
             </NavLink>
           </li>
           <li>
@@ -101,7 +103,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              예매 내역
+              {t('mypage.reservation')}
             </NavLink>
           </li>
           <li>
@@ -111,11 +113,21 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              찜한 박람회
+              {t('mypage.savedExpo')}
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/mypage/system-settings"
+              className={({ isActive }) =>
+                isActive ? styles.active : undefined
+              }
+            >
+              {t('mypage.systemSettings')}
             </NavLink>
           </li>
         </ul>
-        <div className={styles.sectionLabel}>광고주 메뉴</div>
+        <div className={styles.sectionLabel}>{t('mypage.advertiserMenu')}</div>
         <ul>
           <li>
             <NavLink
@@ -124,11 +136,11 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              광고 현황
+              {t('mypage.adStatusMenu')}
             </NavLink>
           </li>
         </ul>
-        <div className={styles.sectionLabel}>박람회 관리자 메뉴</div>
+        <div className={styles.sectionLabel}>{t('mypage.expoAdminMenu')}</div>
         <ul>
           <li>
             <NavLink
@@ -137,7 +149,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              박람회 신청 현황
+              {t('mypage.expoStatusMenu')}
             </NavLink>
           </li>
         </ul>

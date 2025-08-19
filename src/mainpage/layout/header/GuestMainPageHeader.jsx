@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
+import { useTranslation } from 'react-i18next';
 import styles from './GuestMainPageHeader.module.css';
 
 const GuestMainPageHeader = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   const goToHome = () => {
@@ -35,13 +37,13 @@ const GuestMainPageHeader = () => {
 
       <div className={styles.rightSection}>
         <button className={`${styles.authBtn} ${styles.loginBtn}`} onClick={goToLogin}>
-          로그인
+          {t('nav.login')}
         </button>
         <button className={`${styles.authBtn} ${styles.joinBtn}`} onClick={goToJoin}>
-          회원가입
+          {t('nav.signup')}
         </button>
         <button className={`${styles.authBtn} ${styles.studyBtn}`} onClick={goToStudy}>
-          예매 확인
+          {t('nav.reservationCheck')}
         </button>
       </div>
     </nav>

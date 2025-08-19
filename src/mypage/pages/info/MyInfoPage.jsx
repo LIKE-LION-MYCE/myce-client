@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./MyInfoPage.module.css";
 import ChangePasswordModal from "../../components/changePasswordModal/changePasswordModal";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
@@ -6,6 +7,7 @@ import DateInput from "../../../common/components/dateInput/DateInput";
 import { getMemberInfo, updateMemberInfo, withdrawMember } from "../../../api/service/user/memberApi";
 
 const MyInfoPage = () => {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [memberInfo, setMemberInfo] = useState({
@@ -36,25 +38,25 @@ const MyInfoPage = () => {
   const handleUpdateInfo = async () => {
     try {
       await updateMemberInfo(memberInfo);
-      alert('회원 정보가 수정되었습니다.');
+      alert(t('mypage.infoUpdated'));
       setOriginalInfo({...memberInfo});
       setIsEditMode(false);
     } catch (error) {
       console.error('회원 정보 수정 실패:', error);
-      alert('회원 정보 수정에 실패했습니다.');
+      alert(t('mypage.infoUpdateFailed'));
     }
   };
 
   const handleWithdraw = async () => {
-    if (window.confirm('정말로 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.')) {
+    if (window.confirm(t('mypage.withdrawConfirm'))) {
       try {
         await withdrawMember();
-        alert('회원 탈퇴가 완료되었습니다.');
+        alert(t('mypage.withdrawSuccess'));
         localStorage.removeItem('access_token');
         window.location.href = '/';
       } catch (error) {
         console.error('회원 탈퇴 실패:', error);
-        alert('회원 탈퇴에 실패했습니다.');
+        alert(t('mypage.withdrawFailed'));
       }
     }
   };
@@ -76,21 +78,21 @@ const MyInfoPage = () => {
   }, []);
 
   if (loading) {
-    return <div className={styles.wrapper}>로딩 중...</div>;
+    return <div className={styles.wrapper}>{t('common.loading')}</div>;
   }
 
   return (
     <div className={styles.wrapper}>
       {/* 전체 타이틀 */}
-      <h2 className={styles.pageTitle}>회원 정보</h2>
+      <h2 className={styles.pageTitle}>{t('mypage.userInfo')}</h2>
 
       {/* 흰색 박스 영역 전체 */}
       <section className={styles.card}>
-        <h2 className={styles.sectionTitle}>기본 정보</h2>
+        <h2 className={styles.sectionTitle}>{t('mypage.basicInfo')}</h2>
 
         <div className={styles.formGrid}>
           <div className={styles.formGroup}>
-            <label>이름</label>
+            <label>{t('mypage.name')}</label>
             <input 
               type="text" 
               value={memberInfo.name} 
@@ -99,7 +101,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>생년월일</label>
+            <label>{t('mypage.birthDate')}</label>
             <DateInput
               name="birth"
               value={memberInfo.birth}
@@ -111,11 +113,11 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>아이디</label>
+            <label>{t('mypage.userId')}</label>
             <input type="text" disabled value={memberInfo.loginId} className={`${styles.inputText} ${styles.disabled}`} />
           </div>
           <div className={styles.formGroup}>
-            <label>전화번호</label>
+            <label>{t('mypage.phoneNumber')}</label>
             <PhoneInput
               name="phone"
               value={memberInfo.phone}
@@ -130,7 +132,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>이메일</label>
+            <label>{t('mypage.email')}</label>
             <input 
               type="email" 
               value={memberInfo.email}
@@ -140,7 +142,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.genderGroup}>
-            <label>성별</label>
+            <label>{t('mypage.gender')}</label>
             <div>
               <label>
                 <input 
@@ -150,7 +152,7 @@ const MyInfoPage = () => {
                   checked={memberInfo.gender === 'FEMALE'}
                   disabled={!isEditMode}
                   onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
-                /> 여자
+                /> {t('mypage.female')}
               </label>
               <label>
                 <input 
@@ -160,7 +162,7 @@ const MyInfoPage = () => {
                   checked={memberInfo.gender === 'MALE'}
                   disabled={!isEditMode}
                   onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
-                /> 남자
+                /> {t('mypage.male')}
               </label>
             </div>
           </div>
@@ -169,15 +171,15 @@ const MyInfoPage = () => {
         <div className={styles.buttonGroup}>
           {!isEditMode ? (
             <>
-              <button className={styles.modifyBtn} onClick={handleEditToggle}>정보 수정</button>
+              <button className={styles.modifyBtn} onClick={handleEditToggle}>{t('mypage.modifyInfo')}</button>
               <button className={styles.passwordBtn} onClick={openModal}>
-                비밀번호 변경
+                {t('mypage.changePassword')}
               </button>
             </>
           ) : (
             <>
-              <button className={styles.saveBtn} onClick={handleUpdateInfo}>저장</button>
-              <button className={styles.cancelBtn} onClick={handleEditToggle}>취소</button>
+              <button className={styles.saveBtn} onClick={handleUpdateInfo}>{t('mypage.save')}</button>
+              <button className={styles.cancelBtn} onClick={handleEditToggle}>{t('mypage.cancel')}</button>
             </>
           )}
         </div>
@@ -185,11 +187,11 @@ const MyInfoPage = () => {
 
       {/* 계정 관리 영역 */}
       <section className={styles.card}>
-        <h2 className={styles.sectionTitle}>계정 관리</h2>
+        <h2 className={styles.sectionTitle}>{t('mypage.accountManagement')}</h2>
         <div className={styles.dangerBox}>
-          <strong>회원 탈퇴</strong>
-          <p>계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다.</p>
-          <button className={styles.withdrawBtn} onClick={handleWithdraw}>회원 탈퇴</button>
+          <strong>{t('mypage.withdraw')}</strong>
+          <p>{t('mypage.withdrawWarning')}</p>
+          <button className={styles.withdrawBtn} onClick={handleWithdraw}>{t('mypage.withdraw')}</button>
         </div>
       </section>
 
