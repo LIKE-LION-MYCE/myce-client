@@ -6,6 +6,7 @@ import DaumPostcode from "react-daum-postcode";
 import { getCategories } from "../../../api/service/user/categoryApi";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
+import EstimatedPaymentModal from "../../../common/components/estimatedPaymentModal/EstimatedPaymentModal";
 
 const ExpoApply2 = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const ExpoApply2 = () => {
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 주소 검색 팝업
   const [formErrors, setFormErrors] = useState({}); // 입력값별 에러 메시지
   const [categoryOptions, setCategoryOptions] = useState([]); // 카테고리 목록을 동적으로 관리할 상태 추가
+  const [showEstimatedPaymentModal, setShowEstimatedPaymentModal] = useState(false); // 예상 결제금액 모달 상태
 
   // 모든 폼 입력값 검증 (제출 시/입력 시)
   const validateAll = (data = formData) => {
@@ -131,6 +133,26 @@ const ExpoApply2 = () => {
         categoryIds: "카테고리를 1개 이상 선택해주세요.",
       }));
     }
+  };
+
+  // 예상 결제금액 모달 열기
+  const handleEstimatedPaymentClick = () => {
+    if (!initialExpoData) {
+      alert("이전 페이지 데이터가 없습니다. 첫 번째 페이지를 먼저 작성해주세요.");
+      return;
+    }
+    
+    if (!initialExpoData.displayStartDate || !initialExpoData.displayEndDate) {
+      alert("게시 기간 정보가 없습니다. 첫 번째 페이지에서 게시 기간을 입력해주세요.");
+      return;
+    }
+    
+    setShowEstimatedPaymentModal(true);
+  };
+
+  // 예상 결제금액 모달 닫기
+  const handleCloseEstimatedPaymentModal = () => {
+    setShowEstimatedPaymentModal(false);
   };
 
   // 폼 제출
@@ -284,6 +306,20 @@ const ExpoApply2 = () => {
                 />
                 <span className={styles["toggleSlider"]}></span>
               </label>
+            </div>
+            
+            {/* 예상 결제금액 확인 버튼 */}
+            <div className={styles["estimated-payment-section"]}>
+              <button
+                type="button"
+                className={styles["estimated-payment-button"]}
+                onClick={handleEstimatedPaymentClick}
+              >
+                💰 예상 결제금액 확인
+              </button>
+              <p className={styles["estimated-payment-description"]}>
+                입력하신 정보를 바탕으로 예상 결제금액을 확인할 수 있습니다.
+              </p>
             </div>
           </div>
 
@@ -446,6 +482,15 @@ const ExpoApply2 = () => {
           </div>
         </form>
       </div>
+
+      {/* 예상 결제금액 모달 */}
+      <EstimatedPaymentModal
+        isOpen={showEstimatedPaymentModal}
+        onClose={handleCloseEstimatedPaymentModal}
+        displayStartDate={initialExpoData?.displayStartDate}
+        displayEndDate={initialExpoData?.displayEndDate}
+        isPremium={isPremiumChecked}
+      />
     </div>
   );
 };

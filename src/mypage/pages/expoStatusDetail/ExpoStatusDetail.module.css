@@ -3,9 +3,9 @@
   background-color: #f9fafb;
   border-radius: 0.75rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  /* 부모의 60% 너비로 설정하고 가운데 정렬 */
-  width: 60%;
-  max-width: 1200px;
+  /* 더 넓은 너비로 설정하고 가운데 정렬 */
+  width: 90%;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
