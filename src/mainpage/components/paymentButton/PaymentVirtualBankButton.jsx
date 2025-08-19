@@ -84,13 +84,13 @@ function PaymentVirtualBankButton({
             setIsVerifying(true);
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
-              // 새로운 통합 API 사용
+              // 새로운 통합 API 사용 (Redis 기반)
               const res = await instance.post("/payment/reservation/verify-vbank", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
                 targetType: targetType,
-                targetId: reservationId,
+                targetId: 0, // Redis 임시 ID 사용
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
                 reserverInfos: reserverInfos,
@@ -101,12 +101,17 @@ function PaymentVirtualBankButton({
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
+              console.log("백엔드 응답 데이터:", res.data);
+
               setIsVerifying(false);
               if (res.status === 200 && res.data.status === "PENDING") {
                 alert(
                   "결제 검증 성공! 예매가 완료되었습니다. 금일까지 가상 계좌에 입금해주세요."
                 );
-                navigate(`/reservation-pending/${reservationId}`);
+                // 백엔드 응답의 실제 reservationId 사용
+                const actualReservationId = res.data.reservationId || reservationId;
+                console.log("리다이렉트할 reservationId:", actualReservationId);
+                navigate(`/reservation-pending/${actualReservationId}`);
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
@@ -114,22 +119,16 @@ function PaymentVirtualBankButton({
               }
             } catch (err) {
               setIsVerifying(false);
-              alert("결제 처리 중 오류가 발생했습니다.");
-              // reservation 데이터 삭제
-              await deleteReservationPending(reservationId);
+              console.error("서버 처리 실패:", err);
+              console.error("에러 응답:", err.response?.data);
+              console.error("에러 상태:", err.response?.status);
+              
+              const errorMessage = err.response?.data?.message || err.message || "알 수 없는 오류";
+              alert(`결제 처리 중 오류가 발생했습니다: ${errorMessage}`);
+              // Redis에서 사전 예약 데이터 정리는 백엔드에서 처리
             }
           } else {
-            try {
-              await deleteReservationPending(reservationId);
-              console.log(
-                "결제 실패로 인해 사전 예약이 성공적으로 취소되었습니다."
-              );
-            } catch (cancelError) {
-              console.error(
-                "사전 예약 취소 처리 중 오류가 발생했습니다.",
-                cancelError
-              );
-            }
+            console.log("결제가 취소되었습니다.");
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
             navigate(`/detail/${expoId}`);
           }
