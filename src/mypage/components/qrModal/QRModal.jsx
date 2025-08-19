@@ -34,6 +34,33 @@ const QRModal = ({
     return `${startTime} ~ ${endTime}`;
   };
 
+  // QR 상태 한글 변환
+  const formatQrStatus = (status) => {
+    const statusMap = {
+      'ACTIVE': '사용 가능',
+      'USED': '사용됨',
+      'EXPIRED': '만료됨',
+      'APPROVED': '활성화 대기'
+    };
+    return statusMap[status] || status;
+  };
+
+  // QR 상태에 따른 스타일 클래스
+  const getQrStatusClass = (status) => {
+    switch(status) {
+      case 'ACTIVE':
+        return styles.statusActive;
+      case 'APPROVED':
+        return styles.statusApproved;
+      case 'USED':
+        return styles.statusUsed;
+      case 'EXPIRED':
+        return styles.statusExpired;
+      default:
+        return styles.statusDefault;
+    }
+  };
+
   const handleSaveQR = () => {
     // QR 코드 이미지 다운로드 로직
     const link = document.createElement('a');
@@ -105,6 +132,20 @@ const QRModal = ({
                   <span className={styles.infoLabel}>예매일</span>
                   <span className={styles.infoValue}>{formatDate(reservationInfo?.createdAt)}</span>
                 </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>QR 상태</span>
+                  <span className={`${styles.infoValue} ${getQrStatusClass(reserver?.qrStatus)}`}>
+                    {formatQrStatus(reserver?.qrStatus)}
+                  </span>
+                </div>
+                {reserver?.qrUsedAt && (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>사용일시</span>
+                    <span className={styles.infoValue}>
+                      {new Date(reserver.qrUsedAt).toLocaleString('ko-KR')}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

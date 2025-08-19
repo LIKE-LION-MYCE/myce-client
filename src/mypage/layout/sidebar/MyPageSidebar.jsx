@@ -115,14 +115,9 @@ const MyPageSidebar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/mypage/setting"
-              className={({ isActive }) =>
-                isActive ? styles.active : undefined
-              }
-            >
+            <span className={styles.disabled}>
               시스템 설정
-            </NavLink>
+            </span>
           </li>
         </ul>
         <div className={styles.sectionLabel}>광고주 메뉴</div>

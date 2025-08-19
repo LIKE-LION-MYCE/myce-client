@@ -472,11 +472,11 @@ function AdsStatusDetail() {
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
-              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 전/후 구분) */}
+              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 정보 유무로 구분) */}
               {statusConf.buttons === "conditional" && (
                 <>
-                  {/* 임시로 상태가 PENDING_PAYMENT 이후 상태면 결제 정보 있다고 가정 */}
-                  {adData?.status && !['PENDING_APPROVAL', 'PENDING_PAYMENT', 'REJECTED'].includes(adData.status) ? (
+                  {/* paymentInfo 존재 여부로 결제/환불 정보 표시 결정 */}
+                  {adData?.paymentInfo ? (
                     <>
                       <button
                         className={`${styles.btn} ${styles.blue}`}

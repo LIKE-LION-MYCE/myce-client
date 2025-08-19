@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ExpoStatusPage.module.css';
+import settingStyles from '../../../expo-admin/pages/setting/Setting.module.css';
 import { getMyExpos } from '../../../api/service/user/memberApi';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 
@@ -80,16 +81,16 @@ const ExpoStatusPage = () => {
   // 상태에 따른 CSS 클래스 매핑
   const getStatusClass = (status) => {
     const statusClassMap = {
-      'PENDING_APPROVAL': styles.승인대기,
-      'PENDING_PAYMENT': styles.결제대기,
-      'PENDING_PUBLISH': styles.게시대기,
-      'PENDING_CANCEL': styles.취소대기,
-      'PUBLISHED': styles.게시중,
-      'PUBLISH_ENDED': styles.게시종료,
-      'SETTLEMENT_REQUESTED': styles.정산요청,
-      'COMPLETED': styles.종료됨,
-      'REJECTED': styles.승인거절,
-      'CANCELLED': styles.취소완료
+      'PENDING_APPROVAL': styles.badgePENDING_APPROVAL,
+      'PENDING_PAYMENT': styles.badgePENDING_PAYMENT,
+      'PENDING_PUBLISH': styles.badgePENDING_PUBLISH,
+      'PENDING_CANCEL': styles.badgePENDING_CANCEL,
+      'PUBLISHED': styles.badgePUBLISHED,
+      'PUBLISH_ENDED': styles.badgePUBLISH_ENDED,
+      'SETTLEMENT_REQUESTED': styles.badgeSETTLEMENT_REQUESTED,
+      'COMPLETED': styles.badgeCOMPLETED,
+      'REJECTED': styles.badgeREJECTED,
+      'CANCELLED': styles.badgeCANCELLED
     };
     return statusClassMap[status] || '';
   };
@@ -223,7 +224,7 @@ const ExpoStatusPage = () => {
                   <td>{expo.postPeriod}</td>
                   <td>{expo.location}</td>
                   <td>
-                    <span className={`${styles.statusBadge} ${getStatusClass(expo.statusKey)}`}>
+                    <span className={`${settingStyles.badge} ${settingStyles[`badge${expo.statusKey}`]} ${styles.statusBadge}`}>
                       {expo.status}
                     </span>
                   </td>

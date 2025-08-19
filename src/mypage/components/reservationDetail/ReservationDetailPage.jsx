@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./ReservationDetailPage.module.css";
+import settingStyles from "../../../expo-admin/pages/setting/Setting.module.css";
 import QRModal from "../qrModal/QRModal";
 import RefundModal from "../refundModal/RefundModal";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
@@ -193,12 +194,42 @@ const ReservationDetailPage = () => {
   }
 
   const { expoInfo, reservationInfo, reserverInfos } = reservationData;
+  
+  // 예약이 취소된 상태인지 확인
+  const isCancelled = reservationInfo?.status === 'CANCELLED';
+  
+  // 상태 라벨 매핑
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      'CONFIRMED': '예약 확정',
+      'CANCELLED': '예약 취소',
+      'CONFIRMED_PENDING': '결제 대기'
+    };
+    return statusMap[status] || status;
+  };
+  
+  // 상태별 뱃지 클래스 매핑
+  const getStatusBadgeClass = (status) => {
+    const statusClassMap = {
+      'CONFIRMED': 'badgePUBLISHED',
+      'CANCELLED': 'badgeCANCELLED', 
+      'CONFIRMED_PENDING': 'badgePENDING_APPROVAL'
+    };
+    return statusClassMap[status] || 'badgePENDING_APPROVAL';
+  };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <div className={styles.mainContent}>
-        <h2 className={styles.pageTitle}>예약 확인</h2>
+        <div className={styles.titleSection}>
+          <h2 className={styles.pageTitle}>예약 확인</h2>
+          {reservationInfo?.status && (
+            <span className={`${settingStyles.badge} ${settingStyles[getStatusBadgeClass(reservationInfo.status)]} ${styles.statusBadge}`}>
+              {getStatusLabel(reservationInfo.status)}
+            </span>
+          )}
+        </div>
 
         <div className={styles.gridContainer}>
           {/* 상단 전체 - 참여 행사 정보 */}
@@ -327,11 +358,11 @@ const ReservationDetailPage = () => {
                     </td>
                     <td>
                       <button
-                        className={`${styles.qrBtn} ${!isExpoActive() ? styles.qrBtnDisabled : ''}`}
+                        className={`${styles.qrBtn} ${(!isExpoActive() || isCancelled) ? styles.qrBtnDisabled : ''}`}
                         onClick={() => handleQrOpen(member.qrCodeUrl, member)}
-                        disabled={!isExpoActive()}
+                        disabled={!isExpoActive() || isCancelled}
                       >
-                        {isExpoActive() ? '상세보기' : '기간 외'}
+                        {isCancelled ? '취소됨' : isExpoActive() ? '상세보기' : '기간 외'}
                       </button>
                     </td>
                   </tr>
@@ -444,10 +475,11 @@ const ReservationDetailPage = () => {
           style={{ display: "flex", justifyContent: "center", marginTop: 40 }}
         >
           <button 
-            className={styles.neutralCancelBtn}
+            className={`${styles.neutralCancelBtn} ${isCancelled ? styles.disabledBtn : ''}`}
             onClick={() => setIsRefundModalOpen(true)}
+            disabled={isCancelled}
           >
-            예약 취소
+            {isCancelled ? '취소 완료' : '예약 취소'}
           </button>
         </div>
       </div>

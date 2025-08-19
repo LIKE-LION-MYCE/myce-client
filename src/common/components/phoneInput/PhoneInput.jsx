@@ -152,45 +152,47 @@ const PhoneInput = ({
 
   return (
     <div className={styles.phoneInputWrapper}>
-      <input
-        ref={input1Ref}
-        type="tel"
-        value={part1}
-        onChange={handlePart1Change}
-        onKeyDown={(e) => handleKeyDown(e, part1, null)}
-        onBlur={handleBlur}
-        placeholder="010"
-        disabled={disabled}
-        className={`${styles.phonePartInput} ${styles.part1} ${hasError ? styles.error : ''}`}
-        maxLength="3"
-        {...otherProps}
-      />
-      <span className={styles.separator}>-</span>
-      <input
-        ref={input2Ref}
-        type="tel"
-        value={part2}
-        onChange={handlePart2Change}
-        onKeyDown={(e) => handleKeyDown(e, part2, input1Ref)}
-        onBlur={handleBlur}
-        placeholder="1234"
-        disabled={disabled}
-        className={`${styles.phonePartInput} ${styles.part2} ${hasError ? styles.error : ''}`}
-        maxLength="4"
-      />
-      <span className={styles.separator}>-</span>
-      <input
-        ref={input3Ref}
-        type="tel"
-        value={part3}
-        onChange={handlePart3Change}
-        onKeyDown={(e) => handleKeyDown(e, part3, input2Ref)}
-        onBlur={handleBlur}
-        placeholder="5678"
-        disabled={disabled}
-        className={`${styles.phonePartInput} ${styles.part3} ${hasError ? styles.error : ''}`}
-        maxLength="4"
-      />
+      <div className={styles.phoneInputRow}>
+        <input
+          ref={input1Ref}
+          type="tel"
+          value={part1}
+          onChange={handlePart1Change}
+          onKeyDown={(e) => handleKeyDown(e, part1, null)}
+          onBlur={handleBlur}
+          placeholder="010"
+          disabled={disabled}
+          className={`${styles.phonePartInput} ${styles.part1} ${hasError ? styles.error : ''}`}
+          maxLength="3"
+          {...otherProps}
+        />
+        <span className={styles.separator}>-</span>
+        <input
+          ref={input2Ref}
+          type="tel"
+          value={part2}
+          onChange={handlePart2Change}
+          onKeyDown={(e) => handleKeyDown(e, part2, input1Ref)}
+          onBlur={handleBlur}
+          placeholder="1234"
+          disabled={disabled}
+          className={`${styles.phonePartInput} ${styles.part2} ${hasError ? styles.error : ''}`}
+          maxLength="4"
+        />
+        <span className={styles.separator}>-</span>
+        <input
+          ref={input3Ref}
+          type="tel"
+          value={part3}
+          onChange={handlePart3Change}
+          onKeyDown={(e) => handleKeyDown(e, part3, input2Ref)}
+          onBlur={handleBlur}
+          placeholder="5678"
+          disabled={disabled}
+          className={`${styles.phonePartInput} ${styles.part3} ${hasError ? styles.error : ''}`}
+          maxLength="4"
+        />
+      </div>
       {hasError && (
         <span className={styles.errorMessage}>
           {error}
