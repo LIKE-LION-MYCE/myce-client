@@ -45,14 +45,15 @@ const LoginPage = () => {
     try {
       const res = await login(activeTab, userId, password);
       if (res.status === HttpStatusCode.Ok) {
-        movePage();
+        await movePage();
       }
     } catch (err) {
       alert('로그인에 실패했습니다.');
       console.log(`로그인에 실패했습니다. ${err}`);
     }
+  };
 
-     const movePage = async () => {
+  const movePage = async () => {
     // 관리자 코드 로그인인 경우 박람회 관리 페이지로 리다이렉트
         if (activeTab === LOGIN_TYPE.ADMIN_CODE) {
           try {
@@ -71,7 +72,6 @@ const LoginPage = () => {
         // 일반 로그인이거나 관리자 권한 조회 실패시 메인 페이지로
         window.location.href = '/';
   }
-  };
 
   return (
     <AuthLayout>
