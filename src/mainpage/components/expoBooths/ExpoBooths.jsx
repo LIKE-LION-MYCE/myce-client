@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { FiSearch } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import styles from './ExpoBooths.module.css';
 import BoothDetailModal from '../boothDetailModal/BoothDetailModal';
 
 
 const ExpoBooths = ({ booths }) => {
+  const { t } = useTranslation();
   const [selectedBooth, setSelectedBooth] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -46,13 +48,13 @@ const ExpoBooths = ({ booths }) => {
 
   return (
     <div className={styles.boothsSection}>
-      <h3>부스 정보</h3>
+      <h3>{t('expoDetail.expoBooths.title', '부스 정보')}</h3>
       
       {/* 프리미엄 부스 카드 섹션 */}
       {premiumBooths.length > 0 && (
         <div className={styles.premiumSection}>
           <h4 className={styles.sectionTitle}>
-            추천 부스
+            {t('expoDetail.expoBooths.premiumTitle', '추천 부스')}
           </h4>
           <div className={styles.premiumCards}>
             {premiumBooths.map((booth) => (
@@ -84,7 +86,7 @@ const ExpoBooths = ({ booths }) => {
 
       {/* 일반 부스 테이블 섹션 */}
       <div className={styles.regularSection}>
-        <h4 className={styles.sectionTitle}>부스 목록</h4>
+        <h4 className={styles.sectionTitle}>{t('expoDetail.expoBooths.regularTitle', '부스 목록')}</h4>
         
         {/* 검색바 */}
         <div className={styles.searchContainer}>
@@ -93,7 +95,7 @@ const ExpoBooths = ({ booths }) => {
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              placeholder="부스명 또는 설명 검색"
+              placeholder={t('expoDetail.expoBooths.searchPlaceholder', '부스명 또는 설명 검색')}
               className={styles.searchInput}
             />
             <FiSearch className={styles.searchIcon} />
@@ -103,9 +105,9 @@ const ExpoBooths = ({ booths }) => {
         {regularBooths.length > 0 ? (
           <div className={styles.boothsTable}>
             <div className={styles.tableHeader}>
-              <div className={styles.headerCell}>부스 번호</div>
-              <div className={styles.headerCell}>부스명</div>
-              <div className={styles.headerCell}>담당자</div>
+              <div className={styles.headerCell}>{t('expoDetail.expoBooths.boothNumber', '부스 번호')}</div>
+              <div className={styles.headerCell}>{t('expoDetail.expoBooths.boothName', '부스명')}</div>
+              <div className={styles.headerCell}>{t('expoDetail.expoBooths.contactName', '담당자')}</div>
             </div>
             <div className={styles.tableBody}>
               {regularBooths.map((booth) => (
@@ -130,13 +132,13 @@ const ExpoBooths = ({ booths }) => {
             </div>
           </div>
         ) : (
-          <p className={styles.emptyMessage}>검색 결과가 없습니다.</p>
+          <p className={styles.emptyMessage}>{t('expoDetail.expoBooths.noSearchResults', '검색 결과가 없습니다.')}</p>
         )}
       </div>
 
       {/* 부스가 없는 경우 */}
       {(!booths || booths.length === 0) && (
-        <p className={styles.emptyMessage}>등록된 부스가 없습니다.</p>
+        <p className={styles.emptyMessage}>{t('expoDetail.expoBooths.noBooths', '등록된 부스가 없습니다.')}</p>
       )}
 
       <BoothDetailModal

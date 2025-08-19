@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./ExpoCardList.module.css";
 import { FiBookmark, FiBookmark as FiBookmarkFill } from "react-icons/fi";
 import {
   saveFavorite,
   deleteFavorite,
 } from "../../../api/service/user/FavoriteService";
+// 메인 i18n.js에서 모든 리소스를 병합하므로 별도 import 불필요
 
 export default function ExpoCardList({
   expos,
@@ -13,6 +15,7 @@ export default function ExpoCardList({
   error,
   onBookmarkActionComplete,
 }) {
+  const { t } = useTranslation();
   const [internalExpos, setInternalExpos] = useState([]);
   const navigate = useNavigate();
 
@@ -28,7 +31,7 @@ export default function ExpoCardList({
     e.stopPropagation();
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      alert("비회원은 북마크 기능을 이용하실 수 없습니다");
+      alert(t("homepage.expoCard.bookmark.loginRequired", "비회원은 북마크 기능을 이용하실 수 없습니다"));
       return;
     }
 
@@ -56,7 +59,7 @@ export default function ExpoCardList({
       }
     } catch (apiError) {
       console.error("Error toggling bookmark:", apiError);
-      alert("북마크 기능 처리 중 오류가 발생했습니다.");
+      alert(t("homepage.expoCard.bookmark.error", "북마크 기능 처리 중 오류가 발생했습니다."));
     }
   };
 
@@ -79,15 +82,15 @@ export default function ExpoCardList({
   };
 
   if (isLoading) {
-    return <div className={styles.loading}>박람회 불러오는 중</div>;
+    return <div className={styles.loading}>{t("homepage.loading.expos", "박람회 불러오는 중")}</div>;
   }
 
   if (error) {
-    return <div className={styles.error}>Error: {error.message}</div>;
+    return <div className={styles.error}>{t("homepage.errors.expos", "박람회를 불러오는데 실패했습니다")}: {error.message}</div>;
   }
 
   if (!internalExpos || internalExpos.length === 0) {
-    return <div className={styles.noResults}>박람회가 없습니다.</div>;
+    return <div className={styles.noResults}>{t("homepage.common.noResults", "박람회가 없습니다.")}</div>;
   }
 
   return (
@@ -106,7 +109,7 @@ export default function ExpoCardList({
           <div className={styles.overlay}>
             <h3 className={styles.title}>{expo.title}</h3>
             <p className={styles.remain}>
-              남은 티켓 수량 : {expo.remainingQuantity}개
+              {t("homepage.expoCard.remainingTickets", "남은 티켓 수량")} : {expo.remainingQuantity}{t("homepage.expoCard.ticketUnit", "개")}
             </p>
             <p className={styles.location}>
               {expo.location} {expo.locationDetail}
@@ -118,7 +121,7 @@ export default function ExpoCardList({
           <button
             className={styles.bookmark}
             onClick={(e) => handleBookmarkToggle(e, expo.expoId)}
-            aria-label="즐겨찾기 토글"
+            aria-label={t("homepage.expoCard.bookmark.toggle", "즐겨찾기 토글")}
           >
             {expo.isBookmark ? (
               <FiBookmarkFill size={20} fill="white" />

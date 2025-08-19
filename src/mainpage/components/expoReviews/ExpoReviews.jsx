@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { reviewAPI } from '../../../api/service/review/ReviewService';
 import ReviewForm from '../review/ReviewForm';
 import Pagination from '../../../common/components/pagination/Pagination';
 import styles from './ExpoReviews.module.css';
 
 const ExpoReviews = ({ expoId, userInfo }) => {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -93,13 +95,13 @@ const ExpoReviews = ({ expoId, userInfo }) => {
       if (editingReview) {
         const response = await reviewAPI.updateReview(editingReview.id, reviewData);
         if (response.success) {
-          alert('리뷰가 수정되었습니다.');
+          alert(t('expoDetail.expoReviews.messages.reviewUpdated', '리뷰가 수정되었습니다.'));
           setEditingReview(null);
         }
       } else {
         const response = await reviewAPI.createReview({ ...reviewData, expoId });
         if (response.success) {
-          alert('리뷰가 작성되었습니다.');
+          alert(t('expoDetail.expoReviews.messages.reviewCreated', '리뷰가 작성되었습니다.'));
           setCanWriteReview(false);
           setHasReviewed(true);
         }
@@ -108,7 +110,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
       await fetchReviews();
     } catch (error) {
       console.error('리뷰 처리 실패:', error);
-      alert(error.response?.data?.message || '리뷰 처리 중 오류가 발생했습니다.');
+      alert(error.response?.data?.message || t('expoDetail.expoReviews.messages.reviewError', '리뷰 처리 중 오류가 발생했습니다.'));
     }
   };
 
@@ -118,27 +120,27 @@ const ExpoReviews = ({ expoId, userInfo }) => {
   };
 
   const handleDeleteReview = async (reviewId) => {
-    if (!window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+    if (!window.confirm(t('expoDetail.expoReviews.confirmDelete', '정말로 이 리뷰를 삭제하시겠습니까?'))) {
       return;
     }
 
     try {
       const response = await reviewAPI.deleteReview(reviewId);
       if (response.success) {
-        alert('리뷰가 삭제되었습니다.');
+        alert(t('expoDetail.expoReviews.messages.reviewDeleted', '리뷰가 삭제되었습니다.'));
         setCanWriteReview(true);
         setHasReviewed(false);
         await fetchReviews();
       }
     } catch (error) {
       console.error('리뷰 삭제 실패:', error);
-      alert(error.response?.data?.message || '리뷰 삭제 중 오류가 발생했습니다.');
+      alert(error.response?.data?.message || t('expoDetail.expoReviews.messages.deleteError', '리뷰 삭제 중 오류가 발생했습니다.'));
     }
   };
   return (
     <div className={styles.reviewsSection}>
       <div className={styles.reviewHeader}>
-        <h3>리뷰 ({totalElements})</h3>
+        <h3>{t('expoDetail.expoReviews.titleWithCount', '리뷰 ({{count}})', { count: totalElements })}</h3>
         
         <div className={styles.headerActions}>
           <div className={styles.sortButtons}>
@@ -146,13 +148,13 @@ const ExpoReviews = ({ expoId, userInfo }) => {
               className={`${styles.sortBtn} ${sortBy === 'latest' ? styles.active : ''}`}
               onClick={() => handleSortChange('latest')}
             >
-              최신순
+              {t('expoDetail.expoReviews.sortOptions.latest', '최신순')}
             </button>
             <button 
               className={`${styles.sortBtn} ${sortBy === 'rating' ? styles.active : ''}`}
               onClick={() => handleSortChange('rating')}
             >
-              평점순
+              {t('expoDetail.expoReviews.sortOptions.rating', '평점순')}
             </button>
           </div>
 
@@ -164,7 +166,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                 setShowForm(true);
               }}
             >
-              리뷰 작성
+              {t('expoDetail.expoReviews.writeReview', '리뷰 작성')}
             </button>
           )}
         </div>
@@ -172,7 +174,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
 
       {userInfo && !canWriteReview && !hasReviewed && (
         <div className={styles.noPermissionMessage}>
-          박람회에 참석한 후 리뷰를 작성할 수 있습니다.
+          {t('expoDetail.expoReviews.noPermissionMessage', '박람회에 참석한 후 리뷰를 작성할 수 있습니다.')}
         </div>
       )}
 
@@ -188,19 +190,19 @@ const ExpoReviews = ({ expoId, userInfo }) => {
       )}
 
       {loading ? (
-        <div className={styles.loading}>리뷰를 불러오는 중...</div>
+        <div className={styles.loading}>{t('expoDetail.expoReviews.loading', '리뷰를 불러오는 중...')}</div>
       ) : (
         <>
           {reviews.length > 0 ? (
             <>
               <div className={styles.reviewStats}>
-                <p>평균 평점: ⭐ {averageRating.toFixed(1)}</p>
-                <p>총 리뷰 수: {totalElements}개</p>
+                <p>{t('expoDetail.expoReviews.averageRating', '평균 평점')}: ⭐ {averageRating.toFixed(1)}</p>
+                <p>{t('expoDetail.expoReviews.totalReviews', '총 리뷰 수')}: {t('expoDetail.expoReviews.reviewsCount', '{{count}}개', { count: totalElements })}</p>
                 
                 {/* 별점별 분포 */}
                 <div className={styles.ratingSummary}>
                   <div className={styles.ratingBar}>
-                    <span>5점</span>
+                    <span>{t('expoDetail.expoReviews.ratingLabels.fiveStars', '5점')}</span>
                     <div className={styles.barContainer}>
                       <div 
                         className={styles.bar} 
@@ -210,7 +212,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                     <span>{ratingSummary.fiveStars}</span>
                   </div>
                   <div className={styles.ratingBar}>
-                    <span>4점</span>
+                    <span>{t('expoDetail.expoReviews.ratingLabels.fourStars', '4점')}</span>
                     <div className={styles.barContainer}>
                       <div 
                         className={styles.bar} 
@@ -220,7 +222,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                     <span>{ratingSummary.fourStars}</span>
                   </div>
                   <div className={styles.ratingBar}>
-                    <span>3점</span>
+                    <span>{t('expoDetail.expoReviews.ratingLabels.threeStars', '3점')}</span>
                     <div className={styles.barContainer}>
                       <div 
                         className={styles.bar} 
@@ -230,7 +232,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                     <span>{ratingSummary.threeStars}</span>
                   </div>
                   <div className={styles.ratingBar}>
-                    <span>2점</span>
+                    <span>{t('expoDetail.expoReviews.ratingLabels.twoStars', '2점')}</span>
                     <div className={styles.barContainer}>
                       <div 
                         className={styles.bar} 
@@ -240,7 +242,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                     <span>{ratingSummary.twoStars}</span>
                   </div>
                   <div className={styles.ratingBar}>
-                    <span>1점</span>
+                    <span>{t('expoDetail.expoReviews.ratingLabels.oneStars', '1점')}</span>
                     <div className={styles.barContainer}>
                       <div 
                         className={styles.bar} 
@@ -259,7 +261,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                         <div className={styles.reviewerInfo}>
                           <span className={styles.reviewerName}>{review.memberName}</span>
                           {userInfo && userInfo.id === review.memberId && (
-                            <span className={styles.myReviewBadge}>내 리뷰</span>
+                            <span className={styles.myReviewBadge}>{t('expoDetail.expoReviews.myReviewBadge', '내 리뷰')}</span>
                           )}
                         </div>
                         <div className={styles.reviewRating}>
@@ -268,7 +270,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                         <div className={styles.reviewMeta}>
                           <span className={styles.reviewDate}>
                             {new Date(review.createdAt).toLocaleDateString('ko-KR')}
-                            {review.updatedAt !== review.createdAt && ' (수정됨)'}
+                            {review.updatedAt !== review.createdAt && ` ${t('expoDetail.expoReviews.modified', '(수정됨)')}`}
                           </span>
                           {userInfo && userInfo.id === review.memberId && (
                             <div className={styles.reviewActions}>
@@ -276,13 +278,13 @@ const ExpoReviews = ({ expoId, userInfo }) => {
                                 className={styles.editBtn}
                                 onClick={() => handleEditReview(review)}
                               >
-                                수정
+                                {t('expoDetail.expoReviews.editReview', '수정')}
                               </button>
                               <button 
                                 className={styles.deleteBtn}
                                 onClick={() => handleDeleteReview(review.id)}
                               >
-                                삭제
+                                {t('expoDetail.expoReviews.deleteReview', '삭제')}
                               </button>
                             </div>
                           )}
@@ -308,7 +310,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
               )}
             </>
           ) : (
-            <p>아직 리뷰가 없습니다.</p>
+            <p>{t('expoDetail.expoReviews.noReviews', '아직 리뷰가 없습니다.')}</p>
           )}
         </>
       )}

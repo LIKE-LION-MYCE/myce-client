@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import { useTranslation } from 'react-i18next';
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
+import LanguageSelector from '../../../common/components/language/LanguageSelector';
 import { logout } from '../../../api/service/auth/AuthService';
 import { useNotification } from '../../../context/NotificationContext';
 import { getUserInfoFromToken } from '../../../api/utils/jwtUtils';
@@ -90,6 +91,7 @@ const MemberMainPageHeader = ({notification}) => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
+        <LanguageSelector />
         <NotificationButton notification = {notification}/>
 
         <button className={styles.logoutBtn} onClick={handleLogoutClick}>{t('nav.logout')}</button>

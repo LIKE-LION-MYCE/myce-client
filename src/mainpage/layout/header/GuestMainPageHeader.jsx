@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import { useTranslation } from 'react-i18next';
 import styles from './GuestMainPageHeader.module.css';
+import LanguageSelector from '../../../common/components/language/LanguageSelector';
 
 const GuestMainPageHeader = () => {
   const { t } = useTranslation();
@@ -36,6 +37,7 @@ const GuestMainPageHeader = () => {
       </div>
 
       <div className={styles.rightSection}>
+        <LanguageSelector />
         <button className={`${styles.authBtn} ${styles.loginBtn}`} onClick={goToLogin}>
           {t('nav.login')}
         </button>
