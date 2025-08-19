@@ -101,11 +101,15 @@ function ReservationPaymentCardButton({
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
+              console.log("백엔드 응답 데이터:", res.data);
 
               setIsVerifying(false); // 검증 완료
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
-                navigate(`/reservation-success/${reservationId}`);
+                // 백엔드 응답의 실제 reservationId 사용
+                const actualReservationId = res.data.reservationId || reservationId;
+                console.log("리다이렉트할 reservationId:", actualReservationId);
+                navigate(`/reservation-success/${actualReservationId}`);
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
