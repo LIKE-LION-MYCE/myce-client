@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './ticketDropdown.module.css'; // Fixed case sensitivity: TicketDropdown -> ticketDropdown
 
 const TicketDropdown = ({ 
@@ -8,6 +9,7 @@ const TicketDropdown = ({
   onPurchase,
   disabled = false 
 }) => {
+  const { t } = useTranslation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -59,16 +61,16 @@ const TicketDropdown = ({
 
   const handlePurchaseClick = () => {
     if (!selectedTicketId || !tickets || tickets.length === 0) {
-      alert('티켓을 선택해주세요.');
+      alert(t('expoDetail.expoTickets.dropdown.alerts.selectTicket', '티켓을 선택해주세요.'));
       return;
     }
     
     const ticket = tickets.find(t => t.ticketId === selectedTicketId);
     if (ticket && !isTicketAvailable(ticket)) {
       if (ticket.remainingQuantity <= 0) {
-        alert('선택한 티켓이 매진되었습니다.');
+        alert(t('expoDetail.expoTickets.dropdown.alerts.ticketSoldOut', '선택한 티켓이 매진되었습니다.'));
       } else if (!isTicketSalePeriodValid(ticket)) {
-        alert('선택한 티켓의 판매 기간이 아닙니다.');
+        alert(t('expoDetail.expoTickets.dropdown.alerts.notInSalePeriod', '선택한 티켓의 판매 기간이 아닙니다.'));
       }
       return;
     }
@@ -78,7 +80,7 @@ const TicketDropdown = ({
 
   return (
     <div className={styles.ticketPurchaseSection}>
-      <h3>티켓 구매</h3>
+      <h3>{t('expoDetail.expoTickets.dropdown.title', '티켓 구매')}</h3>
       <div className={styles.ticketDropdownContainer}>
         <div className={styles.customDropdown} ref={dropdownRef}>
           <button 
@@ -88,9 +90,9 @@ const TicketDropdown = ({
             disabled={disabled || !tickets || tickets.length === 0}
           >
             {selectedTicket ? (
-              `${selectedTicket.name} - ${selectedTicket.price?.toLocaleString()}원`
+              `${selectedTicket.name} - ${selectedTicket.price?.toLocaleString()}${t('expoDetail.expoTickets.won', '원')}`
             ) : (
-              '티켓을 선택하세요'
+              t('expoDetail.expoTickets.dropdown.selectTicket', '티켓을 선택하세요')
             )}
             <span className={`${styles.dropdownArrow} ${dropdownOpen ? styles.open : ''}`}>
               ▼
@@ -117,19 +119,21 @@ const TicketDropdown = ({
                       type="button"
                       title={
                         !isSalePeriodValid 
-                          ? `판매기간: ${ticket.saleStartDate} ~ ${ticket.saleEndDate}` 
+                          ? t('expoDetail.expoTickets.dropdown.salePeriodTooltip', '판매기간: {{start}} ~ {{end}}', { start: ticket.saleStartDate, end: ticket.saleEndDate })
                           : ticket.remainingQuantity <= 0 
-                            ? '매진된 티켓입니다' 
+                            ? t('expoDetail.expoTickets.dropdown.soldOutTooltip', '매진된 티켓입니다')
                             : ''
                       }
                     >
-                      {ticket.name} - {ticket.price?.toLocaleString()}원 
-                      ({!isSalePeriodValid ? '판매기간 아님' : `남은 수량: ${ticket.remainingQuantity?.toLocaleString()}`})
+                      {ticket.name} - {ticket.price?.toLocaleString()}{t('expoDetail.expoTickets.won', '원')} 
+                      ({!isSalePeriodValid 
+                        ? t('expoDetail.expoTickets.dropdown.saleNotStarted', '판매기간 아님') 
+                        : `${t('expoDetail.expoTickets.dropdown.remainingQuantityLabel', '남은 수량')}: ${ticket.remainingQuantity?.toLocaleString()}`})
                     </button>
                   );
                 })
               ) : (
-                <div className={styles.noOptions}>등록된 티켓이 없습니다</div>
+                <div className={styles.noOptions}>{t('expoDetail.expoTickets.noTickets', '등록된 티켓이 없습니다')}</div>
               )}
             </div>
           )}
@@ -140,7 +144,7 @@ const TicketDropdown = ({
           disabled={!selectedTicketId || !tickets || tickets.length === 0 || disabled || (selectedTicket && !isTicketAvailable(selectedTicket))}
           onClick={handlePurchaseClick}
         >
-          구매하기
+          {t('expoDetail.expoTickets.dropdown.purchaseButton', '구매하기')}
         </button>
       </div>
     </div>

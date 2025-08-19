@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './UpcomingCard.module.css';
 
 const UpcomingCard = ({ 
@@ -6,6 +7,7 @@ const UpcomingCard = ({
   onClick,
   className = '' 
 }) => {
+  const { t } = useTranslation();
   const getTagClass = (color) => {
     const tagClasses = {
       purple: styles.tagPurple,
@@ -31,11 +33,11 @@ const UpcomingCard = ({
   const getStatusText = (status) => {
     switch (status) {
       case 'soldout':
-        return '매진';
+        return t('homepage.upcomingCard.status.soldout', '매진');
       case 'upcoming':
-        return '오픈예정';
+        return t('homepage.upcomingCard.status.upcoming', '오픈예정');
       case 'available':
-        return '예매가능';
+        return t('homepage.upcomingCard.status.available', '예매가능');
       default:
         return status;
     }

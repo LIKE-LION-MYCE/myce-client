@@ -145,6 +145,107 @@ const resources = {
           cancel: "취소",
           confirm: "확인",
           close: "닫기"
+        },
+        
+        // UpcomingCard
+        upcomingCard: {
+          status: {
+            soldout: "매진",
+            upcoming: "오픈예정", 
+            available: "예매가능"
+          }
+        },
+
+        // SidebarFilters
+        sidebarFilters: {
+          search: {
+            placeholder: "박람회를 검색하세요."
+          },
+          period: {
+            title: "기간",
+            months: "{{count}}개월",
+            start: "시작",
+            end: "종료"
+          },
+          category: {
+            title: "카테고리",
+            all: "전체"
+          },
+          reset: "필터 초기화"
+        },
+
+        // Footer
+        footer: {
+          companyAddress: "회사 도로명 주소 정보",
+          service: {
+            title: "서비스",
+            reservation: "박람회 예약",
+            inquiry: "예약 조회",
+            consultation: "일대일 상담"
+          },
+          business: {
+            title: "비즈니스",
+            application: "박람회 신청",
+            advertising: "광고 신청"
+          },
+          copyright: "© 2024 Myce. All rights reserved."
+        },
+
+        // ExpoApply
+        expoApply: {
+          validation: {
+            maxCapacity: {
+              required: "최대 수용 인원을 입력해주세요.",
+              numbersOnly: "숫자만 입력 가능합니다."
+            },
+            description: "박람회 상세 소개를 입력해주세요.",
+            companyName: "회사명을 입력해주세요.",
+            businessNumber: "사업자 번호를 입력해주세요.",
+            companyAddress: "회사 주소를 입력해주세요.",
+            representativeName: "대표자명을 입력해주세요.",
+            representativeContact: "대표자 연락처를 입력해주세요.",
+            representativeEmail: "대표자 이메일을 입력해주세요.",
+            emailFormat: "올바른 이메일 형식이 아닙니다.",
+            categorySelection: "카테고리를 1개 이상 선택해주세요."
+          },
+          alerts: {
+            noPreviousData: "이전 페이지 데이터가 없습니다. 첫 번째 페이지를 먼저 작성해주세요.",
+            noDisplayPeriod: "게시 기간 정보가 없습니다. 첫 번째 페이지에서 게시 기간을 입력해주세요.",
+            validationError: "필수 정보를 모두 올바르게 입력해주세요.",
+            registrationSuccess: "박람회 등록 완료!",
+            registrationError: "등록 중 오류가 발생했습니다."
+          },
+          form: {
+            maxCapacity: "최대 수용 인원",
+            maxCapacityPlaceholder: "예: 1000",
+            description: "박람회 상세 소개",
+            category: "카테고리",
+            categoryPlaceholder: "카테고리를 선택해주세요",
+            premiumService: "프리미엄 상위 노출 서비스 신청",
+            estimatedPayment: "💰 예상 결제금액 확인",
+            estimatedPaymentDesc: "입력하신 정보를 바탕으로 예상 결제금액을 확인할 수 있습니다.",
+            companyInfo: "회사 정보",
+            companyName: "회사명",
+            businessNumber: "사업자 번호",
+            companyAddress: "회사 주소",
+            addressPlaceholder: "주소 검색 버튼을 눌러주세요",
+            addressSearch: "주소 검색",
+            close: "닫기",
+            representativeName: "대표자명",
+            representativeContact: "대표자 연락처",
+            representativeEmail: "대표자 이메일",
+            emailPlaceholder: "예: hello@myce.com",
+            cancel: "취소",
+            submit: "등록"
+          }
+        },
+
+        // BrowseExpo
+        browseExpo: {
+          loadingCategories: "카테고리 로딩중...",
+          errorCategories: "카테고리 로딩 오류: {{message}}",
+          title: "전체 행사",
+          count: "{{count}}개의 행사"
         }
       }
     }
@@ -293,6 +394,107 @@ const resources = {
           cancel: "Cancel",
           confirm: "Confirm",
           close: "Close"
+        },
+        
+        // UpcomingCard
+        upcomingCard: {
+          status: {
+            soldout: "Sold Out",
+            upcoming: "Coming Soon", 
+            available: "Available"
+          }
+        },
+
+        // SidebarFilters
+        sidebarFilters: {
+          search: {
+            placeholder: "Search exhibitions"
+          },
+          period: {
+            title: "Period",
+            months: "{{count}} months",
+            start: "Start",
+            end: "End"
+          },
+          category: {
+            title: "Category",
+            all: "All"
+          },
+          reset: "Reset Filters"
+        },
+
+        // Footer
+        footer: {
+          companyAddress: "Company Address Information",
+          service: {
+            title: "Services",
+            reservation: "Exhibition Booking",
+            inquiry: "Booking Inquiry",
+            consultation: "1:1 Consultation"
+          },
+          business: {
+            title: "Business",
+            application: "Exhibition Application",
+            advertising: "Advertisement Application"
+          },
+          copyright: "© 2024 Myce. All rights reserved."
+        },
+
+        // ExpoApply
+        expoApply: {
+          validation: {
+            maxCapacity: {
+              required: "Please enter maximum capacity.",
+              numbersOnly: "Only numbers are allowed."
+            },
+            description: "Please enter exhibition description.",
+            companyName: "Please enter company name.",
+            businessNumber: "Please enter business registration number.",
+            companyAddress: "Please enter company address.",
+            representativeName: "Please enter representative name.",
+            representativeContact: "Please enter representative contact.",
+            representativeEmail: "Please enter representative email.",
+            emailFormat: "Invalid email format.",
+            categorySelection: "Please select at least one category."
+          },
+          alerts: {
+            noPreviousData: "No previous page data. Please complete the first page first.",
+            noDisplayPeriod: "No display period information. Please enter display period on the first page.",
+            validationError: "Please enter all required information correctly.",
+            registrationSuccess: "Exhibition registration completed!",
+            registrationError: "An error occurred during registration."
+          },
+          form: {
+            maxCapacity: "Maximum Capacity",
+            maxCapacityPlaceholder: "e.g.: 1000",
+            description: "Exhibition Description",
+            category: "Category",
+            categoryPlaceholder: "Please select a category",
+            premiumService: "Apply for Premium Top Exposure Service",
+            estimatedPayment: "💰 Check Estimated Payment",
+            estimatedPaymentDesc: "You can check the estimated payment amount based on the entered information.",
+            companyInfo: "Company Information",
+            companyName: "Company Name",
+            businessNumber: "Business Registration Number",
+            companyAddress: "Company Address",
+            addressPlaceholder: "Please click the address search button",
+            addressSearch: "Search Address",
+            close: "Close",
+            representativeName: "Representative Name",
+            representativeContact: "Representative Contact",
+            representativeEmail: "Representative Email",
+            emailPlaceholder: "e.g.: hello@myce.com",
+            cancel: "Cancel",
+            submit: "Register"
+          }
+        },
+
+        // BrowseExpo
+        browseExpo: {
+          loadingCategories: "Loading categories...",
+          errorCategories: "Error loading categories: {{message}}",
+          title: "All Events",
+          count: "{{count}} events"
         }
       }
     }
@@ -441,6 +643,107 @@ const resources = {
           cancel: "キャンセル",
           confirm: "確認",
           close: "閉じる"
+        },
+        
+        // UpcomingCard
+        upcomingCard: {
+          status: {
+            soldout: "満席",
+            upcoming: "開催予定", 
+            available: "予約可能"
+          }
+        },
+
+        // SidebarFilters
+        sidebarFilters: {
+          search: {
+            placeholder: "展示会を検索"
+          },
+          period: {
+            title: "期間",
+            months: "{{count}}ヶ月",
+            start: "開始",
+            end: "終了"
+          },
+          category: {
+            title: "カテゴリ",
+            all: "すべて"
+          },
+          reset: "フィルターリセット"
+        },
+
+        // Footer
+        footer: {
+          companyAddress: "会社住所情報",
+          service: {
+            title: "サービス",
+            reservation: "展示会予約",
+            inquiry: "予約照会",
+            consultation: "1対1相談"
+          },
+          business: {
+            title: "ビジネス",
+            application: "展示会申込",
+            advertising: "広告申込"
+          },
+          copyright: "© 2024 Myce. All rights reserved."
+        },
+
+        // ExpoApply
+        expoApply: {
+          validation: {
+            maxCapacity: {
+              required: "最大収容人数を入力してください。",
+              numbersOnly: "数字のみ入力可能です。"
+            },
+            description: "展示会詳細紹介を入力してください。",
+            companyName: "会社名を入力してください。",
+            businessNumber: "事業者番号を入力してください。",
+            companyAddress: "会社住所を入力してください。",
+            representativeName: "代表者名を入力してください。",
+            representativeContact: "代表者連絡先を入力してください。",
+            representativeEmail: "代表者メールアドレスを入力してください。",
+            emailFormat: "正しいメール形式ではありません。",
+            categorySelection: "カテゴリを1つ以上選択してください。"
+          },
+          alerts: {
+            noPreviousData: "前のページデータがありません。最初のページを先に作成してください。",
+            noDisplayPeriod: "掲示期間情報がありません。最初のページで掲示期間を入力してください。",
+            validationError: "必須情報をすべて正しく入力してください。",
+            registrationSuccess: "展示会登録完了！",
+            registrationError: "登録中にエラーが発生しました。"
+          },
+          form: {
+            maxCapacity: "最大収容人数",
+            maxCapacityPlaceholder: "例：1000",
+            description: "展示会詳細紹介",
+            category: "カテゴリ",
+            categoryPlaceholder: "カテゴリを選択してください",
+            premiumService: "プレミアム上位露出サービス申込",
+            estimatedPayment: "💰 予想決済金額確認",
+            estimatedPaymentDesc: "入力された情報をもとに予想決済金額を確認できます。",
+            companyInfo: "会社情報",
+            companyName: "会社名",
+            businessNumber: "事業者番号",
+            companyAddress: "会社住所",
+            addressPlaceholder: "住所検索ボタンを押してください",
+            addressSearch: "住所検索",
+            close: "閉じる",
+            representativeName: "代表者名",
+            representativeContact: "代表者連絡先",
+            representativeEmail: "代表者メールアドレス",
+            emailPlaceholder: "例：hello@myce.com",
+            cancel: "キャンセル",
+            submit: "登録"
+          }
+        },
+
+        // BrowseExpo
+        browseExpo: {
+          loadingCategories: "カテゴリ読み込み中...",
+          errorCategories: "カテゴリ読み込みエラー: {{message}}",
+          title: "全てのイベント",
+          count: "{{count}}件のイベント"
         }
       }
     }

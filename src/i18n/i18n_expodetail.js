@@ -75,6 +75,61 @@ const resources = {
           ticketTypes: {
             general: "일반",
             earlyBird: "얼리버드"
+          },
+          dropdown: {
+            title: "티켓 구매",
+            selectTicket: "티켓을 선택하세요",
+            purchaseButton: "구매하기",
+            remainingQuantityLabel: "남은 수량",
+            saleNotStarted: "판매기간 아님",
+            soldOutTooltip: "매진된 티켓입니다",
+            salePeriodTooltip: "판매기간: {{start}} ~ {{end}}",
+            alerts: {
+              selectTicket: "티켓을 선택해주세요.",
+              ticketSoldOut: "선택한 티켓이 매진되었습니다.",
+              notInSalePeriod: "선택한 티켓의 판매 기간이 아닙니다."
+            }
+          },
+          modal: {
+            title: "티켓 구매",
+            remainingLabel: "남은 수량",
+            quantityLabel: "구매 수량",
+            unitPriceLabel: "단가",
+            quantityCount: "수량",
+            totalPriceLabel: "총 결제 금액",
+            noticesTitle: "구매 유의사항",
+            cancelButton: "취소",
+            purchaseButton: "구매하기",
+            processing: "처리 중...",
+            tickets: "매",
+            notices: {
+              refundPolicy: "환불 및 취소 정책",
+              refundRules: {
+                sevenDays: "박람회 시작 7일 전까지: 100% 환불",
+                threeDays: "박람회 시작 3~6일 전까지: 80% 환불",
+                oneDay: "박람회 시작 1~2일 전까지: 50% 환불",
+                sameDay: "박람회 당일: 환불 불가"
+              },
+              ticketUsage: "티켓 사용 안내",
+              usageRules: {
+                qrGeneration: "구매 완료 후 박람회 개최 2일 전부터 QR 코드가 생성됩니다.",
+                qrActivation: "티켓의 사용 개시 일자부터 QR 코드가 활성화 됩니다.",
+                showQr: "박람회 당일 QR 코드를 제시해 주세요",
+                noTransfer: "타인에게 양도/전매 시 입장이 제한될 수 있습니다",
+                noReissue: "분실 시 재발급이 불가능하니 주의해 주세요"
+              },
+              otherInfo: "기타 안내",
+              otherRules: {
+                scheduleChange: "박람회 일정 변경 시 사전 공지됩니다",
+                memberLimit: "회원의 경우 1인당 최대 4매까지 구매 가능합니다",
+                guestLimit: "비회원의 경우 1인당 1매까지 구매 가능합니다",
+                confirmation: "결제 완료 후 예매 확인서가 이메일로 발송됩니다",
+                support: "문의사항은 AI 상담사 찍찍봇을 이용해 주세요"
+              }
+            },
+            errors: {
+              purchaseFailed: "티켓 구매 준비에 실패했습니다. 다시 시도해주세요."
+            }
           }
         },
         
@@ -164,6 +219,91 @@ const resources = {
           }
         },
         
+        // 결제 (ExpoPayment)
+        expoPayment: {
+          loading: "결제 정보를 불러오는 중...",
+          error: "오류: {{error}}",
+          personalInfo: {
+            title: "개인정보 입력",
+            loadMemberInfo: "회원 정보 불러오기",
+            name: "이름",
+            namePlaceholder: "이름을 입력하세요",
+            email: "이메일 주소",
+            emailPlaceholder: "example@email.com",
+            birthdate: "생년월일",
+            phone: "전화번호",
+            gender: "성별",
+            male: "남자",
+            female: "여자"
+          },
+          expoInfo: {
+            loading: "로딩 중...",
+            noLocation: "장소 정보 없음",
+            noSchedule: "일정 정보 없음",
+            eventTitle: "행사 제목"
+          },
+          mileage: {
+            title: "마일리지",
+            available: "보유 마일리지",
+            loading: "불러오는 중...",
+            usagePlaceholder: "사용할 마일리지",
+            useAll: "전액사용",
+            apply: "마일리지 적용",
+            afterApply: "적용 후 마일리지",
+            loginRequired: "로그인 후 이용 가능합니다.",
+            loadingError: "보유 마일리지 조회 중입니다. 잠시 후 다시 시도해주세요.",
+            validNumberRequired: "사용할 마일리지는 0 이상의 숫자여야 합니다.",
+            maxUsageExceeded: "최대 {{maxUse}} M 까지 사용할 수 있습니다.",
+            loadFailed: "보유 마일리지를 불러오지 못했습니다."
+          },
+          summary: {
+            title: "결제 요약",
+            ticketCount: "티켓 매수",
+            ticketPrice: "티켓 가격",
+            serviceFee: "서비스 수수료",
+            mileage: "마일리지",
+            total: "총계",
+            currency: "원"
+          },
+          paymentMethod: {
+            title: "결제 방법 선택"
+          },
+          errors: {
+            reservationNotFound: "예약 정보를 찾을 수 없습니다.",
+            paymentInfoLoadFailed: "결제 정보를 불러오지 못했습니다."
+          },
+          alerts: {
+            memberInfoLoaded: "회원 정보가 불러와졌습니다.",
+            memberInfoLoadFailed: "회원 정보를 불러오는데 실패했습니다. (데이터 없음)",
+            memberInfoLoadError: "회원 정보를 불러오는데 실패했습니다. 오류: {{error}}",
+            loginRequired: "로그인 상태가 아닙니다."
+          }
+        },
+
+        // 박람회 상세 메인 페이지 (ExpoDetail)
+        expoDetailMain: {
+          loading: "로딩 중...",
+          navigation: {
+            back: "이전으로"
+          },
+          tabs: {
+            info: "상세 정보",
+            tickets: "티켓 정보",
+            booths: "부스 정보",
+            events: "이벤트",
+            reviews: "리뷰"
+          },
+          alerts: {
+            bookmarkAdded: "북마크에 추가되었습니다.",
+            bookmarkRemoved: "북마크에서 제거되었습니다.",
+            loginRequired: "로그인이 필요한 서비스입니다.",
+            bookmarkError: "찜하기 처리에 실패했습니다."
+          },
+          errors: {
+            expoNotFound: "박람회 정보를 찾을 수 없습니다."
+          }
+        },
+
         // 공통
         common: {
           loading: "로딩중...",
@@ -250,6 +390,61 @@ const resources = {
           ticketTypes: {
             general: "General",
             earlyBird: "Early Bird"
+          },
+          dropdown: {
+            title: "Purchase Tickets",
+            selectTicket: "Select a ticket",
+            purchaseButton: "Purchase",
+            remainingQuantityLabel: "Remaining",
+            saleNotStarted: "Not for sale",
+            soldOutTooltip: "This ticket is sold out",
+            salePeriodTooltip: "Sale period: {{start}} ~ {{end}}",
+            alerts: {
+              selectTicket: "Please select a ticket.",
+              ticketSoldOut: "The selected ticket is sold out.",
+              notInSalePeriod: "The selected ticket is not in the sale period."
+            }
+          },
+          modal: {
+            title: "Purchase Tickets",
+            remainingLabel: "Remaining",
+            quantityLabel: "Quantity",
+            unitPriceLabel: "Unit Price",
+            quantityCount: "Quantity",
+            totalPriceLabel: "Total Amount",
+            noticesTitle: "Purchase Notice",
+            cancelButton: "Cancel",
+            purchaseButton: "Purchase",
+            processing: "Processing...",
+            tickets: "tickets",
+            notices: {
+              refundPolicy: "Refund & Cancellation Policy",
+              refundRules: {
+                sevenDays: "Up to 7 days before expo: 100% refund",
+                threeDays: "3-6 days before expo: 80% refund",
+                oneDay: "1-2 days before expo: 50% refund",
+                sameDay: "Expo day: No refund"
+              },
+              ticketUsage: "Ticket Usage Guide",
+              usageRules: {
+                qrGeneration: "QR code will be generated 2 days before the expo starts.",
+                qrActivation: "QR code will be activated from the ticket start date.",
+                showQr: "Please present your QR code on the expo day",
+                noTransfer: "Entry may be restricted if transferred to others",
+                noReissue: "Reissue is not possible if lost, please be careful"
+              },
+              otherInfo: "Other Information",
+              otherRules: {
+                scheduleChange: "Schedule changes will be announced in advance",
+                memberLimit: "Members can purchase up to 4 tickets per person",
+                guestLimit: "Guests can purchase up to 1 ticket per person",
+                confirmation: "Reservation confirmation will be sent via email after payment",
+                support: "Please use AI chatbot for inquiries"
+              }
+            },
+            errors: {
+              purchaseFailed: "Failed to prepare ticket purchase. Please try again."
+            }
           }
         },
         
@@ -339,6 +534,91 @@ const resources = {
           }
         },
         
+        // Payment (ExpoPayment)
+        expoPayment: {
+          loading: "Loading payment information...",
+          error: "Error: {{error}}",
+          personalInfo: {
+            title: "Personal Information",
+            loadMemberInfo: "Load Member Info",
+            name: "Name",
+            namePlaceholder: "Enter your name",
+            email: "Email Address",
+            emailPlaceholder: "example@email.com",
+            birthdate: "Date of Birth",
+            phone: "Phone Number",
+            gender: "Gender",
+            male: "Male",
+            female: "Female"
+          },
+          expoInfo: {
+            loading: "Loading...",
+            noLocation: "No location information",
+            noSchedule: "No schedule information",
+            eventTitle: "Event Title"
+          },
+          mileage: {
+            title: "Mileage",
+            available: "Available Mileage",
+            loading: "Loading...",
+            usagePlaceholder: "Mileage to use",
+            useAll: "Use All",
+            apply: "Apply Mileage",
+            afterApply: "Mileage After Apply",
+            loginRequired: "Available after login.",
+            loadingError: "Checking available mileage. Please try again later.",
+            validNumberRequired: "Mileage to use must be a number above 0.",
+            maxUsageExceeded: "You can use up to {{maxUse}} M.",
+            loadFailed: "Failed to load available mileage."
+          },
+          summary: {
+            title: "Payment Summary",
+            ticketCount: "Ticket Count",
+            ticketPrice: "Ticket Price",
+            serviceFee: "Service Fee",
+            mileage: "Mileage",
+            total: "Total",
+            currency: "KRW"
+          },
+          paymentMethod: {
+            title: "Select Payment Method"
+          },
+          errors: {
+            reservationNotFound: "Reservation information not found.",
+            paymentInfoLoadFailed: "Failed to load payment information."
+          },
+          alerts: {
+            memberInfoLoaded: "Member information loaded.",
+            memberInfoLoadFailed: "Failed to load member information. (No data)",
+            memberInfoLoadError: "Failed to load member information. Error: {{error}}",
+            loginRequired: "Not logged in."
+          }
+        },
+
+        // Expo Detail Main Page (ExpoDetail)
+        expoDetailMain: {
+          loading: "Loading...",
+          navigation: {
+            back: "Back"
+          },
+          tabs: {
+            info: "Details",
+            tickets: "Tickets",
+            booths: "Booths",
+            events: "Events",
+            reviews: "Reviews"
+          },
+          alerts: {
+            bookmarkAdded: "Added to bookmarks.",
+            bookmarkRemoved: "Removed from bookmarks.",
+            loginRequired: "Login is required for this service.",
+            bookmarkError: "Failed to process bookmark."
+          },
+          errors: {
+            expoNotFound: "Expo information not found."
+          }
+        },
+
         // Common
         common: {
           loading: "Loading...",
@@ -425,6 +705,61 @@ const resources = {
           ticketTypes: {
             general: "一般",
             earlyBird: "アーリーバード"
+          },
+          dropdown: {
+            title: "チケット購入",
+            selectTicket: "チケットを選択してください",
+            purchaseButton: "購入する",
+            remainingQuantityLabel: "残り",
+            saleNotStarted: "販売期間外",
+            soldOutTooltip: "このチケットは満席です",
+            salePeriodTooltip: "販売期間: {{start}} ~ {{end}}",
+            alerts: {
+              selectTicket: "チケットを選択してください。",
+              ticketSoldOut: "選択したチケットは満席です。",
+              notInSalePeriod: "選択したチケットは販売期間ではありません。"
+            }
+          },
+          modal: {
+            title: "チケット購入",
+            remainingLabel: "残り数量",
+            quantityLabel: "購入数量",
+            unitPriceLabel: "単価",
+            quantityCount: "数量",
+            totalPriceLabel: "合計金額",
+            noticesTitle: "購入時のご注意",
+            cancelButton: "キャンセル",
+            purchaseButton: "購入する",
+            processing: "処理中...",
+            tickets: "枚",
+            notices: {
+              refundPolicy: "返金・キャンセルポリシー",
+              refundRules: {
+                sevenDays: "博覧会開始7日前まで: 100% 返金",
+                threeDays: "博覧会開始3~6日前まで: 80% 返金",
+                oneDay: "博覧会開始1~2日前まで: 50% 返金",
+                sameDay: "博覧会当日: 返金不可"
+              },
+              ticketUsage: "チケット使用案内",
+              usageRules: {
+                qrGeneration: "購入完了後、博覧会開催2日前からQRコードが生成されます。",
+                qrActivation: "チケット使用開始日からQRコードが有効化されます。",
+                showQr: "博覧会当日にQRコードを提示してください",
+                noTransfer: "他人への譲渡・転売時は入場制限される場合があります",
+                noReissue: "紛失時の再発行はできませんのでご注意ください"
+              },
+              otherInfo: "その他のご案内",
+              otherRules: {
+                scheduleChange: "博覧会日程変更時は事前にお知らせします",
+                memberLimit: "会員の場合、1人最大4枚まで購入可能です",
+                guestLimit: "非会員の場合、1人1枚まで購入可能です",
+                confirmation: "決済完了後、予約確認書がメールで送信されます",
+                support: "お問い合わせはAIチャットボットをご利用ください"
+              }
+            },
+            errors: {
+              purchaseFailed: "チケット購入の準備に失敗しました。もう一度お試しください。"
+            }
           }
         },
         
@@ -514,6 +849,91 @@ const resources = {
           }
         },
         
+        // 決済 (ExpoPayment)
+        expoPayment: {
+          loading: "決済情報を読み込み中...",
+          error: "エラー: {{error}}",
+          personalInfo: {
+            title: "個人情報入力",
+            loadMemberInfo: "会員情報を読み込む",
+            name: "氏名",
+            namePlaceholder: "氏名を入力してください",
+            email: "メールアドレス",
+            emailPlaceholder: "example@email.com",
+            birthdate: "生年月日",
+            phone: "電話番号",
+            gender: "性別",
+            male: "男性",
+            female: "女性"
+          },
+          expoInfo: {
+            loading: "読み込み中...",
+            noLocation: "場所情報がありません",
+            noSchedule: "日程情報がありません",
+            eventTitle: "イベントタイトル"
+          },
+          mileage: {
+            title: "マイレージ",
+            available: "保有マイレージ",
+            loading: "読み込み中...",
+            usagePlaceholder: "使用するマイレージ",
+            useAll: "全額使用",
+            apply: "マイレージ適用",
+            afterApply: "適用後マイレージ",
+            loginRequired: "ログイン後ご利用いただけます。",
+            loadingError: "保有マイレージ照会中です。しばらく後でもう一度お試しください。",
+            validNumberRequired: "使用するマイレージは0以上の数字である必要があります。",
+            maxUsageExceeded: "最大{{maxUse}} Mまで使用できます。",
+            loadFailed: "保有マイレージを読み込めませんでした。"
+          },
+          summary: {
+            title: "決済要約",
+            ticketCount: "チケット枚数",
+            ticketPrice: "チケット価格",
+            serviceFee: "サービス手数料",
+            mileage: "マイレージ",
+            total: "合計",
+            currency: "円"
+          },
+          paymentMethod: {
+            title: "決済方法選択"
+          },
+          errors: {
+            reservationNotFound: "予約情報が見つかりません。",
+            paymentInfoLoadFailed: "決済情報を読み込めませんでした。"
+          },
+          alerts: {
+            memberInfoLoaded: "会員情報が読み込まれました。",
+            memberInfoLoadFailed: "会員情報の読み込みに失敗しました。（データなし）",
+            memberInfoLoadError: "会員情報の読み込みに失敗しました。エラー: {{error}}",
+            loginRequired: "ログイン状態ではありません。"
+          }
+        },
+
+        // 展示会詳細メインページ (ExpoDetail)
+        expoDetailMain: {
+          loading: "読み込み中...",
+          navigation: {
+            back: "戻る"
+          },
+          tabs: {
+            info: "詳細情報",
+            tickets: "チケット情報",
+            booths: "ブース情報",
+            events: "イベント",
+            reviews: "レビュー"
+          },
+          alerts: {
+            bookmarkAdded: "ブックマークに追加されました。",
+            bookmarkRemoved: "ブックマークから削除されました。",
+            loginRequired: "このサービスにはログインが必要です。",
+            bookmarkError: "ブックマークの処理に失敗しました。"
+          },
+          errors: {
+            expoNotFound: "展示会情報が見つかりません。"
+          }
+        },
+
         // 共通
         common: {
           loading: "読み込み中...",

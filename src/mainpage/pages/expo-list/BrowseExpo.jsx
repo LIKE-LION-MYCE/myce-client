@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./BrowseExpo.module.css";
 import SidebarFilters from "../../components/sidebar/SidebarFilters";
 import ExpoCardList from "../../components/expocard/ExpoCardList";
@@ -6,6 +7,7 @@ import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
 
 export default function BrowseExpo() {
+  const { t } = useTranslation();
   const { expos, filters, setFilters, isLoading, error, refresh } =
     useExpoData();
   const {
@@ -14,17 +16,17 @@ export default function BrowseExpo() {
     error: categoriesError,
   } = useCategories();
 
-  if (categoriesLoading) return <div>Loading categories...</div>;
+  if (categoriesLoading) return <div>{t('homepage.browseExpo.loadingCategories', 'Loading categories...')}</div>;
   if (categoriesError)
-    return <div>Error loading categories: {categoriesError.message}</div>;
+    return <div>{t('homepage.browseExpo.errorCategories', 'Error loading categories: {{message}}', { message: categoriesError.message })}</div>;
 
   return (
     <div className={styles.container}>
       <main className={styles.main}>
         <section className={styles.content}>
           <h2 className={styles.title}>
-            전체 행사{" "}
-            <span className={styles.count}>{expos.length}개의 행사</span>
+            {t('homepage.browseExpo.title', '전체 행사')}{" "}
+            <span className={styles.count}>{t('homepage.browseExpo.count', '{{count}}개의 행사', { count: expos.length })}</span>
           </h2>
           <ExpoCardList
             expos={expos}
