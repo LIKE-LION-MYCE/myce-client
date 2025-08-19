@@ -150,12 +150,14 @@ function Events() {
         </h4>
 
         <div className={styles.topControls}>
+          {/* 전체보기 버튼 */}
           <button
               onClick={() => setSelectedDate('')}
               className={styles.button}
             >
               전체 보기
             </button>
+          {/* 날짜 선택 */}            
           <div className={styles.filterGroup}>
             <input
               type="date"
@@ -165,7 +167,9 @@ function Events() {
               min={expoInfo?.startDate ? expoInfo.startDate.split('T')[0] : undefined}
               max={expoInfo?.endDate ? expoInfo.endDate.split('T')[0] : undefined}
             />
-          
+          </div>
+          {/* 정렬 */}
+          <div className={styles.filterGroup}>
             <select
               value={sortOrder}
               onChange={(e) => {
