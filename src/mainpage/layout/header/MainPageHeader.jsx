@@ -7,10 +7,25 @@ const MainPageHeader = ({notification}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    if(localStorage.getItem("access_token")) {
-      setIsLoggedIn(true);
-    }
-  });
+    const checkAuth = () => {
+      const token = localStorage.getItem("access_token");
+      setIsLoggedIn(!!token);
+    };
+
+    // 초기 상태 확인
+    checkAuth();
+
+    // storage 이벤트 리스너 (다른 탭에서 변경 시 감지)
+    window.addEventListener('storage', checkAuth);
+    
+    // 같은 탭에서 변경 감지를 위한 커스텀 이벤트
+    window.addEventListener('auth-change', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('auth-change', checkAuth);
+    };
+  }, []);
 
   const handleLogin = () => setIsLoggedIn(true);
   const handleLogout = () => setIsLoggedIn(false);
