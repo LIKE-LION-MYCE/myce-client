@@ -3,66 +3,56 @@
 }
 
 .notificationWrapper {
-  position: relative;
-  cursor: pointer;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  box-shadow: 
-    0 4px 10px rgba(0, 0, 0, 0.2),
-    0 0 20px rgba(102, 126, 234, 0.3);
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-  animation: pulse 2s infinite;
+  gap: 6px;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #29292d;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  position: relative;
+  height: 32px;
 }
 
 .notificationWrapper:hover {
-  background-color: #2b2b2b;
-  transform: scale(1.05);
-}
-
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 
-      0 4px 10px rgba(0, 0, 0, 0.2),
-      0 0 20px rgba(102, 126, 234, 0.3);
-  }
-  50% {
-    box-shadow: 
-      0 4px 10px rgba(0, 0, 0, 0.2),
-      0 0 30px rgba(102, 126, 234, 0.5);
-  }
+  background: #f8f9fa;
 }
 
 .notificationIcon {
-  color: white;
-  transition: color 0.2s ease;
+  color: #29292d;
+  width: 20px;
+  height: 20px;
 }
 
-.notificationWrapper:hover .notificationIcon {
-  color: white;
+.notificationText {
+  font-weight: 600;
+  font-size: 18px;
+  color: #29292d;
+  font-family: 'GmarketSansMedium', sans-serif;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .notificationBadge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 20px;
-  height: 20px;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
   background-color: #ff4757;
-  border-radius: 10px;
+  border-radius: 9px;
   color: white;
   font-size: 10px;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
-  padding: 0 4px;
+  border: 1px solid white;
+  padding: 0 3px;
   box-sizing: border-box;
 }

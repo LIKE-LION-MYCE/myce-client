@@ -1,101 +1,269 @@
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  height: 80px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+.header {
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
 }
 
-.logoSection {
+/* 상단 줄 스타일 */
+.topRow {
   display: flex;
   align-items: center;
+  padding: 1rem 2rem;
+  gap: 1rem;
 }
 
-.logo {
+.topLeft {
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  margin-left: 8rem;
 }
 
-.logo:hover {
-  opacity: 0.8;
-}
-
-.logoImage {
+.logo {
   height: 50px;
   width: auto;
   object-fit: contain;
 }
 
-.rightSection {
+/* 검색창 스타일 - NOL interpark와 완전히 동일 */
+.searchContainer {
   display: flex;
   align-items: center;
-  gap: 8px; /* 미니멀 스타일: 간격 줄임 */
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 32px;
+  padding: 0;
+  margin-left: 1rem;
+  flex: 1;
+  max-width: 600px;
+  height: 64px;
 }
 
-.authBtn {
-  padding: 8px 16px; /* 미니멀 스타일: 패딩 줄임 */
+.searchInput {
+  flex: 1;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500; /* 미니멀 스타일: 폰트 웨이트 줄임 */
+  background: transparent;
+  padding: 0 28px;
+  font-size: 22px;
+  color: #374151;
+  outline: none;
+  height: 100%;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  padding: 20px;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  text-decoration: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.loginBtn {
-  background: none; /* 미니멀 스타일: 투명 배경 */
-  color: #666; /* 미니멀 스타일: 회색 텍스트 */
+.searchButton:hover {
+  color: #000000;
+}
+
+.searchButton svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* 프로모션 배너 스타일 */
+.promoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.promoContainer:hover {
+  opacity: 0.8;
+}
+
+.promoImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.promoText {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #374151;
+  white-space: nowrap;
+  font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.promoText div:first-child {
+  font-weight: 600;
+  color: #29292d;
+}
+
+.promoText div:last-child {
+  color: #6b7280;
+}
+
+.topRightLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.topRightLinks span {
+  white-space: nowrap;
+}
+
+/* 하단 줄 스타일 */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 8rem;
+}
+
+.navButton {
+  background: none;
   border: none;
-  font-weight: 400;
-  padding: 6px 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 25px;
+  font-weight: 500;
+  color: #29292d;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-radius: 0;
+  font-family: 'GmarketSansMedium', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  line-height: 1;
+  position: relative;
 }
 
-.loginBtn:hover {
-  background: #f8f9fa;
-  color: #333;
+.navButton:hover {
+  color: #1f2937;
+  background-color: #f8f9fa;
 }
 
-.joinBtn {
-  background: #000000; /* 미니멀 스타일: 검은색 */
-  color: white;
-  box-shadow: none; /* 미니멀 스타일: 그림자 제거 */
+.navButton.active {
+  color: #1f2937;
+  font-weight: 600;
 }
 
-.joinBtn:hover {
-  background: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 미니멀한 그림자 */
+.navButton.active::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+  height: 3px;
+  background-color: #29292d;
 }
 
-.studyBtn {
-  background: transparent; /* 미니멀 스타일: 투명 배경 */
-  color: #666; /* 미니멀 스타일: 회색 텍스트 */
-  border: 1px solid #ddd; /* 미니멀 스타일: 회색 테두리 */
-  padding: 7px 14px;
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 8rem;
+  height: 40px;
 }
 
-.studyBtn:hover {
-  border-color: #000;
-  color: #000;
+.loginButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
   background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #29292d;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  height: 32px;
+  min-width: fit-content;
 }
 
-/* Focus styles */
-.authBtn:focus {
-  outline: 2px solid #000000;
-  outline-offset: 2px;
+.loginButton:hover {
+  background: #f8f9fa;
+}
+
+.loginIcon {
+  font-size: 20px;
+  filter: grayscale(1) brightness(0.2);
+}
+
+.loginText {
+  font-weight: 600;
+  font-size: 18px;
+  color: #29292d;
+  font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #29292d;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  height: 32px;
+  min-width: fit-content;
+}
+
+.actionButton:hover {
+  background: #f8f9fa;
+}
+
+.actionIcon {
+  color: #29292d;
+  width: 20px;
+  height: 20px;
+}
+
+.actionText {
+  font-weight: 600;
+  font-size: 18px;
+  color: #29292d;
+  font-family: 'GmarketSansMedium', sans-serif;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
