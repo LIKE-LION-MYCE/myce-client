@@ -376,7 +376,6 @@ export default function ExpoPayment() {
                   </div>
                 </div>
               </div>
-              {index < quantity - 1 && <hr className={styles.divider} />}
             </div>
           ))}
         </form>
@@ -385,22 +384,6 @@ export default function ExpoPayment() {
       {/* 오른쪽 결제 정보 영역 */}
       <section className={styles.rightSection}>
         <div className={styles.thumbnailBox}>
-          <div className={styles.details}>
-            <h3>{expoInfo?.title || "로딩 중..."}</h3>
-            <div className={styles.info}>
-              <p>📍 {expoInfo?.location || "장소 정보 없음"}</p>
-              <p>
-                🗓{" "}
-                {expoInfo?.startDate && expoInfo?.endDate
-                  ? `${new Date(expoInfo.startDate).toLocaleDateString(
-                      "ko-KR"
-                    )} ~ ${new Date(expoInfo.endDate).toLocaleDateString(
-                      "ko-KR"
-                    )}`
-                  : "일정 정보 없음"}
-              </p>
-            </div>
-          </div>
           <img
             src={
               expoInfo?.thumbnailUrl ||
@@ -413,6 +396,72 @@ export default function ExpoPayment() {
                 "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg";
             }}
           />
+          <div className={styles.details}>
+            <h3 className={styles.expoTitle}>{expoInfo?.title || "로딩 중..."}</h3>
+            <div className={styles.info}>
+              <div className={styles.infoItem}>
+                <div className={styles.iconWrapper}>
+                  <svg className={styles.icon} viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <circle cx="12" cy="9" r="2.5" fill="white"/>
+                  </svg>
+                </div>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoMain}>{expoInfo?.location || "장소 정보 없음"}</div>
+                  {expoInfo?.locationDetail && (
+                    <div className={styles.infoSub}>{expoInfo.locationDetail}</div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.infoItem}>
+                <div className={styles.iconWrapper}>
+                  <svg className={styles.icon} viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="2"/>
+                    <line x1="8" y1="2" x2="8" y2="6" stroke="white" strokeWidth="2"/>
+                    <line x1="3" y1="10" x2="21" y2="10" stroke="white" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoMain}>
+                    {expoInfo?.startDate && expoInfo?.endDate
+                      ? `${new Date(expoInfo.startDate).toLocaleDateString(
+                          "ko-KR"
+                        )} ~ ${new Date(expoInfo.endDate).toLocaleDateString(
+                          "ko-KR"
+                        )}`
+                      : "일정 정보 없음"}
+                  </div>
+                  {expoInfo?.startTime && expoInfo?.endTime && (
+                    <div className={styles.infoSub}>
+                      {expoInfo.startTime.substring(0, 5)} ~ {expoInfo.endTime.substring(0, 5)}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {expoInfo?.categories && expoInfo.categories.length > 0 && (
+                <div className={styles.infoItem}>
+                  <div className={styles.iconWrapper}>
+                    <svg className={styles.icon} viewBox="0 0 24 24" fill="none">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                      <line x1="7" y1="7" x2="7.01" y2="7" stroke="white" strokeWidth="2"/>
+                    </svg>
+                  </div>
+                  <div className={styles.infoContent}>
+                    <div className={styles.categories}>
+                      {expoInfo.categories.map((category, index) => (
+                        <span key={index} className={styles.categoryTag}>
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {isLoggedIn && (

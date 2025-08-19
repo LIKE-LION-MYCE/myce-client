@@ -30,6 +30,16 @@ function PaymentVirtualBankButton({
   const reservationId = searchParams.get("preReservationId");
 
   const handlePay = async () => {
+    // 모든 개인정보 검증
+    const hasIncompleteInfo = reserverInfos.some(info => 
+      !info.name || !info.email || !info.birth || !info.phone || !info.gender
+    );
+    
+    if (hasIncompleteInfo) {
+      alert("모든 개인정보를 입력해주세요.");
+      return;
+    }
+    
     // amount가 0 이하이거나, buyerName, buyerEmail 등 필수 정보가 없는 경우를 체크하여 결제를 막는 방어 코드를 추가
     if (amount <= 0 && usedMileage === 0) {
       // 마일리지 전액 사용으로 0원 결제는 예외
@@ -37,7 +47,7 @@ function PaymentVirtualBankButton({
       return;
     }
     if (!buyerName || !buyerEmail || !buyerTel) {
-      alert("구매자 정보가 올바르지 않습니다.");
+      alert("구매자 정보가 올바른지 않습니다.");
       return;
     }
     if (!reservationId) {
