@@ -91,8 +91,8 @@
 }
 
 .badgeCOMPLETED {
-  background-color: #ecf2ff; /* 연한 파랑 */
-  color: #3366cc;            /* 진한 파랑 */
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }
 
 .titleRow {
