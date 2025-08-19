@@ -21,7 +21,6 @@ function PaymentVirtualBankButton({
   sessionId,
 }) {
   const [loading, setLoading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -30,6 +29,16 @@ function PaymentVirtualBankButton({
   const reservationId = searchParams.get("preReservationId");
 
   const handlePay = async () => {
+    // 모든 개인정보 검증
+    const hasIncompleteInfo = reserverInfos.some(info => 
+      !info.name || !info.email || !info.birth || !info.phone || !info.gender
+    );
+    
+    if (hasIncompleteInfo) {
+      alert("모든 개인정보를 입력해주세요.");
+      return;
+    }
+    
     // amount가 0 이하이거나, buyerName, buyerEmail 등 필수 정보가 없는 경우를 체크하여 결제를 막는 방어 코드를 추가
     if (amount <= 0 && usedMileage === 0) {
       // 마일리지 전액 사용으로 0원 결제는 예외
@@ -37,7 +46,7 @@ function PaymentVirtualBankButton({
       return;
     }
     if (!buyerName || !buyerEmail || !buyerTel) {
-      alert("구매자 정보가 올바르지 않습니다.");
+      alert("구매자 정보가 올바른지 않습니다.");
       return;
     }
     if (!reservationId) {
@@ -80,7 +89,6 @@ function PaymentVirtualBankButton({
         },
         async function (rsp) {
           if (rsp.success) {
-            setIsVerifying(true);
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
               // 새로운 통합 API 사용 (Redis 기반)
@@ -103,7 +111,6 @@ function PaymentVirtualBankButton({
 
               console.log("백엔드 응답 데이터:", res.data);
 
-              setIsVerifying(false);
               if (res.status === 200 && res.data.status === "PENDING") {
                 alert(
                   "결제 검증 성공! 예매가 완료되었습니다. 금일까지 가상 계좌에 입금해주세요."
@@ -118,7 +125,6 @@ function PaymentVirtualBankButton({
                 );
               }
             } catch (err) {
-              setIsVerifying(false);
               console.error("서버 처리 실패:", err);
               console.error("에러 응답:", err.response?.data);
               console.error("에러 상태:", err.response?.status);
@@ -160,19 +166,6 @@ function PaymentVirtualBankButton({
           "가상 계좌"
         )}
       </button>
-      
-      {isVerifying && (
-        <div className={styles.verificationOverlay}>
-          <div className={styles.verificationModal}>
-            <div className={styles.verificationSpinner}></div>
-            <div className={styles.verificationTitle}>가상계좌 발급 중</div>
-            <div className={styles.verificationMessage}>
-              가상계좌 발급이 완료되었습니다.<br/>
-              서버에서 결제 내역을 확인하고 있습니다...
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
