@@ -1,8 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { getExpos } from "../api/service/user/expoApi";
 
-export const useExpoData = () => {
+export const useExpoData = (initialSize = 10) => {
   const [expos, setExpos] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: initialSize,
+    totalElements: 0,
+    totalPages: 0,
+    last: false,
+    first: true,
+    number: 0, // current page number
+  });
   const [filters, setFilters] = useState({
     sort: 'startDate,asc'
   });
@@ -19,8 +28,20 @@ export const useExpoData = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getExpos(filters);
-        setExpos(data);
+        const data = await getExpos({
+          ...filters,
+          page: pagination.page,
+          size: pagination.size,
+        });
+        setExpos(data.content); // Assuming 'content' holds the actual expo list
+        setPagination((prev) => ({
+          ...prev,
+          totalElements: data.totalElements,
+          totalPages: data.totalPages,
+          last: data.last,
+          first: data.first,
+          number: data.number,
+        }));
       } catch (err) {
         setError(err);
       } finally {
@@ -29,7 +50,7 @@ export const useExpoData = () => {
     };
 
     fetchExpos();
-  }, [filters, refreshTrigger]);
+  }, [filters, pagination.page, pagination.size, refreshTrigger]); // Add pagination dependencies
 
-  return { expos, filters, setFilters, isLoading, error, refresh };
+  return { expos, filters, setFilters, isLoading, error, refresh, pagination, setPagination };
 };
