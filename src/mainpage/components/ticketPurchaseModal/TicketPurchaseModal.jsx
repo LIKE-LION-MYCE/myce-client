@@ -100,9 +100,16 @@ export default function TicketPurchaseModal({
       const response = await savePreReservation(preReservationData);
       console.log("preReservation 이후 응답: ", response);
 
-      navigate(
-        `/detail/${expoId}/payment?preReservationId=${response.reservationId}`
-      );
+      // 세션 ID가 있으면 추가로 전달
+      const queryParams = new URLSearchParams({
+        preReservationId: response.reservationId
+      });
+      
+      if (response.sessionId) {
+        queryParams.set('sessionId', response.sessionId);
+      }
+
+      navigate(`/detail/${expoId}/payment?${queryParams.toString()}`);
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
