@@ -86,3 +86,8 @@ export const fetchSettlementDetail = async (expoId) => {
   const res = await instance.get(`/platform/expo/${expoId}/settlement`);
   return res.data;
 };
+
+export const fetchExpoAdminInfo = async (expoId) => {
+  const res = await instance.get(`/platform/expo/${expoId}/admin-info`);
+  return res.data;
+}

@@ -1,0 +1,149 @@
+/* Modal Overlay and Main Container */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Loading and No Data Messages */
+.loadingBox, .noData {
+  padding: 30px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Content Layout */
+.contentLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Sections (Super Admin and Sub Admins) */
+.section {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+/* Info Box (Super Admin) */
+.infoBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: 500;
+  color: #777;
+  font-size: 15px;
+  width: 100px;
+}
+
+.value {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333;
+  text-align: right;
+  flex: 1;
+}
+
+/* Code List (Sub Admins) */
+.codeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.codeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 10px 15px;
+}
+
+.codeLabel {
+  font-weight: 500;
+  color: #555;
+  font-size: 15px;
+}
+
+.codeValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #007bff;
+}
+
+/* Action Button Box */
+.actionBox {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.closeBtn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.closeBtn:hover {
+  background-color: #555;
+}
