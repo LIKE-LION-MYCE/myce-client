@@ -1,153 +1,134 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { FaDownload } from 'react-icons/fa'; // 🔄 바뀐 부분
+import { FaDownload } from 'react-icons/fa';
 import styles from './SettlementHistory.module.css';
 
 import Tab from '../../../common/components/tab/Tab';
 import SettlementHistoryTable from '../../components/settlementHistoryTable/SettlementHistoryTable';
 import Pagination from '../../../common/components/pagination/Pagination';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
+import { fetchAllPaymentInfo, fetchFilteredPaymentInfo, callExcelDownload } from '../../../api/service/platform-admin/settlement-history/SettlementHistoryService';
+
+
+const typeMap = [null, 'EXPO', 'AD'];
 
 function SettlementHistory() {
-  const [currentTab, setCurrentTab] = useState('결제 완료');
+  const [pageInfo, setPageInfo] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [sortOrder, setSortOrder] = useState('desc');
   const [searchText, setSearchText] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [currentTab, setCurrentTab] = useState('전체');
 
-  const triggerToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
+  const triggerSuccessToast = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 2500);
   };
 
-  const handleExcelDownload = () => {
-    console.log('엑셀 다운로드 실행');
-    triggerToast();
+  const triggerFailToast = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
-  const pageSize = 10;
+  const fetchSettlementData = async () => {
+    try {
+      let resData;
 
-const allData = [
-  {
-    id: 1,
-    title: '2025 귀농귀촌 체험 박람회',
-    type: '박람회',
-    settlementPeriod: '2025.07.01 ~ 2025.07.31',
-    applicationDate: '2025.06.15',
-    registrationFee: '1,500,000',
-    ticketFee: '500,000',
-    totalRevenue: '2,000,000',
-    status: '종료',
-  },
-  {
-    id: 2,
-    title: '2025 촌캉스 라이프스타일 페어',
-    type: '배너',
-    settlementPeriod: '2025.07.15 ~ 2025.07.30',
-    applicationDate: '2025.07.01',
-    registrationFee: '1,000,000',
-    ticketFee: '300,000',
-    totalRevenue: '1,300,000',
-    status: '진행중',
-  },
-  {
-    id: 3,
-    title: '전국 귀농 박람회 2025',
-    type: '박람회',
-    settlementPeriod: '2025.06.01 ~ 2025.06.30',
-    applicationDate: '2025.05.20',
-    registrationFee: '1,200,000',
-    ticketFee: '400,000',
-    totalRevenue: '1,600,000',
-    status: '종료',
-  },
-  {
-    id: 4,
-    title: '시골 체험 박람회',
-    type: '배너',
-    settlementPeriod: '2025.08.01 ~ 2025.08.15',
-    applicationDate: '2025.07.28',
-    registrationFee: '1,100,000',
-    ticketFee: '200,000',
-    totalRevenue: '1,300,000',
-    status: '진행중',
-  },
-  {
-    id: 5,
-    title: '청년 귀촌 캠프 in 전남',
-    type: '박람회',
-    settlementPeriod: '2025.05.01 ~ 2025.05.31',
-    applicationDate: '2025.04.10',
-    registrationFee: '1,300,000',
-    ticketFee: '350,000',
-    totalRevenue: '1,650,000',
-    status: '종료',
-  },
-  {
-    id: 6,
-    title: '로컬 일상 페스티벌',
-    type: '배너',
-    settlementPeriod: '2025.06.20 ~ 2025.07.10',
-    applicationDate: '2025.06.05',
-    registrationFee: '1,250,000',
-    ticketFee: '600,000',
-    totalRevenue: '1,850,000',
-    status: '종료',
-  },
-  {
-    id: 7,
-    title: '전국 청년 귀촌 박람회',
-    type: '박람회',
-    settlementPeriod: '2025.07.10 ~ 2025.07.20',
-    applicationDate: '2025.06.25',
-    registrationFee: '1,600,000',
-    ticketFee: '400,000',
-    totalRevenue: '2,000,000',
-    status: '진행중',
-  },
-  {
-    id: 8,
-    title: '작은 도시 살기 캠페인',
-    type: '배너',
-    settlementPeriod: '2025.08.01 ~ 2025.08.31',
-    applicationDate: '2025.07.15',
-    registrationFee: '1,400,000',
-    ticketFee: '500,000',
-    totalRevenue: '1,900,000',
-    status: '진행중',
-  },
-  {
-    id: 9,
-    title: '귀농귀촌 미래포럼',
-    type: '박람회',
-    settlementPeriod: '2025.06.10 ~ 2025.06.25',
-    applicationDate: '2025.05.30',
-    registrationFee: '1,350,000',
-    ticketFee: '450,000',
-    totalRevenue: '1,800,000',
-    status: '종료',
-  },
-];
+      const isFiltered = searchText || startDate || endDate || currentTab !== '전체';
 
+      if (isFiltered) {
+        console.log("currentTab : ", currentTab);
+        console.log("type : ", typeMap[currentTab]);
+        resData = await fetchFilteredPaymentInfo({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+          keyword: searchText,
+          type: typeMap[currentTab],
+          startDate: startDate,
+          endDate: endDate,
+        });
+      } else {
+        resData = await fetchAllPaymentInfo({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+        });
+      }
+      console.log(resData);
 
-  const pageInfo = {
-    content: allData,
-    totalPages: 1,
-    number: currentPage,
-    size: pageSize,
-    totalElements: 0,
+      setPageInfo({
+        ...resData,
+        number: currentPage,
+      });
+    } catch (err) {
+      console.error(err);
+      triggerFailToast('데이터를 불러오지 못했습니다.');
+    }
   };
+
+  useEffect(() => {
+    fetchSettlementData();
+  }, [currentPage, sortOrder, searchText, currentTab, startDate, endDate]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  const handleExcelDownload = async (e) => {
+    e.preventDefault();
+    console.log('엑셀 다운로드 실행 : ', startDate, endDate);
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const response = await callExcelDownload({
+        keyword: searchText,
+        type: typeMap[currentTab], // Pass the correct type based on the tab
+        startDate: startDate,
+        endDate: endDate,
+      });
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = '플랫폼_정산_내역_' + '.xlsx';
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (fileNameMatch && fileNameMatch.length === 2) {
+          fileName = decodeURIComponent(fileNameMatch[1]);
+        }
+      }
+      const url = window.URL.createObjectURL(new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      triggerSuccessToast();
+    } catch (e) {
+      triggerFailToast(e.message || '다운로드에 실패했습니다.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className={styles.paymentContainer}>
       <Tab
-        tabs={['전체', '박람회', '배너']}
+        tabs={['전체', '박람회', '광고']}
         currentTab={currentTab}
-        onChange={(tab) => setCurrentTab(tab)}
+        onTabChange={(tab) => {
+          setCurrentTab(tab);
+          setCurrentPage(0);
+        }}
       />
 
       <div className={styles.topControls}>
@@ -160,7 +141,7 @@ const allData = [
                 setSearchText(e.target.value);
                 setCurrentPage(0);
               }}
-              placeholder="예약 번호 검색"
+              placeholder="제목 검색"
               className={styles.input}
             />
             <FiSearch className={styles.searchIcon} />
@@ -181,21 +162,42 @@ const allData = [
           </div>
         </div>
 
-        <div className={styles.buttons}>
+        <form onSubmit={handleExcelDownload} className={styles.buttons}>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className={styles.dateInput}
+          />
+          <span>~</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className={styles.dateInput}
+          />
+
           <button
-            className={`${styles.actionBtn} ${styles.qrBtn}`} // 필요 시 클래스명 바꿔도 돼
-            onClick={handleExcelDownload}
+            type="submit"
+            className={`${styles.actionBtn} ${styles.qrBtn}`}
+            disabled={isDownloading}
+            title={isDownloading ? '다운로드 중...' : undefined}
           >
             <FaDownload className={styles.icon} />
             엑셀 추출
           </button>
-        </div>
+        </form>
       </div>
 
-      <SettlementHistoryTable data={pageInfo.content} />
-      <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+      {pageInfo && (
+        <>
+          <SettlementHistoryTable data={pageInfo.content} />
+          <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+        </>
+      )}
 
-      {showToast && <ToastSuccess />}
+      {showSuccessToast && <ToastSuccess />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

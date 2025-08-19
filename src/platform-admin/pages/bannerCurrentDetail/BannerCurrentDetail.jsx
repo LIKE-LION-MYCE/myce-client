@@ -3,12 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import styles from './BannerCurrentDetail.module.css';
 import BannerApplicationForm from '../../components/bannerApplicationForm/BannerApplicationForm';
+import ApplicantForm from '../../components/applicantForm/ApplicantForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 import AdCancelDetailModal from '../../components/bannerCancelDetailModal/AdCancelDetailModal';
 import AdCancelSummaryModal from '../../components/bannerCancelSummaryModal/AdCancelSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail, denyCancelBanner } from '../../../api/service/platform-admin/banner/BannerService';
+import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
   PENDING_CANCEL: '취소_대기',
@@ -36,7 +37,7 @@ function BannerCurrentDetail() {
   const [showCancelDetail, setShowCancelDetail] = useState(false);
 
   const [bannerData, setBannerData] = useState(null);
-  const [operatorData, setOperatorData] = useState(null);
+  const [businessData, setBusinessData] = useState(null);
 
   const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
@@ -92,20 +93,6 @@ function BannerCurrentDetail() {
     setShowSettlementSummary(false);
   };
 
-  const handleCancelDeny = async () => {
-    try{
-      await denyCancelBanner(id);
-      alert("취소 거절에 성공했습니다.");
-      navigate(-1, {
-        replace: true,
-        state: { ...location.state, expoStatus: 'PUBLISHED' },
-      });
-    }catch(err){
-      console.log("취소 거부 실패 : ", err);
-    }
-  }
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -123,13 +110,13 @@ function BannerCurrentDetail() {
         console.log('배너 상세 데이터:', response);
         // 배너와 운영자 데이터 설정
         setBannerData(response);
-        setOperatorData({
+        setBusinessData({
           companyName: response.businessCompany,
           ceoName: response.representName,
-          email: response.businessEmail,
-          phone: response.businessPhone,
+          contactEmail: response.businessEmail,
+          contactPhone: response.businessPhone,
           address: response.address,
-          businessNumber: response.businessNumber,
+          businessRegistrationNumber: response.businessNumber,
         });
       } catch (error) {
         triggerToastFail('데이터를 불러오는 데 실패했습니다.');
@@ -156,8 +143,7 @@ function BannerCurrentDetail() {
     buttonGroup = (
       <div className={styles.buttonGroup}>
         <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
-        <button className={styles.approveBtn} onClick={() => setShowSettlementSummary(true)}>취소 승인</button>
-        <button className={styles.approveBtn} onClick={() => handleCancelDeny()}>취소 거절</button>
+        <button className={styles.approveBtn} onClick={() => setShowSettlementSummary(true)}>취소 내용 확인</button>
       </div>
     );
   } else if (rawStatus === 'PUBLISHED') {
@@ -200,7 +186,11 @@ function BannerCurrentDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        {operatorData && <OperatorApplicationForm operatorData={operatorData} />}
+        <ApplicantForm applicantData={bannerData?.applicant} />
+      </div>
+
+      <div className={styles.section}>
+        {businessData && <OperatorApplicationForm businessData={businessData} />}
       </div>
 
       {/* 버튼 그룹 */}

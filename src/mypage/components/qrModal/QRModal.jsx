@@ -34,6 +34,33 @@ const QRModal = ({
     return `${startTime} ~ ${endTime}`;
   };
 
+  // QR 상태 한글 변환
+  const formatQrStatus = (status) => {
+    const statusMap = {
+      'ACTIVE': '사용 가능',
+      'USED': '사용됨',
+      'EXPIRED': '만료됨',
+      'APPROVED': '활성화 대기'
+    };
+    return statusMap[status] || status;
+  };
+
+  // QR 상태에 따른 스타일 클래스
+  const getQrStatusClass = (status) => {
+    switch(status) {
+      case 'ACTIVE':
+        return styles.statusActive;
+      case 'APPROVED':
+        return styles.statusApproved;
+      case 'USED':
+        return styles.statusUsed;
+      case 'EXPIRED':
+        return styles.statusExpired;
+      default:
+        return styles.statusDefault;
+    }
+  };
+
   const handleSaveQR = () => {
     // QR 코드 이미지 다운로드 로직
     const link = document.createElement('a');
@@ -63,33 +90,31 @@ const QRModal = ({
           <div className={styles.leftSection}>
             <div className={styles.expoInfo}>
               <h3 className={styles.expoTitle}>{expoInfo?.title}</h3>
+            </div>
+
+            <div className={styles.ticketDetails}>
+              <h4 className={styles.detailsTitle}>티켓 상세 정보</h4>
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>개최 기간</span>
+                  <span className={styles.infoLabel}>티켓명</span>
+                  <span className={styles.infoValue}>{reservationInfo?.ticketName || 'N/A'}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>티켓 타입</span>
                   <span className={styles.infoValue}>
-                    {formatDateRange(expoInfo?.startDate, expoInfo?.endDate)}
+                    {reservationInfo?.ticketType === 'GENERAL' ? '일반' : 
+                     reservationInfo?.ticketType === 'EARLY_BIRD' ? '얼리버드' : 
+                     reservationInfo?.ticketType || 'N/A'}
                   </span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>운영 시간</span>
-                  <span className={styles.infoValue}>
-                    {formatTimeRange(expoInfo?.startTime, expoInfo?.endTime)}
-                  </span>
+                  <span className={styles.infoLabel}>사용 시작일</span>
+                  <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>장소</span>
-                  <span className={styles.infoValue}>
-                    {expoInfo?.location}
-                  </span>
+                  <span className={styles.infoLabel}>사용 종료일</span>
+                  <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
                 </div>
-                {expoInfo?.locationDetail && (
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>상세 위치</span>
-                    <span className={styles.infoValue}>
-                      {expoInfo.locationDetail}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -107,6 +132,20 @@ const QRModal = ({
                   <span className={styles.infoLabel}>예매일</span>
                   <span className={styles.infoValue}>{formatDate(reservationInfo?.createdAt)}</span>
                 </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>QR 상태</span>
+                  <span className={`${styles.infoValue} ${getQrStatusClass(reserver?.qrStatus)}`}>
+                    {formatQrStatus(reserver?.qrStatus)}
+                  </span>
+                </div>
+                {reserver?.qrUsedAt && (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>사용일시</span>
+                    <span className={styles.infoValue}>
+                      {new Date(reserver.qrUsedAt).toLocaleString('ko-KR')}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -132,32 +171,6 @@ const QRModal = ({
           </div>
         </div>
 
-        {/* 상세 티켓 정보 */}
-        <div className={styles.ticketDetails}>
-          <h4 className={styles.detailsTitle}>티켓 상세 정보</h4>
-          <div className={styles.detailsGrid}>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>티켓명</span>
-              <span className={styles.detailValue}>{reservationInfo?.ticketName || 'N/A'}</span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>티켓 타입</span>
-              <span className={styles.detailValue}>
-                {reservationInfo?.ticketType === 'GENERAL' ? '일반' : 
-                 reservationInfo?.ticketType === 'EARLY_BIRD' ? '얼리버드' : 
-                 reservationInfo?.ticketType || 'N/A'}
-              </span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>사용 시작일</span>
-              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
-            </div>
-            <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>사용 종료일</span>
-              <span className={styles.detailValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
-            </div>
-          </div>
-        </div>
 
         {/* 티켓 푸터 */}
         <div className={styles.ticketFooter}>

@@ -1,50 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaPlus , FaInfoCircle} from 'react-icons/fa';
 import styles from './TicketSettingForm.module.css';
-import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
-import ToastFail from '../../../common/components/toastFail/ToastFail';
-import { getMyExpoTickets, saveMyExpoTicket, deleteMyExpoTicket, updateMyExpoTicket } from '../../../api/service/expo-admin/setting/TicketService';
+import { FaCheckCircle, FaTimesCircle, FaTimes } from 'react-icons/fa';
+import { getMyExpoInfo } from '../../../api/service/expo-admin/setting/ExpoInfoService';
 
-function TicketSettingForm() {
+function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
   const { expoId } = useParams();
-  const [data, setData] = useState([]);
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [newTicket, setNewTicket] = useState(initTicket());
-  const [editTicket, setEditTicket] = useState(initTicket());
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [showFailToast, setShowFailToast] = useState(false);
-  const [failMessage, setFailMessage] = useState('');
 
-  // 초기 렌더링
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const ticketData = await getMyExpoTickets(expoId);
-        setData(ticketData);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    fetchTickets();
-  }, [expoId]);
+  const [form, setForm] = useState(initForm());
+  const [expoLoaded, setExpoLoaded] = useState(false);
 
-  // 성공 토스트
-  const triggerSuccessToast = () => {
-    setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 3000);
+  // 게시(노출) 기간
+  const [displayStartDate, setDisplayStartDate] = useState('');
+  const [displayEndDate, setDisplayEndDate] = useState('');
+  // 행사(운영) 기간
+  const [expoStartDate, setExpoStartDate] = useState('');
+  const [expoEndDate, setExpoEndDate] = useState('');
+
+  // 에러 상태 (필드별 메시지)
+  const [errors, setErrors] = useState({});
+
+  // 포커스 이동을 위한 ref 맵
+  const refs = {
+    name: useRef(null),
+    type: useRef(null),
+    description: useRef(null),
+    price: useRef(null),
+    totalQuantity: useRef(null),
+    saleStartDate: useRef(null),
+    saleEndDate: useRef(null),
+    useStartDate: useRef(null),
+    useEndDate: useRef(null),
   };
 
-  // 실패 토스트
-  const triggerToastFail = (message) => {
-    setFailMessage(message);
-    setShowFailToast(true);
-    setTimeout(() => setShowFailToast(false), 3000);
-  };
-
-  // 티켓 초기값
-  function initTicket() {
+  function initForm() {
     return {
       ticketId: null,
       name: '',
@@ -59,368 +48,445 @@ function TicketSettingForm() {
     };
   }
 
-  // 유효성 검사 (백엔드 DTO 규칙 반영)
-  const validateTicket = (t) => {
-    if (!t.name || t.name.trim() === '') return '티켓 이름은 필수입니다.';
-    if (t.name.length > 100) return '티켓 이름은 100자 이하여야 합니다.';
-    if (!t.description || t.description.trim() === '') return '설명은 필수입니다.';
-    if (!t.type) return '타입은 필수입니다.';
-
-    if (t.price === '' || isNaN(t.price)) return '가격은 숫자여야 합니다.';
-    if (Number(t.price) < 0) return '가격은 0원 이상이어야 합니다.';
-
-    if (t.totalQuantity === '' || isNaN(t.totalQuantity)) return '수량은 숫자여야 합니다.';
-    if (Number(t.totalQuantity) < 1) return '수량은 1장 이상이어야 합니다.';
-
-    if (!t.saleStartDate) return '판매 시작일은 필수입니다.';
-    if (!t.saleEndDate) return '판매 종료일은 필수입니다.';
-    if (t.saleEndDate < t.saleStartDate) return '판매 종료일은 시작일과 같거나 이후여야 합니다.';
-
-    if (!t.useStartDate) return '사용 시작일은 필수입니다.';
-    if (!t.useEndDate) return '사용 종료일은 필수입니다.';
-    if (t.useEndDate < t.useStartDate) return '사용 종료일은 시작일과 같거나 이후여야 합니다.';
-
-    if (t.useStartDate < t.saleStartDate) return '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
-
-    return null;
-  };
-
-  // 저장
-  const handleSave = async () => {
-    const error = validateTicket(newTicket);
-    if (error) {
-      triggerToastFail(error);
-      return;
-    }
-
-    // 숫자 필드 변환
-    const payload = {
-      ...newTicket,
-      price: Number(newTicket.price),
-      totalQuantity: Number(newTicket.totalQuantity),
+  // 모달 열릴 때 스크롤 잠금
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => e.key === 'Escape' && onClose?.();
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = original;
+      document.removeEventListener('keydown', onKey);
     };
+  }, [open, onClose]);
 
-    try {
-      const created = await saveMyExpoTicket(expoId, payload);
-      triggerSuccessToast();
-      setData([...data, created]);
-      setNewTicket(initTicket());
-      setIsAdding(false);
-    } catch (error) {
-      triggerToastFail(error.message);
-    }
-  };
-
-  // 삭제
-  const handleDelete = async (index) => {
-    const ticketId = data[index]?.ticketId;
-    if (!ticketId) {
-      triggerToastFail('티켓 ID가 없습니다.');
-      return;
-    }
-
-    const confirmed = window.confirm('정말 삭제하시겠습니까?');
-    if (!confirmed) return;
-
-    try {
-      await deleteMyExpoTicket(expoId, ticketId);
-      setData((prev) => prev.filter((_, i) => i !== index));
-      triggerSuccessToast();
-      if (editingIndex === index) setEditingIndex(null);
-    } catch (err) {
-      triggerToastFail(err.message);
-    }
-  };
-
-  // 수정
-  const handleUpdate = async () => {
-    const error = validateTicket(editTicket);
-    if (error) {
-      triggerToastFail(error);
-      return;
-    }
-
-    const payload = {
-      ...editTicket,
-      price: Number(editTicket.price),
-      totalQuantity: Number(editTicket.totalQuantity),
+  // 제약(박람회 기간/게시기간) 로드
+  useEffect(() => {
+    if (!open || !expoId) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const expo = await getMyExpoInfo(expoId);
+        if (!mounted) return;
+        setDisplayStartDate(expo?.displayStartDate?.split('T')[0] || '');
+        setDisplayEndDate(expo?.displayEndDate?.split('T')[0] || '');
+        setExpoStartDate(expo?.startDate?.split('T')[0] || '');
+        setExpoEndDate(expo?.endDate?.split('T')[0] || '');
+        setExpoLoaded(true);
+      } catch (e) {
+        setExpoLoaded(true); // 실패해도 폼 사용 가능
+      }
+    })();
+    return () => {
+      mounted = false;
     };
+  }, [open, expoId]);
 
-    try {
-      const updated = await updateMyExpoTicket(expoId, editTicket.ticketId, payload);
-      const newData = [...data];
-      newData[editingIndex] = updated;
-      setData(newData);
-      setEditingIndex(null);
-      triggerSuccessToast();
-    } catch (error) {
-      triggerToastFail(error.message);
-    }
+  // 모달 열림/수정 모드 전환 시 폼 초기화 + 에러 초기화
+  useEffect(() => {
+    if (editingTicket) setForm(editingTicket);
+    else setForm(initForm());
+    setErrors({});
+  }, [editingTicket, open]);
+
+  // YYYY-MM-DD 범위 클램프
+  const clampDate = (v, min, max) => {
+    if (!v) return v;
+    let nv = v;
+    if (min && nv < min) nv = min;
+    if (max && nv > max) nv = max;
+    return nv;
   };
 
-  // 추가 취소
-  const handleCancel = () => {
-    setIsAdding(false);
-    setNewTicket(initTicket());
-  };
-
-  // 수정 진입
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setEditTicket(data[index]);
-    setIsAdding(false);
-  };
-
-  // 수정 취소
-  const handleCancelEdit = () => {
-    setEditingIndex(null);
-    setEditTicket(initTicket());
-  };
-
-  // input 변경
-  const handleChange = (e, isEdit = false) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    const updater = isEdit ? setEditTicket : setNewTicket;
 
-    updater((prev) => {
-      const next = { ...prev, [name]: value };
+    setForm((prev) => {
+      let next = { ...prev, [name]: value };
 
-      if ((name === 'saleStartDate') && next.saleEndDate && next.saleEndDate < value) {
-        next.saleEndDate = value;
+      // 판매 시작일: 게시기간 내로 클램프
+      if (name === 'saleStartDate') {
+        const clamped = expoLoaded
+          ? clampDate(value, displayStartDate || undefined, displayEndDate || undefined)
+          : value;
+        next.saleStartDate = clamped;
+
+        // 종료일 보정
+        if (next.saleEndDate && next.saleEndDate < clamped) next.saleEndDate = clamped;
+        if (expoLoaded && displayEndDate && next.saleEndDate && next.saleEndDate > displayEndDate) {
+          next.saleEndDate = displayEndDate;
+        }
+        // 사용일 보정
+        if (next.useStartDate && next.useStartDate < clamped) next.useStartDate = clamped;
+        if (next.useEndDate && next.useEndDate < (next.useStartDate || clamped)) {
+          next.useEndDate = next.useStartDate || clamped;
+        }
       }
-      if ((name === 'useStartDate') && next.useEndDate && next.useEndDate < value) {
-        next.useEndDate = value;
+
+      // 판매 종료일: [판매 시작일, 게시 종료일]
+      if (name === 'saleEndDate') {
+        const minStart = next.saleStartDate || prev.saleStartDate;
+        next.saleEndDate = expoLoaded
+          ? clampDate(value, minStart || displayStartDate || undefined, displayEndDate || undefined)
+          : value;
       }
+
+      // 사용 시작일: 행사기간 내 + 판매 시작일 이후
+      if (name === 'useStartDate') {
+        const minBySale = next.saleStartDate || prev.saleStartDate;
+        let min = expoStartDate || undefined;
+        if (minBySale) min = min ? (minBySale > min ? minBySale : min) : minBySale;
+        const clamped = expoLoaded ? clampDate(value, min, expoEndDate || undefined) : value;
+        next.useStartDate = clamped;
+
+        // 종료일 보정
+        if (next.useEndDate && next.useEndDate < clamped) next.useEndDate = clamped;
+        if (expoLoaded && expoEndDate && next.useEndDate && next.useEndDate > expoEndDate) {
+          next.useEndDate = expoEndDate;
+        }
+      }
+
+      // 사용 종료일: [사용 시작일, 행사 종료일]
+      if (name === 'useEndDate') {
+        const minUseStart = next.useStartDate || prev.useStartDate || expoStartDate || undefined;
+        next.useEndDate = expoLoaded
+          ? clampDate(value, minUseStart, expoEndDate || undefined)
+          : value;
+      }
+
+      // 안전장치
+      if (name === 'saleStartDate' && next.saleEndDate && next.saleEndDate < next.saleStartDate) {
+        next.saleEndDate = next.saleStartDate;
+      }
+      if (name === 'useStartDate' && next.useEndDate && next.useEndDate < next.useStartDate) {
+        next.useEndDate = next.useStartDate;
+      }
+
       return next;
     });
+
+    // 필드 수정 시 해당 에러 즉시 제거
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // 추가 행 열기
-  const handleAddClick = () => {
-    setIsAdding(true);
-    setEditingIndex(null);
-    setNewTicket(initTicket());
+  // 사용 시작일 input용 min 계산 (행사 시작 vs 판매 시작 중 늦은 날짜)
+  const minUseStart = useMemo(() => {
+    const cands = [];
+    if (expoStartDate) cands.push(expoStartDate);
+    if (form.saleStartDate) cands.push(form.saleStartDate);
+    if (!cands.length) return undefined;
+    return cands.sort()[cands.length - 1];
+  }, [expoStartDate, form.saleStartDate]);
+
+  // ============== 유효성 검사(모든 에러 한 번에) ==============
+  const isBlank = (s) => !s || String(s).trim() === '';
+
+  const runValidation = () => {
+    const e = {};
+
+    // 왼쪽 컬럼: 이름/타입/설명 (각각 독립적으로 검사)
+    if (isBlank(form.name)) e.name = '티켓 이름은 필수입니다.';
+    else if (form.name.length > 100) e.name = '티켓 이름은 100자 이하여야 합니다.';
+
+    if (isBlank(form.type)) e.type = '티켓 타입은 필수입니다.';
+
+    if (isBlank(form.description)) e.description = '티켓 설명은 필수입니다.';
+
+    // 오른쪽: 가격/수량
+    if (form.price === '' || form.price === null) e.price = '티켓 가격은 필수입니다.';
+    else if (isNaN(Number(form.price))) e.price = '가격은 숫자여야 합니다.';
+    else if (Number(form.price) < 0) e.price = '가격은 0원 이상이어야 합니다.';
+
+    if (form.totalQuantity === '' || form.totalQuantity === null)
+      e.totalQuantity = '티켓 수량은 필수입니다.';
+    else if (isNaN(Number(form.totalQuantity)))
+      e.totalQuantity = '티켓 수량은 숫자여야 합니다.';
+    else if (Number(form.totalQuantity) < 1)
+      e.totalQuantity = '티켓 수량은 1장 이상이어야 합니다.';
+
+    // 판매기간: 둘 다 필수
+    if (isBlank(form.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
+    if (isBlank(form.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
+
+    // 판매기간 제약(두 값이 있을 때만 비교)
+    if (!e.saleStartDate && !e.saleEndDate && form.saleStartDate && form.saleEndDate) {
+      if (form.saleEndDate < form.saleStartDate) {
+        e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
+      }
+      if (displayStartDate && form.saleStartDate < displayStartDate) {
+        e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
+      }
+      if (displayEndDate && form.saleStartDate > displayEndDate) {
+        e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
+      }
+      if (displayEndDate && form.saleEndDate > displayEndDate) {
+        e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
+      }
+    }
+
+    // 사용기간: 둘 다 필수
+    if (isBlank(form.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
+    if (isBlank(form.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
+
+    // 사용기간 제약(두 값이 있을 때만 비교)
+    if (!e.useStartDate && !e.useEndDate && form.useStartDate && form.useEndDate) {
+      if (form.useEndDate < form.useStartDate) {
+        e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
+      }
+      if (form.saleStartDate && form.useStartDate < form.saleStartDate) {
+        e.useStartDate = '사용 시작일은 판매 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoStartDate && form.useStartDate < expoStartDate) {
+        e.useStartDate = '사용 시작일은 행사 시작일과 같거나 이후여야 합니다.';
+      }
+      if (expoEndDate && form.useEndDate > expoEndDate) {
+        e.useEndDate = '사용 종료일은 행사 종료일과 같거나 이전이어야 합니다.';
+      }
+    }
+
+    return e;
   };
 
-  const renderRow = (row, idx) => {
-    const isEdit = editingIndex === idx;
-    const ticket = isEdit ? editTicket : row;
-
-    return (
-      <tr key={idx} className={styles.row}>
-        {['name', 'type', 'description', 'price', 'totalQuantity'].map((field) => (
-          <td key={field} className={styles.td}>
-            {isEdit ? (
-              field === 'type' ? (
-                <select
-                  name="type"
-                  value={ticket.type}
-                  onChange={(e) => handleChange(e, true)}
-                  className={styles.input}
-                >
-                  <option value="얼리버드">얼리버드</option>
-                  <option value="일반">일반</option>
-                </select>
-              ) : (
-                <input
-                  name={field}
-                  type={field === 'price' || field === 'totalQuantity' ? 'number' : 'text'}
-                  value={ticket[field]}
-                  onChange={(e) => handleChange(e, true)}
-                  className={styles.input}
-                  min={field === 'price' ? 0 : field === 'totalQuantity' ? 1 : undefined}
-                />
-              )
-            ) : (
-              ticket[field]
-            )}
-          </td>
-        ))}
-
-        {/* 판매 기간 */}
-        <td className={styles.td}>
-          {isEdit ? (
-            <div className={styles.dateRange}>
-              <input
-                name="saleStartDate"
-                type="date"
-                value={ticket.saleStartDate || ''}
-                onChange={(e) => handleChange(e, true)}
-                className={styles.input}
-              />
-              <span>~</span>
-              <input
-                name="saleEndDate"
-                type="date"
-                value={ticket.saleEndDate || ''}
-                onChange={(e) => handleChange(e, true)}
-                className={styles.input}
-                min={ticket.saleStartDate || undefined}
-              />
-            </div>
-          ) : (
-            `${ticket.saleStartDate} ~ ${ticket.saleEndDate}`
-          )}
-        </td>
-
-        {/* 사용 기간 */}
-        <td className={styles.td}>
-          {isEdit ? (
-            <div className={styles.dateRange}>
-              <input
-                name="useStartDate"
-                type="date"
-                value={ticket.useStartDate || ''}
-                onChange={(e) => handleChange(e, true)}
-                className={styles.input}
-              />
-              <span>~</span>
-              <input
-                name="useEndDate"
-                type="date"
-                value={ticket.useEndDate || ''}
-                onChange={(e) => handleChange(e, true)}
-                className={styles.input}
-                min={ticket.useStartDate || undefined}
-              />
-            </div>
-          ) : (
-            `${ticket.useStartDate} ~ ${ticket.useEndDate}`
-          )}
-        </td>
-
-        <td className={styles.td}>
-          {isEdit ? (
-            <div className={styles.actionGroup}>
-              <button className={styles.submitBtn} onClick={handleUpdate}>저장</button>
-              <button className={styles.cancelBtn} onClick={handleCancelEdit}>취소</button>
-            </div>
-          ) : (
-            <>
-              <button className={styles.editBtn} onClick={() => handleEdit(idx)}>수정</button>
-              <button className={styles.deleteBtn} onClick={() => handleDelete(idx)}>삭제</button>
-            </>
-          )}
-        </td>
-      </tr>
-    );
+  const focusFirstError = (e) => {
+    const order = [
+      'name',
+      'type',
+      'description',
+      'price',
+      'totalQuantity',
+      'saleStartDate',
+      'saleEndDate',
+      'useStartDate',
+      'useEndDate',
+    ];
+    for (const key of order) {
+      if (e[key]) {
+        refs[key]?.current?.focus?.();
+        break;
+      }
+    }
   };
+
+  const handleSubmit = async () => {
+    const e = runValidation();
+    setErrors(e);
+    if (Object.values(e).some(Boolean)) {
+      focusFirstError(e);
+      return;
+    }
+    const payload = {
+      ...form,
+      price: form.price === '' ? '' : Number(form.price),
+      totalQuantity: form.totalQuantity === '' ? '' : Number(form.totalQuantity),
+    };
+    const success = await onSubmit(payload);
+    if (success) {
+      setForm(initForm());
+      setErrors({});
+      onClose?.();
+    }
+  };
+
+  const handleCancel = () => {
+    setForm(initForm());
+    setErrors({});
+    onClose?.();
+  };
+
+  if (!open) return null;
 
   return (
-    <div className={styles.container}>
-      {/* 안내 박스 */}
-      <div className={styles.alertBox}>
-        <FaInfoCircle className={styles.alertIcon} />
-        <span className={styles.alertText}>
-          <strong>안내 :</strong>&nbsp;
-          사용자들의 예매가 완료된 이후로는 티켓 정보를 변경할 수 없습니다.
-        </span>
-      </div>
+    <div className={styles.backdrop} onClick={onClose} role="dialog" aria-modal="true">
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* 헤더 */}
+        <div className={styles.modalHeader}>
+          <h3 className={styles.modalTitle}>{editingTicket ? '티켓 수정' : '티켓 등록'}</h3>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="닫기">
+            <FaTimes className={styles.closeIcon} />
+          </button>
+        </div>
 
-      <div className={styles.header}>
-        <button className={styles.addBtn} onClick={handleAddClick}>
-          <FaPlus className={styles.iconBtn} /> 티켓 등록
-        </button>
-      </div>
+        {/* 컨텐츠 */}
+        <div className={styles.modalContent}>
+          <div className={styles.container}>
+            <div className={styles.formGrid}>
+              {/* 왼쪽 컬럼: 기본 정보 */}
+              <div className={styles.column}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>티켓 이름</label>
+                  <input
+                    ref={refs.name}
+                    name="name"
+                    className={styles.inputField}
+                    placeholder="티켓 이름 입력"
+                    value={form.name}
+                    onChange={handleChange}
+                    aria-invalid={!!errors.name}
+                  />
+                  {errors.name && <p className={styles.errorText}>{errors.name}</p>}
+                </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr className={styles.headerRow}>
-              <th className={styles.th}>티켓 이름</th>
-              <th className={styles.th}>타입</th>
-              <th className={styles.th}>설명</th>
-              <th className={styles.th}>가격(원)</th>
-              <th className={styles.th}>수량</th>
-              <th className={styles.th}>판매 기간</th>
-              <th className={styles.th}>사용 기간</th>
-              <th className={styles.th}>수정/삭제</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map(renderRow)}
-            {isAdding && (
-              <tr className={styles.row}>
-                {['name', 'type', 'description', 'price', 'totalQuantity'].map((field) => (
-                  <td key={field} className={styles.td}>
-                    {field === 'type' ? (
-                      <select
-                        name="type"
-                        value={newTicket.type}
-                        onChange={handleChange}
-                        className={styles.input}
-                      >
-                        <option value="얼리버드">얼리버드</option>
-                        <option value="일반">일반</option>
-                      </select>
-                    ) : (
-                      <input
-                        name={field}
-                        type={field === 'price' || field === 'totalQuantity' ? 'number' : 'text'}
-                        value={newTicket[field]}
-                        onChange={handleChange}
-                        className={styles.input}
-                        min={field === 'price' ? 0 : field === 'totalQuantity' ? 1 : undefined}
-                      />
-                    )}
-                  </td>
-                ))}
-                {/* 판매 기간 */}
-                <td className={styles.td}>
-                  <div className={styles.dateRange}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>타입</label>
+                  <select
+                    ref={refs.type}
+                    name="type"
+                    className={styles.inputField}
+                    value={form.type}
+                    onChange={handleChange}
+                    aria-invalid={!!errors.type}
+                  >
+                    <option value="">타입 선택</option>
+                    <option value="얼리버드">얼리버드</option>
+                    <option value="일반">일반</option>
+                  </select>
+                  {errors.type && <p className={styles.errorText}>{errors.type}</p>}
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>설명</label>
+                  <input
+                    ref={refs.description}
+                    name="description"
+                    className={styles.inputField}
+                    placeholder="설명 입력"
+                    value={form.description}
+                    onChange={handleChange}
+                    aria-invalid={!!errors.description}
+                  />
+                  {errors.description && (
+                    <p className={styles.errorText}>{errors.description}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* 오른쪽 컬럼: 가격/수량 + 기간 */}
+              <div className={styles.column}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>가격(원)</label>
+                  <input
+                    ref={refs.price}
+                    type="number"
+                    name="price"
+                    className={styles.inputField}
+                    placeholder="가격 입력"
+                    value={form.price}
+                    onChange={handleChange}
+                    min={0}
+                    aria-invalid={!!errors.price}
+                  />
+                  {errors.price && <p className={styles.errorText}>{errors.price}</p>}
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>수량</label>
+                  <input
+                    ref={refs.totalQuantity}
+                    type="number"
+                    name="totalQuantity"
+                    className={styles.inputField}
+                    placeholder="수량 입력"
+                    value={form.totalQuantity}
+                    onChange={handleChange}
+                    min={1}
+                    aria-invalid={!!errors.totalQuantity}
+                  />
+                  {errors.totalQuantity && (
+                    <p className={styles.errorText}>{errors.totalQuantity}</p>
+                  )}
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>판매 기간</label>
+                  <div className={styles.timeRange}>
                     <input
+                      ref={refs.saleStartDate}
+                      type="date"
                       name="saleStartDate"
-                      type="date"
-                      value={newTicket.saleStartDate}
+                      className={styles.inputField}
+                      value={form.saleStartDate}
                       onChange={handleChange}
-                      className={styles.input}
+                      min={expoLoaded && displayStartDate ? displayStartDate : undefined}
+                      max={expoLoaded && displayEndDate ? displayEndDate : undefined}
+                      aria-invalid={!!errors.saleStartDate}
                     />
-                    <span>~</span>
+                    <span className={styles.timeDivider}>~</span>
                     <input
+                      ref={refs.saleEndDate}
+                      type="date"
                       name="saleEndDate"
-                      type="date"
-                      value={newTicket.saleEndDate}
+                      className={styles.inputField}
+                      value={form.saleEndDate}
                       onChange={handleChange}
-                      className={styles.input}
-                      min={newTicket.saleStartDate || undefined}
+                      min={
+                        (form.saleStartDate ||
+                          (expoLoaded && displayStartDate ? displayStartDate : undefined)) ||
+                        undefined
+                      }
+                      max={expoLoaded && displayEndDate ? displayEndDate : undefined}
+                      aria-invalid={!!errors.saleEndDate}
                     />
                   </div>
-                </td>
-                {/* 사용 기간 */}
-                <td className={styles.td}>
-                  <div className={styles.dateRange}>
-                    <input
-                      name="useStartDate"
-                      type="date"
-                      value={newTicket.useStartDate}
-                      onChange={handleChange}
-                      className={styles.input}
-                    />
-                    <span>~</span>
-                    <input
-                      name="useEndDate"
-                      type="date"
-                      value={newTicket.useEndDate}
-                      onChange={handleChange}
-                      className={styles.input}
-                      min={newTicket.useStartDate || undefined}
-                    />
-                  </div>
-                </td>
-                <td className={styles.td}>
-                  <div className={styles.actionGroup}>
-                    <button className={styles.submitBtn} onClick={handleSave}>저장</button>
-                    <button className={styles.cancelBtn} onClick={handleCancel}>취소</button>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  {(errors.saleStartDate || errors.saleEndDate) && (
+                    <p className={styles.errorText}>
+                      {errors.saleStartDate || errors.saleEndDate}
+                    </p>
+                  )}
+                </div>
 
-      {showSuccessToast && <ToastSuccess />}
-      {showFailToast && <ToastFail message={failMessage} />}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>사용 기간</label>
+                  <div className={styles.timeRange}>
+                    <input
+                      ref={refs.useStartDate}
+                      type="date"
+                      name="useStartDate"
+                      className={styles.inputField}
+                      value={form.useStartDate}
+                      onChange={handleChange}
+                      min={expoLoaded ? minUseStart : undefined}
+                      max={expoLoaded && expoEndDate ? expoEndDate : undefined}
+                      aria-invalid={!!errors.useStartDate}
+                    />
+                    <span className={styles.timeDivider}>~</span>
+                    <input
+                      ref={refs.useEndDate}
+                      type="date"
+                      name="useEndDate"
+                      className={styles.inputField}
+                      value={form.useEndDate}
+                      onChange={handleChange}
+                      min={
+                        form.useStartDate ||
+                        (expoLoaded && expoStartDate ? expoStartDate : undefined)
+                      }
+                      max={expoLoaded && expoEndDate ? expoEndDate : undefined}
+                      aria-invalid={!!errors.useEndDate}
+                    />
+                  </div>
+                  {(errors.useStartDate || errors.useEndDate) && (
+                    <p className={styles.errorText}>
+                      {errors.useStartDate || errors.useEndDate}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 구분선 + 버튼 */}
+            <div className={styles.buttonDivider} />
+            <div className={styles.buttonGroup}>
+              <button className={`${styles.actionBtn} ${styles.submitBtn}`} onClick={handleSubmit}>
+                <FaCheckCircle className={styles.iconBtn} /> {editingTicket ? '수정' : '등록'}
+              </button>
+              <button className={`${styles.actionBtn} ${styles.cancelBtn}`} onClick={handleCancel}>
+                <FaTimesCircle className={styles.iconBtn} /> 취소
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

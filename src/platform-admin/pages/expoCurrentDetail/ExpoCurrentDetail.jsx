@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ExpoCurrentDetail.module.css';
 import ExpoApplicationForm from '../../components/expoApplicationForm/ExpoApplicationForm';
+import ApplicantForm from '../../components/applicantForm/ApplicantForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import ExpoPaymentDetailModal from '../../components/expoPaymentDetailModal/ExpoPaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
+import ExpoAdminDetailModal from '../../components/expoAdminDetailModal/ExpoAdminDetailModal';
 import SettlementSummaryModal from '../../components/settlementSummaryModal/SettlementSummaryModal';
 import CancelDetailModal from '../../components/cancelDetailModal/cancelDetailModal';
 import { fetchExpoDetail, approveCancellation, approveSettlement, fetchPaymentInfo, fetchCancelInfo } from '../../../api/service/platform-admin/expo/ExpoService';
@@ -36,7 +38,8 @@ function ExpoCurrentDetail() {
   const { id } = useParams();
   const [expo, setExpo] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
+  const [showAdminList, setShowAdminList] = useState(false);
   const [showSettlementSummary, setShowSettlementSummary] = useState(false);
   const [showSettlementDetail, setShowSettlementDetail] = useState(false);
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
@@ -50,6 +53,10 @@ function ExpoCurrentDetail() {
       setLoading(true);
       const response = await fetchExpoDetail(id);
       setExpo(response);
+      if (expo?.status === 'PUBLISHED' || expo?.status === 'PENDING_CANCEL') {
+        console.log("관리자 정보 불러오는 중");
+
+      }
     } catch (error) {
       console.error('현재 박람회 상세 정보 조회 실패:', error);
     } finally {
@@ -69,6 +76,11 @@ function ExpoCurrentDetail() {
   const handleBack = () => {
     navigate(-1);
   };
+
+  const handleAdminListDetail = () => {
+    console.log("모달 활성화");
+    setShowAdminList(true);
+  }
 
   const handleSettlementSubmit = () => {
     setShowSettlementSummary(false);
@@ -142,10 +154,28 @@ function ExpoCurrentDetail() {
   };
 
   let buttonGroup = null;
+  let adminListButton = null;
 
   // 승인 대기와 승인 거절을 제외한 모든 상태에서 결제 정보 표시
-  const showPaymentInfo = expo?.status && 
+  const showPaymentInfo = expo?.status &&
     !['PENDING_APPROVAL', 'REJECTED'].includes(expo.status);
+
+  if (expo?.status === 'PUBLISHED' || expo?.status === 'PENDING_CANCEL'
+  || expo?.status === 'CANCELLED' || expo?.status === 'PUBLISH_ENDED'
+  || expo?.status === 'SETTLEMENT_REQUESTED' || expo?.status === 'COMPLETED'
+  ) {
+    adminListButton = (
+      <div>
+        <button
+          className={styles.infoBtnShort}
+          onClick={handleAdminListDetail}
+        >
+          관리자 정보
+        </button>
+      </div>
+    );
+  }
+
 
   if (expo?.status === 'PENDING_CANCEL') {
     buttonGroup = (
@@ -262,17 +292,28 @@ function ExpoCurrentDetail() {
               {statusText}
             </span>
           )}
+          {/* 관리자 목록 버튼 */}
+          {adminListButton}
         </div>
         <ExpoApplicationForm expoData={expo} />
       </div>
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={expo?.applicant} businessData={expo?.business} />
+        <ApplicantForm applicantData={expo?.applicant} />
       </div>
+      <div className={styles.section}>
+        <OperatorApplicationForm businessData={expo?.business} />
+      </div>
+
 
       {/* 버튼 그룹 */}
       {buttonGroup}
+
+      <ExpoAdminDetailModal
+        isOpen={showAdminList}
+        onClose={() => setShowAdminList(false)}
+      />
 
       {/* 모달들 */}
       <SettlementSummaryModal

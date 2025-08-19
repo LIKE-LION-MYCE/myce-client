@@ -33,6 +33,7 @@
 .table th, .table td {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
 }
 
 .tableRow {
@@ -48,73 +49,11 @@
   border-bottom: none;
 }
 
+/* badge 정렬을 위해 margin 조정 */
 .statusBadge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* 상태별 뱃지 색상 - EXPO STATUS */
-/* PENDING_APPROVAL: 승인 대기 */
-.승인대기, .승인대기 {
-  background: #fffbe4;
-  color: #b28a15;
-}
-
-/* PENDING_PAYMENT: 결제 대기 */
-.결제대기, .결제대기 {
-  background: #e8f4fd;
-  color: #2563eb;
-}
-
-/* PENDING_PUBLISH: 게시 대기 */
-.게시대기, .게시대기 {
-  background: #e8f4fd;
-  color: #2563eb;
-}
-
-/* PENDING_CANCEL: 취소 대기 */
-.취소대기, .취소대기 {
-  background: #fffbe4;
-  color: #b28a15;
-}
-
-/* PUBLISHED: 게시 중 */
-.게시중, .게시중 {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-/* PUBLISH_ENDED: 게시 종료 */
-.게시종료, .게시종료 {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-/* SETTLEMENT_REQUESTED: 정산 요청 */
-.정산요청, .정산요청 {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-/* COMPLETED: 종료됨 */
-.종료됨, .종료됨 {
-  background: #f9fafb;
-  color: #6b7280;
-}
-
-/* REJECTED: 승인 거절 */
-.승인거절, .승인거절 {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-/* CANCELLED: 취소 완료 */
-.취소완료, .취소완료 {
-  background: #fef2f2;
-  color: #dc2626;
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+  vertical-align: middle;
 }
 
 /* 페이지네이션 스타일 */

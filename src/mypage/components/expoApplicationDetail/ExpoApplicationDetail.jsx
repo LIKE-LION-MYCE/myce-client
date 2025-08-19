@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './ExpoApplicationDetail.module.css';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
@@ -14,6 +15,17 @@ function ExpoApplicationDetail({
   onPaymentInfoClick,
   onAdminPageClick,
 }) {
+  const { t } = useTranslation();
+  
+  // 디버그: i18n 키 테스트 (더 자세히)
+  console.log('=== ExpoApplicationDetail i18n Debug ===');
+  console.log('Current language:', localStorage.getItem('language') || 'ko');
+  console.log('Test expoStatus:', t('mypage.expoStatus.title'));
+  console.log('Test detail section:', t('mypage.expoStatus.detail.loading'));
+  console.log('Test buttons section:', t('mypage.expoStatus.detail.buttons.paymentRequest'));
+  console.log('Test fields section exists:', typeof t('mypage.expoStatus.detail.fields'));
+  console.log('Test fields.description:', t('mypage.expoStatus.detail.fields.description'));
+  console.log('Test fields.companyName:', t('mypage.expoStatus.detail.fields.companyName'));
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState('');
@@ -33,65 +45,90 @@ function ExpoApplicationDetail({
   }, [expoData]); // expoData가 변경될 때마다 useEffect 실행
 
   const renderStatusTag = () => {
-    switch (status) {
-      case '승인대기':
-      case '승인 대기':
-        return <span className={`${styles.statusTag} ${styles.pending}`}>승인 대기</span>;
-      case '결제대기':
-      case '결제 대기':
-        return <span className={`${styles.statusTag} ${styles.paymentPending}`}>결제 대기</span>;
-      case '게시대기':
-      case '게시 대기':
-        return <span className={`${styles.statusTag} ${styles.pending}`}>게시 대기</span>;
-      case '취소대기':
-      case '취소 대기':
-        return <span className={`${styles.statusTag} ${styles.pending}`}>취소 대기</span>;
-      case '게시중':
-      case '게시 중':
-        return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 중</span>;
-      case '게시종료':
-      case '게시 종료':
-        return <span className={`${styles.statusTag} ${styles.inProgress}`}>게시 종료</span>;
-      case '정산요청':
-      case '정산 요청':
-        return <span className={`${styles.statusTag} ${styles.settled}`}>정산 요청</span>;
-      case '종료됨':
-        return <span className={`${styles.statusTag} ${styles.completed}`}>종료됨</span>;
-      case '거절됨':
-      case '승인 거절':
-        return <span className={`${styles.statusTag} ${styles.rejected}`}>거절됨</span>;
-      case '취소됨':
-      case '취소 완료':
-        return <span className={`${styles.statusTag} ${styles.cancelled}`}>취소됨</span>;
-      default:
-        return null;
+    // 상태별 직접 매핑으로 더 간단하고 확실하게 처리
+    const statusMapping = {
+      // 영어 키들
+      'PENDING_APPROVAL': { key: 'PENDING_APPROVAL', style: 'pending' },
+      'PENDING_PAYMENT': { key: 'PENDING_PAYMENT', style: 'paymentPending' },
+      'PENDING_PUBLISH': { key: 'PENDING_PUBLISH', style: 'pending' },
+      'PENDING_CANCEL': { key: 'PENDING_CANCEL', style: 'pending' },
+      'PUBLISHED': { key: 'PUBLISHED', style: 'inProgress' },
+      'PUBLISH_ENDED': { key: 'PUBLISH_ENDED', style: 'inProgress' },
+      'SETTLEMENT_REQUESTED': { key: 'SETTLEMENT_REQUESTED', style: 'settled' },
+      'COMPLETED': { key: 'COMPLETED', style: 'completed' },
+      'REJECTED': { key: 'REJECTED', style: 'rejected' },
+      'CANCELLED': { key: 'CANCELLED', style: 'cancelled' },
+      
+      // 한국어 키들 (백엔드가 한국어로 보낼 경우 대비)
+      '승인대기': { key: 'PENDING_APPROVAL', style: 'pending' },
+      '승인 대기': { key: 'PENDING_APPROVAL', style: 'pending' },
+      '결제대기': { key: 'PENDING_PAYMENT', style: 'paymentPending' },
+      '결제 대기': { key: 'PENDING_PAYMENT', style: 'paymentPending' },
+      '게시대기': { key: 'PENDING_PUBLISH', style: 'pending' },
+      '게시 대기': { key: 'PENDING_PUBLISH', style: 'pending' },
+      '취소대기': { key: 'PENDING_CANCEL', style: 'pending' },
+      '취소 대기': { key: 'PENDING_CANCEL', style: 'pending' },
+      '게시중': { key: 'PUBLISHED', style: 'inProgress' },
+      '게시 중': { key: 'PUBLISHED', style: 'inProgress' },
+      '게시종료': { key: 'PUBLISH_ENDED', style: 'inProgress' },
+      '게시 종료': { key: 'PUBLISH_ENDED', style: 'inProgress' },
+      '정산요청': { key: 'SETTLEMENT_REQUESTED', style: 'settled' },
+      '정산 요청': { key: 'SETTLEMENT_REQUESTED', style: 'settled' },
+      '종료됨': { key: 'COMPLETED', style: 'completed' },
+      '거절됨': { key: 'REJECTED', style: 'rejected' },
+      '승인 거절': { key: 'REJECTED', style: 'rejected' },
+      '취소됨': { key: 'CANCELLED', style: 'cancelled' },
+      '취소 완료': { key: 'CANCELLED', style: 'cancelled' }
+    };
+
+    const statusConfig = statusMapping[status];
+    if (!statusConfig) {
+      return null;
     }
+
+    const statusText = t(`mypage.expoStatus.status.${statusConfig.key}`);
+    
+    return (
+      <span className={`${styles.statusTag} ${styles[statusConfig.style]}`}>
+        {statusText}
+      </span>
+    );
+  };
+
+  // 상태 확인 헬퍼 함수들
+  const isStatus = (currentStatus, targetStatuses) => {
+    const normalizedStatus = currentStatus?.toUpperCase().replace(/\s+/g, '_');
+    return targetStatuses.some(target => {
+      if (typeof target === 'string' && target.includes('_')) {
+        return normalizedStatus === target;
+      }
+      return currentStatus === target;
+    });
   };
 
   // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 
   const canViewPaymentInfo = (status) => {
     const excludedStatuses = [
-      '승인대기', '승인 대기',
-      '결제대기', '결제 대기',
-      '거절됨', '승인 거절'
+      'PENDING_APPROVAL', '승인대기', '승인 대기',
+      'PENDING_PAYMENT', '결제대기', '결제 대기',
+      'REJECTED', '거절됨', '승인 거절'
     ];
-    return !excludedStatuses.includes(status) && expoData?.paymentInfo;
+    return !isStatus(status, excludedStatuses) && expoData?.paymentInfo;
   };
   
   // 환불 정보를 볼 수 있는지 확인하는 함수 (결제를 했고 취소/환불 상태인 경우)
   const canViewRefundInfo = (status) => {
-    const refundStatuses = ['취소대기', '취소 대기', '취소됨', '취소 완료'];
-    return refundStatuses.includes(status) && expoData?.paymentInfo;
+    const refundStatuses = ['PENDING_CANCEL', 'CANCELLED', '취소대기', '취소 대기', '취소됨', '취소 완료'];
+    return isStatus(status, refundStatuses) && expoData?.paymentInfo;
   };
 
   // 티켓 정보를 볼 수 있는지 확인하는 함수 (PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김)
   const canViewTicketInfo = (status) => {
-    const hiddenStatuses = ['승인대기', '승인 대기', '게시대기', '게시 대기'];
-    return !hiddenStatuses.includes(status);
+    const hiddenStatuses = ['PENDING_APPROVAL', 'PENDING_PUBLISH', '승인대기', '승인 대기', '게시대기', '게시 대기'];
+    return !isStatus(status, hiddenStatuses);
   };
 
   const renderButtons = () => {
-    console.log('ExpoApplicationDetail - renderButtons, current status:', status);
     
     // 상태가 로드되지 않았으면 버튼을 렌더링하지 않음
     if (!status || status.length === 0) {
@@ -103,46 +140,46 @@ function ExpoApplicationDetail({
         {/* 상태별 정보 조회 버튼 */}
         <div className={styles.receiptButtons}>
           {/* 결제 관련 버튼 */}
-          {(status === '결제대기' || status === '결제 대기') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>결제 신청</button>
+          {isStatus(status, ['PENDING_PAYMENT', '결제대기', '결제 대기']) && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>{t('mypage.expoStatus.detail.buttons.paymentRequest')}</button>
           )}
           
           {/* 환불 관련 버튼 */}
-          {(status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 신청</button>
+          {isStatus(status, ['PENDING_PUBLISH', 'PUBLISHED', '게시대기', '게시 대기', '게시중', '게시 중']) && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypage.expoStatus.detail.buttons.refundRequest')}</button>
           )}
-          {(status === '취소대기' || status === '취소 대기' || status === '취소됨' || status === '취소 완료') && (
+          {isStatus(status, ['PENDING_CANCEL', 'CANCELLED', '취소대기', '취소 대기', '취소됨', '취소 완료']) && (
             <>
               {expoData?.paymentInfo ? (
-                <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>환불 정보</button>
+                <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypage.expoStatus.detail.buttons.refundInfo')}</button>
               ) : (
-                <span className={styles.infoMessage}>결제/환불 정보가 존재하지 않습니다.</span>
+                <span className={styles.infoMessage}>{t('mypage.expoStatus.detail.defaultValues.noPaymentRefundInfo')}</span>
               )}
             </>
           )}
           
           {/* 정산 관련 버튼 */}
-          {(status === '게시종료' || status === '게시 종료') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>정산 신청</button>
+          {isStatus(status, ['PUBLISH_ENDED', '게시종료', '게시 종료']) && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>{t('mypage.expoStatus.detail.buttons.settlementRequest')}</button>
           )}
-          {(status === '정산요청' || status === '정산 요청') && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 정보 조회</button>
+          {isStatus(status, ['SETTLEMENT_REQUESTED', '정산요청', '정산 요청']) && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypage.expoStatus.detail.buttons.settlementInfo')}</button>
           )}
-          {status === '종료됨' && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>정산 완료 정보 조회</button>
+          {isStatus(status, ['COMPLETED', '종료됨']) && (
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypage.expoStatus.detail.buttons.settlementCompleted')}</button>
           )}
           
           {/* 결제 정보 조회 버튼 */}
           {canViewPaymentInfo(status) && (
-            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>결제 정보</button>
+            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>{t('mypage.expoStatus.detail.buttons.paymentInfo')}</button>
           )}
         </div>
         
         {/* 상태별 주요 액션 버튼 */}
         <div className={styles.actionButtons}>
           {/* 취소 신청 버튼 */}
-          {(status === '승인대기' || status === '승인 대기' || status === '결제대기' || status === '결제 대기') && (
-            <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>취소 신청</button>
+          {isStatus(status, ['PENDING_APPROVAL', 'PENDING_PAYMENT', '승인대기', '승인 대기', '결제대기', '결제 대기']) && (
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>{t('mypage.expoStatus.detail.buttons.cancelRequest')}</button>
           )}
           
           
@@ -152,13 +189,18 @@ function ExpoApplicationDetail({
   };
   
   const renderAdminButton = () => {
-    if (status === '게시대기' || status === '게시 대기' || status === '게시중' || status === '게시 중' || status === '게시종료' || status === '게시 종료' || status === '종료됨' || status === '정산요청' || status === '정산 요청') {
+    const adminStatuses = [
+      'PENDING_PUBLISH', 'PUBLISHED', 'PUBLISH_ENDED', 'COMPLETED', 'SETTLEMENT_REQUESTED',
+      '게시대기', '게시 대기', '게시중', '게시 중', '게시종료', '게시 종료', '종료됨', '정산요청', '정산 요청'
+    ];
+    
+    if (isStatus(status, adminStatuses)) {
       return (
         <div className={styles.adminButtonGroup}>
           {/* 관리자 정보 버튼 */}
-          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>관리자 정보</button>
+          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>{t('mypage.expoStatus.detail.buttons.adminInfo')}</button>
           {/* 관리자 페이지로 이동 버튼 */}
-          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>관리자 페이지</button>
+          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>{t('mypage.expoStatus.detail.buttons.adminPage')}</button>
         </div>
       );
     }
@@ -169,158 +211,166 @@ function ExpoApplicationDetail({
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.pageTitle}>{form.name || '신청 상세'}</h2>
+          <h2 className={styles.pageTitle}>{form.name || t('mypage.expoStatus.detail.pageTitle')}</h2>
           {renderStatusTag()}
           {renderAdminButton()}
         </div>
       </div>
       
-      {/* 폼 상세 내용 */}
-      <div className={styles.topRow}>
-        <div className={styles.profileWrapper}>
+      {/* 박람회 기본 정보 박스 */}
+      <div className={styles.infoBoxContainer}>
+        <div className={styles.posterSection}>
           <img
             src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
-            alt="박람회 포스터"
-            className={styles.profileImage}
+            alt={t('mypage.expoStatus.detail.altText.poster')}
+            className={styles.posterImage}
           />
         </div>
-        <div className={styles.formGrid}>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>박람회 이름</label>
-            <input className={styles.inputField} value={form.name || ''} readOnly />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>박람회 위치</label>
-            <input className={styles.inputField} value={form.location || ''} readOnly />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>최대 수용 인원</label>
-            <input
-              type="number"
-              className={styles.inputField}
-              value={form.capacity || ''}
-              readOnly
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>개최 기간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.startDate || ''} ~ ${form.endDate || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>운영 시간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.startTime || ''} ~ ${form.endTime || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>게시 기간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
-            <div className={styles.toggleWrapper}>
-              <ToggleSwitch checked={isPremium} disabled />
+        <div className={styles.infoSection}>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.expoName')}</label>
+              <div className={styles.infoValue}>{form.name || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.location')}</label>
+              <div className={styles.infoValue}>{form.location || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>카테고리</label>
-            <div className={styles.badgeRow}>
-              <div className={styles.badge}>{form.category || '카테고리 없음'}</div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.capacity')}</label>
+              <div className={styles.infoValue}>{form.capacity ? `${form.capacity}명` : t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.period')}</label>
+              <div className={styles.infoValue}>{`${form.startDate || ''} ~ ${form.endDate || ''}`}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.operatingTime')}</label>
+              <div className={styles.infoValue}>{`${form.startTime || ''} ~ ${form.endTime || ''}`}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.postPeriod')}</label>
+              <div className={styles.infoValue}>{`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.premium')}</label>
+              <div className={styles.toggleWrapper}>
+                <ToggleSwitch checked={isPremium} disabled />
+              </div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.category')}</label>
+              <div className={styles.badgeRow}>
+                {form.category && form.category !== '카테고리 없음' ? (
+                  form.category.split(', ').map((cat, index) => (
+                    <div key={index} className={styles.badge}>{cat.trim()}</div>
+                  ))
+                ) : (
+                  <div className={styles.badge}>{t('mypage.expoStatus.detail.defaultValues.noCategory')}</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* 회사 정보 추가 */}
-      <div className={`${styles.infoGrid} ${styles.full}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>회사명</label>
-          <input className={styles.inputField} value={form.companyName || ''} readOnly />
+        
+        {/* 회사 정보 섹션 */}
+        <div className={styles.additionalInfoSection}>
+          <h3 className={styles.sectionTitle}>{t('mypage.expoStatus.detail.fields.companyInfo')}</h3>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.companyName')}</label>
+              <div className={styles.infoValue}>{form.companyName || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.companyAddress')}</label>
+              <div className={styles.infoValue}>{form.companyAddress || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.businessNumber')}</label>
+              <div className={styles.infoValue}>{form.businessRegistrationNumber || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+          </div>
+          
+          <h4 className={styles.subSectionTitle}>{t('mypage.expoStatus.detail.fields.ceoInfo')}</h4>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoName')}</label>
+              <div className={styles.infoValue}>{form.ceoName || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoContact')}</label>
+              <div className={styles.infoValue}>{form.ceoContact || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoEmail')}</label>
+              <div className={styles.infoValue}>{form.ceoEmail || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+            </div>
+          </div>
         </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>회사 주소</label>
-          <input className={styles.inputField} value={form.companyAddress || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>사업자 번호</label>
-          <input className={styles.inputField} value={form.businessRegistrationNumber || ''} readOnly />
-        </div>
-      </div>
 
-      {/* 대표자 정보 추가 */}
-      <div className={`${styles.infoGrid} ${styles.full}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표명</label>
-          <input className={styles.inputField} value={form.ceoName || ''} readOnly />
+        {/* 상세 설명 섹션 */}
+        <div className={styles.additionalInfoSection}>
+          <h3 className={styles.sectionTitle}>
+            {t('mypage.expoStatus.detail.fields.description') !== 'mypage.expoStatus.detail.fields.description' 
+              ? t('mypage.expoStatus.detail.fields.description') 
+              : (localStorage.getItem('language') === 'en' ? 'Description' : 
+                 localStorage.getItem('language') === 'ja' ? '詳細説明' : '상세 설명')}
+          </h3>
+          <div className={styles.descriptionContent}>
+            {form.description || t('mypage.expoStatus.detail.defaultValues.noDescription')}
+          </div>
         </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표자 연락처</label>
-          <input className={styles.inputField} value={form.ceoContact || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표자 이메일</label>
-          <input className={styles.inputField} value={form.ceoEmail || ''} readOnly />
-        </div>
-      </div>
-
-
-      <div className={`${styles.formGroup} ${styles.full}`}>
-        <label className={styles.label}>설명</label>
-        <div className={styles.descriptionText}>
-          {form.description || '상세 설명이 없습니다.'}
-        </div>
-      </div>
-      
-      
-      {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
-      {canViewTicketInfo(status) && (
-        <div className={`${styles.formGroup} ${styles.full}`}>
-          <label className={styles.label}>티켓 정보</label>
-          <div className={styles.ticketContainer}>
-            {form.tickets && form.tickets.length > 0 ? (
-              <>
-                {/* 티켓 헤더 */}
-                <div className={styles.ticketHeader}>
-                  <div className={styles.ticketHeaderInfo}>
-                    <span className={styles.headerLabel}>티켓명</span>
-                    <span className={styles.headerLabel}>가격</span>
-                    <span className={styles.headerLabel}>판매개수</span>
-                    <span className={styles.headerLabel}>종류</span>
-                  </div>
-                </div>
-                {/* 티켓 목록 */}
-                {form.tickets.map((ticket, index) => (
-                  <div key={index} className={styles.ticketRow}>
-                    <div className={styles.ticketInfo}>
-                      <span className={styles.ticketName}>{ticket.name}</span>
-                      <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
-                      <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
-                      <span className={styles.ticketType}>
-                        {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
-                      </span>
+        
+        {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
+        {canViewTicketInfo(status) && (
+          <div className={styles.additionalInfoSection}>
+            <h3 className={styles.sectionTitle}>{t('mypage.expoStatus.detail.fields.ticketInfo')}</h3>
+            <div className={styles.ticketContainer}>
+              {form.tickets && form.tickets.length > 0 ? (
+                <>
+                  {/* 티켓 헤더 */}
+                  <div className={styles.ticketHeader}>
+                    <div className={styles.ticketHeaderInfo}>
+                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketName')}</span>
+                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketPrice')}</span>
+                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketQuantity')}</span>
+                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketType')}</span>
                     </div>
                   </div>
-                ))}
-              </>
-            ) : (
-              <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
-            )}
+                  {/* 티켓 목록 */}
+                  {form.tickets.map((ticket, index) => (
+                    <div key={index} className={styles.ticketRow}>
+                      <div className={styles.ticketInfo}>
+                        <span className={styles.ticketName}>{ticket.name}</span>
+                        <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
+                        <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
+                        <span className={styles.ticketType}>
+                          {ticket.type === 'EARLY_BIRD' ? t('mypage.expoStatus.detail.ticketTypes.earlyBird') : t('mypage.expoStatus.detail.ticketTypes.general')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className={styles.noTickets}>{t('mypage.expoStatus.detail.defaultValues.noTickets')}</div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       
-      {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}
-      <div className={styles.bottomButtonArea}>
+      {/* 하단 버튼 영역 - 박스 스타일로 변경 */}
+      <div className={styles.buttonBoxContainer}>
         {renderButtons()}
       </div>
       

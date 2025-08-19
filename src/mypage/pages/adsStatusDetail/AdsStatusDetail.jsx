@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getAdvertisementDetail, getAdvertisementPayment, getAdvertisementRefundReceipt, getAdvertisementRefundHistory, deleteAdvertisement, requestAdvertisementRefundByStatus, cancelAdvertisementByStatus, getAdvertisementRejectInfo, completeAdvertisementPayment } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
@@ -8,70 +9,71 @@ import AdRejectInfoModal from "../../components/rejectInfoModal/AdRejectInfoModa
 import AdCancelModal from "../../components/cancelModal/AdCancelModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
 
-// 단순화된 버튼 설정
+// 단순화된 버튼 설정 (i18n 적용은 component 내부에서)
 const ALL_BUTTONS = [
-  { label: "결제하기", color: "black", disabled: false, action: "payment" },
-  { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
-  { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
-  { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
-  { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
+  { action: "payment", color: "black", disabled: false },
+  { action: "viewPaymentInfo", color: "blue", disabled: false },
+  { action: "refundRequest", color: "purple", disabled: false },
+  { action: "cancelRequest", color: "orange", disabled: false },
+  { action: "viewRejectInfo", color: "red", disabled: false },
 ];
 
-// 광고 상태 매핑 객체 (상태별 버튼 분기 처리)
+// 광고 상태 매핑 객체 (상태별 버튼 분기 처리, i18n 적용은 component 내부에서)
 const AD_STATUS_MAP = {
   PENDING_APPROVAL: {
-    badge: { label: "승인대기", className: "pending" },
+    badge: { key: "PENDING_APPROVAL", className: "pending" },
     buttons: [
-      { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
+      { action: "cancelRequest", color: "orange", disabled: false },
     ],
   },
   PENDING_PAYMENT: {
-    badge: { label: "결제대기", className: "waiting" },
+    badge: { key: "PENDING_PAYMENT", className: "waiting" },
     buttons: [
-      { label: "결제하기", color: "black", disabled: false, action: "payment" },
-      { label: "광고 취소", color: "orange", disabled: false, action: "cancelRequest" },
+      { action: "payment", color: "black", disabled: false },
+      { action: "cancelRequest", color: "orange", disabled: false },
     ],
   },
   PENDING_PUBLISH: {
-    badge: { label: "게시예정", className: "waiting" },
+    badge: { key: "PENDING_PUBLISH", className: "waiting" },
     buttons: [
-      { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
+      { action: "refundRequest", color: "purple", disabled: false },
+      { action: "viewPaymentInfo", color: "blue", disabled: false },
     ],
   },
   PENDING_CANCEL: {
-    badge: { label: "취소대기", className: "pending" },
+    badge: { key: "PENDING_CANCEL", className: "pending" },
     buttons: [
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
-      { label: "환불 정보", color: "purple", disabled: false, action: "refundHistory" },
+      { action: "viewPaymentInfo", color: "blue", disabled: false },
+      { action: "refundHistory", color: "purple", disabled: false },
     ],
   },
   PUBLISHED: {
-    badge: { label: "게시중", className: "active" },
+    badge: { key: "PUBLISHED", className: "active" },
     buttons: [
-      { label: "환불 신청", color: "purple", disabled: false, action: "refundRequest" },
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
+      { action: "refundRequest", color: "purple", disabled: false },
+      { action: "viewPaymentInfo", color: "blue", disabled: false },
     ],
   },
   COMPLETED: {
-    badge: { label: "게시완료", className: "finished" },
+    badge: { key: "COMPLETED", className: "finished" },
     buttons: [
-      { label: "결제 정보", color: "blue", disabled: false, action: "viewPaymentInfo" },
+      { action: "viewPaymentInfo", color: "blue", disabled: false },
     ],
   },
   REJECTED: {
-    badge: { label: "거절됨", className: "canceled" },
+    badge: { key: "REJECTED", className: "canceled" },
     buttons: [
-      { label: "거절사유보기", color: "red", disabled: false, action: "viewRejectInfo" },
+      { action: "viewRejectInfo", color: "red", disabled: false },
     ],
   },
   CANCELLED: {
-    badge: { label: "취소됨", className: "canceled" },
+    badge: { key: "CANCELLED", className: "canceled" },
     buttons: "conditional", // 결제 정보 유무에 따라 조건부 렌더링
   },
 };
 
 function AdsStatusDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [adData, setAdData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -94,7 +96,7 @@ function AdsStatusDetail() {
       setAdData(response.data);
     } catch (err) {
       console.error('광고 상세 정보 조회 실패:', err);
-      setError('광고 상세 정보를 불러오는데 실패했습니다.');
+      setError(t('mypage.adsStatus.detail.error'));
     } finally {
       setLoading(false);
     }
@@ -109,7 +111,7 @@ function AdsStatusDetail() {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.loading}>{t('mypage.adsStatus.detail.loading')}</div>
       </div>
     );
   }
@@ -125,7 +127,7 @@ function AdsStatusDetail() {
   if (!adData) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.error}>광고 정보를 찾을 수 없습니다.</div>
+        <div className={styles.error}>{t('mypage.adsStatus.detail.notFound')}</div>
       </div>
     );
   }
@@ -173,7 +175,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('결제 정보를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -188,7 +190,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('정산 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('정산 정보를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -204,7 +206,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('거절 사유 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('거절 사유를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -292,52 +294,52 @@ function AdsStatusDetail() {
   const handleCancelConfirm = async () => {
     try {
       await cancelAdvertisementByStatus(id);
-      alert('광고가 성공적으로 취소되었습니다.');
+      alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
       handleCloseModal();
       fetchAdvertisementDetail(); // 데이터 새로고침
     } catch (error) {
       console.error('취소 실패:', error);
-      alert('취소 중 오류가 발생했습니다.');
+      alert(t('mypage.adsStatus.detail.messages.cancelError'));
     }
   };
 
   // 승인대기 취소 핸들러
   const handleCancelPendingApproval = async () => {
-    if (window.confirm('승인대기 중인 광고를 취소하시겠습니까?')) {
+    if (window.confirm(t('mypage.adsStatus.detail.messages.pendingApprovalCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert('광고가 성공적으로 취소되었습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('승인대기 취소 실패:', error);
-        alert('취소 중 오류가 발생했습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelError'));
       }
     }
   };
 
   // 결제대기 취소 핸들러
   const handleCancelPendingPayment = async () => {
-    if (window.confirm('결제대기 중인 광고를 취소하시겠습니까?')) {
+    if (window.confirm(t('mypage.adsStatus.detail.messages.pendingPaymentCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert('광고가 성공적으로 취소되었습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('결제대기 취소 실패:', error);
-        alert('취소 중 오류가 발생했습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelError'));
       }
     }
   };
   
   const handleCancelAdvertisement = async () => {
-    if (window.confirm('광고를 취소하시겠습니까?')) {
+    if (window.confirm(t('mypage.adsStatus.detail.messages.cancelConfirm'))) {
       try {
         await deleteAdvertisement(id);
-        alert('광고가 성공적으로 취소되었습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('취소 실패:', error);
-        alert('취소 중 오류가 발생했습니다.');
+        alert(t('mypage.adsStatus.detail.messages.cancelError'));
       }
     }
   };
@@ -353,7 +355,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('결제 정보를 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -403,13 +405,13 @@ function AdsStatusDetail() {
       <div className={styles.inner}>
         {/* 상단 헤더/상태 뱃지 */}
         <div className={styles.headerRow}>
-          <h2 className={styles.pageTitle}>배너 상세</h2>
+          <h2 className={styles.pageTitle}>{t('mypage.adsStatus.detail.title')}</h2>
           <span
             className={`${styles.statusBadge} ${
               styles[statusConf.badge.className]
             }`}
           >
-            {statusConf.badge.label}
+            {t(`mypage.adsStatus.status.${statusConf.badge.key}`)}
           </span>
         </div>
         {/* infoGrid(흰색 박스) */}
@@ -420,49 +422,49 @@ function AdsStatusDetail() {
               {imageUrl ? (
                 <img
                   src={imageUrl}
-                  alt="배너 이미지"
+                  alt={t('mypage.adsStatus.detail.bannerImage')}
                   className={styles.bannerImage}
                 />
               ) : (
-                <div className={styles.bannerImagePlaceholder}>배너 이미지</div>
+                <div className={styles.bannerImagePlaceholder}>{t('mypage.adsStatus.detail.bannerImage')}</div>
               )}
             </div>
           </div>
           {/* 좌측 - 광고 정보 */}
           <div className={styles.infoSection}>
-            <label>광고 제목</label>
+            <label>{t('mypage.adsStatus.detail.adTitle')}</label>
             <input value={title} readOnly className={styles.input} />
 
-            <label>광고 위치</label>
+            <label>{t('mypage.adsStatus.detail.adPosition')}</label>
             <input value={adPositionName} readOnly className={styles.input} />
 
-            <label>게시 기간</label>
+            <label>{t('mypage.adsStatus.detail.displayPeriod')}</label>
             <div className={styles.periodInputRow}>
               <input value={formatDate(displayStartDate)} readOnly className={styles.input} />
               <span style={{ margin: "0 8px" }}>~</span>
               <input value={formatDate(displayEndDate)} readOnly className={styles.input} />
             </div>
 
-            <label>링크 URL</label>
+            <label>{t('mypage.adsStatus.detail.linkUrl')}</label>
             <input value={linkUrl} readOnly className={styles.input} />
           </div>
           {/* 우측 - 신청자 정보 */}
           <div className={styles.infoSection}>
-            <label>신청자명 (대표자)</label>
+            <label>{t('mypage.adsStatus.detail.applicantName')}</label>
             <input value={ceoName} readOnly className={styles.input} />
 
-            <label>신청자 연락처</label>
+            <label>{t('mypage.adsStatus.detail.applicantPhone')}</label>
             <input value={contactPhone} readOnly className={styles.input} />
 
-            <label>회사명</label>
+            <label>{t('mypage.adsStatus.detail.companyName')}</label>
             <input value={companyName} readOnly className={styles.input} />
 
-            <label>사업자등록번호</label>
+            <label>{t('mypage.adsStatus.detail.businessNumber')}</label>
             <input value={businessRegistrationNumber} readOnly className={styles.input} />
           </div>
           {/* 광고 소개: 두 칸 전체 */}
           <div className={styles.fullRow}>
-            <label>광고 소개</label>
+            <label>{t('mypage.adsStatus.detail.adDescription')}</label>
             <textarea
               value={description}
               readOnly
@@ -472,30 +474,21 @@ function AdsStatusDetail() {
           {/* 버튼: 두 칸 전체 */}
           <div className={styles.fullRow}>
             <div className={styles.buttonRow}>
-              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 전/후 구분) */}
+              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 정보 유무로 구분) */}
               {statusConf.buttons === "conditional" && (
                 <>
-                  {/* 임시로 상태가 PENDING_PAYMENT 이후 상태면 결제 정보 있다고 가정 */}
-                  {adData?.status && !['PENDING_APPROVAL', 'PENDING_PAYMENT', 'REJECTED'].includes(adData.status) ? (
-                    <>
-                      <button
-                        className={`${styles.btn} ${styles.blue}`}
-                        onClick={() => handleButtonAction("viewPaymentInfo")}
-                      >
-                        결제 정보
-                      </button>
-                      <button
-                        className={`${styles.btn} ${styles.purple}`}
-                        onClick={() => handleButtonAction("refundHistory")}
-                      >
-                        환불 정보
-                      </button>
-                    </>
-                  ) : (
-                    <div className={styles.infoMessage}>
-                      결제/환불 정보가 존재하지 않습니다.
-                    </div>
-                  )}
+                  <button
+                    className={`${styles.btn} ${styles.blue}`}
+                    onClick={() => handleButtonAction("viewPaymentInfo")}
+                  >
+                    {t('mypage.adsStatus.detail.buttons.paymentInfo')}
+                  </button>
+                  <button
+                    className={`${styles.btn} ${styles.purple}`}
+                    onClick={() => handleButtonAction("refundHistory")}
+                  >
+                    {t('mypage.adsStatus.detail.buttons.refundInfo')}
+                  </button>
                 </>
               )}
               
@@ -507,14 +500,14 @@ function AdsStatusDetail() {
                   onClick={() => handleButtonAction(button.action)}
                   disabled={button.disabled}
                 >
-                  {button.label}
+                  {t(`mypage.adsStatus.detail.buttons.${button.action}`)}
                 </button>
               ))}
               
               {/* 버튼이 없는 경우 */}
               {(!statusConf.buttons || (Array.isArray(statusConf.buttons) && statusConf.buttons.length === 0)) && (
                 <div className={styles.noButtonsMessage}>
-                  사용 가능한 작업이 없습니다.
+                  {t('mypage.adsStatus.detail.messages.noButtonsAvailable')}
                 </div>
               )}
             </div>
@@ -536,12 +529,12 @@ function AdsStatusDetail() {
             onPay={async () => {
               try {
                 await completeAdvertisementPayment(id);
-                alert('결제가 성공적으로 완료되었습니다.');
+                alert(t('mypage.adsStatus.detail.messages.paymentSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('결제 완료 실패:', error);
-                alert('결제 완료 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onCancel={handleCloseModal}
@@ -580,12 +573,12 @@ function AdsStatusDetail() {
             onRefund={!refundData.isRefundCompleted ? async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert('환불 신청이 성공적으로 접수되었습니다.');
+                alert(t('mypage.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             } : null}
             onClose={handleCloseModal}
@@ -636,12 +629,12 @@ function AdsStatusDetail() {
             onRefund={async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert('환불 신청이 성공적으로 접수되었습니다.');
+                alert(t('mypage.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert('환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onClose={handleCloseModal}

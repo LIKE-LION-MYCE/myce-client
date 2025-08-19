@@ -46,6 +46,7 @@
 
 .topControls {
   display: flex;
+  gap: 12px;
 }
 
 .filterGroup {
@@ -54,7 +55,7 @@
   border: 1px solid #ddd;
   background-color: #fff;
   padding: 7px 10px;
-  gap: 8px;
+  gap: 12px;
 }
 
 .select {

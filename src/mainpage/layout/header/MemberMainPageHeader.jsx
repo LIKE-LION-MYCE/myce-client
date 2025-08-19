@@ -1,34 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { IoNotifications } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
+import { useTranslation } from 'react-i18next';
 import styles from './MemberMainPageHeader.module.css';
 import NotificationButton from '../../components/notification/NotificationButton';
-import { createSseInstance } from '../../../api/service/system/sse/SseListener'
+import LanguageSelector from '../../../common/components/language/LanguageSelector';
 import { logout } from '../../../api/service/auth/AuthService';
+import { useNotification } from '../../../context/NotificationContext';
+import { getUserInfoFromToken } from '../../../api/utils/jwtUtils';
 
-const MemberMainPageHeader = () => {
-  const [activeMenu, setActiveMenu] = useState('박람회 목록');
+const MemberMainPageHeader = ({notification}) => {
+  const { t } = useTranslation();
+  const [activeMenu, setActiveMenu] = useState(t('nav.expoList'));
   const navigate = useNavigate(); // useNavigate 훅 사용
 
-  useEffect(() => {
-    const sse = createSseInstance(
-      (event) => {
-        console.log('📩 SSE 메시지:', event.data);
-      },
-      (error) => {
-        console.error('❌ SSE 에러:', error);
-      }
-    );
+  // 사용자 권한 확인
+  const token = localStorage.getItem('access_token');
+  const userInfo = getUserInfoFromToken(token);
+  const isPlatformAdmin = userInfo?.role === 'PLATFORM_ADMIN';
 
-    return () => {
-      sse.close(); // 컴포넌트 언마운트 시 연결 해제
-    };
-  }, []);
+  // 언어 변경 시 activeMenu 업데이트
+  useEffect(() => {
+    if (!activeMenu || activeMenu === '박람회 목록') {
+      setActiveMenu(t('nav.expoList'));
+    }
+  }, [t]);
 
   const menuItems = [
-    { name: '박람회 목록', path: '/expo-list' },
-    { name: '박람회 신청', path: '/expo-apply' },
-    { name: '광고 신청', path: '/ad-apply' }
+    { name: t('nav.expoList'), path: '/expo-list' },
+    { name: t('nav.expoApply'), path: '/expo-apply' },
+    { name: t('nav.adApply'), path: '/ad-apply' },
+    ...(isPlatformAdmin ? [{ name: t('nav.platformAdmin'), path: '/platform/admin/dashboard/revenue' }] : [])
   ];
 
   const handleMenuClick = (item) => {
@@ -89,10 +91,11 @@ const MemberMainPageHeader = () => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
-        <NotificationButton />
+        <LanguageSelector />
+        <NotificationButton notification = {notification}/>
 
-        <button className={styles.logoutBtn} onClick={handleLogoutClick}>로그아웃</button>
-        <button className={styles.mypageBtn} onClick={handleMypageClick}>마이페이지</button>
+        <button className={styles.logoutBtn} onClick={handleLogoutClick}>{t('nav.logout')}</button>
+        <button className={styles.mypageBtn} onClick={handleMypageClick}>{t('nav.mypage')}</button>
       </div>
     </nav>
   );

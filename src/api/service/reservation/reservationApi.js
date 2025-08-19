@@ -51,14 +51,29 @@ export const savePreReservation = async (preReservationData) => {
 };
 
 // 사전 예약 정보 바탕으로 결제 요약 정보 가져오기
-export const getPaymentSummary = async (preReservationId) => {
-  const { data } = await instance.get(
-    `/reservations/${preReservationId}/payment-summary`
-  );
+export const getPaymentSummary = async (preReservationId, sessionId = null) => {
+  let url = `/reservations/payment-summary?preReservationId=${preReservationId}`;
+  
+  if (sessionId) {
+    url += `&sessionId=${sessionId}`;
+  }
+  
+  const { data } = await instance.get(url);
   return data;
 };
 
 // 결제 취소 or 결제 실패 시 reservation pending 상태 삭제
 export const deleteReservationPending = async (reservationId) => {
   await instance.delete(`/reservations/${reservationId}`);
+};
+
+// 비회원 예매 조회 (이메일 + 예매번호)
+export const getNonMemberReservation = async (email, reservationCode) => {
+  const { data } = await instance.get("/reservations/guest", {
+    params: {
+      email,
+      reservationCode
+    }
+  });
+  return data;
 };

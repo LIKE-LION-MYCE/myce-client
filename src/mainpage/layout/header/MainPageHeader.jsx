@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MemberMainPageHeader from './MemberMainPageHeader'; // 이름이 변경된 컴포넌트 임포트
 import GuestMainPageHeader from './GuestMainPageHeader';
 
-const MainPageHeader = () => {
+const MainPageHeader = ({notification}) => {
   // 로그인 상태를 관리하는 useState 훅을 사용합니다. 임시로 boolean값줘서 로그인 상태 바꾸기
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -19,7 +19,9 @@ const MainPageHeader = () => {
   return (
     <>
       {isLoggedIn ? (
-        <MemberMainPageHeader onLogout={handleLogout} /> // 이름이 변경된 컴포넌트 사용
+        <MemberMainPageHeader
+        onLogout={handleLogout}
+        notification = {notification} /> // 이름이 변경된 컴포넌트 사용
       ) : (
         <GuestMainPageHeader onLogin={handleLogin} />
       )}

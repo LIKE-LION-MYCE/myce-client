@@ -17,7 +17,7 @@ function DashboardTable({ columns, data, summaryRow }) {
           {data.map((row, idx) => (
             <tr key={idx} className={styles.row}>
               {columns.map((col) => (
-                <td key={col.key} className={styles.td}>
+                <td key={col.key} className={`${styles.td} ${col.key === 'ticketType' ? styles.leftAlign : ''}`}>
                   {row[col.key]}
                 </td>
               ))}
@@ -28,7 +28,7 @@ function DashboardTable({ columns, data, summaryRow }) {
           <tfoot>
             <tr className={styles.summaryRow}>
               {columns.map((col) => (
-                <td key={col.key} className={styles.tfootTd}>
+                <td key={col.key} className={`${styles.tfootTd} ${col.key === 'ticketType' ? styles.leftAlign : ''}`}>
                   <strong>{summaryRow[col.key] || ''}</strong>
                 </td>
               ))}

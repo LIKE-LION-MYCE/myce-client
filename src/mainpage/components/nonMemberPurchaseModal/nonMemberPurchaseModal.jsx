@@ -22,6 +22,8 @@ export default function NonMemberPurchaseModal({
   const [isVerified, setIsVerified] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const quantity = 1; // Non-members can only purchase 1 ticket
 
   useEffect(() => {
@@ -41,6 +43,8 @@ export default function NonMemberPurchaseModal({
       alert("유효한 이메일 주소를 입력해주세요.");
       return;
     }
+    
+    setIsSendingEmail(true);
     try {
       await sendVerificatiionEmail(VERIFICATION_TYPE.NONMEMBER_VERIFY, email);
       alert("인증 코드가 발송되었습니다.");
@@ -49,6 +53,8 @@ export default function NonMemberPurchaseModal({
     } catch (error) {
       console.error("인증 코드 발송 실패:", error);
       alert("인증 코드 발송에 실패했습니다.");
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -57,6 +63,8 @@ export default function NonMemberPurchaseModal({
       alert("인증 코드를 입력해주세요.");
       return;
     }
+    
+    setIsVerifyingCode(true);
     try {
       await verifyVerificationEmail(
         VERIFICATION_TYPE.NONMEMBER_VERIFY,
@@ -69,6 +77,8 @@ export default function NonMemberPurchaseModal({
     } catch (error) {
       console.error("이메일 인증 실패:", error);
       alert("인증 코드가 올바르지 않습니다.");
+    } finally {
+      setIsVerifyingCode(false);
     }
   };
 
@@ -104,9 +114,16 @@ export default function NonMemberPurchaseModal({
       // preReservation Id 반환하는 POST
       const response = await savePreReservation(preReservationData);
 
-      navigate(
-        `/detail/${expoId}/payment?preReservationId=${response.reservationId}`
-      );
+      // 세션 ID가 있으면 추가로 전달
+      const queryParams = new URLSearchParams({
+        preReservationId: response.reservationId
+      });
+      
+      if (response.sessionId) {
+        queryParams.set('sessionId', response.sessionId);
+      }
+
+      navigate(`/detail/${expoId}/payment?${queryParams.toString()}`);
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
@@ -152,10 +169,19 @@ export default function NonMemberPurchaseModal({
               />
               <button
                 onClick={handleSendCode}
-                disabled={isCodeSent || timer > 0}
-                className={styles.sendCodeBtn}
+                disabled={isCodeSent || timer > 0 || isSendingEmail}
+                className={`${styles.sendCodeBtn} ${isSendingEmail ? styles.loading : ''}`}
               >
-                {isCodeSent ? `재전송 (${timer}s)` : "인증번호 발송"}
+                {isSendingEmail ? (
+                  <span className={styles.loadingContent}>
+                    <span className={styles.spinner}></span>
+                    발송 중...
+                  </span>
+                ) : isCodeSent ? (
+                  `재전송 (${timer}s)`
+                ) : (
+                  "인증번호 발송"
+                )}
               </button>
             </div>
           </div>
@@ -175,10 +201,19 @@ export default function NonMemberPurchaseModal({
                 />
                 <button
                   onClick={handleVerifyCode}
-                  disabled={isVerified}
-                  className={styles.verifyBtn}
+                  disabled={isVerified || isVerifyingCode}
+                  className={`${styles.verifyBtn} ${isVerifyingCode ? styles.loading : ''}`}
                 >
-                  {isVerified ? "인증 완료" : "확인"}
+                  {isVerifyingCode ? (
+                    <span className={styles.loadingContent}>
+                      <span className={styles.spinner}></span>
+                      확인 중...
+                    </span>
+                  ) : isVerified ? (
+                    "인증 완료"
+                  ) : (
+                    "확인"
+                  )}
                 </button>
               </div>
             </div>

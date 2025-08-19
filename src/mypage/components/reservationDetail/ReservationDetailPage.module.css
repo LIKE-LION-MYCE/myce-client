@@ -48,9 +48,21 @@
   grid-column: 1 / -1;
 }
 
-.pageTitle {
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 38px;
+}
+
+.pageTitle {
+  margin-bottom: 0;
   letter-spacing: -1.5px;
+}
+
+.statusBadge {
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /* 소제목 크기 확장 + 강조 */
@@ -258,6 +270,19 @@
 .neutralCancelBtn:hover {
   background: #ececec;
   color: #555;
+}
+
+/* 비활성화된 버튼 스타일 */
+.disabledBtn {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  cursor: not-allowed !important;
+}
+
+.disabledBtn:hover {
+  background: #f5f5f5 !important;
+  color: #999 !important;
 }
 
 

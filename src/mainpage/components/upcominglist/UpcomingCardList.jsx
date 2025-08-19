@@ -1,77 +1,100 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './UpcomingCardList.module.css';
 import UpcomingCard from '../upcomingcard/UpcomingCard';
+import { getPendingPublishExpos } from '../../../api/service/user/expoApi';
+import '../../../i18n/i18n_homepage.js'; // homepage용 i18n 파일 import
 
 const UpcomingCardList = ({ 
   events: propEvents, 
-  loading = false, 
-  error = null
+  loading: propLoading = false, 
+  error: propError = null
 }) => {
-  // 기본 데이터 (props로 전달되지 않은 경우)
-  const defaultEvents = [
-    {
-      id: 1,
-      category: "추후공지",
-      title: "월드 오브 스테일 올림 파이터 [THE REAL STAGE] TOUR - 울산",
-      image: "https://picsum.photos/300/400?random=1",
-    },
-    {
-      id: 2,
-      date: "08.20(수) 20:00",
-      title: "XIUMIN FAN CONCERT X Times ( ) ∞ ENCORE",
-      image: "https://picsum.photos/300/400?random=2",
-      location: "서울 올림픽공원",
-    },
-    {
-      id: 3,
-      date: "08.22(금) 18:00",
-      title: "램페라트리스 내한공연 (L'Imperatrice PULSAR ASIA...)",
-      image: "https://picsum.photos/300/400?random=3",
-      location: "서울 예스24 라이브홀",
-    },
-    {
-      id: 4,
-      date: "08.21(목) 20:00",
-      title: "[Play&Stay] 2025 ZEROBASEONE WORLD TOUR",
-      image: "https://picsum.photos/300/400?random=4",
-      location: "고척스카이돔",
-    },
-    {
-      id: 5,
-      date: "08.25(월) 20:00",
-      title: "2025-26 TREASURE TOUR [PULSE ON] IN SEOUL",
-      image: "https://picsum.photos/300/400?random=5",
-      location: "잠실실내체육관",
-    },
-    {
-      id: 6,
-      date: "09.19(금) 14:00",
-      title: "ENHYPEN WORLD TOUR 'WALK THE LINE' : FINAL",
-      image: "https://picsum.photos/300/400?random=6",
-      location: "KSPO DOME",
-    },
-    {
-      id: 7,
-      date: "09.05(목) 19:30",
-      title: "아이유 2025 CONCERT [The Golden Hour]",
-      image: "https://picsum.photos/300/400?random=7",
-      location: "서울 올림픽공원 체조경기장",
-    },
-    {
-      id: 8,
-      date: "09.12(금) 20:00",
-      title: "NewJeans Fan Meeting [Get Up]",
-      image: "https://picsum.photos/300/400?random=8",
-      status: "available",
-      location: "SK Olympic Handball Gymnasium",
-    }
-  ];
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [expos, setExpos] = useState([]);
+  const [loading, setLoading] = useState(propLoading);
+  const [error, setError] = useState(propError);
 
-  const events = propEvents || defaultEvents;
+  useEffect(() => {
+    if (!propEvents) {
+      fetchPendingExpos();
+    }
+  }, [propEvents]);
+
+  const fetchPendingExpos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPendingPublishExpos();
+      
+      // 백엔드 데이터를 기존 카드 형식에 맞게 변환
+      let transformedExpos = [];
+      
+      if (data.content && Array.isArray(data.content)) {
+        transformedExpos = data.content.map(expo => ({
+          id: expo.expoId || expo.expo_id,
+          title: expo.title,
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
+          location: expo.location,
+          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+        }));
+      } else if (Array.isArray(data)) {
+        transformedExpos = data.map(expo => ({
+          id: expo.expoId || expo.expo_id,
+          title: expo.title,
+          image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
+          date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
+          location: expo.location,
+          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+        }));
+      }
+      setExpos(transformedExpos);
+    } catch (err) {
+      console.error("Failed to fetch pending publish expos:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatExpoDate = (startDate, endDate) => {
+    if (!startDate) return t("homepage.upcoming.dateUndetermined", "날짜 미정");
+    
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : null;
+    
+    const formatDate = (date) => {
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const weekdays = [
+        t("homepage.upcoming.weekdays.sun", "일"),
+        t("homepage.upcoming.weekdays.mon", "월"), 
+        t("homepage.upcoming.weekdays.tue", "화"),
+        t("homepage.upcoming.weekdays.wed", "수"),
+        t("homepage.upcoming.weekdays.thu", "목"),
+        t("homepage.upcoming.weekdays.fri", "금"),
+        t("homepage.upcoming.weekdays.sat", "토")
+      ];
+      const weekday = weekdays[date.getDay()];
+      return `${month}.${day}(${weekday})`;
+    };
+    
+    if (end && start.toDateString() !== end.toDateString()) {
+      return `${formatDate(start)} - ${formatDate(end)}`;
+    }
+    return formatDate(start);
+  };
+
+  const events = propEvents || expos;
 
   const handleEventClick = (event) => {
     console.log('Event clicked:', event);
-    // 여기에 이벤트 클릭 핸들러 로직 추가
-    // 예: 상세페이지 이동, 모달 열기 등
+    if (event.id) {
+      navigate(`/detail/${event.id}`);
+    }
   };
 
   const handleViewAll = () => {
@@ -85,7 +108,7 @@ const UpcomingCardList = ({
       <div className={styles.container}>
         <div className={styles.loading}>
           <div className={styles.loadingSpinner}></div>
-          <div>이벤트를 불러오는 중...</div>
+          <div>{t("homepage.upcoming.loading", "이벤트를 불러오는 중...")}</div>
         </div>
       </div>
     );
@@ -97,9 +120,9 @@ const UpcomingCardList = ({
       <div className={styles.container}>
         <div className={styles.error}>
           <div className={styles.errorIcon}>⚠️</div>
-          <div>이벤트를 불러오는데 실패했습니다.</div>
+          <div>{t("homepage.upcoming.error", "이벤트를 불러오는데 실패했습니다.")}</div>
           <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-            {error.message || '잠시 후 다시 시도해주세요.'}
+            {error.message || t("homepage.upcoming.errorRetry", "잠시 후 다시 시도해주세요.")}
           </div>
         </div>
       </div>
@@ -112,9 +135,9 @@ const UpcomingCardList = ({
       <div className={styles.container}>
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>🎭</div>
-          <div className={styles.emptyTitle}>예정된 이벤트가 없습니다</div>
+          <div className={styles.emptyTitle}>{t("homepage.upcoming.noEvents", "예정된 이벤트가 없습니다")}</div>
           <div className={styles.emptyDescription}>
-            새로운 이벤트가 추가되면 알려드리겠습니다.
+            {t("homepage.upcoming.noEventsDesc", "새로운 이벤트가 추가되면 알려드리겠습니다.")}
           </div>
         </div>
       </div>
@@ -126,8 +149,8 @@ const UpcomingCardList = ({
       {/* 섹션 헤더 */}
       <div className={styles.sectionHeader}>
         <div>
-          <h2 className={styles.title}>오픈 예정</h2>
-          <p className={styles.subtitle}>곧 시작될 흥미진진한 이벤트들을 만나보세요</p>
+          <h2 className={styles.title}>{t("homepage.upcoming.title", "오픈 예정")}</h2>
+          <p className={styles.subtitle}>{t("homepage.upcoming.subtitle", "곧 시작될 흥미진진한 이벤트들을 만나보세요")}</p>
         </div>
       </div>
       
@@ -148,7 +171,7 @@ const UpcomingCardList = ({
           onClick={handleViewAll}
           className={styles.viewAllButton}
         >
-          오픈 예정 공연 전체보기
+{t("homepage.upcoming.viewAllButton", "오픈 예정 공연 전체보기")}
           <svg className={styles.arrowIcon} viewBox="0 0 24 24">
             <path d="M9 5l7 7-7 7" />
           </svg>

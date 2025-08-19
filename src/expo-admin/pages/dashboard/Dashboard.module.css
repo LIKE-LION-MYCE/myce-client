@@ -13,6 +13,18 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background-color: transparent;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.section:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .sectionTitle {
@@ -36,7 +48,14 @@
   min-width: 200px;
   flex: 1 1 200px;
   text-align: left;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .cardLabel {
@@ -75,10 +94,18 @@
 
 /* --- 체크인 박스 --- */
 .checkinContainer {
-  background-color: #fff;
+  background-color: transparent;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.checkinContainer:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .checkinHeader {
@@ -206,8 +233,16 @@
   flex: 1 1 48%;
   background-color: #fafafa;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   min-width: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.chartContainer:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .chartWrapper {
@@ -227,8 +262,16 @@
 .fullWidthChart {
   background-color: #fafafa;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.fullWidthChart:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .fullWidthChart .chartWrapper {
@@ -429,4 +472,9 @@
   .dateInput {
     min-width: 120px;
   }
+}
+
+/* 티켓 테이블 스타일 */
+.ticketTableLeft {
+  text-align: left !important;
 }

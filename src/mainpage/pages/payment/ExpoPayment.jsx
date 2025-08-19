@@ -8,6 +8,8 @@ import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { getMyInfo, getMyMileage } from "../../../api/service/user/memberApi";
 import { getExpoBasicInfo } from "../../../api/service/expo/expoDetailApi";
 import { getPaymentSummary } from "../../../api/service/reservation/reservationApi";
+import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
+import DateInput from "../../../common/components/dateInput/DateInput";
 
 export default function ExpoPayment() {
   const SERVICE_FEE_PER_TICKET = 1000;
@@ -16,6 +18,7 @@ export default function ExpoPayment() {
   const [searchParams] = useSearchParams();
 
   const reservationId = searchParams.get("preReservationId");
+  const sessionId = searchParams.get("sessionId");
 
   const [paymentSummary, setPaymentSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +40,7 @@ export default function ExpoPayment() {
       }
       try {
         setLoading(true);
-        const data = await getPaymentSummary(reservationId);
+        const data = await getPaymentSummary(reservationId, sessionId);
         setPaymentSummary(data);
         setError(null);
       } catch (err) {
@@ -50,7 +53,7 @@ export default function ExpoPayment() {
       }
     };
     fetchPaymentSummary();
-  }, [reservationId]);
+  }, [reservationId, sessionId]);
 
   const [expoInfo, setExpoInfo] = useState(null);
   const [personalInfo, setPersonalInfo] = useState([]);
@@ -308,9 +311,8 @@ export default function ExpoPayment() {
                   </div>
                   <div className={styles.inputField}>
                     <label htmlFor={`birthdate-${index}`}>생년월일</label>
-                    <input
-                      type="text"
-                      id={`birthdate-${index}`}
+                    <DateInput
+                      name={`birthdate-${index}`}
                       value={personalInfo[index]?.birthdate || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(
@@ -319,19 +321,19 @@ export default function ExpoPayment() {
                           e.target.value
                         )
                       }
-                      placeholder="YYYY-MM-DD"
+                      format="YYYY-MM-DD"
+                      required
                     />
                   </div>
                   <div className={styles.inputField}>
                     <label htmlFor={`phone-${index}`}>전화번호</label>
-                    <input
-                      type="tel"
-                      id={`phone-${index}`}
+                    <PhoneInput
+                      name={`phone-${index}`}
                       value={personalInfo[index]?.phone || ""}
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "phone", e.target.value)
                       }
-                      placeholder="010-1234-5678"
+                      required
                     />
                   </div>
                 </div>
@@ -518,6 +520,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
             <PaymentVirtualBankButton
               targetType={TARGET_TYPE}
@@ -529,6 +532,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
             <PaymentTransferButton
               targetType={TARGET_TYPE}
@@ -540,6 +544,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
           </div>
         </div>

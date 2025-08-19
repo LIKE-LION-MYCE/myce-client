@@ -4,6 +4,7 @@ import MyInfoPage from "../mypage/pages/info/MyInfoPage";
 import MyReservationPage from "../mypage/pages/reservation/MyReservationPage";
 import MySavedExpoPage from "../mypage/pages/saved-expo/MySavedExpoPage";
 import MySettingPage from "../mypage/pages/setting/MySettingPage";
+import SystemSettings from "../mypage/pages/systemSettings/SystemSettings";
 import AdsStatusPage from "../mypage/pages/ads-status/AdsStatusPage";
 import AdsStatusDetail from "../mypage/pages/adsStatusDetail/AdsStatusDetail";
 import ExpoStatusPage from "../mypage/pages/expo-status/ExpoStatusPage";
@@ -23,6 +24,7 @@ const MyPageRoutes = () => {
         <Route path="reservation/:id" element={<ReservationDetailPage />} />
         <Route path="saved-expo" element={<MySavedExpoPage />} />
         <Route path="setting" element={<MySettingPage />} />
+        <Route path="system-settings" element={<SystemSettings />} />
         <Route path="ads-status" element={<AdsStatusPage />} />
         <Route path="ads-status/:id" element={<AdsStatusDetail />} />
         <Route path="expo-status" element={<ExpoStatusPage />} />

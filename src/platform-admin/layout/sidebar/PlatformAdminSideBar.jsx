@@ -14,20 +14,23 @@ import { MdEventNote, MdOutlineOndemandVideo } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
 
-import PlatformAdminInfoBox from '../../components/platformAdminInfoBox/PlatformAdminInfoBox';
+import PlatformAdminInfoBox from '../../components/InfoBox/PlatformAdminInfoBox';
 
 function PlatformAdminSideBar() {
   const location = useLocation();
   const currentPath = location.pathname;
-  const currentHash = location.hash;
 
   const [selectedMenu, setSelectedMenu] = useState('');
+  // 한 번에 하나만 열리도록 유지: ['dashboard'] | ['expo'] | ['banner'] | ['role'] | ['setting'] | []
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
   // 경로 이동 시 해당 서브메뉴만 열리게 처리
   useEffect(() => {
     setSelectedMenu(currentPath);
-    if (currentPath.includes('/platform/admin/expo')) {
+
+    if (currentPath.includes('/platform/admin/dashboard')) {
+      setOpenSubMenus(['dashboard']);
+    } else if (currentPath.includes('/platform/admin/expo')) {
       setOpenSubMenus(['expo']);
     } else if (currentPath.includes('/platform/admin/banner')) {
       setOpenSubMenus(['banner']);
@@ -42,17 +45,17 @@ function PlatformAdminSideBar() {
     }
   }, [currentPath]);
 
-  // 여러 개 열 수 있도록 유지
+  // 한 번에 하나만 열리도록 토글
   const toggleSubMenu = (menuKey) => {
-    setOpenSubMenus((prev) =>
-      prev.includes(menuKey)
-        ? prev.filter((key) => key !== menuKey)
-        : [...prev, menuKey]
-    );
+    setOpenSubMenus((prev) => (prev.includes(menuKey) ? [] : [menuKey]));
   };
 
-  // 스크롤 위치에 따라 해시값 갱신 (선택사항)
+  // 대시보드(루트)에서 스크롤에 따라 해시 갱신 (선택사항)
   useEffect(() => {
+    if (currentPath !== '/platform/admin/dashboard/revenue' && currentPath !== '/platform/admin/dashboard/usage') {
+      return;
+    }
+
     const handleScroll = () => {
       const revenueSection = document.getElementById('revenue');
       const usageSection = document.getElementById('usage');
@@ -69,10 +72,8 @@ function PlatformAdminSideBar() {
       }
     };
 
-    if (currentPath === '/platform/admin') {
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [currentPath, location.hash]);
 
   return (

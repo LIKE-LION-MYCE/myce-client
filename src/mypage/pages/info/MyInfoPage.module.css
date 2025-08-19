@@ -63,11 +63,15 @@
 .inputEmail,
 .inputDate,
 .inputTel {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
+  padding: 18px 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+  height: 56px;
+  box-sizing: border-box;
+  background-color: #fff;
 }
 
 .inputText:focus,
@@ -75,13 +79,15 @@
 .inputDate:focus,
 .inputTel:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .disabled {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: #f8f9fa;
+  color: #6c757d;
   cursor: not-allowed;
+  border-color: #dee2e6;
 }
 
 .disabled:focus {

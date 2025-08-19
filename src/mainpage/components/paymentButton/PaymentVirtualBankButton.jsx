@@ -3,15 +3,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { saveReservers } from "../../../api/service/reservation/ReserverService";
 import {
-  updateReservationStatusConfirm,
-  updateGuestId,
   deleteReservationPending,
 } from "../../../api/service/reservation/reservationApi";
-import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
-import { updateGrade } from "../../../api/service/user/memberApi";
 
 function PaymentVirtualBankButton({
   targetType,
@@ -23,8 +18,10 @@ function PaymentVirtualBankButton({
   usedMileage,
   savedMileage,
   reserverInfos,
+  sessionId,
 }) {
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -59,11 +56,10 @@ function PaymentVirtualBankButton({
     try {
       // 토큰으로 사용자 타입 판별
       const token = localStorage.getItem("access_token");
-      const isGuest = isTokenExpired(token); // true이면 비회원, false이면 회원
+      const isGuest = !token || isTokenExpired(token); // 토큰이 없거나 만료되면 비회원
 
       if (isGuest) {
-        console.log("guestId 생성 및 업데이트");
-        await updateGuestId(reservationId, reserverInfos);
+        console.log("비회원 예매를 시작합니다.");
         userType = "GUEST";
       } else {
         console.log("회원 예매를 시작합니다.");
@@ -84,58 +80,55 @@ function PaymentVirtualBankButton({
         },
         async function (rsp) {
           if (rsp.success) {
+            setIsVerifying(true);
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
-              const res = await instance.post("/payment/verify-vbank", {
+              // 새로운 통합 API 사용 (Redis 기반)
+              const res = await instance.post("/payment/reservation/verify-vbank", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
                 targetType: targetType,
-                targetId: reservationId,
+                targetId: 0, // Redis 임시 ID 사용
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
+                reserverInfos: reserverInfos,
+                ticketId: ticketId,
+                quantity: quantity,
+                sessionId: sessionId
               });
-              await saveReservers(reservationId, reserverInfos);
-
-              await updateRemainingQuantity(ticketId, quantity);
-
-              // // 회원 등급 업데이트 member_grade의 base_amount
-              // // reservation에서 회원 ID로 reservation_payment_info 조회해서 그동안의 결제 금액 계산
-              // // 비교에 따라 업데이트
-              // if (userType === "MEMBER") {
-              //   await updateGrade();
-              // }
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
 
+              console.log("백엔드 응답 데이터:", res.data);
+
+              setIsVerifying(false);
               if (res.status === 200 && res.data.status === "PENDING") {
                 alert(
                   "결제 검증 성공! 예매가 완료되었습니다. 금일까지 가상 계좌에 입금해주세요."
                 );
-                navigate(`/reservation-pending/${reservationId}`);
+                // 백엔드 응답의 실제 reservationId 사용
+                const actualReservationId = res.data.reservationId || reservationId;
+                console.log("리다이렉트할 reservationId:", actualReservationId);
+                navigate(`/reservation-pending/${actualReservationId}`);
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
               }
             } catch (err) {
-              alert("결제 처리 중 오류가 발생했습니다.");
-              // reservation 데이터 삭제
-              await deleteReservationPending(reservationId);
+              setIsVerifying(false);
+              console.error("서버 처리 실패:", err);
+              console.error("에러 응답:", err.response?.data);
+              console.error("에러 상태:", err.response?.status);
+              
+              const errorMessage = err.response?.data?.message || err.message || "알 수 없는 오류";
+              alert(`결제 처리 중 오류가 발생했습니다: ${errorMessage}`);
+              // Redis에서 사전 예약 데이터 정리는 백엔드에서 처리
             }
           } else {
-            try {
-              await deleteReservationPending(reservationId);
-              console.log(
-                "결제 실패로 인해 사전 예약이 성공적으로 취소되었습니다."
-              );
-            } catch (cancelError) {
-              console.error(
-                "사전 예약 취소 처리 중 오류가 발생했습니다.",
-                cancelError
-              );
-            }
+            console.log("결제가 취소되었습니다.");
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
             navigate(`/detail/${expoId}`);
           }
@@ -152,13 +145,35 @@ function PaymentVirtualBankButton({
   };
 
   return (
-    <button
-      onClick={handlePay}
-      className={styles.paymentButton}
-      disabled={loading} // 이 부분을 추가
-    >
-      {loading ? "처리 중..." : "가상 계좌"}
-    </button>
+    <>
+      <button
+        onClick={handlePay}
+        className={`${styles.paymentButton} ${loading ? styles.loading : ''}`}
+        disabled={loading}
+      >
+        {loading ? (
+          <span className={styles.loadingContent}>
+            <span className={styles.spinner}></span>
+            처리 중...
+          </span>
+        ) : (
+          "가상 계좌"
+        )}
+      </button>
+      
+      {isVerifying && (
+        <div className={styles.verificationOverlay}>
+          <div className={styles.verificationModal}>
+            <div className={styles.verificationSpinner}></div>
+            <div className={styles.verificationTitle}>가상계좌 발급 중</div>
+            <div className={styles.verificationMessage}>
+              가상계좌 발급이 완료되었습니다.<br/>
+              서버에서 결제 내역을 확인하고 있습니다...
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

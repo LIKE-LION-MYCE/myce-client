@@ -1,13 +1,24 @@
 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ReviewCard from '../reviewcard/ReviewCard';
 import styles from './BestReviews.module.css';
+import { getBestReviews, transformReviewData } from '../../../api/service/review/bestReviewApi';
+// 메인 i18n.js에서 모든 리소스를 병합하므로 별도 import 불필요
 
 const BestReviews = ({
   reviews: propReviews,
   onReviewClick,
   onRefresh
 }) => {
-  // 기본 데이터 (props로 전달되지 않은 경우)
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // 기본 데이터 (API 실패 시 사용)
   const defaultReviews = [
     {
       id: 1,
@@ -47,12 +58,45 @@ const BestReviews = ({
     }
   ];
 
-  const reviews = propReviews || defaultReviews;
+  // 베스트 리뷰 로드
+  const loadBestReviews = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const reviewData = await getBestReviews(6);
+      const transformedReviews = transformReviewData(reviewData);
+      
+      if (transformedReviews.length > 0) {
+        setReviews(transformedReviews);
+      } else {
+        setReviews(defaultReviews); // 데이터가 없으면 기본 데이터 사용
+      }
+    } catch (err) {
+      console.error('베스트 리뷰 로드 실패:', err);
+      setError(err.message);
+      setReviews(defaultReviews); // 에러 시 기본 데이터 사용
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (propReviews) {
+      setReviews(propReviews);
+    } else {
+      loadBestReviews();
+    }
+  }, [propReviews]);
+
+  const displayReviews = propReviews || reviews;
 
   const handleReviewClick = (review) => {
     console.log('Review clicked:', review);
     if (onReviewClick) {
       onReviewClick(review);
+    } else if (review.expoId) {
+      // 해당 박람회 상세 페이지의 리뷰 섹션으로 이동
+      navigate(`/detail/${review.expoId}#reviews`);
     }
   };
 
@@ -60,15 +104,25 @@ const BestReviews = ({
     console.log('Refresh clicked');
     if (onRefresh) {
       onRefresh();
+    } else {
+      loadBestReviews(); // 새로 베스트 리뷰 로드
     }
   };
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>베스트 관람후기</h2>
+      <h2 className={styles.title}>{t("homepage.bestReviews.title", "베스트 관람후기")}</h2>
+      
+      {loading && (
+        <div className={styles.loading}>{t("homepage.bestReviews.loading", "리뷰를 불러오는 중...")}</div>
+      )}
+      
+      {error && (
+        <div className={styles.error}>{t("homepage.bestReviews.error", "리뷰를 불러오는데 실패했습니다.")}</div>
+      )}
       
       <div className={styles.reviewsGrid}>
-        {reviews.map((review) => (
+        {displayReviews.map((review) => (
           <ReviewCard
             key={review.id}
             review={review}
@@ -80,7 +134,7 @@ const BestReviews = ({
       <div className={styles.buttonContainer}>
         <button className={styles.moreButton} onClick={handleRefresh}>
           <span className={styles.refreshIcon}>↻</span>
-          관람후기 새로 보기
+{t("homepage.bestReviews.refreshButton", "관람후기 새로 보기")}
         </button>
       </div>
     </div>

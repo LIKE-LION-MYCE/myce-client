@@ -15,7 +15,6 @@ import BannerCurrentDetail from '../platform-admin/pages/bannerCurrentDetail/Ban
 import MessageTemplateList from '../platform-admin/pages/settingMessages/MessageTemplateList';
 import MessageTemplateDetail from '../platform-admin/pages/settingMessagesDetail/MessageTemplateDetail';
 import MessageTemplateEdit from '../platform-admin/pages/settingMessagesDetail/MessageTemplateEdit';
-import MessageTemplateNew from '../platform-admin/pages/settingMessagesDetail/MessageTemplateNew';
 import AmountSettingList from '../platform-admin/pages/settingAmount/AmountSettingList';
 import AmountSettingDetail from '../platform-admin/pages/settingAmountDetail/AmountSettingDetail';
 import AdPositionList from '../platform-admin/pages/settingAdPosition/AdPositionList';
@@ -46,7 +45,6 @@ function PlatformAdminRoutes() {
         <Route path="settingMessage" element={<MessageTemplateList />} />
         <Route path="settingMessage/:id" element={<MessageTemplateDetail />} />
         <Route path="settingMessage/:id/edit" element={<MessageTemplateEdit />} />
-        <Route path="settingMessage/new" element={<MessageTemplateNew />} />
         <Route path="settingAmount" element={<AmountSettingList />} />
         <Route path="settingAmount/:name" element={<AmountSettingDetail />} />
         <Route path="adPosition" element={< AdPositionList />} />

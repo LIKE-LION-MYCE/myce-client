@@ -1,0 +1,60 @@
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.content {
+    padding: 60px;
+    border-radius: 10px;
+    position: relative; /* overlayContainer의 기준점 */
+}
+
+.overlayContainer {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 5rem;
+    color: #dc3545;
+    position: relative;
+    z-index: 2; /* 이미지가 뒤에 오도록 더 높은 z-index 설정 */
+}
+
+.overlayImage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 중앙 정렬 */
+    max-width: 180%;
+    max-height: 180%;
+    opacity: 0.5;
+    z-index: 1; /* 글자 뒤에 오도록 더 낮은 z-index 설정 */
+}
+
+.message {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-top:80px;
+    margin-bottom: 30px;
+}
+
+.link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.link:hover {
+    background-color: #0056b3;
+}

@@ -3,16 +3,10 @@ import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { saveReservers } from "../../../api/service/reservation/ReserverService";
 import {
-  updateReservationStatusConfirm,
-  updateGuestId,
   deleteReservationPending,
 } from "../../../api/service/reservation/reservationApi";
-import { updateRemainingQuantity } from "../../../api/service/user/TicketService";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
-import { updateGrade } from "../../../api/service/user/memberApi";
-import { generateQrForReservation } from "../../../api/service/qr/qrApi";
 import { requestRefund } from "../../../api/service/payment/RefundService";
 
 function ReservationPaymentCardButton({
@@ -25,8 +19,10 @@ function ReservationPaymentCardButton({
   usedMileage,
   savedMileage,
   reserverInfos,
+  sessionId,
 }) {
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
@@ -61,11 +57,10 @@ function ReservationPaymentCardButton({
     try {
       // 토큰으로 사용자 타입 판별
       const token = localStorage.getItem("access_token");
-      const isGuest = isTokenExpired(token); // true이면 비회원, false이면 회원
+      const isGuest = !token || isTokenExpired(token); // 토큰이 없거나 만료되면 비회원
 
       if (isGuest) {
-        console.log("guestId 생성 및 업데이트");
-        await updateGuestId(reservationId, reserverInfos);
+        console.log("비회원 예매를 시작합니다.");
         userType = "GUEST";
       } else {
         console.log("회원 예매를 시작합니다.");
@@ -87,8 +82,10 @@ function ReservationPaymentCardButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
+            setIsVerifying(true); // 결제 검증 시작
             try {
-              const res = await instance.post("/payment/verify", {
+              // 새로운 통합 API 사용
+              const res = await instance.post("/payment/reservation/verify", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
@@ -96,41 +93,30 @@ function ReservationPaymentCardButton({
                 targetId: reservationId,
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
+                reserverInfos: reserverInfos,
+                ticketId: ticketId,
+                quantity: quantity,
+                sessionId: sessionId
               });
-
-              await updateReservationStatusConfirm(reservationId);
-
-              await saveReservers(reservationId, reserverInfos);
-
-              await updateRemainingQuantity(ticketId, quantity);
-
-              // 회원 등급 업데이트 member_grade의 base_amount
-              // reservation에서 회원 ID로 reservation_payment_info 조회해서 그동안의 결제 금액 계산
-              // 비교에 따라 업데이트
-              if (userType === "MEMBER") {
-                await updateGrade();
-              }
 
               console.log("imp_uid:", rsp.imp_uid);
               console.log("merchant_uid:", rsp.merchant_uid);
+              console.log("백엔드 응답 데이터:", res.data);
 
+              setIsVerifying(false); // 검증 완료
               if (res.status === 200 && res.data.status === "SUCCESS") {
-                // QR 코드 즉시 생성 시도
-                try {
-                  await generateQrForReservation(reservationId);
-                  console.log("QR 코드 생성 완료");
-                } catch (qrError) {
-                  console.warn("QR 코드 생성 실패 (스케줄러에서 생성됨):", qrError);
-                }
-                
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
-                navigate(`/reservation-success/${reservationId}`);
+                // 백엔드 응답의 실제 reservationId 사용
+                const actualReservationId = res.data.reservationId || reservationId;
+                console.log("리다이렉트할 reservationId:", actualReservationId);
+                navigate(`/reservation-success/${actualReservationId}`);
               } else {
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
               }
             } catch (err) {
+              setIsVerifying(false); // 검증 실패시도 오버레이 숨김
               // '결제는 성공'했지만 '서버 검증' 또는 'DB 처리' 중 실패한 매우 치명적인 상황
               // 이 경우, 서버에서 아임포트 '결제 취소(환불)' API를 호출하여 방금 결제된 금액을 즉시 환불 처리하는 로직을 반드시 구현해야 함.
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
@@ -181,14 +167,35 @@ function ReservationPaymentCardButton({
   };
 
   return (
-    <button
-      onClick={handlePay}
-      className={styles.paymentButton}
-      disabled={loading}
-    >
-      {/* 로딩 중일 때 버튼 내용을 변경하여 사용자에게 상태를 알려주고, 중복 클릭을 방지합니다. */}
-      {loading ? "결제 진행 중..." : "카드 결제"}
-    </button>
+    <>
+      <button
+        onClick={handlePay}
+        className={`${styles.paymentButton} ${loading ? styles.loading : ''}`}
+        disabled={loading}
+      >
+        {loading ? (
+          <span className={styles.loadingContent}>
+            <span className={styles.spinner}></span>
+            결제 진행 중...
+          </span>
+        ) : (
+          "카드 결제"
+        )}
+      </button>
+      
+      {isVerifying && (
+        <div className={styles.verificationOverlay}>
+          <div className={styles.verificationModal}>
+            <div className={styles.verificationSpinner}></div>
+            <div className={styles.verificationTitle}>결제 검증 중</div>
+            <div className={styles.verificationMessage}>
+              결제가 완료되었습니다.<br/>
+              서버에서 결제 내역을 확인하고 있습니다...
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

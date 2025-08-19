@@ -30,6 +30,7 @@
 
 .table th, .table td {
   text-align: left;
+  vertical-align: middle;
   padding: 18px 16px;
   border-bottom: 1px solid #f1f1f1;
   font-size: 16px;
@@ -49,56 +50,11 @@
   border-bottom: none;
 }
 
+/* badge 정렬을 위해 margin 조정 */
 .statusBadge {
-  display: inline-block;
-  min-width: 58px;
-  padding: 5px 18px;
-  border-radius: 16px;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-  background: #f7f8fa;
-  color: #555;
-  margin: 0 2px;
-  letter-spacing: -0.2px;
-  border: none;
-  /* 그림자, 테두리 없이 flat */
-}
-
-/* PENDING_APPROVAL: 승인 대기 - 부드러운 파스텔 노랑 */
-.pending {
-  background: #fffbe4;
-  color: #b28a15;
-}
-
-/* PENDING_PAYMENT: 결제 대기 - 맑은 하늘색 */
-.waiting {
-  background: #e8f4fd;
-  color: #2563eb;
-}
-
-/* PUBLISHED: 게시 중 - 부드러운 민트 그린 */
-.statusBadge.active {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-/* REJECTED: 승인 거절 - 연한 핑크 */
-.canceled {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-/* CANCELLED: 취소 완료 - 연한 핑크 */
-.canceled {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-/* COMPLETED: 종료 됨 - 밝은 그레이 */
-.finished {
-  background: #f9fafb;
-  color: #6b7280;
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+  vertical-align: middle;
 }
 
 .clickableRow:hover {

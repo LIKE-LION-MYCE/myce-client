@@ -17,7 +17,7 @@
 .ticketModal {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   width: 100%;
-  max-width: 800px;
+  max-width: 650px;
   border-radius: 20px;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -76,7 +76,7 @@
   margin: 0 20px;
   border-radius: 16px;
   display: flex;
-  min-height: 300px;
+  min-height: 250px;
   overflow: hidden;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
 }
@@ -84,10 +84,10 @@
 /* 왼쪽 섹션 */
 .leftSection {
   flex: 2;
-  padding: 30px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 18px;
 }
 
 .expoInfo {
@@ -106,14 +106,14 @@
 .infoGrid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .infoItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .infoLabel {
@@ -250,20 +250,20 @@
 /* 티켓 상세 정보 섹션 */
 .ticketDetails {
   background: #fff;
-  margin: 0 20px 20px;
-  padding: 25px 30px;
-  border-radius: 16px;
+  margin: 0 20px 15px;
+  padding: 18px 20px;
+  border-radius: 12px;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .detailsTitle {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #333;
-  margin: 0 0 20px 0;
+  margin: 0 0 15px 0;
   text-align: center;
   border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 }
 
 .detailsGrid {
@@ -339,4 +339,30 @@
     grid-template-columns: 1fr;
     gap: 12px;
   }
+}
+
+/* QR 상태 스타일 */
+.statusActive {
+  color: #4CAF50 !important;
+  font-weight: bold;
+}
+
+.statusApproved {
+  color: #FF9800 !important;
+  font-weight: bold;
+}
+
+.statusUsed {
+  color: #757575 !important;
+  font-weight: bold;
+}
+
+.statusExpired {
+  color: #f44336 !important;
+  font-weight: bold;
+}
+
+.statusDefault {
+  color: #757575 !important;
+  font-weight: bold;
 }

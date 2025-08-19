@@ -1,6 +1,9 @@
-import { FiBookmark, FiBookmark as FiBookmarkFill, FiMapPin, FiClock, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
+import { FiBookmark, FiMapPin, FiClock, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
+import { MdBookmark } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 import TicketDropdown from '../ticketdropdown/ticketDropdown'; // Fixed case sensitivity: ticketDropDown -> ticketDropdown
 import styles from './ExpoHeader.module.css';
+import '../../../i18n/i18n_expodetail.js'; // expodetail용 i18n 파일 import
 
 const ExpoHeader = ({ 
   basicInfo, 
@@ -15,6 +18,7 @@ const ExpoHeader = ({
   formatTime,
   loading 
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.header}>
       <div className={styles.imageSection}>
@@ -37,18 +41,17 @@ const ExpoHeader = ({
               ))}
             </div>
             
-            {bookmarkStatus && (
-              <button 
-                className={styles.bookmarkBtn}
-                onClick={onBookmarkToggle}
-              >
-                {bookmarkStatus.isBookmarked ? (
-                  <FiBookmarkFill size={20} />
-                ) : (
-                  <FiBookmark size={20} />
-                )}
-              </button>
-            )}
+            <button 
+              className={styles.bookmarkBtn}
+              onClick={onBookmarkToggle}
+              title={bookmarkStatus?.isBookmarked ? t('expoDetail.expoHeader.buttons.bookmarkRemove', '북마크 제거') : t('expoDetail.expoHeader.buttons.bookmarkAdd', '북마크 추가')}
+            >
+              {bookmarkStatus?.isBookmarked ? (
+                <MdBookmark size={24} style={{ color: '#000000' }} />
+              ) : (
+                <FiBookmark size={24} />
+              )}
+            </button>
           </div>
 
           <div className={styles.titleSection}>
@@ -58,10 +61,10 @@ const ExpoHeader = ({
               className={styles.chatButton}
               onClick={onChatStart}
               disabled={loading}
-              title="1:1 상담 채팅"
+              title={t('expoDetail.expoHeader.buttons.consultationTitle', '1:1 상담 채팅')}
             >
               <FiMessageCircle className={styles.chatIcon} />
-              <span>1:1 상담하기</span>
+              <span>{t('expoDetail.expoHeader.buttons.consultation', '1:1 상담하기')}</span>
             </button>
           </div>
           
@@ -83,7 +86,7 @@ const ExpoHeader = ({
             
             <div className={styles.detailItem}>
               <FiUsers className={styles.icon} />
-              <span>현재 {basicInfo.currentReservationCount?.toLocaleString()}명 예약</span>
+              <span>{t('expoDetail.expoHeader.currentReservations', '현재 {{count}}명 예약', { count: basicInfo.currentReservationCount?.toLocaleString() || 0 })}</span>
             </div>
           </div>
         </div>

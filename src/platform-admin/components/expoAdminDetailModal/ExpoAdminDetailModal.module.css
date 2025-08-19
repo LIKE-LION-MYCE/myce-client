@@ -1,0 +1,152 @@
+:root {
+  --scale: 0.9;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: calc(10px * var(--scale));
+  box-shadow: 0 calc(4px * var(--scale)) calc(20px * var(--scale)) rgba(0, 0, 0, 0.2);
+  width: calc(90% * var(--scale));
+  max-width: calc(500px * var(--scale));
+  display: flex;
+  flex-direction: column;
+  padding: calc(30px * var(--scale));
+  box-sizing: border-box;
+}
+
+/* Header */
+.title {
+  font-size: calc(24px * var(--scale));
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: calc(25px * var(--scale));
+}
+
+/* Loading and No Data Messages */
+.loadingBox, .noData {
+  padding: calc(30px * var(--scale));
+  text-align: center;
+  font-size: calc(16px * var(--scale));
+  color: #666;
+}
+
+/* Content Layout */
+.contentLayout {
+  display: flex;
+  flex-direction: column;
+  gap: calc(30px * var(--scale));
+}
+
+/* Sections (Super Admin and Sub Admins) */
+.section {
+  background-color: #f9f9f9;
+  border: calc(1px * var(--scale)) solid #eee;
+  border-radius: calc(8px * var(--scale));
+  padding: calc(20px * var(--scale));
+}
+
+.sectionTitle {
+  font-size: calc(18px * var(--scale));
+  font-weight: 600;
+  color: #555;
+  border-bottom: calc(2px * var(--scale)) solid #ddd;
+  padding-bottom: calc(10px * var(--scale));
+  margin-bottom: calc(15px * var(--scale));
+}
+
+/* Info Box (Super Admin) */
+.infoBox {
+  display: flex;
+  flex-direction: column;
+  gap: calc(12px * var(--scale));
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: 500;
+  color: #777;
+  font-size: calc(15px * var(--scale));
+  width: calc(100px * var(--scale));
+}
+
+.value {
+  font-size: calc(15px * var(--scale));
+  font-weight: 400;
+  color: #333;
+  text-align: right;
+  flex: 1;
+}
+
+/* Code List (Sub Admins) */
+.codeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(10px * var(--scale));
+}
+
+.codeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: calc(1px * var(--scale)) solid #e0e0e0;
+  border-radius: calc(6px * var(--scale));
+  padding: calc(10px * var(--scale)) calc(15px * var(--scale));
+}
+
+.codeLabel {
+  font-weight: 500;
+  color: #555;
+  font-size: calc(15px * var(--scale));
+}
+
+.codeValue {
+  font-size: calc(15px * var(--scale));
+  font-weight: 600;
+  color: #007bff;
+}
+
+/* Action Button Box */
+.actionBox {
+  margin-top: calc(30px * var(--scale));
+  display: flex;
+  justify-content: center;
+}
+
+.closeBtn {
+  padding: calc(12px * var(--scale)) calc(24px * var(--scale));
+  font-size: calc(16px * var(--scale));
+  font-weight: 600;
+  color: #fff;
+  background-color: #333;
+  border: none;
+  border-radius: calc(8px * var(--scale));
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.closeBtn:hover {
+  background-color: #555;
+}
