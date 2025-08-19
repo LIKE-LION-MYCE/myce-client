@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ExpoCurrentDetail.module.css';
 import ExpoApplicationForm from '../../components/expoApplicationForm/ExpoApplicationForm';
+import ApplicantForm from '../../components/applicantForm/ApplicantForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import ExpoPaymentDetailModal from '../../components/expoPaymentDetailModal/ExpoPaymentDetailModal';
 import SettlementDetailModal from '../../components/settlementDetailModal/SettlementDetailModal';
@@ -159,7 +160,10 @@ function ExpoCurrentDetail() {
   const showPaymentInfo = expo?.status &&
     !['PENDING_APPROVAL', 'REJECTED'].includes(expo.status);
 
-  if (expo?.status === 'PUBLISHED' || expo?.status === 'PENDING_CANCEL') {
+  if (expo?.status === 'PUBLISHED' || expo?.status === 'PENDING_CANCEL'
+  || expo?.status === 'CANCELLED' || expo?.status === 'PUBLISH_ENDED'
+  || expo?.status === 'SETTLEMENT_REQUESTED' || expo?.status === 'COMPLETED'
+  ) {
     adminListButton = (
       <div>
         <button
@@ -296,7 +300,10 @@ function ExpoCurrentDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={expo?.applicant} businessData={expo?.business} />
+        <ApplicantForm applicantData={expo?.applicant} />
+      </div>
+      <div className={styles.section}>
+        <OperatorApplicationForm businessData={expo?.business} />
       </div>
 
 

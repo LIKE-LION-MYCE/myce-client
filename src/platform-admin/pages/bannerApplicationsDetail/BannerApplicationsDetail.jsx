@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import styles from './BannerApplicationsDetail.module.css';
 import BannerApplicationForm from '../../components/bannerApplicationForm/BannerApplicationForm';
+import ApplicantForm from '../../components/applicantForm/ApplicantForm'
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import RejectReasonModal from '../../components/rejectReasonModal/RejectReasonModal';
 import RejectReasonViewModal from '../../components/rejectReasonViewModal/RejectReasonViewModal';
@@ -34,7 +35,7 @@ function BannerApplicationsDetail() {
   const [showRejectViewModal, setShowRejectViewModal] = useState(false);
 
   const [bannerData, setBannerData] = useState(null);
-  const [operatorData, setOperatorData] = useState(null);
+  const [businessData, setBusinessData] = useState(null);
 
   const rawStatus = location.state?.expoStatus;
   const statusClass = statusClassMap[rawStatus];
@@ -75,13 +76,13 @@ function BannerApplicationsDetail() {
         getPaymentDetail();
       }
       setBannerData(response);
-      setOperatorData({
+      setBusinessData({
         companyName: response.businessCompany,
         ceoName: response.representName,
-        email: response.businessEmail,
-        phone: response.businessPhone,
+        contactEmail: response.businessEmail,
+        contactPhone: response.businessPhone,
         address: response.address,
-        businessNumber: response.businessNumber,
+        businessRegistrationNumber: response.businessNumber,
       });
     } catch (error) {
       triggerToastFail('데이터를 불러오는 데 실패했습니다.');
@@ -175,7 +176,11 @@ function BannerApplicationsDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        {operatorData && <OperatorApplicationForm operatorData={operatorData} />}
+        <ApplicantForm applicantData={bannerData?.applicant} />
+      </div>
+
+      <div className={styles.section}>
+        {businessData && <OperatorApplicationForm businessData={businessData} />}
       </div>
 
       {/* 버튼 그룹 */}
