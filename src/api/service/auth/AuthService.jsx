@@ -56,6 +56,17 @@ const logout = async () => {
     return await instance.post(`${AUTH_PREFIX}/logout`);
 }
 
+
+const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
+
+const googleLogin = () => {
+    window.location.href = `${SERVER_URL}/oauth2/authorization/google`;
+}
+
+const kakaoLogin = () => {
+    window.location.href = `${SERVER_URL}/oauth2/authorization/kakao`;
+}
+
 export {
     signup, 
     login, 
@@ -67,5 +78,7 @@ export {
     checkDuplicateLoginId,
     findId,
     findPassword,
+    googleLogin,
+    kakaoLogin,
     VERIFICATION_TYPE
 };

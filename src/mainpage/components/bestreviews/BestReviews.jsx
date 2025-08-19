@@ -1,15 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ReviewCard from '../reviewcard/ReviewCard';
 import styles from './BestReviews.module.css';
 import { getBestReviews, transformReviewData } from '../../../api/service/review/bestReviewApi';
+// 메인 i18n.js에서 모든 리소스를 병합하므로 별도 import 불필요
 
 const BestReviews = ({
   reviews: propReviews,
   onReviewClick,
   onRefresh
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -108,14 +111,14 @@ const BestReviews = ({
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>베스트 관람후기</h2>
+      <h2 className={styles.title}>{t("homepage.bestReviews.title", "베스트 관람후기")}</h2>
       
       {loading && (
-        <div className={styles.loading}>리뷰를 불러오는 중...</div>
+        <div className={styles.loading}>{t("homepage.bestReviews.loading", "리뷰를 불러오는 중...")}</div>
       )}
       
       {error && (
-        <div className={styles.error}>리뷰를 불러오는데 실패했습니다.</div>
+        <div className={styles.error}>{t("homepage.bestReviews.error", "리뷰를 불러오는데 실패했습니다.")}</div>
       )}
       
       <div className={styles.reviewsGrid}>
@@ -131,7 +134,7 @@ const BestReviews = ({
       <div className={styles.buttonContainer}>
         <button className={styles.moreButton} onClick={handleRefresh}>
           <span className={styles.refreshIcon}>↻</span>
-          관람후기 새로 보기
+{t("homepage.bestReviews.refreshButton", "관람후기 새로 보기")}
         </button>
       </div>
     </div>

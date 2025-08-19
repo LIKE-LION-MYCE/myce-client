@@ -1,0 +1,137 @@
+.languageSelector {
+  position: relative;
+  display: inline-block;
+}
+
+.currentLanguage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1f2937;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.currentLanguage:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.languageFlag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.languageName {
+  font-weight: 600;
+  font-size: 12px;
+  color: #111827;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+  color: #374151;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  min-width: 140px;
+  overflow: hidden;
+}
+
+.languageOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.languageOption:hover {
+  background: #f9fafb;
+}
+
+.languageOption.active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.flag {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.name {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* 다크모드 지원 (필요시) */
+@media (prefers-color-scheme: dark) {
+  .currentLanguage {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f9fafb;
+  }
+  
+  .currentLanguage:hover {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .languageName {
+    color: #f9fafb;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+  
+  .chevron {
+    color: #d1d5db;
+  }
+  
+  .dropdown {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .languageOption {
+    color: #f3f4f6;
+  }
+  
+  .languageOption:hover {
+    background: #374151;
+  }
+  
+  .languageOption.active {
+    background: #1e40af;
+    color: #dbeafe;
+  }
+}

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./MyReservationPage.module.css";
 import { getReservedExpos } from "../../../api/service/user/memberApi";
 
 function ReservationCard({ reservation }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // 예약 상태를 한글로 변환하는 함수
+  // 예약 상태를 번역으로 변환하는 함수
   const getStatusLabel = (status) => {
     const statusMap = {
-      'CANCELLED': '취소됨',
-      'CONFIRMED_PENDING': '결제 대기',
-      'CONFIRMED': '결제 완료'
+      'CANCELLED': t('reservation.status.cancelled'),
+      'CONFIRMED_PENDING': t('reservation.status.pending'),
+      'CONFIRMED': t('reservation.status.confirmed')
     };
     return statusMap[status] || status;
   };
@@ -35,18 +37,18 @@ function ReservationCard({ reservation }) {
             {getStatusLabel(reservation.reservationStatus)}
           </span>
         </div>
-        <p>예매번호: {reservation.reservationCode}</p>
+        <p>{t('reservation.reservationNumber')}: {reservation.reservationCode}</p>
         <div className={styles.detailRow}>
           <div>
-            <strong>티켓 이름</strong>
+            <strong>{t('reservation.ticketName')}</strong>
             <p>{reservation.ticketName}</p>
           </div>
           <div>
-            <strong>티켓수</strong>
-            <p>{reservation.ticketCount}매</p>
+            <strong>{t('reservation.ticketCount')}</strong>
+            <p>{reservation.ticketCount}{t('reservation.ticketUnit')}</p>
           </div>
           <div>
-            <strong>예매일</strong>
+            <strong>{t('reservation.reservationDate')}</strong>
             <p>{new Date(reservation.createdAt).toLocaleDateString('ko-KR')}</p>
           </div>
         </div>
@@ -55,7 +57,7 @@ function ReservationCard({ reservation }) {
             className={styles.primaryBtn}
             onClick={() => navigate(`./${reservation.reservationId}`)}
           >
-            예매 상세
+            {t('reservation.reservationDetail')}
           </button>
         </div>
       </div>
@@ -70,6 +72,7 @@ function ReservationCard({ reservation }) {
 }
 
 const MyReservationPage = () => {
+  const { t } = useTranslation();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -92,7 +95,7 @@ const MyReservationPage = () => {
       setTotalElements(response.data?.totalElements || 0);
     } catch (err) {
       console.error('예매 내역 조회 실패:', err);
-      setError('예매 내역을 불러오는데 실패했습니다.');
+      setError(t('reservation.loadError'));
       setReservations([]);
     } finally {
       setLoading(false);
@@ -120,7 +123,7 @@ const MyReservationPage = () => {
           className={styles.pageBtn} 
           onClick={() => handlePageChange(currentPage - 1)}
         >
-          이전
+          {t('reservation.previous')}
         </button>
       );
     }
@@ -146,7 +149,7 @@ const MyReservationPage = () => {
           className={styles.pageBtn} 
           onClick={() => handlePageChange(currentPage + 1)}
         >
-          다음
+          {t('reservation.next')}
         </button>
       );
     }
@@ -161,8 +164,8 @@ const MyReservationPage = () => {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>예매 내역</h2>
-        <div className={styles.loading}>로딩 중...</div>
+        <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
+        <div className={styles.loading}>{t('common.loading')}</div>
       </div>
     );
   }
@@ -170,7 +173,7 @@ const MyReservationPage = () => {
   if (error) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>예매 내역</h2>
+        <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
         <div className={styles.error}>{error}</div>
       </div>
     );
@@ -178,7 +181,7 @@ const MyReservationPage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.pageTitle}>예매 내역</h2>
+      <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
       {reservations.length > 0 ? (
         <>
           <div className={styles.list}>
@@ -192,7 +195,7 @@ const MyReservationPage = () => {
           {renderPagination()}
         </>
       ) : (
-        <div className={styles.noData}>예매 내역이 없습니다.</div>
+        <div className={styles.noData}>{t('reservation.noData')}</div>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ExpoApplicationDetail from '../../components/expoApplicationDetail/ExpoApplicationDetail';
 import PaymentWaitingModal from '../../components/paymentDetailModal/PaymentWaitingModal';
 import PaymentRefundModal from '../../components/paymentDetailModal/PaymentRefundModal';
@@ -12,21 +13,9 @@ import PaymentSelection from '../payment-selection/PaymentSelection';
 import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoRefundHistory, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail, completeExpoPayment, requestExpoRefund } from '../../../api/service/user/memberApi';
 import { useNavigate } from 'react-router-dom';
 
-// 상태 라벨 매핑
-const getStatusLabel = (status) => {
-  const statusMap = {
-    'PENDING_APPROVAL': '승인 대기',
-    'PENDING_PAYMENT': '결제 대기',
-    'PENDING_PUBLISH': '게시 대기',
-    'PENDING_CANCEL': '취소 대기',
-    'PUBLISHED': '게시 중',
-    'PUBLISH_ENDED': '게시 종료',
-    'SETTLEMENT_REQUESTED': '정산 요청',
-    'COMPLETED': '종료됨',
-    'REJECTED': '승인 거절',
-    'CANCELLED': '취소 완료'
-  };
-  return statusMap[status] || status;
+// 상태 라벨 매핑 (i18n 적용)
+const getStatusLabel = (status, t) => {
+  return t(`mypage.expoStatus.status.${status}`) || status;
 };
 
 // 날짜 포맷팅 함수
@@ -64,6 +53,7 @@ const safeNumber = (num, defaultValue = 0) => {
 
 
 const ExpoStatusDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [expoData, setExpoData] = useState(null);
@@ -105,8 +95,8 @@ const ExpoStatusDetail = () => {
       // 백엔드 데이터를 프론트엔드 형식으로 변환
       const transformedData = {
         id: safeNumber(data.expoId, 1),
-        name: data.title || '박람회 제목 없음',
-        location: data.locationDetail ? `${data.location} (${data.locationDetail})` : data.location || '장소 미정',
+        name: data.title || t('mypage.expoStatus.detail.defaultValues.noTitle'),
+        location: data.locationDetail ? `${data.location} (${data.locationDetail})` : data.location || t('mypage.expoStatus.detail.defaultValues.noLocation'),
         capacity: safeNumber(data.maxReserverCount, 100),
         startDate: data.startDate || '',
         endDate: data.endDate || '',
@@ -116,27 +106,27 @@ const ExpoStatusDetail = () => {
         postEndDate: data.displayEndDate || '',
         isPremium: Boolean(data.isPremium),
         isPublic: data.status === 'PUBLISHED',
-        category: data.category || '카테고리 미정',
-        description: data.description === 'string' ? '상세 설명이 없습니다.' : (data.description || '상세 설명이 없습니다.'),
+        category: data.category || t('mypage.expoStatus.detail.defaultValues.noCategory'),
+        description: data.description === 'string' ? t('mypage.expoStatus.detail.defaultValues.noDescription') : (data.description || t('mypage.expoStatus.detail.defaultValues.noDescription')),
         registrationFee: data.paymentInfo ? `${safeNumber(data.paymentInfo.deposit, 0).toLocaleString()}원` : 'N/A',
         recruitedTickets: data.tickets?.reduce((sum, ticket) => sum + safeNumber(ticket.totalQuantity, 0), 0) || 0,
         expectedRevenue: data.paymentInfo ? `${Math.floor(safeNumber(data.paymentInfo.totalAmount, 0) / 10000).toLocaleString()}만원` : 'N/A',
         attachments: [],
-        status: getStatusLabel(data.status),
-        companyName: data.businessInfo?.companyName === 'string' ? '회사명 미정' : (data.businessInfo?.companyName || '회사명 미정'),
-        companyAddress: data.businessInfo?.address === 'string' ? '주소 미정' : (data.businessInfo?.address || '주소 미정'),
-        businessRegistrationNumber: data.businessInfo?.businessRegistrationNumber === 'string' ? '사업자번호 미정' : (data.businessInfo?.businessRegistrationNumber || '사업자번호 미정'),
-        ceoName: data.businessInfo?.ceoName === 'string' ? '대표자명 미정' : (data.businessInfo?.ceoName || '대표자명 미정'),
-        ceoContact: data.businessInfo?.contactPhone === 'string' ? '연락처 미정' : (data.businessInfo?.contactPhone || '연락처 미정'),
-        ceoEmail: data.businessInfo?.contactEmail === 'string' ? '이메일 미정' : (data.businessInfo?.contactEmail || '이메일 미정'),
-        applicantName: data.businessInfo?.ceoName === 'string' ? '신청자명 미정' : (data.businessInfo?.ceoName || '신청자명 미정'),
-        memberLoginId: data.memberLoginId || '로그인 ID 없음',
+        status: data.status, // 원본 status 값을 전달
+        companyName: data.businessInfo?.companyName === 'string' ? t('mypage.expoStatus.detail.defaultValues.noCompanyName') : (data.businessInfo?.companyName || t('mypage.expoStatus.detail.defaultValues.noCompanyName')),
+        companyAddress: data.businessInfo?.address === 'string' ? t('mypage.expoStatus.detail.defaultValues.noAddress') : (data.businessInfo?.address || t('mypage.expoStatus.detail.defaultValues.noAddress')),
+        businessRegistrationNumber: data.businessInfo?.businessRegistrationNumber === 'string' ? t('mypage.expoStatus.detail.defaultValues.noBusinessNumber') : (data.businessInfo?.businessRegistrationNumber || t('mypage.expoStatus.detail.defaultValues.noBusinessNumber')),
+        ceoName: data.businessInfo?.ceoName === 'string' ? t('mypage.expoStatus.detail.defaultValues.noCeoName') : (data.businessInfo?.ceoName || t('mypage.expoStatus.detail.defaultValues.noCeoName')),
+        ceoContact: data.businessInfo?.contactPhone === 'string' ? t('mypage.expoStatus.detail.defaultValues.noContact') : (data.businessInfo?.contactPhone || t('mypage.expoStatus.detail.defaultValues.noContact')),
+        ceoEmail: data.businessInfo?.contactEmail === 'string' ? t('mypage.expoStatus.detail.defaultValues.noEmail') : (data.businessInfo?.contactEmail || t('mypage.expoStatus.detail.defaultValues.noEmail')),
+        applicantName: data.businessInfo?.ceoName === 'string' ? t('mypage.expoStatus.detail.defaultValues.noApplicant') : (data.businessInfo?.ceoName || t('mypage.expoStatus.detail.defaultValues.noApplicant')),
+        memberLoginId: data.memberLoginId || t('mypage.expoStatus.detail.defaultValues.noLoginId'),
         thumbnailUrl: data.thumbnailUrl === 'string' ? null : data.thumbnailUrl,
         tickets: data.tickets?.map(ticket => ({
           ...ticket,
           price: safeNumber(ticket.price, 0),
           totalQuantity: safeNumber(ticket.totalQuantity, 0),
-          name: ticket.name === 'string' ? '티켓명 미정' : ticket.name
+          name: ticket.name === 'string' ? t('mypage.expoStatus.detail.defaultValues.noTicketName') : ticket.name
         })) || [],
         paymentInfo: data.paymentInfo ? {
           ...data.paymentInfo,
@@ -151,7 +141,7 @@ const ExpoStatusDetail = () => {
       setExpoData(transformedData);
     } catch (err) {
       console.error('박람회 상세 정보 조회 실패:', err);
-      setError('박람회 정보를 불러오는데 실패했습니다.');
+      setError(t('mypage.expoStatus.detail.error'));
       setExpoData(null);
     } finally {
       setLoading(false);
@@ -175,7 +165,7 @@ const ExpoStatusDetail = () => {
       setModalType('waiting');
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
-      alert('결제 정보를 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.paymentInfoError'));
     } finally {
       setLoading(false);
     }
@@ -192,7 +182,7 @@ const ExpoStatusDetail = () => {
       // 결제 완료 API 호출 (실제 결제 API 대신)
       await completeExpoPayment(id);
       
-      alert('결제가 완료되었습니다. 박람회 상태가 게시대기로 변경되었습니다.');
+      alert(t('mypage.expoStatus.detail.messages.paymentCompleted'));
       
       // 상세 정보 다시 불러오기
       await fetchExpoDetail();
@@ -200,7 +190,7 @@ const ExpoStatusDetail = () => {
       handleCloseModal();
     } catch (err) {
       console.error('결제 완료 처리 실패:', err);
-      alert('결제 처리에 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.paymentFailed'));
     } finally {
       setLoading(false);
     }
@@ -215,7 +205,7 @@ const ExpoStatusDetail = () => {
       setShowAdminModal(true);
     } catch (err) {
       console.error('관리자 정보 조회 실패:', err);
-      alert('관리자 정보를 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.adminInfoError'));
     } finally {
       setLoading(false);
     }
@@ -230,11 +220,11 @@ const ExpoStatusDetail = () => {
   const handleCancelExpo = async () => {
     try {
       await deleteMyExpo(id);
-      alert('박람회 신청이 취소되었습니다.');
+      alert(t('mypage.expoStatus.detail.messages.expoCancelled'));
       window.history.back(); // 이전 페이지로 돌아가기
     } catch (err) {
       console.error('박람회 취소 실패:', err);
-      alert('박람회 취소에 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.expoCancelFailed'));
     }
   };
 
@@ -242,15 +232,22 @@ const ExpoStatusDetail = () => {
   const handleRefundButtonClick = async () => {
     try {
       setLoading(true);
-      // CANCELLED 상태일 때는 실제 환불 내역 조회, 아니면 계산된 환불 정보 조회
-      const response = expoData.status === '취소됨' || expoData.status === '취소 완료' 
+      console.log('디버그 - 현재 status:', expoData.status);
+      console.log('디버그 - 취소 상태 체크:', expoData.status === '취소됨' || expoData.status === '취소 완료' || expoData.status === 'CANCELLED');
+      
+      // CANCELLED 또는 PENDING_CANCEL 상태일 때는 실제 환불 내역 조회, 아니면 계산된 환불 정보 조회
+      const isCancelledOrPending = expoData.status === '취소됨' || expoData.status === '취소 완료' || 
+                                   expoData.status === 'CANCELLED' || expoData.status === 'PENDING_CANCEL' || 
+                                   expoData.status === '취소대기' || expoData.status === '취소 대기';
+      const response = isCancelledOrPending
         ? await getExpoRefundHistory(id) 
         : await getExpoRefundReceipt(id);
+      console.log('디버그 - API 응답:', response.data);
       setRefundData(response.data);
       setShowRefundModal(true);
     } catch (err) {
       console.error('환불 정보 조회 실패:', err);
-      alert('환불 정보를 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.refundInfoError'));
     } finally {
       setLoading(false);
     }
@@ -274,7 +271,7 @@ const ExpoStatusDetail = () => {
       };
       
       await requestExpoRefund(id, refundRequest);
-      alert('환불 신청이 완료되었습니다.');
+      alert(t('mypage.expoStatus.detail.messages.refundCompleted'));
       handleCloseRefundModal();
       // 상세 정보 다시 불러오기
       await fetchExpoDetail();
@@ -286,7 +283,7 @@ const ExpoStatusDetail = () => {
         handleCloseRefundModal(); // 환불 모달 닫기
         setShowSevenDayRuleModal(true); // 7일 규칙 모달 열기
       } else {
-        alert('환불 신청에 실패했습니다.');
+        alert(t('mypage.expoStatus.detail.messages.refundFailed'));
       }
     } finally {
       setLoading(false);
@@ -321,7 +318,7 @@ const ExpoStatusDetail = () => {
       setShowSettlementReceiptModal(true);
     } catch (err) {
       console.error('정산 내역 조회 실패:', err);
-      alert('정산 내역을 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.settlementInfoError'));
     } finally {
       setLoading(false);
     }
@@ -350,7 +347,7 @@ const ExpoStatusDetail = () => {
       setShowSettlementReceiptModal(true);
     } catch (err) {
       console.error('정산 내역 조회 실패:', err);
-      alert('정산 내역을 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.settlementInfoError'));
     } finally {
       setLoading(false);
     }
@@ -373,12 +370,12 @@ const ExpoStatusDetail = () => {
       };
       
       await requestExpoSettlement(id, settlementData);
-      alert('정산 요청이 완료되었습니다.');
+      alert(t('mypage.expoStatus.detail.messages.settlementCompleted'));
       handleCloseSettlementReceiptModal();
       fetchExpoDetail(); // 상태 업데이트를 위해 데이터 다시 불러오기
     } catch (err) {
       console.error('정산 요청 실패:', err);
-      alert('정산 요청에 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.settlementFailed'));
     } finally {
       setLoading(false);
     }
@@ -398,7 +395,7 @@ const ExpoStatusDetail = () => {
       setShowPaymentInfoModal(true);
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
-      alert('결제 정보를 불러오는데 실패했습니다.');
+      alert(t('mypage.expoStatus.detail.messages.paymentInfoError'));
     } finally {
       setLoading(false);
     }
@@ -418,7 +415,7 @@ const ExpoStatusDetail = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.loading}>{t('mypage.expoStatus.detail.loading')}</div>
       </div>
     );
   }
@@ -434,7 +431,7 @@ const ExpoStatusDetail = () => {
   if (!expoData) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>데이터를 찾을 수 없습니다.</div>
+        <div className={styles.loading}>{t('mypage.expoStatus.detail.notFound')}</div>
       </div>
     );
   }
@@ -493,7 +490,10 @@ const ExpoStatusDetail = () => {
       )}
 
       {/* 환불 신청 모달 조건부 렌더링 */}
-      {showRefundModal && refundData && expoData && (
+      {showRefundModal && refundData && expoData && (() => {
+        const isCancelled = expoData.status === '취소됨' || expoData.status === '취소 완료' || expoData.status === 'CANCELLED' || expoData.status === 'PENDING_CANCEL' || expoData.status === '취소대기' || expoData.status === '취소 대기';
+        console.log('디버그 - 모달 렌더링 시 readOnly:', isCancelled, 'status:', expoData.status);
+        return (
         <PaymentRefundModal
           expoName={refundData.expoTitle}
           applicant={refundData.applicantName}
@@ -514,10 +514,11 @@ const ExpoStatusDetail = () => {
           onRefund={handleRefund}
           onClose={handleCloseRefundModal}
           onCancel={handleCloseRefundModal}
-          readOnly={expoData.status === '취소됨' || expoData.status === '취소 완료'}
-          isRefundCompleted={expoData.status === '취소됨' || expoData.status === '취소 완료'}
+          readOnly={isCancelled}
+          isRefundCompleted={isCancelled}
         />
-      )}
+        );
+      })()}
 
       {/* 정산 내역 모달 조건부 렌더링 */}
       {showSettlementReceiptModal && settlementReceiptData && (
@@ -553,7 +554,7 @@ const ExpoStatusDetail = () => {
             className={styles.confirmBtn}
             onClick={handleClosePaymentInfoModal}
           >
-            확인
+            {t('mypage.expoStatus.modal.confirm')}
           </button>
         </PaymentDetailModal>
       )}
