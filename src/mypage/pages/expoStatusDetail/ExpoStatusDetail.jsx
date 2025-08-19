@@ -232,10 +232,17 @@ const ExpoStatusDetail = () => {
   const handleRefundButtonClick = async () => {
     try {
       setLoading(true);
-      // CANCELLED 상태일 때는 실제 환불 내역 조회, 아니면 계산된 환불 정보 조회
-      const response = expoData.status === '취소됨' || expoData.status === '취소 완료' 
+      console.log('디버그 - 현재 status:', expoData.status);
+      console.log('디버그 - 취소 상태 체크:', expoData.status === '취소됨' || expoData.status === '취소 완료' || expoData.status === 'CANCELLED');
+      
+      // CANCELLED 또는 PENDING_CANCEL 상태일 때는 실제 환불 내역 조회, 아니면 계산된 환불 정보 조회
+      const isCancelledOrPending = expoData.status === '취소됨' || expoData.status === '취소 완료' || 
+                                   expoData.status === 'CANCELLED' || expoData.status === 'PENDING_CANCEL' || 
+                                   expoData.status === '취소대기' || expoData.status === '취소 대기';
+      const response = isCancelledOrPending
         ? await getExpoRefundHistory(id) 
         : await getExpoRefundReceipt(id);
+      console.log('디버그 - API 응답:', response.data);
       setRefundData(response.data);
       setShowRefundModal(true);
     } catch (err) {
@@ -483,7 +490,10 @@ const ExpoStatusDetail = () => {
       )}
 
       {/* 환불 신청 모달 조건부 렌더링 */}
-      {showRefundModal && refundData && expoData && (
+      {showRefundModal && refundData && expoData && (() => {
+        const isCancelled = expoData.status === '취소됨' || expoData.status === '취소 완료' || expoData.status === 'CANCELLED' || expoData.status === 'PENDING_CANCEL' || expoData.status === '취소대기' || expoData.status === '취소 대기';
+        console.log('디버그 - 모달 렌더링 시 readOnly:', isCancelled, 'status:', expoData.status);
+        return (
         <PaymentRefundModal
           expoName={refundData.expoTitle}
           applicant={refundData.applicantName}
@@ -504,10 +514,11 @@ const ExpoStatusDetail = () => {
           onRefund={handleRefund}
           onClose={handleCloseRefundModal}
           onCancel={handleCloseRefundModal}
-          readOnly={expoData.status === '취소됨' || expoData.status === '취소 완료'}
-          isRefundCompleted={expoData.status === '취소됨' || expoData.status === '취소 완료'}
+          readOnly={isCancelled}
+          isRefundCompleted={isCancelled}
         />
-      )}
+        );
+      })()}
 
       {/* 정산 내역 모달 조건부 렌더링 */}
       {showSettlementReceiptModal && settlementReceiptData && (

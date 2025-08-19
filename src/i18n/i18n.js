@@ -2,8 +2,32 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// 번역 리소스
-const resources = {
+// 별도 i18n 리소스 파일들 import
+import homepageI18n from './i18n_homepage.js';
+import expoDetailI18n from './i18n_expodetail.js';
+
+// 리소스 병합 함수
+const mergeResources = (mainResources, ...additionalResources) => {
+  const merged = JSON.parse(JSON.stringify(mainResources)); // Deep copy
+  
+  additionalResources.forEach(resource => {
+    Object.keys(resource).forEach(lang => {
+      if (merged[lang]) {
+        merged[lang].translation = {
+          ...merged[lang].translation,
+          ...resource[lang].translation
+        };
+      } else {
+        merged[lang] = resource[lang];
+      }
+    });
+  });
+  
+  return merged;
+};
+
+// 메인 번역 리소스
+const mainResources = {
   ko: {
     translation: {
       // 공통
@@ -15,7 +39,8 @@ const resources = {
         loading: "로딩 중...",
         error: "오류",
         success: "성공",
-        warning: "경고"
+        warning: "경고",
+        selectLanguage: "언어 선택"
       },
       // 네비게이션
       nav: {
@@ -33,7 +58,7 @@ const resources = {
         reservationCheck: "예매 확인"
       },
       // 메인페이지
-      mainpage: {
+      mainpage:{
         adForm: {
           title: "광고 신청",
           subtitle: "광고 정보를 입력해주세요.",
@@ -662,7 +687,6 @@ const resources = {
           },
           ticketTypes: {
             general: "일반",
-            regular: "일반",
             earlyBird: "얼리버드"
           },
           altText: {
@@ -684,7 +708,8 @@ const resources = {
         loading: "Loading...",
         error: "Error",
         success: "Success",
-        warning: "Warning"
+        warning: "Warning",
+        selectLanguage: "Select Language"
       },
       // Navigation
       nav: {
@@ -1004,7 +1029,6 @@ const resources = {
             },
             ticketTypes: {
               general: "General",
-              regular: "General",
               earlyBird: "Early Bird"
             },
             altText: {
@@ -1353,7 +1377,8 @@ const resources = {
         loading: "読み込み中...",
         error: "エラー",
         success: "成功",
-        warning: "警告"
+        warning: "警告",
+        selectLanguage: "言語選択"
       },
       // ナビゲーション
       nav: {
@@ -1673,7 +1698,6 @@ const resources = {
             },
             ticketTypes: {
               general: "一般",
-              regular: "一般",
               earlyBird: "アーリーバード"
             },
             altText: {
@@ -2013,6 +2037,9 @@ const resources = {
     }
   }
 };
+
+// 모든 리소스 병합
+const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n);
 
 i18n
   .use(LanguageDetector)

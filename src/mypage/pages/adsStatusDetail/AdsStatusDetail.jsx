@@ -477,27 +477,18 @@ function AdsStatusDetail() {
               {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 정보 유무로 구분) */}
               {statusConf.buttons === "conditional" && (
                 <>
-                  {/* paymentInfo 존재 여부로 결제/환불 정보 표시 결정 */}
-                  {adData?.paymentInfo ? (
-                    <>
-                      <button
-                        className={`${styles.btn} ${styles.blue}`}
-                        onClick={() => handleButtonAction("viewPaymentInfo")}
-                      >
-                        {t('mypage.adsStatus.detail.buttons.paymentInfo')}
-                      </button>
-                      <button
-                        className={`${styles.btn} ${styles.purple}`}
-                        onClick={() => handleButtonAction("refundHistory")}
-                      >
-                        {t('mypage.adsStatus.detail.buttons.refundInfo')}
-                      </button>
-                    </>
-                  ) : (
-                    <div className={styles.infoMessage}>
-                      {t('mypage.adsStatus.detail.messages.noPaymentRefundInfo')}
-                    </div>
-                  )}
+                  <button
+                    className={`${styles.btn} ${styles.blue}`}
+                    onClick={() => handleButtonAction("viewPaymentInfo")}
+                  >
+                    {t('mypage.adsStatus.detail.buttons.paymentInfo')}
+                  </button>
+                  <button
+                    className={`${styles.btn} ${styles.purple}`}
+                    onClick={() => handleButtonAction("refundHistory")}
+                  >
+                    {t('mypage.adsStatus.detail.buttons.refundInfo')}
+                  </button>
                 </>
               )}
               

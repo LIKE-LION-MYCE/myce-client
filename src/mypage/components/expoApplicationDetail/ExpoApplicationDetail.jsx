@@ -355,7 +355,7 @@ function ExpoApplicationDetail({
                         <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
                         <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
                         <span className={styles.ticketType}>
-                          {ticket.type === 'EARLY_BIRD' ? t('mypage.expoStatus.detail.ticketTypes.earlyBird') : t('mypage.expoStatus.detail.ticketTypes.regular')}
+                          {ticket.type === 'EARLY_BIRD' ? t('mypage.expoStatus.detail.ticketTypes.earlyBird') : t('mypage.expoStatus.detail.ticketTypes.general')}
                         </span>
                       </div>
                     </div>

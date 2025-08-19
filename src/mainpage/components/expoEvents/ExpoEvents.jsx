@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import styles from './ExpoEvents.module.css';
 
 const ExpoEvents = ({ events, formatDate, formatTime }) => {
+  const { t } = useTranslation();
   const [eventFilter, setEventFilter] = useState('all');
 
   // 이벤트 필터링 로직
@@ -35,31 +37,31 @@ const ExpoEvents = ({ events, formatDate, formatTime }) => {
   return (
     <div className={styles.eventsSection}>
       <div className={styles.eventsHeader}>
-        <h3>이벤트 정보</h3>
+        <h3>{t('expoDetail.expoEvents.title', '이벤트 정보')}</h3>
         <div className={styles.filterButtons}>
           <button 
             className={`${styles.filterBtn} ${eventFilter === 'all' ? styles.active : ''}`}
             onClick={() => setEventFilter('all')}
           >
-            전체
+            {t('expoDetail.expoEvents.filters.all', '전체')}
           </button>
           <button 
             className={`${styles.filterBtn} ${eventFilter === 'past' ? styles.active : ''}`}
             onClick={() => setEventFilter('past')}
           >
-            지난 행사
+            {t('expoDetail.expoEvents.filters.past', '지난 행사')}
           </button>
           <button 
             className={`${styles.filterBtn} ${eventFilter === 'today' ? styles.active : ''}`}
             onClick={() => setEventFilter('today')}
           >
-            오늘 행사
+            {t('expoDetail.expoEvents.filters.today', '오늘 행사')}
           </button>
           <button 
             className={`${styles.filterBtn} ${eventFilter === 'upcoming' ? styles.active : ''}`}
             onClick={() => setEventFilter('upcoming')}
           >
-            다가오는 행사
+            {t('expoDetail.expoEvents.filters.upcoming', '다가오는 행사')}
           </button>
         </div>
       </div>
@@ -88,19 +90,19 @@ const ExpoEvents = ({ events, formatDate, formatTime }) => {
                   </div>
                 </div>
                 <div className={styles.eventDescription}>
-                  {event.description || '이벤트 설명이 없습니다.'}
+                  {event.description || t('expoDetail.expoEvents.noDescription', '이벤트 설명이 없습니다.')}
                 </div>
               </div>
               
               <div className={styles.contactInfo}>
                 {event.contactName && (
                   <div className={styles.contactName}>
-                    담당자: {event.contactName}
+                    {t('expoDetail.expoEvents.contact', '담당자')}: {event.contactName}
                   </div>
                 )}
                 {event.contactEmail && (
                   <div className={styles.contactEmail}>
-                    이메일: {event.contactEmail}
+                    {t('expoDetail.expoEvents.email', '이메일')}: {event.contactEmail}
                   </div>
                 )}
               </div>
@@ -109,10 +111,10 @@ const ExpoEvents = ({ events, formatDate, formatTime }) => {
         </div>
       ) : (
         <p className={styles.emptyMessage}>
-          {eventFilter === 'all' ? '등록된 이벤트가 없습니다.' : 
-           eventFilter === 'past' ? '지난 행사가 없습니다.' :
-           eventFilter === 'today' ? '오늘 예정된 행사가 없습니다.' :
-           '다가오는 행사가 없습니다.'}
+          {eventFilter === 'all' ? t('expoDetail.expoEvents.noEvents.all', '등록된 이벤트가 없습니다.') : 
+           eventFilter === 'past' ? t('expoDetail.expoEvents.noEvents.past', '지난 행사가 없습니다.') :
+           eventFilter === 'today' ? t('expoDetail.expoEvents.noEvents.today', '오늘 예정된 행사가 없습니다.') :
+           t('expoDetail.expoEvents.noEvents.upcoming', '다가오는 행사가 없습니다.')}
         </p>
       )}
     </div>
