@@ -8,14 +8,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 56px; /* 높이 증가 */
 }
 
 .phonePartInput {
-  padding: 18px 12px;
-  border: 2px solid #e1e5e9;
+  padding: 12px;
+  border: 1px solid #e1e5e9;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.2;
   transition: all 0.2s ease;
   box-sizing: border-box;
