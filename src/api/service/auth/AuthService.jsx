@@ -56,6 +56,18 @@ const logout = async () => {
     return await instance.post(`${AUTH_PREFIX}/logout`);
 }
 
+
+// const SERVER_URL = 'http://localhost:8080/api';
+const SERVER_URL = 'https://api.myce.live/api';
+
+const googleLogin = () => {
+    window.location.href = `${SERVER_URL}/oauth2/authorization/google`;
+}
+
+const kakaoLogin = () => {
+    window.location.href = `${SERVER_URL}/oauth2/authorization/kakao`;
+}
+
 export {
     signup, 
     login, 
@@ -67,5 +79,7 @@ export {
     checkDuplicateLoginId,
     findId,
     findPassword,
+    googleLogin,
+    kakaoLogin,
     VERIFICATION_TYPE
 };
