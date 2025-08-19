@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./LoginPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { login } from "../../../api/service/auth/AuthService";
+import { googleLogin, kakaoLogin, login } from "../../../api/service/auth/AuthService";
 import { getMyPermission } from "../../../api/service/expo-admin/permission/PermissionService";
 import { HttpStatusCode } from "axios";
 
@@ -33,13 +33,27 @@ const LoginPage = () => {
     userLogin();
   };
 
+  const handleGoogleLogin = () => {
+    googleLogin();
+  }
+
+  const handleKakaoLogin = () => {
+    kakaoLogin();
+  }
+
   const userLogin = async () => {
     try {
       const res = await login(activeTab, userId, password);
       if (res.status === HttpStatusCode.Ok) {
-        alert('로그인이 완료되었습니다.');
-        
-        // 관리자 코드 로그인인 경우 박람회 관리 페이지로 리다이렉트
+        movePage();
+      }
+    } catch (err) {
+      alert('로그인에 실패했습니다.');
+      console.log(`로그인에 실패했습니다. ${err}`);
+    }
+
+     const movePage = async () => {
+    // 관리자 코드 로그인인 경우 박람회 관리 페이지로 리다이렉트
         if (activeTab === LOGIN_TYPE.ADMIN_CODE) {
           try {
             const permissionData = await getMyPermission();
@@ -56,11 +70,7 @@ const LoginPage = () => {
         
         // 일반 로그인이거나 관리자 권한 조회 실패시 메인 페이지로
         window.location.href = '/';
-      }
-    } catch (err) {
-      alert('로그인에 실패했습니다.');
-      console.log(`로그인에 실패했습니다. ${err}`);
-    }
+  }
   };
 
   return (
@@ -130,7 +140,7 @@ const LoginPage = () => {
               <span className={styles.orText}>또는</span>
               <span className={styles.line}></span>
             </div>
-            <button className={styles.socialButton}>
+            <button className={styles.socialButton} onClick={handleKakaoLogin}>
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/KakaoTalk_logo.svg/120px-KakaoTalk_logo.svg.png"
                 alt="카카오"
@@ -138,7 +148,7 @@ const LoginPage = () => {
               />
               카카오로 로그인
             </button>
-            <button className={styles.socialButton}>
+            <button className={styles.socialButton} onClick={handleGoogleLogin}>
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png"
                 alt="구글"
