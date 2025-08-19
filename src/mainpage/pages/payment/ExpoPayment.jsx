@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./ExpoPayment.module.css";
 import ReservationPaymentCardButton from "../../components/paymentButton/ReservationPaymentCardButton";
 import PaymentVirtualBankButton from "../../components/paymentButton/PaymentVirtualBankButton";
@@ -12,6 +13,7 @@ import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import DateInput from "../../../common/components/dateInput/DateInput";
 
 export default function ExpoPayment() {
+  const { t } = useTranslation();
   const SERVICE_FEE_PER_TICKET = 1000;
   const TARGET_TYPE = "RESERVATION";
   const { expoId } = useParams();
@@ -34,7 +36,7 @@ export default function ExpoPayment() {
   useEffect(() => {
     const fetchPaymentSummary = async () => {
       if (!reservationId) {
-        setError("예약 정보를 찾을 수 없습니다.");
+        setError(t('expoDetail.expoPayment.errors.reservationNotFound', '예약 정보를 찾을 수 없습니다.'));
         setLoading(false);
         return;
       }
@@ -46,7 +48,7 @@ export default function ExpoPayment() {
       } catch (err) {
         console.error("결제 요약 정보 로드 실패:", err);
         setError(
-          err.response?.data?.message || "결제 정보를 불러오지 못했습니다."
+          err.response?.data?.message || t('expoDetail.expoPayment.errors.paymentInfoLoadFailed', '결제 정보를 불러오지 못했습니다.')
         );
       } finally {
         setLoading(false);
@@ -153,7 +155,7 @@ export default function ExpoPayment() {
         setAppliedMileage(0);
         setUsedMileageInput("");
         setMileageError(
-          e?.response?.data?.message || "보유 마일리지를 불러오지 못했습니다."
+          e?.response?.data?.message || t('expoDetail.expoPayment.mileage.loadFailed', '보유 마일리지를 불러오지 못했습니다.')
         );
       }
     };
@@ -196,19 +198,18 @@ export default function ExpoPayment() {
             return newInfo;
           });
           setMileageRate(userInfo?.mileageRate || 0.01);
-          alert("회원 정보가 불러와졌습니다.");
+          alert(t('expoDetail.expoPayment.alerts.memberInfoLoaded', '회원 정보가 불러와졌습니다.'));
         } else {
-          alert("회원 정보를 불러오는데 실패했습니다. (데이터 없음)");
+          alert(t('expoDetail.expoPayment.alerts.memberInfoLoadFailed', '회원 정보를 불러오는데 실패했습니다. (데이터 없음)'));
         }
       } catch (error) {
         console.error("회원 정보 불러오기 API 호출 실패:", error);
         alert(
-          "회원 정보를 불러오는데 실패했습니다. 오류: " +
-            (error.response?.data?.message || error.message)
+          t('expoDetail.expoPayment.alerts.memberInfoLoadError', '회원 정보를 불러오는데 실패했습니다. 오류: {{error}}', { error: error.response?.data?.message || error.message })
         );
       }
     } else {
-      alert("로그인 상태가 아닙니다.");
+      alert(t('expoDetail.expoPayment.alerts.loginRequired', '로그인 상태가 아닙니다.'));
     }
   };
 
@@ -220,25 +221,25 @@ export default function ExpoPayment() {
 
   const handleApplyMileage = () => {
     if (!isLoggedIn) {
-      setMileageError("로그인 후 이용 가능합니다.");
+      setMileageError(t('expoDetail.expoPayment.mileage.loginRequired', '로그인 후 이용 가능합니다.'));
       return;
     }
     if (mileage === null) {
       setMileageError(
-        "보유 마일리지 조회 중입니다. 잠시 후 다시 시도해주세요."
+        t('expoDetail.expoPayment.mileage.loadingError', '보유 마일리지 조회 중입니다. 잠시 후 다시 시도해주세요.')
       );
       return;
     }
     const raw = Number(usedMileageInput);
     if (!Number.isFinite(raw) || raw < 0) {
-      setMileageError("사용할 마일리지는 0 이상의 숫자여야 합니다.");
+      setMileageError(t('expoDetail.expoPayment.mileage.validNumberRequired', '사용할 마일리지는 0 이상의 숫자여야 합니다.'));
       return;
     }
     const rounded = Math.floor(raw);
     const maxUse = Math.min(mileage, baseTotal);
     if (rounded > maxUse) {
       setMileageError(
-        `최대 ${maxUse.toLocaleString()} M 까지 사용할 수 있습니다.`
+        t('expoDetail.expoPayment.mileage.maxUsageExceeded', '최대 {{maxUse}} M 까지 사용할 수 있습니다.', { maxUse: maxUse.toLocaleString() })
       );
       setAppliedMileage(maxUse);
       setUsedMileageInput(String(maxUse));
@@ -251,7 +252,7 @@ export default function ExpoPayment() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <h2>결제 정보를 불러오는 중...</h2>
+        <h2>{t('expoDetail.expoPayment.loading', '결제 정보를 불러오는 중...')}</h2>
       </div>
     );
   }
@@ -259,7 +260,7 @@ export default function ExpoPayment() {
   if (error) {
     return (
       <div className={styles.container}>
-        <h2 className={styles.errorText}>오류: {error}</h2>
+        <h2 className={styles.errorText}>{t('expoDetail.expoPayment.error', '오류: {{error}}', { error })}</h2>
       </div>
     );
   }
@@ -272,21 +273,21 @@ export default function ExpoPayment() {
           {Array.from({ length: quantity }).map((_, index) => (
             <div key={index} className={styles.personInfoCard}>
               <div className={styles.cardHeader}>
-                <h2>개인정보 입력 {quantity > 1 ? `${index + 1}` : ""}</h2>
+                <h2>{t('expoDetail.expoPayment.personalInfo.title', '개인정보 입력')} {quantity > 1 ? `${index + 1}` : ""}</h2>
                 {index === 0 && isLoggedIn && (
                   <button
                     type="button"
                     onClick={loadMemberInfo}
                     className={styles.loadMemberInfoButton}
                   >
-                    회원 정보 불러오기
+                    {t('expoDetail.expoPayment.personalInfo.loadMemberInfo', '회원 정보 불러오기')}
                   </button>
                 )}
               </div>
               <div className={styles.cardBody}>
                 <div className={styles.inputGrid}>
                   <div className={styles.inputField}>
-                    <label htmlFor={`name-${index}`}>이름</label>
+                    <label htmlFor={`name-${index}`}>{t('expoDetail.expoPayment.personalInfo.name', '이름')}</label>
                     <input
                       type="text"
                       id={`name-${index}`}
@@ -294,11 +295,11 @@ export default function ExpoPayment() {
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "name", e.target.value)
                       }
-                      placeholder="이름을 입력하세요"
+                      placeholder={t('expoDetail.expoPayment.personalInfo.namePlaceholder', '이름을 입력하세요')}
                     />
                   </div>
                   <div className={styles.inputField}>
-                    <label htmlFor={`email-${index}`}>이메일 주소</label>
+                    <label htmlFor={`email-${index}`}>{t('expoDetail.expoPayment.personalInfo.email', '이메일 주소')}</label>
                     <input
                       type="email"
                       id={`email-${index}`}
@@ -306,11 +307,11 @@ export default function ExpoPayment() {
                       onChange={(e) =>
                         handlePersonalInfoChange(index, "email", e.target.value)
                       }
-                      placeholder="example@email.com"
+                      placeholder={t('expoDetail.expoPayment.personalInfo.emailPlaceholder', 'example@email.com')}
                     />
                   </div>
                   <div className={styles.inputField}>
-                    <label htmlFor={`birthdate-${index}`}>생년월일</label>
+                    <label htmlFor={`birthdate-${index}`}>{t('expoDetail.expoPayment.personalInfo.birthdate', '생년월일')}</label>
                     <DateInput
                       name={`birthdate-${index}`}
                       value={personalInfo[index]?.birthdate || ""}
@@ -326,7 +327,7 @@ export default function ExpoPayment() {
                     />
                   </div>
                   <div className={styles.inputField}>
-                    <label htmlFor={`phone-${index}`}>전화번호</label>
+                    <label htmlFor={`phone-${index}`}>{t('expoDetail.expoPayment.personalInfo.phone', '전화번호')}</label>
                     <PhoneInput
                       name={`phone-${index}`}
                       value={personalInfo[index]?.phone || ""}
@@ -339,7 +340,7 @@ export default function ExpoPayment() {
                 </div>
 
                 <div className={styles.genderSelection}>
-                  <label>성별</label>
+                  <label>{t('expoDetail.expoPayment.personalInfo.gender', '성별')}</label>
                   <div className={styles.genderOptions}>
                     <label className={styles.radioOption}>
                       <input
@@ -355,7 +356,7 @@ export default function ExpoPayment() {
                           )
                         }
                       />
-                      남자
+                      {t('expoDetail.expoPayment.personalInfo.male', '남자')}
                     </label>
                     <label className={styles.radioOption}>
                       <input
@@ -371,7 +372,7 @@ export default function ExpoPayment() {
                           )
                         }
                       />
-                      여자
+                      {t('expoDetail.expoPayment.personalInfo.female', '여자')}
                     </label>
                   </div>
                 </div>
@@ -386,9 +387,9 @@ export default function ExpoPayment() {
       <section className={styles.rightSection}>
         <div className={styles.thumbnailBox}>
           <div className={styles.details}>
-            <h3>{expoInfo?.title || "로딩 중..."}</h3>
+            <h3>{expoInfo?.title || t('expoDetail.expoPayment.expoInfo.loading', '로딩 중...')}</h3>
             <div className={styles.info}>
-              <p>📍 {expoInfo?.location || "장소 정보 없음"}</p>
+              <p>📍 {expoInfo?.location || t('expoDetail.expoPayment.expoInfo.noLocation', '장소 정보 없음')}</p>
               <p>
                 🗓{" "}
                 {expoInfo?.startDate && expoInfo?.endDate
@@ -397,7 +398,7 @@ export default function ExpoPayment() {
                     )} ~ ${new Date(expoInfo.endDate).toLocaleDateString(
                       "ko-KR"
                     )}`
-                  : "일정 정보 없음"}
+                  : t('expoDetail.expoPayment.expoInfo.noSchedule', '일정 정보 없음')}
               </p>
             </div>
           </div>
@@ -406,7 +407,7 @@ export default function ExpoPayment() {
               expoInfo?.thumbnailUrl ||
               "https://flexible.img.hani.co.kr/flexible/normal/590/590/imgdb/resize/2007/1227/68227042_20071227.jpg"
             }
-            alt={expoInfo?.title || "행사 제목"}
+            alt={expoInfo?.title || t('expoDetail.expoPayment.expoInfo.eventTitle', '행사 제목')}
             className={styles.thumbnail}
             onError={(e) => {
               e.target.src =
@@ -418,12 +419,12 @@ export default function ExpoPayment() {
         {isLoggedIn && (
           <div className={styles.mileageSection}>
             <div className={styles.mileageHeader}>
-              <h2>마일리지</h2>
+              <h2>{t('expoDetail.expoPayment.mileage.title', '마일리지')}</h2>
               <div className={styles.currentMileage}>
-                <span>보유 마일리지</span>
+                <span>{t('expoDetail.expoPayment.mileage.available', '보유 마일리지')}</span>
                 <strong>
                   {mileage === null
-                    ? "불러오는 중..."
+                    ? t('expoDetail.expoPayment.mileage.loading', '불러오는 중...')
                     : `${mileage.toLocaleString()} M`}
                 </strong>
               </div>
@@ -433,7 +434,7 @@ export default function ExpoPayment() {
               <div className={styles.mileageInputContainer}>
                 <input
                   type="number"
-                  placeholder="사용할 마일리지"
+                  placeholder={t('expoDetail.expoPayment.mileage.usagePlaceholder', '사용할 마일리지')}
                   className={styles.mileageInput}
                   value={usedMileageInput}
                   onChange={(e) => setUsedMileageInput(e.target.value)}
@@ -444,7 +445,7 @@ export default function ExpoPayment() {
                   className={styles.useAllButton}
                   onClick={handleUseAllMileage}
                 >
-                  전액사용
+                  {t('expoDetail.expoPayment.mileage.useAll', '전액사용')}
                 </button>
               </div>
               <button
@@ -453,7 +454,7 @@ export default function ExpoPayment() {
                 onClick={handleApplyMileage}
                 disabled={mileage === null || (mileage || 0) === 0}
               >
-                마일리지 적용
+                {t('expoDetail.expoPayment.mileage.apply', '마일리지 적용')}
               </button>
             </div>
 
@@ -462,7 +463,7 @@ export default function ExpoPayment() {
                 <div className={styles.errorText}>{mileageError}</div>
               ) : (
                 <div className={styles.remainingMileage}>
-                  <span>적용 후 마일리지</span>
+                  <span>{t('expoDetail.expoPayment.mileage.afterApply', '적용 후 마일리지')}</span>
                   <strong>
                     {remainingMileageAfterApply === null
                       ? "-"
@@ -475,39 +476,39 @@ export default function ExpoPayment() {
         )}
 
         <div className={styles.summary}>
-          <h3>결제 요약</h3>
+          <h3>{t('expoDetail.expoPayment.summary.title', '결제 요약')}</h3>
           <div className={styles.reciept}>
             <div className={styles.row}>
-              <span>티켓 매수</span>
+              <span>{t('expoDetail.expoPayment.summary.ticketCount', '티켓 매수')}</span>
               <span>
                 {quantity} x {ticketName}
               </span>
             </div>
             <div className={styles.row}>
-              <span>티켓 가격</span>
+              <span>{t('expoDetail.expoPayment.summary.ticketPrice', '티켓 가격')}</span>
               <span>
-                {quantity} x {unitPrice?.toLocaleString()}원
+                {quantity} x {unitPrice?.toLocaleString()}{t('expoDetail.expoPayment.summary.currency', '원')}
               </span>
             </div>
             <div className={styles.row}>
-              <span>서비스 수수료</span>
+              <span>{t('expoDetail.expoPayment.summary.serviceFee', '서비스 수수료')}</span>
               <span>
                 {quantity} x {SERVICE_FEE_PER_TICKET.toLocaleString()}
               </span>
             </div>
             <div className={styles.row}>
-              <span>마일리지</span>
-              <span>- {appliedMileage.toLocaleString()}원</span>
+              <span>{t('expoDetail.expoPayment.summary.mileage', '마일리지')}</span>
+              <span>- {appliedMileage.toLocaleString()}{t('expoDetail.expoPayment.summary.currency', '원')}</span>
             </div>
             <div className={`${styles.row} ${styles.total}`}>
-              <span>총계</span>
-              <span>{totalAfterApply.toLocaleString()}원</span>
+              <span>{t('expoDetail.expoPayment.summary.total', '총계')}</span>
+              <span>{totalAfterApply.toLocaleString()}{t('expoDetail.expoPayment.summary.currency', '원')}</span>
             </div>
           </div>
         </div>
 
         <div className={styles.payment}>
-          <h3>결제 방법 선택</h3>
+          <h3>{t('expoDetail.expoPayment.paymentMethod.title', '결제 방법 선택')}</h3>
 
           <div className={styles.methodGroup}>
             <ReservationPaymentCardButton

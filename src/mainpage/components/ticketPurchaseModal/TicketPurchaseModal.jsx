@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./TicketPurchaseModal.module.css";
 import { FiX, FiMinus, FiPlus, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { getUserIdFromToken } from "../../../api/utils/jwtUtils";
@@ -13,6 +14,7 @@ export default function TicketPurchaseModal({
   isOpen,
   onClose,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +96,7 @@ export default function TicketPurchaseModal({
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
-      alert("티켓 구매 준비에 실패했습니다. 다시 시도해주세요.");
+      alert(t('expoDetail.expoTickets.modal.errors.purchaseFailed', '티켓 구매 준비에 실패했습니다. 다시 시도해주세요.'));
       setIsLoading(false);
     }
   };
@@ -103,7 +105,7 @@ export default function TicketPurchaseModal({
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h3>티켓 구매</h3>
+          <h3>{t('expoDetail.expoTickets.modal.title', '티켓 구매')}</h3>
           <button className={styles.closeBtn} onClick={onClose}>
             <FiX size={24} />
           </button>
@@ -113,20 +115,22 @@ export default function TicketPurchaseModal({
           <div className={styles.ticketInfo}>
             <h4>{ticket.name}</h4>
             <p className={styles.ticketType}>
-              {ticket.type === "EARLY_BIRD" ? "얼리버드" : "일반"}
+              {ticket.type === "EARLY_BIRD" 
+                ? t('expoDetail.expoTickets.ticketTypes.earlyBird', '얼리버드') 
+                : t('expoDetail.expoTickets.ticketTypes.general', '일반')}
             </p>
-            <p className={styles.price}>{ticket.price?.toLocaleString()}원</p>
+            <p className={styles.price}>{ticket.price?.toLocaleString()}{t('expoDetail.expoTickets.won', '원')}</p>
             {ticket.description && (
               <p className={styles.description}>{ticket.description}</p>
             )}
             <p className={styles.remaining}>
-              남은 수량:{" "}
-              <strong>{ticket.remainingQuantity?.toLocaleString()}매</strong>
+              {t('expoDetail.expoTickets.modal.remainingLabel', '남은 수량')}:{" "}
+              <strong>{ticket.remainingQuantity?.toLocaleString()}{t('expoDetail.expoTickets.modal.tickets', '매')}</strong>
             </p>
           </div>
 
           <div className={styles.quantitySection}>
-            <label>구매 수량</label>
+            <label>{t('expoDetail.expoTickets.modal.quantityLabel', '구매 수량')}</label>
             <div className={styles.quantityControls}>
               <button
                 className={styles.quantityBtn}
@@ -158,53 +162,53 @@ export default function TicketPurchaseModal({
 
           <div className={styles.priceSection}>
             <div className={styles.priceRow}>
-              <span>단가</span>
-              <span>{ticket.price?.toLocaleString()}원</span>
+              <span>{t('expoDetail.expoTickets.modal.unitPriceLabel', '단가')}</span>
+              <span>{ticket.price?.toLocaleString()}{t('expoDetail.expoTickets.won', '원')}</span>
             </div>
             <div className={styles.priceRow}>
-              <span>수량</span>
-              <span>{quantity}매</span>
+              <span>{t('expoDetail.expoTickets.modal.quantityCount', '수량')}</span>
+              <span>{quantity}{t('expoDetail.expoTickets.modal.tickets', '매')}</span>
             </div>
             <div className={styles.totalRow}>
-              <span>총 결제 금액</span>
-              <span className={styles.totalPrice}>{getTotalPrice()}원</span>
+              <span>{t('expoDetail.expoTickets.modal.totalPriceLabel', '총 결제 금액')}</span>
+              <span className={styles.totalPrice}>{getTotalPrice()}{t('expoDetail.expoTickets.won', '원')}</span>
             </div>
           </div>
 
           <div className={styles.noticesSection}>
             <div className={styles.noticesHeader} onClick={() => setShowNotices(!showNotices)}>
-              <span>구매 유의사항</span>
+              <span>{t('expoDetail.expoTickets.modal.noticesTitle', '구매 유의사항')}</span>
               {showNotices ? <FiChevronUp /> : <FiChevronDown />}
             </div>
             {showNotices && (
               <div className={styles.noticesContent}>
                 <div className={styles.noticeItem}>
-                  <strong>환불 및 취소 정책</strong>
+                  <strong>{t('expoDetail.expoTickets.modal.notices.refundPolicy', '환불 및 취소 정책')}</strong>
                   <ul>
-                    <li>박람회 시작 7일 전까지: 100% 환불</li>
-                    <li>박람회 시작 3~6일 전까지: 80% 환불</li>
-                    <li>박람회 시작 1~2일 전까지: 50% 환불</li>
-                    <li>박람회 당일: 환불 불가</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.refundRules.sevenDays', '박람회 시작 7일 전까지: 100% 환불')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.refundRules.threeDays', '박람회 시작 3~6일 전까지: 80% 환불')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.refundRules.oneDay', '박람회 시작 1~2일 전까지: 50% 환불')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.refundRules.sameDay', '박람회 당일: 환불 불가')}</li>
                   </ul>
                 </div>
                 <div className={styles.noticeItem}>
-                  <strong>티켓 사용 안내</strong>
+                  <strong>{t('expoDetail.expoTickets.modal.notices.ticketUsage', '티켓 사용 안내')}</strong>
                   <ul>
-                    <li>구매 완료 후 박람회 개최 2일 전부터 QR 코드가 생성됩니다.</li>
-                    <li>티켓의 사용 개시 일자부터 QR 코드가 활성화 됩니다.</li>
-                    <li>박람회 당일 QR 코드를 제시해 주세요</li>
-                    <li>타인에게 양도/전매 시 입장이 제한될 수 있습니다</li>
-                    <li>분실 시 재발급이 불가능하니 주의해 주세요</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.usageRules.qrGeneration', '구매 완료 후 박람회 개최 2일 전부터 QR 코드가 생성됩니다.')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.usageRules.qrActivation', '티켓의 사용 개시 일자부터 QR 코드가 활성화 됩니다.')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.usageRules.showQr', '박람회 당일 QR 코드를 제시해 주세요')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.usageRules.noTransfer', '타인에게 양도/전매 시 입장이 제한될 수 있습니다')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.usageRules.noReissue', '분실 시 재발급이 불가능하니 주의해 주세요')}</li>
                   </ul>
                 </div>
                 <div className={styles.noticeItem}>
-                  <strong>기타 안내</strong>
+                  <strong>{t('expoDetail.expoTickets.modal.notices.otherInfo', '기타 안내')}</strong>
                   <ul>
-                    <li>박람회 일정 변경 시 사전 공지됩니다</li>
-                    <li>회원의 경우 1인당 최대 4매까지 구매 가능합니다</li>
-                    <li>비회원의 경우 1인당 1매까지 구매 가능합니다</li>
-                    <li>결제 완료 후 예매 확인서가 이메일로 발송됩니다</li>
-                    <li>문의사항은 AI 상담사 찍찍봇을 이용해 주세요</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.otherRules.scheduleChange', '박람회 일정 변경 시 사전 공지됩니다')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.otherRules.memberLimit', '회원의 경우 1인당 최대 4매까지 구매 가능합니다')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.otherRules.guestLimit', '비회원의 경우 1인당 1매까지 구매 가능합니다')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.otherRules.confirmation', '결제 완료 후 예매 확인서가 이메일로 발송됩니다')}</li>
+                    <li>{t('expoDetail.expoTickets.modal.notices.otherRules.support', '문의사항은 AI 상담사 찍찍봇을 이용해 주세요')}</li>
                   </ul>
                 </div>
               </div>
@@ -213,7 +217,7 @@ export default function TicketPurchaseModal({
 
           <div className={styles.actions}>
             <button className={styles.cancelBtn} onClick={onClose}>
-              취소
+              {t('expoDetail.expoTickets.modal.cancelButton', '취소')}
             </button>
             <button
               className={styles.purchaseBtn}
@@ -222,7 +226,7 @@ export default function TicketPurchaseModal({
                 ticket.remainingQuantity <= 0 || quantity <= 0 || isLoading
               }
             >
-              {isLoading ? "처리 중..." : "구매하기"}
+              {isLoading ? t('expoDetail.expoTickets.modal.processing', '처리 중...') : t('expoDetail.expoTickets.modal.purchaseButton', '구매하기')}
             </button>
           </div>
         </div>

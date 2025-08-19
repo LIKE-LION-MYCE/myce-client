@@ -1,8 +1,10 @@
 // SidebarFilters.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './SidebarFilters.module.css';
 
 export default function SidebarFilters({ filters, setFilters, categories }) {
+  const { t } = useTranslation();
   const handleKeywordChange = (e) => {
     setFilters(prevFilters => ({ ...prevFilters, keyword: e.target.value }));
   };
@@ -16,7 +18,7 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
   };
 
   const handleCategoryChange = (categoryValue) => {
-    const newCategory = categoryValue === '전체' ? undefined : categoryValue;
+    const newCategory = categoryValue === t('homepage.sidebarFilters.category.all', '전체') ? undefined : categoryValue;
     setFilters(prevFilters => ({ ...prevFilters, category: newCategory }));
   };
 
@@ -29,13 +31,13 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
       <input
         className={styles.search}
         type="text"
-        placeholder="박람회를 검색하세요."
+        placeholder={t('homepage.sidebarFilters.search.placeholder', '박람회를 검색하세요.')}
         value={filters.keyword || ''}
         onChange={handleKeywordChange}
       />
 
       <div className={styles.filterSection}>
-        <h4>기간</h4>
+        <h4>{t('homepage.sidebarFilters.period.title', '기간')}</h4>
         <div className={styles.durationButtons}>
           {[1, 3, 6, 12].map((periodValue) => (
             <button
@@ -43,18 +45,18 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
               className={`${styles.filterButton} ${filters.period === periodValue ? styles.active : ''}`}
               onClick={() => handlePeriodChange(periodValue)}
             >
-              {periodValue}개월
+              {t('homepage.sidebarFilters.period.months', '{{count}}개월', { count: periodValue })}
             </button>
           ))}
         </div>
         <div className={styles.datePickerWrapper}>
-          <span>시작</span>
+          <span>{t('homepage.sidebarFilters.period.start', '시작')}</span>
           <input
             type="date"
             value={filters.from || ''}
             onChange={(e) => handleDateChange('from', e)}
           />
-          <span>종료</span>
+          <span>{t('homepage.sidebarFilters.period.end', '종료')}</span>
           <input
             type="date"
             value={filters.to || ''}
@@ -64,7 +66,7 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
       </div>
 
       <div className={styles.filterSection}>
-        <h4>카테고리</h4>
+        <h4>{t('homepage.sidebarFilters.category.title', '카테고리')}</h4>
         <div className={styles.categoryList}>
           {categories.map((cat) => (
             <button
@@ -78,7 +80,7 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
         </div>
       </div>
 
-      <button className={styles.resetButton} onClick={handleResetFilters}>필터 초기화</button>
+      <button className={styles.resetButton} onClick={handleResetFilters}>{t('homepage.sidebarFilters.reset', '필터 초기화')}</button>
     </div>
   );
 }

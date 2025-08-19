@@ -5,6 +5,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // 별도 i18n 리소스 파일들 import
 import homepageI18n from './i18n_homepage.js';
 import expoDetailI18n from './i18n_expodetail.js';
+import nonmemberI18n from './i18n_nonmember.js';
+import mypageI18n from './i18n_mypage.js';
 
 // 리소스 병합 함수
 const mergeResources = (mainResources, ...additionalResources) => {
@@ -2039,7 +2041,7 @@ const mainResources = {
 };
 
 // 모든 리소스 병합
-const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n);
+const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n, nonmemberI18n, mypageI18n);
 
 i18n
   .use(LanguageDetector)
