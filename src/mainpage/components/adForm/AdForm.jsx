@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./AdForm.module.css";
 import { getAdPositions } from "../../../api/service/user/adPositionApi";
 import { saveAdvertisement, validatePeriod } from "../../../api/service/user/advertisementApi";
@@ -12,6 +13,7 @@ import BusinessNumberInput from "../../../common/components/businessNumberInput/
 import EstimatedAdCostModal from "../../../common/components/estimatedAdCostModal/EstimatedAdCostModal";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
+  const { t } = useTranslation();
   // 서버에 보낼 정보만 유지
   const [formData, setFormData] = useState({
     adPositionId: "", // 광고 위치 id (select)
@@ -51,12 +53,12 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   // 예상 이용료 모달 열기
   const handleEstimatedCostClick = () => {
     if (!formData.adPositionId) {
-      alert("광고 위치를 먼저 선택해주세요.");
+      alert(t('mainpage.adForm.messages.selectPositionFirst'));
       return;
     }
     
     if (!formData.displayStartDate || !formData.displayEndDate) {
-      alert("광고 기간을 먼저 입력해주세요.");
+      alert(t('mainpage.adForm.messages.enterPeriodFirst'));
       return;
     }
     
@@ -78,15 +80,15 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         return;
       }else if(formData.displayStartDate > formData.displayEndDate) {
         setIsFormValid(false);
-        setErrorMessage("시작일은 종료일보다 이전이어야 합니다.");
+        setErrorMessage(t('mainpage.adForm.messages.startDateAfterEndDate'));
         return;
       }else if(formData.displayStartDate < localeDate) {
         setIsFormValid(false);
-        setErrorMessage("시작일은 오늘 이후여야 합니다.");
+        setErrorMessage(t('mainpage.adForm.messages.startDateAfterToday'));
         return;
       }else if(formData.displayEndDate < localeDate) {
         setIsFormValid(false);
-        setErrorMessage("종료일은 오늘 이후여야 합니다.");
+        setErrorMessage(t('mainpage.adForm.messages.endDateAfterToday'));
         return;
       }
 
@@ -101,7 +103,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         setErrorMessage(""); // 유효성 검사 성공 시 오류 메시지 초기화
       } else {
         setIsPeriodValid(false);
-        setErrorMessage("유효하지 않은 날짜입니다."); // 유효하지 않은 날짜일 때 오류 메시지 표시
+        setErrorMessage(t('mainpage.adForm.messages.invalidDate')); // 유효하지 않은 날짜일 때 오류 메시지 표시
       }
     } catch (error) {
       if (error.status === 409) {
@@ -112,7 +114,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       } else {
         console.error("기간 유효성 검사 실패:", error);
         setIsFormValid(false);
-        setErrorMessage("유효하지 않은 날짜입니다."); // 다른 오류 발생 시 기본 오류 메시지 설정
+        setErrorMessage(t('mainpage.adForm.messages.invalidDate')); // 다른 오류 발생 시 기본 오류 메시지 설정
       }
     }
   };
@@ -160,7 +162,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
   // 이미지 업로드 실패 시
   const handleImageUploadError = (error) => {
-    alert("이미지 업로드에 실패했습니다.");
+    alert(t('mainpage.adForm.messages.imageUploadFailed'));
   };
 
   // 유효성 검사
@@ -229,10 +231,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     setSubmitting(true);
     try {
       await saveAdvertisement(adData);
-      alert("광고가 성공적으로 등록되었습니다.");
+      alert(t('mainpage.adForm.messages.adRegistered'));
       navigate("/mypage/ads-status");
     } catch (error) {
-      alert("광고 등록에 실패했습니다. 입력값을 확인해 주세요.");
+      alert(t('mainpage.adForm.messages.adRegistrationFailed'));
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -243,8 +245,8 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   return (
     <div className={styles["form-container"]}>
       <form onSubmit={handleSubmit}>
-        <h1 className={styles["title"]}>광고 신청</h1>
-        <p className={styles["subtitle"]}>광고 정보를 입력해주세요.</p>
+        <h1 className={styles["title"]}>{t('mainpage.adForm.title')}</h1>
+        <p className={styles["subtitle"]}>{t('mainpage.adForm.subtitle')}</p>
         
         {/* 주의사항 및 요금제 안내 */}
         <UsageGuidelines type="ad" />
@@ -252,7 +254,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 광고명 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="title">광고명</label>
+          <label htmlFor="title">{t('mainpage.adForm.fields.adTitle')}</label>
           <input
             type="text"
             id="title"
@@ -260,14 +262,14 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             value={formData.title}
             onChange={handleChange}
             className={styles["input-field"]}
-            placeholder="광고명을 입력해주세요"
+            placeholder={t('mainpage.adForm.fields.adTitlePlaceholder')}
             required
           />
         </div>
 
         {/* 광고 배너 위치 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="adPositionId">광고 배너 위치</label>
+          <label htmlFor="adPositionId">{t('mainpage.adForm.fields.adPosition')}</label>
           <select
             id="adPositionId"
             name="adPositionId"
@@ -277,7 +279,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             required
           >
             <option value="" disabled>
-              광고 배너 위치를 선택해주세요
+              {t('mainpage.adForm.fields.adPositionPlaceholder')}
             </option>
             {adPositions.map((pos) => (
               <option key={pos.id} value={pos.id}>
@@ -289,7 +291,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 광고 기간 */}
         <div className={styles["form-group"]}>
-          <label>광고 기간</label>
+          <label>{t('mainpage.adForm.fields.adPeriod')}</label>
           <div className={styles["date-range-group"]}>
             <input
               type="date"
@@ -324,12 +326,12 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               onClick={handleEstimatedCostClick}
               disabled={!formData.adPositionId || !formData.displayStartDate || !formData.displayEndDate}
             >
-              💰 예상 이용료 확인
+              {t('mainpage.adForm.buttons.estimatedCost')}
             </button>
             <p className={styles["estimated-cost-description"]}>
               {!formData.adPositionId || !formData.displayStartDate || !formData.displayEndDate
-                ? "광고 위치와 기간을 먼저 선택해주세요."
-                : "선택하신 위치와 기간을 바탕으로 예상 이용료를 확인할 수 있습니다."
+                ? t('mainpage.adForm.messages.selectPositionAndPeriod')
+                : t('mainpage.adForm.messages.estimatedCostDescription')
               }
             </p>
           </div>
@@ -337,7 +339,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 광고 이미지 (S3 업로드) */}
         <div className={styles["form-group"]}>
-          <label>광고 배너 이미지</label>
+          <label>{t('mainpage.adForm.fields.adImage')}</label>
           <ImageUpload
             onUploadSuccess={handleImageUploadSuccess}
             onUploadError={handleImageUploadError}
@@ -345,7 +347,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           {formData.imageUrl && (
             <img
               src={formData.imageUrl}
-              alt="광고 미리보기"
+              alt={t('mainpage.adForm.fields.adImageAlt')}
               style={{
                 maxWidth: "200px",
                 maxHeight: "100px",
@@ -358,7 +360,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 광고 배너 클릭 시 이동할 페이지 URL */}
         <div className={styles["form-group"]}>
-          <label htmlFor="linkUrl">광고 배너 클릭 시 이동할 페이지 URL</label>
+          <label htmlFor="linkUrl">{t('mainpage.adForm.fields.linkUrl')}</label>
           <input
             type="text"
             id="linkUrl"
@@ -366,14 +368,14 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             value={formData.linkUrl}
             onChange={handleChange}
             className={styles["input-field"]}
-            placeholder="예: https://www.myce.link"
+            placeholder={t('mainpage.adForm.fields.linkUrlPlaceholder')}
             required
           />
         </div>
 
         {/* 광고 소개 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="description">광고 소개</label>
+          <label htmlFor="description">{t('mainpage.adForm.fields.adDescription')}</label>
           <textarea
             id="description"
             name="description"
@@ -385,11 +387,11 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         </div>
 
         {/* 회사 정보 */}
-        <div className={styles["section-title"]}>회사 정보</div>
+        <div className={styles["section-title"]}>{t('mainpage.adForm.fields.companyInfo')}</div>
         <div className={styles["form-group"]}>
           <div className={styles["inline-input-group"]}>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="companyName">회사명</label>
+              <label htmlFor="companyName">{t('mainpage.adForm.fields.companyName')}</label>
               <input
                 type="text"
                 id="companyName"
@@ -401,7 +403,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               />
             </div>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="businessRegistrationNumber">사업자 번호</label>
+              <label htmlFor="businessRegistrationNumber">{t('mainpage.adForm.fields.businessNumber')}</label>
               <BusinessNumberInput
                 name="businessRegistrationNumber"
                 value={formData.businessRegistrationNumber}
@@ -414,7 +416,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 회사 주소 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="address">회사 주소</label>
+          <label htmlFor="address">{t('mainpage.adForm.fields.companyAddress')}</label>
           <div style={{ display: "flex", gap: "8px" }}>
             <input
               type="text"
@@ -423,14 +425,14 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               value={formData.address}
               readOnly
               className={styles["input-field"]}
-              placeholder="주소 검색 버튼을 눌러주세요"
+              placeholder={t('mainpage.adForm.fields.companyAddressPlaceholder')}
             />
             <button
               type="button"
               className={styles["search-button"]}
               onClick={() => setIsPostcodeOpen(true)}
             >
-              주소 검색
+              {t('mainpage.adForm.fields.addressSearch')}
             </button>
           </div>
           {isPostcodeOpen && (
@@ -445,7 +447,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
                 onClick={() => setIsPostcodeOpen(false)}
                 className={styles["close-modal"]}
               >
-                닫기
+                {t('mainpage.adForm.fields.addressSearchClose')}
               </button>
             </div>
           )}
@@ -455,7 +457,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         <div className={styles["form-group"]}>
           <div className={styles["inline-input-group"]}>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="ceoName">대표자명</label>
+              <label htmlFor="ceoName">{t('mainpage.adForm.fields.ceoName')}</label>
               <input
                 type="text"
                 id="ceoName"
@@ -467,7 +469,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
               />
             </div>
             <div className={styles["inline-input-item"]}>
-              <label htmlFor="contactPhone">대표자 연락처</label>
+              <label htmlFor="contactPhone">{t('mainpage.adForm.fields.ceoContact')}</label>
               <PhoneInput
                 name="contactPhone"
                 value={formData.contactPhone}
@@ -480,7 +482,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
         {/* 대표자 이메일 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="contactEmail">대표자 이메일</label>
+          <label htmlFor="contactEmail">{t('mainpage.adForm.fields.ceoEmail')}</label>
           <input
             type="email"
             id="contactEmail"
@@ -488,7 +490,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             value={formData.contactEmail}
             onChange={handleChange}
             className={styles["input-field"]}
-            placeholder="예: hello@myce.com"
+            placeholder={t('mainpage.adForm.fields.ceoEmailPlaceholder')}
             required
           />
         </div>
@@ -500,14 +502,14 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             className={styles["cancel-button"]}
             onClick={() => navigate("/")}
           >
-            취소
+            {t('mainpage.adForm.buttons.cancel')}
           </button>
           <button
             type="submit"
             className={`${styles["submit-button"]} ${!(isFormValid && isPeriodValid) ? styles["disabled"] : ""}`}
             disabled={!(isFormValid && isPeriodValid)}
           >
-            등록
+            {t('mainpage.adForm.buttons.submit')}
           </button>
         </div>
       </form>

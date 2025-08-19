@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AppRouter from './routes/AppRouter';
 import './styles/main.css'; //전역 css 설정
+import './i18n/i18n'; // i18n 설정 import
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
