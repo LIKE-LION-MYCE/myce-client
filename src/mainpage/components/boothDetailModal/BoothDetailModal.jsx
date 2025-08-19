@@ -61,12 +61,6 @@ const BoothDetailModal = ({ booth, isOpen, onClose }) => {
                     <span className={styles.contactValue}>{booth.contactName}</span>
                   </div>
                 )}
-                {booth.contactPhone && (
-                  <div className={styles.contactItem}>
-                    <span className={styles.contactLabel}>연락처</span>
-                    <span className={styles.contactValue}>{booth.contactPhone}</span>
-                  </div>
-                )}
                 {booth.contactEmail && (
                   <div className={styles.contactItem}>
                     <span className={styles.contactLabel}>이메일</span>
