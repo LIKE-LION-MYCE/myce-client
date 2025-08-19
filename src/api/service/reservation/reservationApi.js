@@ -51,10 +51,14 @@ export const savePreReservation = async (preReservationData) => {
 };
 
 // 사전 예약 정보 바탕으로 결제 요약 정보 가져오기
-export const getPaymentSummary = async (preReservationId) => {
-  const { data } = await instance.get(
-    `/reservations/payment-summary?preReservationId=${preReservationId}`
-  );
+export const getPaymentSummary = async (preReservationId, sessionId = null) => {
+  let url = `/reservations/payment-summary?preReservationId=${preReservationId}`;
+  
+  if (sessionId) {
+    url += `&sessionId=${sessionId}`;
+  }
+  
+  const { data } = await instance.get(url);
   return data;
 };
 

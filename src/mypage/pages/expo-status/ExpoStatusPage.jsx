@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './ExpoStatusPage.module.css';
 import settingStyles from '../../../expo-admin/pages/setting/Setting.module.css';
 import { getMyExpos } from '../../../api/service/user/memberApi';
@@ -13,6 +14,7 @@ const PAGE_BTN_COUNT = 5;
 
 const ExpoStatusPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [expos, setExpos] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -48,7 +50,7 @@ const ExpoStatusPage = () => {
       setTotalPages(total);
     } catch (err) {
       console.error('신청 박람회 조회 실패:', err);
-      setError('신청 박람회를 불러오는데 실패했습니다.');
+      setError(t('expoStatus.loadError'));
       setExpos([]);
     } finally {
       setLoading(false);
@@ -64,16 +66,16 @@ const ExpoStatusPage = () => {
 
   const getStatusLabel = (status) => {
     const statusMap = {
-      'PENDING_APPROVAL': '승인 대기',
-      'PENDING_PAYMENT': '결제 대기',
-      'PENDING_PUBLISH': '게시 대기',
-      'PENDING_CANCEL': '취소 대기',
-      'PUBLISHED': '게시 중',
-      'PUBLISH_ENDED': '게시 종료',
-      'SETTLEMENT_REQUESTED': '정산 요청',
-      'COMPLETED': '종료됨',
-      'REJECTED': '승인 거절',
-      'CANCELLED': '취소 완료'
+      'PENDING_APPROVAL': t('expoStatus.status.PENDING_APPROVAL'),
+      'PENDING_PAYMENT': t('expoStatus.status.PENDING_PAYMENT'),
+      'PENDING_PUBLISH': t('expoStatus.status.PENDING_PUBLISH'),
+      'PENDING_CANCEL': t('expoStatus.status.PENDING_CANCEL'),
+      'PUBLISHED': t('expoStatus.status.PUBLISHED'),
+      'PUBLISH_ENDED': t('expoStatus.status.PUBLISH_ENDED'),
+      'SETTLEMENT_REQUESTED': t('expoStatus.status.SETTLEMENT_REQUESTED'),
+      'COMPLETED': t('expoStatus.status.COMPLETED'),
+      'REJECTED': t('expoStatus.status.REJECTED'),
+      'CANCELLED': t('expoStatus.status.CANCELLED')
     };
     return statusMap[status] || status;
   };
@@ -145,7 +147,7 @@ const ExpoStatusPage = () => {
     if (currentPage > 1) {
       pages.push(
         <button key="prev" onClick={() => setCurrentPage(currentPage - 1)} className={styles.pageButton}>
-          이전
+          {t('expoStatus.pagination.prev')}
         </button>
       );
     }
@@ -170,7 +172,7 @@ const ExpoStatusPage = () => {
     if (currentPage < totalPages) {
       pages.push(
         <button key="next" onClick={() => setCurrentPage(currentPage + 1)} className={styles.pageButton}>
-          다음
+          {t('expoStatus.pagination.next')}
         </button>
       );
     }
@@ -181,8 +183,8 @@ const ExpoStatusPage = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <h2 className={styles.title}>신청 박람회 현황</h2>
-        <div className={styles.loading}>로딩 중...</div>
+        <h2 className={styles.title}>{t('expoStatus.title')}</h2>
+        <div className={styles.loading}>{t('expoStatus.loading')}</div>
       </div>
     );
   }
@@ -190,7 +192,7 @@ const ExpoStatusPage = () => {
   if (error) {
     return (
       <div className={styles.container}>
-        <h2 className={styles.title}>신청 박람회 현황</h2>
+        <h2 className={styles.title}>{t('expoStatus.title')}</h2>
         <div className={styles.error}>{error}</div>
       </div>
     );
@@ -198,18 +200,18 @@ const ExpoStatusPage = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>신청 박람회 현황</h2>
+      <h2 className={styles.title}>{t('expoStatus.title')}</h2>
       {expos.length > 0 ? (
         <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>No.</th>
-                <th>박람회명</th>
-                <th>신청일</th>
-                <th>게시 기간</th>
-                <th>개최 장소</th>
-                <th>상태</th>
+                <th>{t('expoStatus.table.no')}</th>
+                <th>{t('expoStatus.table.expoName')}</th>
+                <th>{t('expoStatus.table.appliedAt')}</th>
+                <th>{t('expoStatus.table.postPeriod')}</th>
+                <th>{t('expoStatus.table.location')}</th>
+                <th>{t('expoStatus.table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -218,7 +220,7 @@ const ExpoStatusPage = () => {
                   <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                   <td>
                     {expo.title}
-                    {expo.isPremium && <span className={styles.premiumBadge}>프리미엄</span>}
+                    {expo.isPremium && <span className={styles.premiumBadge}>{t('expoStatus.table.premium')}</span>}
                   </td>
                   <td>{expo.applyDate}</td>
                   <td>{expo.postPeriod}</td>
@@ -238,7 +240,7 @@ const ExpoStatusPage = () => {
           </div>
         </>
       ) : (
-        <div className={styles.noData}>신청한 박람회가 없습니다.</div>
+        <div className={styles.noData}>{t('expoStatus.noData')}</div>
       )}
       
       {/* 결제 상세 정보 모달 */}
@@ -261,7 +263,7 @@ const ExpoStatusPage = () => {
             className={styles.confirmBtn}
             onClick={handleClosePaymentModal}
           >
-            확인
+            {t('expoStatus.modal.confirm')}
           </button>
         </PaymentDetailModal>
       )}

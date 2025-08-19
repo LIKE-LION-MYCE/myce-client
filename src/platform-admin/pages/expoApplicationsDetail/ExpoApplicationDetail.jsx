@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ExpoApplicationDetail.module.css';
 import ExpoApplicationForm from '../../components/expoApplicationForm/ExpoApplicationForm';
+import ApplicantForm from '../../components/applicantForm/ApplicantForm';
 import OperatorApplicationForm from '../../components/operatorApplicationForm/OperatorApplicationForm';
 import RejectReasonModal from '../../components/rejectReasonModal/RejectReasonModal';
 import RejectReasonViewModal from '../../components/rejectReasonViewModal/RejectReasonViewModal';
@@ -216,7 +217,10 @@ function ExpoApplicationDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
-        <OperatorApplicationForm operatorData={expo?.applicant} businessData={expo?.business} />
+        <ApplicantForm applicantData={expo?.applicant} />
+      </div>
+      <div className={styles.section}>
+        <OperatorApplicationForm businessData={expo?.business} />
       </div>
 
       {/* 버튼 그룹 */}

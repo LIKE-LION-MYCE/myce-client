@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
 import {
-  updateGuestId,
   deleteReservationPending,
 } from "../../../api/service/reservation/reservationApi";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
@@ -21,6 +20,7 @@ function PaymentTransferButton({
   usedMileage,
   savedMileage,
   reserverInfos,
+  sessionId,
 }) {
   const [loading, setLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -58,11 +58,10 @@ function PaymentTransferButton({
     try {
       // 토큰으로 사용자 타입 판별
       const token = localStorage.getItem("access_token");
-      const isGuest = isTokenExpired(token); // true이면 비회원, false이면 회원
+      const isGuest = !token || isTokenExpired(token); // 토큰이 없거나 만료되면 비회원
 
       if (isGuest) {
-        console.log("guestId 생성 및 업데이트");
-        await updateGuestId(reservationId, reserverInfos);
+        console.log("비회원 예매를 시작합니다.");
         userType = "GUEST";
       } else {
         console.log("회원 예매를 시작합니다.");
@@ -97,7 +96,8 @@ function PaymentTransferButton({
                 savedMileage: savedMileage || 0,
                 reserverInfos: reserverInfos,
                 ticketId: ticketId,
-                quantity: quantity
+                quantity: quantity,
+                sessionId: sessionId
               });
 
               console.log("imp_uid:", rsp.imp_uid);

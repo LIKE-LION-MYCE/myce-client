@@ -111,6 +111,7 @@ const PricingInfo = ({ type }) => {
       }];
     }
   };
+
   const title = type === "expo" ? "박람회 요금제 안내" : "광고 요금제 안내";
 
   return (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./ReservationDetailPage.module.css";
 import settingStyles from "../../../expo-admin/pages/setting/Setting.module.css";
 import QRModal from "../qrModal/QRModal";
@@ -8,6 +9,7 @@ import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
 
 const ReservationDetailPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -40,7 +42,7 @@ const ReservationDetailPage = () => {
       setEditMembers(data.reserverInfos || []);
     } catch (err) {
       console.error('예약 상세 조회 실패:', err);
-      setError('예약 정보를 불러오는데 실패했습니다.');
+      setError(t('reservationDetail.loadError'));
       setReservationData(null);
     } finally {
       setLoading(false);
@@ -80,12 +82,12 @@ const ReservationDetailPage = () => {
       }));
       
       setIsEditMode(false);
-      alert('참여 인원 정보가 성공적으로 업데이트되었습니다.');
+      alert(t('reservationDetail.updateSuccess'));
       
     } catch (err) {
       console.error('참여 인원 업데이트 실패:', err);
-      setError('참여 인원 정보 업데이트에 실패했습니다.');
-      alert('업데이트에 실패했습니다. 다시 시도해주세요.');
+      setError(t('reservationDetail.updateError'));
+      alert(t('reservationDetail.updateFailAlert'));
     } finally {
       setLoading(false);
     }
@@ -124,7 +126,7 @@ const ReservationDetailPage = () => {
   // 상세보기 버튼 클릭 시
   const handleQrOpen = (qrUrl, reserver) => {
     if (!isExpoActive()) {
-      alert('박람회 기간이 아닙니다.');
+      alert(t('reservationDetail.expoNotActive'));
       return;
     }
     setQrImgUrl(qrUrl);
@@ -151,22 +153,22 @@ const ReservationDetailPage = () => {
     return `${startTime} ~ ${endTime}`;
   };
 
-  // 티켓 타입 한글 변환
+  // 티켓 타입 번역 변환
   const formatTicketType = (ticketType) => {
     const typeMap = {
-      'GENERAL': '일반',
-      'EARLY_BIRD': '얼리버드'
+      'GENERAL': t('reservationDetail.ticketTypes.general'),
+      'EARLY_BIRD': t('reservationDetail.ticketTypes.earlyBird')
     };
     return typeMap[ticketType] || ticketType;
   };
 
-  // 결제 방법 한글 변환
+  // 결제 방법 번역 변환
   const formatPaymentMethod = (method) => {
     const methodMap = {
-      'CARD': '카드',
-      'BANK_TRANSFER': '계좌이체',
-      'VIRTUAL_ACCOUNT': '가상계좌',
-      'SIMPLE_PAY': '간편결제'
+      'CARD': t('reservationDetail.paymentMethods.card'),
+      'BANK_TRANSFER': t('reservationDetail.paymentMethods.bankTransfer'),
+      'VIRTUAL_ACCOUNT': t('reservationDetail.paymentMethods.virtualAccount'),
+      'SIMPLE_PAY': t('reservationDetail.paymentMethods.simplePay')
     };
     return methodMap[method] || method;
   };
@@ -175,8 +177,8 @@ const ReservationDetailPage = () => {
     return (
       <div className={styles.wrapper}>
         <div className={styles.mainBox}>
-          <h2 className={styles.pageTitle}>예약 확인</h2>
-          <div className={styles.loading}>로딩 중...</div>
+          <h2 className={styles.pageTitle}>{t('reservationDetail.title')}</h2>
+          <div className={styles.loading}>{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -186,8 +188,8 @@ const ReservationDetailPage = () => {
     return (
       <div className={styles.wrapper}>
         <div className={styles.mainBox}>
-          <h2 className={styles.pageTitle}>예약 확인</h2>
-          <div className={styles.error}>{error || '예약 정보를 찾을 수 없습니다.'}</div>
+          <h2 className={styles.pageTitle}>{t('reservationDetail.title')}</h2>
+          <div className={styles.error}>{error || t('reservationDetail.notFound')}</div>
         </div>
       </div>
     );
@@ -201,9 +203,9 @@ const ReservationDetailPage = () => {
   // 상태 라벨 매핑
   const getStatusLabel = (status) => {
     const statusMap = {
-      'CONFIRMED': '예약 확정',
-      'CANCELLED': '예약 취소',
-      'CONFIRMED_PENDING': '결제 대기'
+      'CONFIRMED': t('reservationDetail.statusLabels.confirmed'),
+      'CANCELLED': t('reservationDetail.statusLabels.cancelled'),
+      'CONFIRMED_PENDING': t('reservationDetail.statusLabels.pending')
     };
     return statusMap[status] || status;
   };
@@ -223,7 +225,7 @@ const ReservationDetailPage = () => {
       <div className={styles.container}>
         <div className={styles.mainContent}>
         <div className={styles.titleSection}>
-          <h2 className={styles.pageTitle}>예약 확인</h2>
+          <h2 className={styles.pageTitle}>{t('reservationDetail.title')}</h2>
           {reservationInfo?.status && (
             <span className={`${settingStyles.badge} ${settingStyles[getStatusBadgeClass(reservationInfo.status)]} ${styles.statusBadge}`}>
               {getStatusLabel(reservationInfo.status)}
@@ -235,7 +237,7 @@ const ReservationDetailPage = () => {
           {/* 상단 전체 - 참여 행사 정보 */}
           <section className={`${styles.gridSection} ${styles.fullWidthTop}`}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.subTitle}>참여 행사 정보</h3>
+              <h3 className={styles.subTitle}>{t('reservationDetail.eventInfo')}</h3>
             </div>
             <div className={styles.expoBox}>
               <img 
@@ -267,18 +269,18 @@ const ReservationDetailPage = () => {
           {/* 중단 전체 - 참여 인원 */}
           <section className={`${styles.gridSection} ${styles.fullWidthMiddle}`}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.subTitle}>참여 인원</h3>
+              <h3 className={styles.subTitle}>{t('reservationDetail.participants')}</h3>
               {!isEditMode ? (
                 <button className={styles.editBtn} onClick={handleEdit}>
-                  편집
+                  {t('reservationDetail.edit')}
                 </button>
               ) : (
                 <div className={styles.editActionGroup}>
                   <button className={styles.saveBtn} onClick={handleSave}>
-                    저장
+                    {t('reservationDetail.save')}
                   </button>
                   <button className={styles.cancelBtn} onClick={handleCancel}>
-                    취소
+                    {t('reservationDetail.cancel')}
                   </button>
                 </div>
               )}
@@ -286,12 +288,12 @@ const ReservationDetailPage = () => {
             <table className={styles.memberTable}>
               <thead>
                 <tr>
-                  <th>이름</th>
-                  <th>예매번호</th>
-                  <th>성별</th>
-                  <th>전화번호</th>
-                  <th>이메일</th>
-                  <th>QR 확인</th>
+                  <th>{t('reservationDetail.table.name')}</th>
+                  <th>{t('reservationDetail.table.reservationNumber')}</th>
+                  <th>{t('reservationDetail.table.gender')}</th>
+                  <th>{t('reservationDetail.table.phone')}</th>
+                  <th>{t('reservationDetail.table.email')}</th>
+                  <th>{t('reservationDetail.table.qrCheck')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -321,12 +323,12 @@ const ReservationDetailPage = () => {
                           className={styles.input}
                           style={{ width: "70px" }}
                         >
-                          <option value="">선택</option>
-                          <option value="MALE">남자</option>
-                          <option value="FEMALE">여자</option>
+                          <option value="">{t('reservationDetail.table.select')}</option>
+                          <option value="MALE">{t('reservationDetail.table.male')}</option>
+                          <option value="FEMALE">{t('reservationDetail.table.female')}</option>
                         </select>
                       ) : (
-                        member.gender === 'MALE' ? '남자' : member.gender === 'FEMALE' ? '여자' : 'N/A'
+                        member.gender === 'MALE' ? t('reservationDetail.table.male') : member.gender === 'FEMALE' ? t('reservationDetail.table.female') : 'N/A'
                       )}
                     </td>
                     <td>
@@ -362,7 +364,7 @@ const ReservationDetailPage = () => {
                         onClick={() => handleQrOpen(member.qrCodeUrl, member)}
                         disabled={!isExpoActive() || isCancelled}
                       >
-                        {isCancelled ? '취소됨' : isExpoActive() ? '상세보기' : '기간 외'}
+                        {isCancelled ? t('reservationDetail.table.cancelled') : isExpoActive() ? t('reservationDetail.table.detail') : t('reservationDetail.table.outOfPeriod')}
                       </button>
                     </td>
                   </tr>
@@ -373,36 +375,36 @@ const ReservationDetailPage = () => {
 
           {/* 좌하단 - 예매 정보 */}
           <section className={styles.gridSection}>
-            <h3 className={styles.subTitle}>예매 정보</h3>
+            <h3 className={styles.subTitle}>{t('reservationDetail.reservationInfo')}</h3>
             <div className={styles.reservationInfoGrid}>
               <div>
-                <div className={styles.label}>예매일</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.reservationDate')}</div>
                 <div>{formatDate(reservationInfo.createdAt)}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 이름</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.ticketName')}</div>
                 <div>{reservationInfo.ticketName || 'N/A'}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 타입</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.ticketType')}</div>
                 <div>{formatTicketType(reservationInfo.ticketType) || 'N/A'}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 장수</div>
-                <div>{reservationInfo.quantity}매</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.ticketCount')}</div>
+                <div>{reservationInfo.quantity}{t('reservation.ticketUnit')}</div>
               </div>
               <div>
-                <div className={styles.label}>단가</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.unitPrice')}</div>
                 <div>{reservationInfo.ticketPrice?.toLocaleString()}원</div>
               </div>
               <div>
-                <div className={styles.label}>서비스 수수료</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.serviceFee')}</div>
                 <div className={styles.feeText}>
                   {(reservationInfo.quantity * 1000).toLocaleString()}원
                 </div>
               </div>
               <div>
-                <div className={styles.label}>예상 결제금액</div>
+                <div className={styles.label}>{t('reservationDetail.reservationFields.expectedPayment')}</div>
                 <div className={styles.totalPriceText}>
                   {((reservationInfo.ticketPrice * reservationInfo.quantity) + (reservationInfo.quantity * 1000)).toLocaleString()}원
                 </div>
@@ -413,34 +415,34 @@ const ReservationDetailPage = () => {
           {/* 우하단 - 결제 정보 */}
           {reservationData?.paymentInfo && (
             <section className={styles.gridSection}>
-              <h3 className={styles.subTitle}>결제 정보</h3>
+              <h3 className={styles.subTitle}>{t('reservationDetail.paymentInfo')}</h3>
               <div className={styles.paymentGrid}>
                 <div>
-                  <div className={styles.label}>결제방법</div>
+                  <div className={styles.label}>{t('reservationDetail.paymentFields.paymentMethod')}</div>
                   <div>{formatPaymentMethod(reservationData.paymentInfo.paymentMethod)}</div>
                 </div>
                 {reservationData.paymentInfo.paymentDetail && (
                   <div>
-                    <div className={styles.label}>결제수단</div>
+                    <div className={styles.label}>{t('reservationDetail.paymentFields.paymentDetail')}</div>
                     <div>{reservationData.paymentInfo.paymentDetail}</div>
                   </div>
                 )}
                 <div>
-                  <div className={styles.label}>총 결제금액</div>
+                  <div className={styles.label}>{t('reservationDetail.paymentFields.totalAmount')}</div>
                   <div className={styles.priceText}>
                     {reservationData.paymentInfo.totalAmount?.toLocaleString()}원
                   </div>
                 </div>
                 {reservationData.paymentInfo.usedMileage > 0 && (
                   <div>
-                    <div className={styles.label}>사용 마일리지</div>
+                    <div className={styles.label}>{t('reservationDetail.paymentFields.usedMileage')}</div>
                     <div className={styles.mileageUsed}>
                       -{reservationData.paymentInfo.usedMileage?.toLocaleString()}P
                     </div>
                   </div>
                 )}
                 <div>
-                  <div className={styles.label}>적립 마일리지</div>
+                  <div className={styles.label}>{t('reservationDetail.paymentFields.savedMileage')}</div>
                   <div className={styles.mileageEarned}>
                     +{reservationData.paymentInfo.savedMileage?.toLocaleString()}P
                   </div>
@@ -448,20 +450,20 @@ const ReservationDetailPage = () => {
                 {reservationData.paymentInfo.memberGrade && (
                   <>
                     <div>
-                      <div className={styles.label}>회원등급</div>
+                      <div className={styles.label}>{t('reservationDetail.paymentFields.memberGrade')}</div>
                       <div className={styles.gradeText}>
                         {reservationData.paymentInfo.memberGrade}
                       </div>
                     </div>
                     <div>
-                      <div className={styles.label}>적립률</div>
+                      <div className={styles.label}>{t('reservationDetail.paymentFields.mileageRate')}</div>
                       <div>{(reservationData.paymentInfo.mileageRate * 100).toFixed(1)}%</div>
                     </div>
                   </>
                 )}
                 {reservationData.paymentInfo.paidAt && (
                   <div>
-                    <div className={styles.label}>결제일시</div>
+                    <div className={styles.label}>{t('reservationDetail.paymentFields.paidAt')}</div>
                     <div>{new Date(reservationData.paymentInfo.paidAt).toLocaleString('ko-KR')}</div>
                   </div>
                 )}
@@ -479,7 +481,7 @@ const ReservationDetailPage = () => {
             onClick={() => setIsRefundModalOpen(true)}
             disabled={isCancelled}
           >
-            {isCancelled ? '취소 완료' : '예약 취소'}
+            {isCancelled ? t('reservationDetail.cancelCompleted') : t('reservationDetail.cancelButton')}
           </button>
         </div>
       </div>

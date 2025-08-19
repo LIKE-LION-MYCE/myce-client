@@ -18,6 +18,7 @@ export default function ExpoPayment() {
   const [searchParams] = useSearchParams();
 
   const reservationId = searchParams.get("preReservationId");
+  const sessionId = searchParams.get("sessionId");
 
   const [paymentSummary, setPaymentSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ export default function ExpoPayment() {
       }
       try {
         setLoading(true);
-        const data = await getPaymentSummary(reservationId);
+        const data = await getPaymentSummary(reservationId, sessionId);
         setPaymentSummary(data);
         setError(null);
       } catch (err) {
@@ -52,7 +53,7 @@ export default function ExpoPayment() {
       }
     };
     fetchPaymentSummary();
-  }, [reservationId]);
+  }, [reservationId, sessionId]);
 
   const [expoInfo, setExpoInfo] = useState(null);
   const [personalInfo, setPersonalInfo] = useState([]);
@@ -519,6 +520,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
             <PaymentVirtualBankButton
               targetType={TARGET_TYPE}
@@ -530,6 +532,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
             <PaymentTransferButton
               targetType={TARGET_TYPE}
@@ -541,6 +544,7 @@ export default function ExpoPayment() {
               usedMileage={appliedMileage}
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
+              sessionId={sessionId}
             />
           </div>
         </div>
