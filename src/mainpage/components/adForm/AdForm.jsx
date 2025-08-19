@@ -9,6 +9,7 @@ import UsageGuidelines from "../../../common/components/usageGuidelines/UsageGui
 import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
+import EstimatedAdCostModal from "../../../common/components/estimatedAdCostModal/EstimatedAdCostModal";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   // 서버에 보낼 정보만 유지
@@ -35,6 +36,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   const [isPeriodValid, setIsPeriodValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false); // 폼 유효성 상태
   const [errorMessage, setErrorMessage] = useState(""); // 유효성 검사 오류 메시지 상태
+  const [showEstimatedCostModal, setShowEstimatedCostModal] = useState(false); // 예상 이용료 모달 상태
   const navigate = useNavigate();
 
   // 주소 선택 시 호출
@@ -44,6 +46,26 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
       address: data.address, // 도로명 주소로 저장
     }));
     setIsPostcodeOpen(false);
+  };
+
+  // 예상 이용료 모달 열기
+  const handleEstimatedCostClick = () => {
+    if (!formData.adPositionId) {
+      alert("광고 위치를 먼저 선택해주세요.");
+      return;
+    }
+    
+    if (!formData.displayStartDate || !formData.displayEndDate) {
+      alert("광고 기간을 먼저 입력해주세요.");
+      return;
+    }
+    
+    setShowEstimatedCostModal(true);
+  };
+
+  // 예상 이용료 모달 닫기
+  const handleCloseEstimatedCostModal = () => {
+    setShowEstimatedCostModal(false);
   };
 
   const checkPeriodValidity = async () => {
@@ -265,6 +287,54 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           </select>
         </div>
 
+        {/* 광고 기간 */}
+        <div className={styles["form-group"]}>
+          <label>광고 기간</label>
+          <div className={styles["date-range-group"]}>
+            <input
+              type="date"
+              name="displayStartDate"
+              value={formData.displayStartDate}
+              onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
+              className={styles["input-field"]}
+              required
+            />
+            <input
+              type="date"
+              name="displayEndDate"
+              value={formData.displayEndDate}
+              onChange={handleChange}
+              min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
+              className={styles["input-field"]}
+              required
+            />
+          </div>
+          {errorMessage && <p className={styles["error-message"]}>{errorMessage}</p>}
+          
+          {/* 예상 이용료 확인 버튼 */}
+          <div className={styles["estimated-cost-section"]}>
+            <button
+              type="button"
+              className={`${styles["estimated-cost-button"]} ${
+                !formData.adPositionId || !formData.displayStartDate || !formData.displayEndDate 
+                  ? styles["disabled"] 
+                  : ""
+              }`}
+              onClick={handleEstimatedCostClick}
+              disabled={!formData.adPositionId || !formData.displayStartDate || !formData.displayEndDate}
+            >
+              💰 예상 이용료 확인
+            </button>
+            <p className={styles["estimated-cost-description"]}>
+              {!formData.adPositionId || !formData.displayStartDate || !formData.displayEndDate
+                ? "광고 위치와 기간을 먼저 선택해주세요."
+                : "선택하신 위치와 기간을 바탕으로 예상 이용료를 확인할 수 있습니다."
+              }
+            </p>
+          </div>
+        </div>
+
         {/* 광고 이미지 (S3 업로드) */}
         <div className={styles["form-group"]}>
           <label>광고 배너 이미지</label>
@@ -312,32 +382,6 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
             className={styles["textarea-field"]}
             required
           ></textarea>
-        </div>
-
-        {/* 광고 기간 */}
-        <div className={styles["form-group"]}>
-          <label>광고 기간</label>
-          <div className={styles["date-range-group"]}>
-            <input
-              type="date"
-              name="displayStartDate"
-              value={formData.displayStartDate}
-              onChange={handleChange}
-              min={new Date().toISOString().split('T')[0]}
-              className={styles["input-field"]}
-              required
-            />
-            <input
-              type="date"
-              name="displayEndDate"
-              value={formData.displayEndDate}
-              onChange={handleChange}
-              min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
-              className={styles["input-field"]}
-              required
-            />
-          </div>
-          {errorMessage && <p className={styles["error-message"]}>{errorMessage}</p>}
         </div>
 
         {/* 회사 정보 */}
@@ -467,6 +511,15 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
           </button>
         </div>
       </form>
+
+      {/* 예상 이용료 모달 */}
+      <EstimatedAdCostModal
+        isOpen={showEstimatedCostModal}
+        onClose={handleCloseEstimatedCostModal}
+        displayStartDate={formData.displayStartDate}
+        displayEndDate={formData.displayEndDate}
+        selectedPositionId={formData.adPositionId}
+      />
     </div>
   );
 };

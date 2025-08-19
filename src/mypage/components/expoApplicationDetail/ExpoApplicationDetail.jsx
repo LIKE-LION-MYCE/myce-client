@@ -175,152 +175,155 @@ function ExpoApplicationDetail({
         </div>
       </div>
       
-      {/* 폼 상세 내용 */}
-      <div className={styles.topRow}>
-        <div className={styles.profileWrapper}>
+      {/* 박람회 기본 정보 박스 */}
+      <div className={styles.infoBoxContainer}>
+        <div className={styles.posterSection}>
           <img
             src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
             alt="박람회 포스터"
-            className={styles.profileImage}
+            className={styles.posterImage}
           />
         </div>
-        <div className={styles.formGrid}>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>박람회 이름</label>
-            <input className={styles.inputField} value={form.name || ''} readOnly />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>박람회 위치</label>
-            <input className={styles.inputField} value={form.location || ''} readOnly />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>최대 수용 인원</label>
-            <input
-              type="number"
-              className={styles.inputField}
-              value={form.capacity || ''}
-              readOnly
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>개최 기간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.startDate || ''} ~ ${form.endDate || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>운영 시간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.startTime || ''} ~ ${form.endTime || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>게시 기간</label>
-            <input 
-              className={styles.inputField} 
-              value={`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`} 
-              readOnly 
-            />
-          </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
-            <div className={styles.toggleWrapper}>
-              <ToggleSwitch checked={isPremium} disabled />
+        <div className={styles.infoSection}>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>박람회 이름</label>
+              <div className={styles.infoValue}>{form.name || '정보 없음'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>박람회 위치</label>
+              <div className={styles.infoValue}>{form.location || '정보 없음'}</div>
             </div>
           </div>
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>카테고리</label>
-            <div className={styles.badgeRow}>
-              <div className={styles.badge}>{form.category || '카테고리 없음'}</div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>최대 수용 인원</label>
+              <div className={styles.infoValue}>{form.capacity ? `${form.capacity}명` : '정보 없음'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>개최 기간</label>
+              <div className={styles.infoValue}>{`${form.startDate || ''} ~ ${form.endDate || ''}`}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>운영 시간</label>
+              <div className={styles.infoValue}>{`${form.startTime || ''} ~ ${form.endTime || ''}`}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>게시 기간</label>
+              <div className={styles.infoValue}>{`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>프리미엄 노출</label>
+              <div className={styles.toggleWrapper}>
+                <ToggleSwitch checked={isPremium} disabled />
+              </div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>카테고리</label>
+              <div className={styles.badgeRow}>
+                {form.category && form.category !== '카테고리 없음' ? (
+                  form.category.split(', ').map((cat, index) => (
+                    <div key={index} className={styles.badge}>{cat.trim()}</div>
+                  ))
+                ) : (
+                  <div className={styles.badge}>카테고리 없음</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* 회사 정보 추가 */}
-      <div className={`${styles.infoGrid} ${styles.full}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>회사명</label>
-          <input className={styles.inputField} value={form.companyName || ''} readOnly />
+        
+        {/* 회사 정보 섹션 */}
+        <div className={styles.additionalInfoSection}>
+          <h3 className={styles.sectionTitle}>회사 정보</h3>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>회사명</label>
+              <div className={styles.infoValue}>{form.companyName || '정보 없음'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>회사 주소</label>
+              <div className={styles.infoValue}>{form.companyAddress || '정보 없음'}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>사업자 번호</label>
+              <div className={styles.infoValue}>{form.businessRegistrationNumber || '정보 없음'}</div>
+            </div>
+          </div>
+          
+          <h4 className={styles.subSectionTitle}>대표자 정보</h4>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>대표명</label>
+              <div className={styles.infoValue}>{form.ceoName || '정보 없음'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>대표자 연락처</label>
+              <div className={styles.infoValue}>{form.ceoContact || '정보 없음'}</div>
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoItem}>
+              <label className={styles.infoLabel}>대표자 이메일</label>
+              <div className={styles.infoValue}>{form.ceoEmail || '정보 없음'}</div>
+            </div>
+          </div>
         </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>회사 주소</label>
-          <input className={styles.inputField} value={form.companyAddress || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>사업자 번호</label>
-          <input className={styles.inputField} value={form.businessRegistrationNumber || ''} readOnly />
-        </div>
-      </div>
 
-      {/* 대표자 정보 추가 */}
-      <div className={`${styles.infoGrid} ${styles.full}`}>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표명</label>
-          <input className={styles.inputField} value={form.ceoName || ''} readOnly />
+        {/* 상세 설명 섹션 */}
+        <div className={styles.additionalInfoSection}>
+          <h3 className={styles.sectionTitle}>상세 설명</h3>
+          <div className={styles.descriptionContent}>
+            {form.description || '상세 설명이 없습니다.'}
+          </div>
         </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표자 연락처</label>
-          <input className={styles.inputField} value={form.ceoContact || ''} readOnly />
-        </div>
-        <div className={styles.infoGroup}>
-          <label className={styles.label}>대표자 이메일</label>
-          <input className={styles.inputField} value={form.ceoEmail || ''} readOnly />
-        </div>
-      </div>
-
-
-      <div className={`${styles.formGroup} ${styles.full}`}>
-        <label className={styles.label}>설명</label>
-        <div className={styles.descriptionText}>
-          {form.description || '상세 설명이 없습니다.'}
-        </div>
-      </div>
-      
-      
-      {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
-      {canViewTicketInfo(status) && (
-        <div className={`${styles.formGroup} ${styles.full}`}>
-          <label className={styles.label}>티켓 정보</label>
-          <div className={styles.ticketContainer}>
-            {form.tickets && form.tickets.length > 0 ? (
-              <>
-                {/* 티켓 헤더 */}
-                <div className={styles.ticketHeader}>
-                  <div className={styles.ticketHeaderInfo}>
-                    <span className={styles.headerLabel}>티켓명</span>
-                    <span className={styles.headerLabel}>가격</span>
-                    <span className={styles.headerLabel}>판매개수</span>
-                    <span className={styles.headerLabel}>종류</span>
-                  </div>
-                </div>
-                {/* 티켓 목록 */}
-                {form.tickets.map((ticket, index) => (
-                  <div key={index} className={styles.ticketRow}>
-                    <div className={styles.ticketInfo}>
-                      <span className={styles.ticketName}>{ticket.name}</span>
-                      <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
-                      <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
-                      <span className={styles.ticketType}>
-                        {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
-                      </span>
+        
+        {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
+        {canViewTicketInfo(status) && (
+          <div className={styles.additionalInfoSection}>
+            <h3 className={styles.sectionTitle}>티켓 정보</h3>
+            <div className={styles.ticketContainer}>
+              {form.tickets && form.tickets.length > 0 ? (
+                <>
+                  {/* 티켓 헤더 */}
+                  <div className={styles.ticketHeader}>
+                    <div className={styles.ticketHeaderInfo}>
+                      <span className={styles.headerLabel}>티켓명</span>
+                      <span className={styles.headerLabel}>가격</span>
+                      <span className={styles.headerLabel}>판매개수</span>
+                      <span className={styles.headerLabel}>종류</span>
                     </div>
                   </div>
-                ))}
-              </>
-            ) : (
-              <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
-            )}
+                  {/* 티켓 목록 */}
+                  {form.tickets.map((ticket, index) => (
+                    <div key={index} className={styles.ticketRow}>
+                      <div className={styles.ticketInfo}>
+                        <span className={styles.ticketName}>{ticket.name}</span>
+                        <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
+                        <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
+                        <span className={styles.ticketType}>
+                          {ticket.type === 'EARLY_BIRD' ? '얼리버드' : '일반'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className={styles.noTickets}>등록된 티켓이 없습니다.</div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       
-      {/* 하단 버튼 영역 - 환불 신청 버튼을 아래로 이동 */}
-      <div className={styles.bottomButtonArea}>
+      {/* 하단 버튼 영역 - 박스 스타일로 변경 */}
+      <div className={styles.buttonBoxContainer}>
         {renderButtons()}
       </div>
       
