@@ -28,13 +28,8 @@ const LanguageSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t('common.selectLanguage', '언어 선택')}
       >
-        <IoLanguage size={18} />
-        <span className={styles.languageFlag}>{currentLanguage.flag}</span>
-        <span className={styles.languageName}>{currentLanguage.code.toUpperCase()}</span>
-        <IoChevronDown 
-          size={14} 
-          className={`${styles.chevron} ${isOpen ? styles.open : ''}`}
-        />
+        <span className={styles.globeIcon}>🌐</span>
+        <span className={styles.languageName}>국제화</span>
       </button>
       
       {isOpen && (
