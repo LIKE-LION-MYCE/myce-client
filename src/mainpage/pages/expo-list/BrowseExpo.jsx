@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./BrowseExpo.module.css";
 import SidebarFilters from "../../components/sidebar/SidebarFilters";
 import ExpoCardList from "../../components/expocard/ExpoCardList";
@@ -28,9 +29,22 @@ export default function BrowseExpo() {
     }
   };
 
-  if (categoriesLoading) return <div>Loading categories...</div>;
+  if (categoriesLoading)
+    return (
+      <div>
+        {t("homepage.browseExpo.loadingCategories", "Loading categories...")}
+      </div>
+    );
   if (categoriesError)
-    return <div>Error loading categories: {categoriesError.message}</div>;
+    return (
+      <div>
+        {t(
+          "homepage.browseExpo.errorCategories",
+          "Error loading categories: {{message}}",
+          { message: categoriesError.message }
+        )}
+      </div>
+    );
 
   return (
     <div className={styles.container}>

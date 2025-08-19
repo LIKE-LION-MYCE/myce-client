@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./NonMemberReservationDetailPage.module.css";
 import QRModal from "../../../mypage/components/qrModal/QRModal";
 
 const NonMemberReservationDetailPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,7 +24,7 @@ const NonMemberReservationDetailPage = () => {
       setReservationData(location.state.reservationData);
     } else {
       // 데이터가 없으면 이전 페이지로 이동
-      setError('예매 정보를 찾을 수 없습니다.');
+      setError(t('nonmember.reservationDetail.errors.notFound', '예매 정보를 찾을 수 없습니다.'));
       setTimeout(() => {
         navigate('/guest-reservation');
       }, 2000);
@@ -34,12 +36,12 @@ const NonMemberReservationDetailPage = () => {
     console.log('QR 버튼 클릭:', { qrUrl, reserver, isActive: isExpoActive() });
     
     if (!isExpoActive()) {
-      alert('박람회 기간이 아닙니다.');
+      alert(t('nonmember.reservationDetail.alerts.notExpoActive', '박람회 기간이 아닙니다.'));
       return;
     }
     
     if (!qrUrl) {
-      alert('QR 코드가 아직 생성되지 않았습니다.');
+      alert(t('nonmember.reservationDetail.alerts.qrNotGenerated', 'QR 코드가 아직 생성되지 않았습니다.'));
       return;
     }
     
@@ -50,7 +52,7 @@ const NonMemberReservationDetailPage = () => {
 
   // 날짜 포맷팅
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('nonmember.reservationDetail.common.notAvailable', 'N/A');
     const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR');
   };
@@ -79,7 +81,7 @@ const NonMemberReservationDetailPage = () => {
 
   // 날짜 범위 포맷팅
   const formatDateRange = (startDate, endDate) => {
-    if (!startDate || !endDate) return 'N/A';
+    if (!startDate || !endDate) return t('nonmember.reservationDetail.common.notAvailable', 'N/A');
     const start = formatDate(startDate);
     const end = formatDate(endDate);
     return `${start} ~ ${end}`;
@@ -87,15 +89,15 @@ const NonMemberReservationDetailPage = () => {
 
   // 시간 범위 포맷팅
   const formatTimeRange = (startTime, endTime) => {
-    if (!startTime || !endTime) return 'N/A';
+    if (!startTime || !endTime) return t('nonmember.reservationDetail.common.notAvailable', 'N/A');
     return `${startTime} ~ ${endTime}`;
   };
 
   // 티켓 타입 한글 변환
   const formatTicketType = (ticketType) => {
     const typeMap = {
-      'GENERAL': '일반',
-      'EARLY_BIRD': '얼리버드'
+      'GENERAL': t('nonmember.reservationDetail.ticketTypes.general', '일반'),
+      'EARLY_BIRD': t('nonmember.reservationDetail.ticketTypes.earlyBird', '얼리버드')
     };
     return typeMap[ticketType] || ticketType;
   };
@@ -103,10 +105,10 @@ const NonMemberReservationDetailPage = () => {
   // 결제 방법 한글 변환
   const formatPaymentMethod = (method) => {
     const methodMap = {
-      'CARD': '카드',
-      'BANK_TRANSFER': '계좌이체',
-      'VIRTUAL_ACCOUNT': '가상계좌',
-      'SIMPLE_PAY': '간편결제'
+      'CARD': t('nonmember.reservationDetail.paymentMethods.card', '카드'),
+      'BANK_TRANSFER': t('nonmember.reservationDetail.paymentMethods.bankTransfer', '계좌이체'),
+      'VIRTUAL_ACCOUNT': t('nonmember.reservationDetail.paymentMethods.virtualAccount', '가상계좌'),
+      'SIMPLE_PAY': t('nonmember.reservationDetail.paymentMethods.simplePay', '간편결제')
     };
     return methodMap[method] || method;
   };
@@ -116,8 +118,8 @@ const NonMemberReservationDetailPage = () => {
       <div className={styles.wrapper}>
         <div className={styles.container}>
           <div className={styles.mainContent}>
-            <h2 className={styles.pageTitle}>예매 정보 확인</h2>
-            <div className={styles.loading}>로딩 중...</div>
+            <h2 className={styles.pageTitle}>{t('nonmember.reservationDetail.title', '예매 정보 확인')}</h2>
+            <div className={styles.loading}>{t('nonmember.reservationDetail.loading', '로딩 중...')}</div>
           </div>
         </div>
       </div>
@@ -129,8 +131,8 @@ const NonMemberReservationDetailPage = () => {
       <div className={styles.wrapper}>
         <div className={styles.container}>
           <div className={styles.mainContent}>
-            <h2 className={styles.pageTitle}>예매 정보 확인</h2>
-            <div className={styles.error}>{error || '예매 정보를 찾을 수 없습니다.'}</div>
+            <h2 className={styles.pageTitle}>{t('nonmember.reservationDetail.title', '예매 정보 확인')}</h2>
+            <div className={styles.error}>{error || t('nonmember.reservationDetail.errors.notFound', '예매 정보를 찾을 수 없습니다.')}</div>
           </div>
         </div>
       </div>
@@ -143,30 +145,30 @@ const NonMemberReservationDetailPage = () => {
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <div className={styles.mainContent}>
-          <h2 className={styles.pageTitle}>예매 정보 확인</h2>
+          <h2 className={styles.pageTitle}>{t('nonmember.reservationDetail.title', '예매 정보 확인')}</h2>
           
           <div className={styles.contentGrid}>
           {/* 좌상단 - 박람회 정보 */}
           <section className={styles.gridSection}>
-            <h3 className={styles.subTitle}>박람회 정보</h3>
+            <h3 className={styles.subTitle}>{t('nonmember.reservationDetail.sections.expoInfo', '박람회 정보')}</h3>
             <div className={styles.expoBox}>
               {expoInfo.thumbnailUrl && (
                 <img 
                   src={expoInfo.thumbnailUrl} 
-                  alt="박람회 썸네일" 
+                  alt={t('nonmember.reservationDetail.expoInfo.thumbnailAlt', '박람회 썸네일')} 
                   className={styles.poster} 
                 />
               )}
               <div className={styles.expoDetails}>
                 <h4 className={styles.expoTitle}>{expoInfo.title}</h4>
                 <div className={styles.eventPlace}>
-                  장소: {expoInfo.location} {expoInfo.locationDetail}
+                  {t('nonmember.reservationDetail.expoInfo.location', '장소')}: {expoInfo.location} {expoInfo.locationDetail}
                 </div>
                 <div className={styles.eventDate}>
-                  일정: {formatDateRange(expoInfo.startDate, expoInfo.endDate)}
+                  {t('nonmember.reservationDetail.expoInfo.schedule', '일정')}: {formatDateRange(expoInfo.startDate, expoInfo.endDate)}
                 </div>
                 <div className={styles.eventDate}>
-                  시간: {formatTimeRange(expoInfo.startTime, expoInfo.endTime)}
+                  {t('nonmember.reservationDetail.expoInfo.time', '시간')}: {formatTimeRange(expoInfo.startTime, expoInfo.endTime)}
                 </div>
               </div>
             </div>
@@ -174,16 +176,16 @@ const NonMemberReservationDetailPage = () => {
 
           {/* 우상단 - 티켓 사용 안내 */}
           <section className={styles.gridSection}>
-            <h3 className={styles.subTitle}>티켓 사용 안내</h3>
+            <h3 className={styles.subTitle}>{t('nonmember.reservationDetail.sections.ticketGuide', '티켓 사용 안내')}</h3>
             <div className={styles.ticketGuide}>
               <div>
-                <div className={styles.label}>사용 가능 기간</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.ticketGuide.usagePeriod', '사용 가능 기간')}</div>
                 <div>{formatDateRange(reservationInfo.ticketUseStartDate, reservationInfo.ticketUseEndDate)}</div>
               </div>
               <div className={styles.guideText}>
-                • 입장 시 QR코드를 제시해주세요.<br/>
-                • 티켓 사용 기간을 확인해주세요.<br/>
-                • 분실 시 재발급이 어려우니 주의하세요.
+                • {t('nonmember.reservationDetail.ticketGuide.qrCodeInfo', '입장 시 QR코드를 제시해주세요.')}<br/>
+                • {t('nonmember.reservationDetail.ticketGuide.checkPeriod', '티켓 사용 기간을 확인해주세요.')}<br/>
+                • {t('nonmember.reservationDetail.ticketGuide.lossWarning', '분실 시 재발급이 어려우니 주의하세요.')}
               </div>
             </div>
           </section>
@@ -191,34 +193,34 @@ const NonMemberReservationDetailPage = () => {
           {/* 중단 전체 - 참여 인원 */}
           <section className={`${styles.gridSection} ${styles.fullWidthMiddle}`}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.subTitle}>참여 인원</h3>
+              <h3 className={styles.subTitle}>{t('nonmember.reservationDetail.sections.participants', '참여 인원')}</h3>
             </div>
             <table className={styles.memberTable}>
               <thead>
                 <tr>
-                  <th>이름</th>
-                  <th>예매번호</th>
-                  <th>성별</th>
-                  <th>전화번호</th>
-                  <th>이메일</th>
-                  <th>QR코드</th>
+                  <th>{t('nonmember.reservationDetail.participants.name', '이름')}</th>
+                  <th>{t('nonmember.reservationDetail.participants.reservationNumber', '예매번호')}</th>
+                  <th>{t('nonmember.reservationDetail.participants.gender', '성별')}</th>
+                  <th>{t('nonmember.reservationDetail.participants.phone', '전화번호')}</th>
+                  <th>{t('nonmember.reservationDetail.participants.email', '이메일')}</th>
+                  <th>{t('nonmember.reservationDetail.participants.qrCode', 'QR코드')}</th>
                 </tr>
               </thead>
               <tbody>
                 {reserverInfos?.map((member, idx) => (
                   <tr key={idx}>
-                    <td>{member.name || 'N/A'}</td>
-                    <td>{reservationInfo.reservationCode || 'N/A'}</td>
-                    <td>{member.gender === 'MALE' ? '남자' : member.gender === 'FEMALE' ? '여자' : 'N/A'}</td>
-                    <td>{member.phone || 'N/A'}</td>
-                    <td>{member.email || 'N/A'}</td>
+                    <td>{member.name || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</td>
+                    <td>{reservationInfo.reservationCode || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</td>
+                    <td>{member.gender === 'MALE' ? t('nonmember.reservationDetail.genders.male', '남자') : member.gender === 'FEMALE' ? t('nonmember.reservationDetail.genders.female', '여자') : t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</td>
+                    <td>{member.phone || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</td>
+                    <td>{member.email || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</td>
                     <td>
                       <button
                         className={`${styles.qrBtn} ${!isExpoActive() ? styles.qrBtnDisabled : ''}`}
                         onClick={() => handleQrOpen(member.qrCodeUrl, member)}
                         disabled={!isExpoActive()}
                       >
-                        {isExpoActive() ? '상세보기' : '기간 외'}
+                        {isExpoActive() ? t('nonmember.reservationDetail.qr.viewDetails', '상세보기') : t('nonmember.reservationDetail.qr.outOfPeriod', '기간 외')}
                       </button>
                     </td>
                   </tr>
@@ -229,38 +231,38 @@ const NonMemberReservationDetailPage = () => {
 
           {/* 좌하단 - 예매 정보 */}
           <section className={styles.gridSection}>
-            <h3 className={styles.subTitle}>예매 정보</h3>
+            <h3 className={styles.subTitle}>{t('nonmember.reservationDetail.sections.reservationInfo', '예매 정보')}</h3>
             <div className={styles.reservationInfoGrid}>
               <div>
-                <div className={styles.label}>예매일</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.reservationDate', '예매일')}</div>
                 <div>{formatDate(reservationInfo.createdAt)}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 이름</div>
-                <div>{reservationInfo.ticketName || 'N/A'}</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.ticketName', '티켓 이름')}</div>
+                <div>{reservationInfo.ticketName || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 타입</div>
-                <div>{formatTicketType(reservationInfo.ticketType) || 'N/A'}</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.ticketType', '티켓 타입')}</div>
+                <div>{formatTicketType(reservationInfo.ticketType) || t('nonmember.reservationDetail.common.notAvailable', 'N/A')}</div>
               </div>
               <div>
-                <div className={styles.label}>티켓 장수</div>
-                <div>{reservationInfo.quantity}매</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.quantity', '티켓 장수')}</div>
+                <div>{reservationInfo.quantity}{t('nonmember.reservationDetail.reservationInfo.ticketUnit', '매')}</div>
               </div>
               <div>
-                <div className={styles.label}>단가</div>
-                <div>{reservationInfo.ticketPrice?.toLocaleString()}원</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.unitPrice', '단가')}</div>
+                <div>{reservationInfo.ticketPrice?.toLocaleString()}{t('nonmember.reservationDetail.reservationInfo.currency', '원')}</div>
               </div>
               <div>
-                <div className={styles.label}>서비스 수수료</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.serviceFee', '서비스 수수료')}</div>
                 <div className={styles.feeText}>
-                  {(reservationInfo.quantity * 1000).toLocaleString()}원
+                  {(reservationInfo.quantity * 1000).toLocaleString()}{t('nonmember.reservationDetail.reservationInfo.currency', '원')}
                 </div>
               </div>
               <div>
-                <div className={styles.label}>총 결제금액</div>
+                <div className={styles.label}>{t('nonmember.reservationDetail.reservationInfo.totalAmount', '총 결제금액')}</div>
                 <div className={styles.totalPriceText}>
-                  {((reservationInfo.ticketPrice * reservationInfo.quantity) + (reservationInfo.quantity * 1000)).toLocaleString()}원
+                  {((reservationInfo.ticketPrice * reservationInfo.quantity) + (reservationInfo.quantity * 1000)).toLocaleString()}{t('nonmember.reservationDetail.reservationInfo.currency', '원')}
                 </div>
               </div>
             </div>
@@ -269,27 +271,27 @@ const NonMemberReservationDetailPage = () => {
           {/* 우하단 - 결제 정보 */}
           {reservationData?.paymentInfo && (
             <section className={styles.gridSection}>
-              <h3 className={styles.subTitle}>결제 정보</h3>
+              <h3 className={styles.subTitle}>{t('nonmember.reservationDetail.sections.paymentInfo', '결제 정보')}</h3>
               <div className={styles.paymentGrid}>
                 <div>
-                  <div className={styles.label}>결제방법</div>
+                  <div className={styles.label}>{t('nonmember.reservationDetail.paymentInfo.paymentMethod', '결제방법')}</div>
                   <div>{formatPaymentMethod(reservationData.paymentInfo.paymentMethod)}</div>
                 </div>
                 {reservationData.paymentInfo.paymentDetail && (
                   <div>
-                    <div className={styles.label}>결제수단</div>
+                    <div className={styles.label}>{t('nonmember.reservationDetail.paymentInfo.paymentDetail', '결제수단')}</div>
                     <div>{reservationData.paymentInfo.paymentDetail}</div>
                   </div>
                 )}
                 <div>
-                  <div className={styles.label}>총 결제금액</div>
+                  <div className={styles.label}>{t('nonmember.reservationDetail.paymentInfo.totalAmount', '총 결제금액')}</div>
                   <div className={styles.priceText}>
-                    {reservationData.paymentInfo.totalAmount?.toLocaleString()}원
+                    {reservationData.paymentInfo.totalAmount?.toLocaleString()}{t('nonmember.reservationDetail.reservationInfo.currency', '원')}
                   </div>
                 </div>
                 {reservationData.paymentInfo.paidAt && (
                   <div>
-                    <div className={styles.label}>결제일시</div>
+                    <div className={styles.label}>{t('nonmember.reservationDetail.paymentInfo.paidAt', '결제일시')}</div>
                     <div>{new Date(reservationData.paymentInfo.paidAt).toLocaleString('ko-KR')}</div>
                   </div>
                 )}

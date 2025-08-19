@@ -215,6 +215,7 @@ const joinRoom = async (roomId) => {
       
       const unreadHandler = unreadCountHandlers.get(roomId);
       if (unreadHandler && data.type === 'read_status_update') {
+        console.log("📡 WebSocketService: Forwarding read_status_update to handler:", data);
         unreadHandler(data);
       }
       
