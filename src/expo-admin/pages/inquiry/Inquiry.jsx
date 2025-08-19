@@ -65,8 +65,8 @@ function Inquiry() {
       setError(null);
       
       // Use expo-specific endpoint for this expo's chat rooms
-      const response = await instance.get(`/chats/rooms/expo/${expoId}`);
-      const roomsData = response.data.chatRooms || [];
+      const response = await instance.get(`/expos/${expoId}/chats/rooms`);
+      const roomsData = response.data[0]?.chatRooms || response.data || [];
       
       setChatRooms(roomsData);
       
@@ -336,14 +336,18 @@ function Inquiry() {
             if (readerType === 'USER') {
               try {
                 // Immediate state update: remove badges from my admin messages
-                const updatedCount = messages.filter(msg => {
+                const myAdminMessages = messages.filter(msg => {
                   const isMyMsg = msg.senderType === 'ADMIN' && msg.senderId === currentUserId;
                   return isMyMsg && msg.unreadCount > 0;
-                }).length;
+                });
+                const updatedCount = myAdminMessages.length;
                 
-                if (updatedCount > 0) {
-                  console.log(`🔄 Removing ${updatedCount} unread badges from my admin messages (USER read them)`);
-                  
+                if (messages.length === 0) {
+                  // 메시지가 아직 로드되지 않았다면 즉시 로드
+                  if (selectedRoom && selectedRoom.roomCode) {
+                    loadInitialMessages(selectedRoom.roomCode).catch(console.error);
+                  }
+                } else if (updatedCount > 0) {
                   // Update messages state to remove unread badges
                   messages.forEach(msg => {
                     const isMyMsg = msg.senderType === 'ADMIN' && msg.senderId === currentUserId;
@@ -351,18 +355,11 @@ function Inquiry() {
                       updateMessage(msg.id, { unreadCount: 0 });
                     }
                   });
-                  
-                  // Background refetch for accuracy after 1.5 seconds
-                  setTimeout(async () => {
-                    try {
-                      if (selectedRoom && selectedRoom.roomCode) {
-                        console.log('🔄 Admin background refetch for accuracy after read status update');
-                        await loadInitialMessages(selectedRoom.roomCode);
-                      }
-                    } catch (error) {
-                      console.error('Admin background refetch failed:', error);
-                    }
-                  }, 1500);
+                } else {
+                  // 업데이트할 메시지가 없어도 안전을 위해 새로고침
+                  if (selectedRoom && selectedRoom.roomCode) {
+                    loadInitialMessages(selectedRoom.roomCode).catch(console.error);
+                  }
                 }
               } catch (error) {
                 console.error('Failed to update admin read status, falling back to immediate refetch:', error);
