@@ -77,7 +77,7 @@ const BusinessNumberInput = ({
   // 전체 사업자번호 조합 및 부모에게 전달
   const updateFullBusinessNumber = (p1, p2, p3) => {
     const cleanFullNumber = p1 && p2 && p3 ? `${p1}-${p2}-${p3}` : '';
-    
+
     // 에러 검사
     if (showError && (p1 || p2 || p3)) {
       setTouched(true);
@@ -102,12 +102,12 @@ const BusinessNumberInput = ({
   // 첫 번째 칸 입력 핸들러 (3자리)
   const handlePart1Change = (e) => {
     if (disabled) return;
-    
+
     const value = e.target.value.replace(/\D/g, ''); // 숫자만 허용
     if (value.length <= 3) {
       setPart1(value);
       updateFullBusinessNumber(value, part2, part3);
-      
+
       // 3자리 입력 완료 시 다음 칸으로 포커스
       if (value.length === 3) {
         input2Ref.current?.focus();
@@ -118,12 +118,12 @@ const BusinessNumberInput = ({
   // 두 번째 칸 입력 핸들러 (2자리)
   const handlePart2Change = (e) => {
     if (disabled) return;
-    
+
     const value = e.target.value.replace(/\D/g, '');
     if (value.length <= 2) {
       setPart2(value);
       updateFullBusinessNumber(part1, value, part3);
-      
+
       // 2자리 입력 완료 시 다음 칸으로 포커스
       if (value.length === 2) {
         input3Ref.current?.focus();
@@ -134,7 +134,7 @@ const BusinessNumberInput = ({
   // 세 번째 칸 입력 핸들러 (5자리)
   const handlePart3Change = (e) => {
     if (disabled) return;
-    
+
     const value = e.target.value.replace(/\D/g, '');
     if (value.length <= 5) {
       setPart3(value);
@@ -162,45 +162,47 @@ const BusinessNumberInput = ({
 
   return (
     <div className={styles.businessNumberWrapper}>
-      <input
-        ref={input1Ref}
-        type="tel"
-        value={part1}
-        onChange={handlePart1Change}
-        onKeyDown={(e) => handleKeyDown(e, part1, null)}
-        onBlur={handleBlur}
-        placeholder="123"
-        disabled={disabled}
-        className={`${styles.businessPartInput} ${styles.part1} ${hasError ? styles.error : ''}`}
-        maxLength="3"
-        {...otherProps}
-      />
-      <span className={styles.separator}>-</span>
-      <input
-        ref={input2Ref}
-        type="tel"
-        value={part2}
-        onChange={handlePart2Change}
-        onKeyDown={(e) => handleKeyDown(e, part2, input1Ref)}
-        onBlur={handleBlur}
-        placeholder="12"
-        disabled={disabled}
-        className={`${styles.businessPartInput} ${styles.part2} ${hasError ? styles.error : ''}`}
-        maxLength="2"
-      />
-      <span className={styles.separator}>-</span>
-      <input
-        ref={input3Ref}
-        type="tel"
-        value={part3}
-        onChange={handlePart3Change}
-        onKeyDown={(e) => handleKeyDown(e, part3, input2Ref)}
-        onBlur={handleBlur}
-        placeholder="12345"
-        disabled={disabled}
-        className={`${styles.businessPartInput} ${styles.part3} ${hasError ? styles.error : ''}`}
-        maxLength="5"
-      />
+      <div className={styles.businessInputRow}>
+        <input
+          ref={input1Ref}
+          type="tel"
+          value={part1}
+          onChange={handlePart1Change}
+          onKeyDown={(e) => handleKeyDown(e, part1, null)}
+          onBlur={handleBlur}
+          placeholder="123"
+          disabled={disabled}
+          className={`${styles.businessPartInput} ${styles.part1} ${hasError ? styles.error : ''}`}
+          maxLength="3"
+          {...otherProps}
+        />
+        <span className={styles.separator}>-</span>
+        <input
+          ref={input2Ref}
+          type="tel"
+          value={part2}
+          onChange={handlePart2Change}
+          onKeyDown={(e) => handleKeyDown(e, part2, input1Ref)}
+          onBlur={handleBlur}
+          placeholder="12"
+          disabled={disabled}
+          className={`${styles.businessPartInput} ${styles.part2} ${hasError ? styles.error : ''}`}
+          maxLength="2"
+        />
+        <span className={styles.separator}>-</span>
+        <input
+          ref={input3Ref}
+          type="tel"
+          value={part3}
+          onChange={handlePart3Change}
+          onKeyDown={(e) => handleKeyDown(e, part3, input2Ref)}
+          onBlur={handleBlur}
+          placeholder="12345"
+          disabled={disabled}
+          className={`${styles.businessPartInput} ${styles.part3} ${hasError ? styles.error : ''}`}
+          maxLength="5"
+        />
+      </div>
       {hasError && (
         <span className={styles.errorMessage}>
           {error}
