@@ -53,38 +53,45 @@
 }
 
 .statusBadge {
+  margin-left : 10px;
+  margin-bottom : 10px;
+  padding: 4px 10px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: 400;
-  padding: 4px 10px 6px 10px;
-  border-radius: 20px;
-  color: white;
+  font-weight: 500;
+  display: inline-block;
   white-space: nowrap;
-  margin-bottom: 7px;
 }
 
 /* 임의 색상 */
 .승인_대기 {
-  background-color: #f0ad4e;
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .승인_완료 {
-  background-color: #5cb85c;
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
 }
 
 .승인_거절 {
-  background-color: #d9534f;
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .취소_완료 {
-  background-color: #6c757d;
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .정산_대기 {
-  background-color: #f0ad4e;
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .정산_완료 {
-  background-color: #5cb85c;
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
 }
 
 .buttonGroup {
