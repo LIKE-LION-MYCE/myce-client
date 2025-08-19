@@ -62,6 +62,10 @@ const logout = async () => {
     return result;
 }
 
+const changePassword = async ({currentPassword, newPassword, confirmPassword}) => {
+    return await instance.put('/members/password', {currentPassword, newPassword, confirmPassword});
+}
+
 
 const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -84,6 +88,7 @@ export {
     checkDuplicateLoginId,
     findId,
     findPassword,
+    changePassword,
     googleLogin,
     kakaoLogin,
     VERIFICATION_TYPE
