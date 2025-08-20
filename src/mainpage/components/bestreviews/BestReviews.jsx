@@ -134,7 +134,7 @@ const BestReviews = ({
       <div className={styles.buttonContainer}>
         <button className={styles.moreButton} onClick={handleRefresh}>
           <span className={styles.refreshIcon}>↻</span>
-{t("homepage.bestReviews.refreshButton", "관람후기 새로 보기")}
+          {t("homepage.bestReviews.refreshButton", "관람후기 새로 보기")}
         </button>
       </div>
     </div>
