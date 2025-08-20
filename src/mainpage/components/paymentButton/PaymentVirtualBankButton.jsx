@@ -83,13 +83,13 @@ function PaymentVirtualBankButton({
             setIsVerifying(true);
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
-              // 새로운 통합 API 사용 (Redis 기반)
+              // 새로운 통합 API 사용
               const res = await instance.post("/payment/reservation/verify-vbank", {
                 impUid: rsp.imp_uid,
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
                 targetType: targetType,
-                targetId: 0, // Redis 임시 ID 사용
+                targetId: 0, // 임시 ID 사용
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
                 reserverInfos: reserverInfos,
@@ -125,7 +125,7 @@ function PaymentVirtualBankButton({
               
               const errorMessage = err.response?.data?.message || err.message || "알 수 없는 오류";
               alert(`결제 처리 중 오류가 발생했습니다: ${errorMessage}`);
-              // Redis에서 사전 예약 데이터 정리는 백엔드에서 처리
+              // 사전 예약 데이터 정리는 백엔드에서 처리
             }
           } else {
             console.log("결제가 취소되었습니다.");
