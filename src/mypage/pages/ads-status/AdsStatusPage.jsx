@@ -40,20 +40,22 @@ const AdsStatusPage = () => {
     );
   }
 
-  function AdsTable({ data, onRowClick }) {
+  function AdsTable({ data, onRowClick, currentPage }) {
     return (
-      <div className={styles.tableWrapper}>
+      <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>
             <tr>
+              <th>No.</th>
               <th>{t('mypageGeneral.adsStatus.table.title')}</th>
-              <th>{t('mypageGeneral.adsStatus.table.location')}</th>
-              <th>{t('mypageGeneral.adsStatus.table.period')}</th>
-              <th>{t('mypageGeneral.adsStatus.table.status')}</th>
+              <th>신청일</th>
+              <th>게시 기간</th>
+              <th>게시 장소</th>
+              <th>상태</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((ad) => (
+            {data.map((ad, index) => (
               <tr
                 key={ad.advertisementId}
                 className={styles.clickableRow}
@@ -62,9 +64,11 @@ const AdsStatusPage = () => {
                 style={{ cursor: "pointer" }}
                 aria-label={t('mypageGeneral.adsStatus.aria.goToDetail', { title: ad.title })}
               >
+                <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                 <td>{ad.title}</td>
-                <td>{ad.adPositionName}</td>
+                <td>{formatDate(ad.createdAt || ad.displayStartDate)}</td>
                 <td>{formatDate(ad.displayStartDate)} ~ {formatDate(ad.displayEndDate)}</td>
+                <td>{ad.adPositionName}</td>
                 <td>
                   <StatusBadge status={ad.status} />
                 </td>
@@ -166,12 +170,7 @@ const AdsStatusPage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.title')}</h2>
-        <div className={styles.summary}>
-          {t('mypageGeneral.adsStatus.totalAds', { count: totalElements })}
-        </div>
-      </div>
+      <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.title')}</h2>
 
       {advertisements.length === 0 ? (
         <div className={styles.emptyState}>
@@ -179,7 +178,7 @@ const AdsStatusPage = () => {
         </div>
       ) : (
         <>
-          <AdsTable data={advertisements} onRowClick={handleRowClick} />
+          <AdsTable data={advertisements} onRowClick={handleRowClick} currentPage={currentPage} />
           <div className={styles.pagination}>
             {renderPaginationButtons()}
           </div>
