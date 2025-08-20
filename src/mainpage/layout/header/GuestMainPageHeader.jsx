@@ -3,11 +3,31 @@ import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import { useTranslation } from 'react-i18next';
 import styles from './GuestMainPageHeader.module.css';
 import LanguageSelector from '../../../common/components/language/LanguageSelector';
+import { useExpoData } from '../../../hooks/useExpoData';
 
 const GuestMainPageHeader = () => {
   const { t } = useTranslation();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [activeMenu, setActiveMenu] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const { expos, setFilters } = useExpoData();
+
+  // 외부 클릭 시 검색 결과 닫기
+  useEffect(() => {
+    const handleDocumentClick = () => {
+      setShowSearchResults(false);
+    };
+
+    if (showSearchResults) {
+      document.addEventListener('click', handleDocumentClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [showSearchResults]);
 
   const menuItems = [
     { name: t('nav.home'), path: '/' },
@@ -42,6 +62,42 @@ const GuestMainPageHeader = () => {
     navigate('/guest-reservation'); // 예매 확인 페이지로 이동
   };
 
+  // 검색 기능
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (query.trim().length > 0) {
+      // 검색어가 있을 때 필터링된 결과 표시
+      const filtered = expos.filter(expo => 
+        expo.title.toLowerCase().includes(query.toLowerCase()) ||
+        expo.location.toLowerCase().includes(query.toLowerCase()) ||
+        (expo.categories && expo.categories.some(cat => 
+          cat.toLowerCase().includes(query.toLowerCase())
+        ))
+      );
+      setSearchResults(filtered);
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // 검색 결과 페이지로 이동하면서 검색어 전달
+      navigate(`/expo-list?search=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchResultClick = (expo) => {
+    navigate(`/detail/${expo.expoId || expo.id}`);
+    setShowSearchResults(false);
+    setSearchQuery('');
+  };
+
   return (
     <header className={styles.header}>
       {/* 상단 줄 */}
@@ -49,17 +105,60 @@ const GuestMainPageHeader = () => {
         <div className={styles.topLeft} onClick={goToHome}>
           <img src="/myce_logo.png" alt="MYCE" className={styles.logo} />
         </div>
-        <div className={styles.searchContainer}>
-          <input 
-            type="text" 
-            placeholder="박람회를 검색해보세요" 
-            className={styles.searchInput}
-          />
-          <button className={styles.searchButton}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+        <div className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0 ? styles.withDropdown : ''}`} onClick={(e) => e.stopPropagation()}>
+          <form onSubmit={handleSearchSubmit}>
+            <input 
+              type="text" 
+              placeholder="박람회를 검색해보세요" 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+            />
+            <button type="submit" className={styles.searchButton}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </form>
+          {showSearchResults && searchResults.length > 0 && (
+            <div className={styles.searchResultsDropdown}>
+              {searchResults.slice(0, 5).map((expo) => (
+                <div 
+                  key={expo.expoId || expo.id} 
+                  className={styles.searchResultItem}
+                  onClick={() => handleSearchResultClick(expo)}
+                >
+                  <div className={styles.searchResultImage}>
+                    <img 
+                      src={expo.thumbnailUrl || '/default-expo-image.jpg'} 
+                      alt={expo.title}
+                      onError={(e) => {
+                        e.target.src = '/default-expo-image.jpg';
+                      }}
+                    />
+                  </div>
+                  <div className={styles.searchResultContent}>
+                    <div className={styles.searchResultTitle}>{expo.title}</div>
+                    <div className={styles.searchResultLocation}>{expo.location}</div>
+                    <div className={styles.searchResultDate}>
+                      {expo.startDate && expo.endDate && 
+                        `${new Date(expo.startDate).toLocaleDateString('ko-KR')} ~ ${new Date(expo.endDate).toLocaleDateString('ko-KR')}`
+                      }
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {searchResults.length > 5 && (
+                <div 
+                  className={styles.searchResultMore}
+                  onClick={() => handleSearchSubmit({ preventDefault: () => {} })}
+                >
+                  더 많은 결과 보기
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className={styles.promoContainer}>
           <img 
