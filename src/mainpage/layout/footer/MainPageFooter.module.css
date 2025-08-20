@@ -1,7 +1,7 @@
 /* src/mainpage/layout/footer/MainPageFooter.module.css */
 .footer {
   background-color: #ffffff;
-  padding: 3rem 0 2rem;
+  padding: 0 0 2rem;
   font-size: 0.875rem;
   color: #6b7280;
   border: none !important;
@@ -28,10 +28,6 @@
 .topSection {
   display: flex;
   justify-content: flex-start;
-  gap: 4rem;
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #e9ecef;
 }
 
 .column {

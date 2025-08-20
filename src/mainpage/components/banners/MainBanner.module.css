@@ -4,7 +4,7 @@
   position: relative;
   margin-top: -80px; /* 헤더 높이만큼 위로 올려서 헤더 아래 숨김 */
   padding-top: 80px; /* 헤더 공간 확보 */
-  margin-bottom: 120px;
+  margin-bottom: 3rem;
 }
 
 /* 대안 1: 큰 화면용 높이 조정 */
