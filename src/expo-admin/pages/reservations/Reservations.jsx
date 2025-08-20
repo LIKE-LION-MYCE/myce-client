@@ -29,6 +29,7 @@ function Reservations() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // ✅ 추가: 성공 토스트 메시지
 
   // 필터/페이징
   const [currentTab, setCurrentTab] = useState('전체');
@@ -126,7 +127,7 @@ function Reservations() {
 
   // 수기 입장 처리
   const handleEntranceBadgeClick = async (row) => {
-    if (!window.confirm('수기 입장 처리를 진행하시겠습니까?')) return;
+    if (!window.confirm('입장 처리를 진행하시겠습니까?')) return;
     try {
       const updated = await updateReserverQrCodeForManualCheckIn(expoId, row.reserverId);
       if (updated && updated.reserverId) {
@@ -139,7 +140,7 @@ function Reservations() {
       } else {
         await fetchReservations();
       }
-      triggerSuccessToast();
+      triggerSuccessToast('입장 처리가 완료되었습니다.'); // ✅ 수정
     } catch (e) {
       triggerToastFail(e.message);
     }
@@ -255,7 +256,7 @@ function Reservations() {
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-      triggerSuccessToast();
+      triggerSuccessToast('엑셀 다운로드가 완료되었습니다.'); // ✅ 수정
     } catch (e) {
       triggerToastFail(e.message || '다운로드에 실패했습니다.');
     } finally {
@@ -269,7 +270,6 @@ function Reservations() {
   const handleReissueQR = async () => {
     if (isReissuing) return;
 
-    // 선택 없음 가드
     if (selectedCount === 0) {
       triggerToastFail('선택된 예약자가 없습니다.');
       return;
@@ -277,13 +277,11 @@ function Reservations() {
 
     // “입장 전”만 재발급 허용
     if (selectAllMatching) {
-      // 전체 선택 모드에서는 현재 탭이 반드시 “입장 전”이어야 함
       if (currentTab !== '입장 전') {
         triggerToastFail('입장 전 상태만 QR 재발급이 가능합니다.');
         return;
       }
     } else {
-      // 부분 선택 모드: 선택된 행들에 “입장 전” 아닌 상태가 하나라도 있으면 차단
       const hasInvalid = Array.from(selectedIds).some((id) => {
         const info = selectedMap.get(id);
         return !info || info.entranceStatus !== '입장 전';
@@ -294,7 +292,6 @@ function Reservations() {
       }
     }
 
-    // 선택된 reserverId만 숫자로 추림
     const selectedReserverIds = Array.from(selectedIds)
       .map((id) => Number(id))
       .filter((n) => !Number.isNaN(n));
@@ -317,7 +314,6 @@ function Reservations() {
       const updatedList = await reissueReserverQrCode(expoId, dto, params);
 
       if (Array.isArray(updatedList) && updatedList.length > 0) {
-        // 화면 데이터 갱신
         setPageInfo((prev) => ({
           ...prev,
           content: (prev.content || []).map((row) => {
@@ -326,7 +322,6 @@ function Reservations() {
           }),
         }));
 
-        // 재발급 완료 행 하이라이트/칩 표시 (3초)
         const ids = new Set(updatedList.map((u) => u.reserverId));
         setReissuedIds(ids);
         setTimeout(() => setReissuedIds(new Set()), 3000);
@@ -335,7 +330,7 @@ function Reservations() {
       }
 
       clearSelection();
-      triggerSuccessToast();
+      triggerSuccessToast('QR 재발급이 성공적으로 완료되었습니다.'); // ✅ 수정
     } catch (e) {
       triggerToastFail(e.message || 'QR 재발급에 실패했습니다.');
     } finally {
@@ -351,15 +346,16 @@ function Reservations() {
     setCurrentTab(selectedTab);
   };
 
-  // 토스트
-  const triggerSuccessToast = () => {
+  // ✅ 토스트
+  const triggerSuccessToast = (msg) => {
+    setSuccessMessage(msg || '처리가 완료되었습니다.');
     setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 3000);
+    setTimeout(() => setShowSuccessToast(false), 2000);
   };
-  const triggerToastFail = (message) => {
-    setFailMessage(message);
+  const triggerToastFail = (msg) => {
+    setFailMessage(msg || '요청을 처리하지 못했습니다.');
     setShowFailToast(true);
-    setTimeout(() => setShowFailToast(false), 3000);
+    setTimeout(() => setShowFailToast(false), 2000);
   };
 
   // 컨트롤러로 넘길 현재 필터 파라미터 (모달/재발급 공통)
@@ -510,7 +506,7 @@ function Reservations() {
         ticketName={ticketNameParam}
       />
 
-      {showSuccessToast && <ToastSuccess />}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}{/* ✅ 메시지 전달 */}
       {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );

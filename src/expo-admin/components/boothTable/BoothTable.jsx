@@ -21,19 +21,17 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
-  const [errors, setErrors] = useState({}); // ✅ 인라인 에러 상태
+  const [errors, setErrors] = useState({}); // 인라인 에러 상태
 
   // 전화번호 자동 하이픈
   const formatPhoneNumber = (value) => {
     const onlyNums = String(value || '').replace(/[^0-9]/g, '');
-    // 02로 시작 (서울)
     if (onlyNums.startsWith('02')) {
       if (onlyNums.length <= 2) return onlyNums;
       if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
       if (onlyNums.length <= 9) return onlyNums.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
       return onlyNums.replace(/(\d{2})(\d{4})(\d{4}).*/, '$1-$2-$3');
     }
-    // 기타 (010, 031 등)
     if (onlyNums.length <= 3) return onlyNums;
     if (onlyNums.length <= 6) return onlyNums.replace(/(\d{3})(\d{1,3})/, '$1-$2');
     if (onlyNums.length <= 10) return onlyNums.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
@@ -59,7 +57,6 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
   const handleEditClick = (e, row) => {
     e.stopPropagation();
     setEditingId(row.id);
-    // ✅ 편집 폼 기본값 안전하게
     setEditForm({
       id: row.id,
       mainImageUrl: row.mainImageUrl || '',
@@ -70,7 +67,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
       contactPhone: row.contactPhone || '',
       contactEmail: row.contactEmail || '',
       isPremium: !!row.isPremium,
-      displayRank: row.displayRank ?? '', // 빈 문자열 허용
+      displayRank: row.displayRank ?? '',
     });
     setErrors({});
   };
@@ -80,14 +77,13 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
     const { name, value } = e.target;
     setEditForm((prev) => {
       if (!prev) return prev;
-      // 연락처는 자동 하이픈
       if (name === 'contactPhone') {
         const formatted = formatPhoneNumber(value);
         return { ...prev, contactPhone: formatted };
       }
       return { ...prev, [name]: value };
     });
-    setErrors((prev) => ({ ...prev, [name]: '' })); // 해당 필드 에러 제거
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handlePremiumToggle = (value) => {
@@ -96,7 +92,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
       return {
         ...prev,
         isPremium: value,
-        displayRank: value ? prev.displayRank || '' : '', // 꺼지면 순위 초기화
+        displayRank: value ? prev.displayRank || '' : '',
       };
     });
     setErrors((prev) => ({ ...prev, isPremium: '', displayRank: '' }));
@@ -110,40 +106,32 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
     console.error('이미지 업로드 실패:', error);
   };
 
-  // ✅ BoothSettingForm과 동일한 유효성 검사
+  // 유효성 검사 (BoothSettingForm과 동일)
   const runValidation = () => {
     const e = {};
     const f = editForm || {};
     const isBlank = (v) => !v || String(v).trim() === '';
 
-    // boothNumber: required, max 30
     if (isBlank(f.boothNumber)) e.boothNumber = '부스 위치(번호)는 필수입니다.';
     else if (f.boothNumber.length > 30) e.boothNumber = '부스 위치(번호)는 30자 이하여야 합니다.';
 
-    // name: required, max 100
     if (isBlank(f.name)) e.name = '부스명은 필수입니다.';
     else if (f.name.length > 100) e.name = '부스명은 100자 이하여야 합니다.';
 
-    // description: required
     if (isBlank(f.description)) e.description = '부스 설명은 필수입니다.';
 
-    // contactName: required, max 30
     if (isBlank(f.contactName)) e.contactName = '담당자명은 필수입니다.';
     else if (f.contactName.length > 30) e.contactName = '담당자명은 30자 이하여야 합니다.';
 
-    // contactPhone: required, pattern
     const phoneRe = /^\d{2,3}-\d{3,4}-\d{4}$/;
     if (isBlank(f.contactPhone)) e.contactPhone = '담당자 연락처는 필수입니다.';
-    else if (!phoneRe.test(f.contactPhone))
-      e.contactPhone = '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)';
+    else if (!phoneRe.test(f.contactPhone)) e.contactPhone = '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)';
 
-    // contactEmail: required, email, max 100
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (isBlank(f.contactEmail)) e.contactEmail = '담당자 이메일은 필수입니다.';
     else if (!emailRe.test(f.contactEmail)) e.contactEmail = '유효한 이메일 형식이 아닙니다.';
     else if (f.contactEmail.length > 100) e.contactEmail = '담당자 이메일은 100자 이하여야 합니다.';
 
-    // displayRank: 프리미엄 + isPremium=true일 때 필수 숫자
     if (expoIsPremium && f.isPremium) {
       if (isBlank(f.displayRank)) e.displayRank = '노출 순위를 선택해주세요.';
       else if (!/^\d+$/.test(String(f.displayRank))) e.displayRank = '노출 순위는 숫자여야 합니다.';
@@ -156,7 +144,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
     e.stopPropagation();
     const v = runValidation();
     setErrors(v);
-    if (Object.values(v).some(Boolean)) return; // 에러 있으면 저장 중단
+    if (Object.values(v).some(Boolean)) return;
 
     const payload = {
       ...editForm,
@@ -239,19 +227,25 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {boothFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
                                       <input
                                         type="text"
                                         name={key}
                                         value={editForm[key] || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
+                                        // ★ placeholder: BoothSettingForm과 동일
+                                        placeholder={
+                                          key === 'name'
+                                            ? '부스명 입력'
+                                            : key === 'boothNumber'
+                                            ? '예: A-01'
+                                            : key === 'description'
+                                            ? '부스 설명 입력'
+                                            : ''
+                                        }
                                       />
-                                      {errors[key] && (
-                                        <p className={styles.errorText}>{errors[key]}</p>
-                                      )}
+                                      {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
                                     </div>
                                   ))}
 
@@ -296,19 +290,26 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {contactFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
                                       <input
                                         name={key}
                                         value={editForm[key] || ''}
                                         onChange={handleChange}
                                         className={styles.inputField}
                                         inputMode={key === 'contactPhone' ? 'numeric' : undefined}
+                                        type={key === 'contactEmail' ? 'email' : 'text'}
+                                        // ★ placeholder: BoothSettingForm과 동일
+                                        placeholder={
+                                          key === 'contactName'
+                                            ? '담당자명을 입력'
+                                            : key === 'contactPhone'
+                                            ? '예 : 010-1234-5678'
+                                            : key === 'contactEmail'
+                                            ? '예 : xample@company.com'
+                                            : ''
+                                        }
                                       />
-                                      {errors[key] && (
-                                        <p className={styles.errorText}>{errors[key]}</p>
-                                      )}
+                                      {errors[key] && <p className={styles.errorText}>{errors[key]}</p>}
                                     </div>
                                   ))}
                                 </div>
@@ -342,9 +343,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {boothFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
                                       <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
@@ -354,11 +353,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                       <div className={styles.detailItem}>
                                         <div className={styles.detailLabel}>프리미엄 부스</div>
                                         <div className={styles.booleanGroup}>
-                                          <ToggleSwitch
-                                            checked={!!row.isPremium}
-                                            onChange={() => {}}
-                                            disabled
-                                          />
+                                          <ToggleSwitch checked={!!row.isPremium} onChange={() => {}} disabled />
                                         </div>
                                       </div>
                                       {row.isPremium && (
@@ -376,9 +371,7 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                                 <div className={styles.column}>
                                   {contactFields.map((key) => (
                                     <div key={key} className={styles.detailItem}>
-                                      <div className={styles.detailLabel}>
-                                        {fieldLabelMap[key]}
-                                      </div>
+                                      <div className={styles.detailLabel}>{fieldLabelMap[key]}</div>
                                       <div className={styles.valueText}>{row[key] || '-'}</div>
                                     </div>
                                   ))}
@@ -389,18 +382,12 @@ function BoothTable({ data = [], onDelete, onUpdate, expoIsPremium, hasPermissio
                             <div className={styles.buttonDivider} />
                             <div className={styles.buttonGroupBottom}>
                               {hasPermission && onUpdate && (
-                                <button
-                                  className={styles.editBtn}
-                                  onClick={(e) => handleEditClick(e, row)}
-                                >
+                                <button className={styles.editBtn} onClick={(e) => handleEditClick(e, row)}>
                                   수정
                                 </button>
                               )}
                               {hasPermission && onDelete && (
-                                <button
-                                  className={styles.deleteBtn}
-                                  onClick={(e) => handleDeleteClick(e, row.id)}
-                                >
+                                <button className={styles.deleteBtn} onClick={(e) => handleDeleteClick(e, row.id)}>
                                   삭제
                                 </button>
                               )}

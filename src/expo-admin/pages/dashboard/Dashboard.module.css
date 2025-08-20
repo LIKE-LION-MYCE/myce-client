@@ -1,3 +1,53 @@
+/* === 공통 버튼 (OperatorSection 톤과 동일) === */
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btnPrimary {
+  background-color: #1e2a38;
+  color: #fff;
+}
+.btnPrimary:hover {
+  background-color: #2c3e50;
+}
+
+.btnGhost {
+  background-color: #ececec;
+  color: #1e2a38;
+}
+.btnGhost:hover {
+  background-color: #d9d9d9;
+}
+
+.btnOutline {
+  background-color: transparent;
+  color: #1e2a38;
+  border: 1px solid #1e2a38;
+}
+.btnOutline:hover {
+  background-color: #f6f8fa;
+}
+
+.btnSm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+/* 아이콘 */
+.refreshIcon {
+  font-size: 16px;
+}
+
 /* --- Layout Container --- */
 .dashboardContainer {
   display: flex;
@@ -19,12 +69,10 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .section:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
 }
 
 .sectionTitle {
@@ -33,7 +81,7 @@
   margin-bottom: 8px;
 }
 
-/* --- Card Group (예약/결제 등) --- */
+/* --- Card Group --- */
 .cardGroup {
   display: flex;
   gap: 16px;
@@ -70,7 +118,7 @@
   color: #111;
 }
 
-/* --- 차트 묶음 (성별 / 연령대 등) --- */
+/* --- 차트 묶음 --- */
 .chartGrid {
   display: flex;
   gap: 16px;
@@ -78,157 +126,6 @@
   justify-content: space-between;
 }
 
-.chartImage {
-  flex: 1 1 48%;
-  border-radius: 8px;
-  background-color: #fafafa;
-  min-width: 280px;
-}
-
-.fullWidthImage {
-  width: 100%;
-  margin-top: 20px;
-  border-radius: 8px;
-  background-color: #fafafa;
-}
-
-/* --- 체크인 박스 --- */
-.checkinContainer {
-  background-color: transparent;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-.checkinContainer:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-.checkinHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.refreshBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #555;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding : 5px 7px;
-}
-
-.refreshBtn:hover {
-  color: #222;
-  background-color: #f1f1f1;
-  border-radius: 6px;
-}
-
-.refreshIcon {
-  font-size: 16px;
-}
-
-.checkinStats {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-  text-align: center;
-}
-
-.checkinRate {
-  text-align: center;
-}
-
-.checkinSub {
-  color: #777;
-  font-size: 12px;
-}
-
-.progressBar {
-  height: 8px;
-  background: #eee;
-  border-radius: 4px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.progressFill {
-  width: 78%;
-  height: 100%;
-  background-color: #111;
-}
-
-.summary {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #333;
-  margin-top: 16px;
-  padding: 0 8px;
-}
-
-/* --- 새로 추가된 스타일 --- */
-
-/* 전체 새로고침 버튼 */
-.globalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.refreshAllBtn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s;
-}
-
-.refreshAllBtn:hover {
-  background-color: #0056b3;
-}
-
-.clearCacheBtn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: background-color 0.2s;
-}
-
-.clearCacheBtn:hover {
-  background-color: #c82333;
-}
-
-/* 섹션 헤더 */
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-/* 차트 컨테이너 */
 .chartContainer {
   flex: 1 1 48%;
   background-color: #fafafa;
@@ -278,124 +175,17 @@
   height: 250px;
 }
 
-/* 테이블 컨테이너 */
-.tableContainer {
-  margin-top: 24px;
-}
-
-.tableTitle {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #333;
-}
-
-/* 로딩 및 에러 상태 */
-.loading {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #666;
-}
-
-.error {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #dc3545;
-}
-
-.retryBtn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 12px;
-  font-size: 14px;
-}
-
-.retryBtn:hover {
-  background-color: #c82333;
-}
-
-/* 데이터 소스 정보 */
-.dataSourceInfo {
-  background-color: #f8f9fa;
-  padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #007bff;
-  margin-top: 32px;
-}
-
-.dataSourceText {
-  font-size: 12px;
-  color: #666;
-  margin: 4px 0;
-}
-
-/* 결제 카드 그룹 확장 */
-.cardGroup {
+/* --- 상단/섹션 헤더 --- */
+.sectionHeader {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-/* 결제 섹션의 카드는 좀 더 작게 */
-.section .cardGroup .card {
-  min-width: 180px;
-  flex: 1 1 180px;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .dashboardContainer {
-    padding: 16px;
-    gap: 32px;
-  }
-  
-  .chartGrid {
-    flex-direction: column;
-  }
-  
-  .chartContainer {
-    min-width: 100%;
-  }
-  
-  .cardGroup {
-    flex-direction: column;
-  }
-  
-  .card {
-    min-width: 100%;
-  }
-}
-
-/* 사용 안내 공지 */
-.noticeInfo {
-  background-color: #f8f9fa;
-  padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #28a745;
-  margin-bottom: 24px;
-}
-
-.noticeText {
-  font-size: 14px;
-  color: #495057;
-  margin: 0;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-.noticeText:last-child {
-  margin-bottom: 0;
-}
-
-/* 날짜 선택 컨트롤 */
-.chartHeader {
+/* 날짜 컨트롤 (공통) */
+.chartHeader,
+.chartTitleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -425,56 +215,186 @@
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.dateApplyBtn {
-  background-color: #28a745;
+/* --- 체크인 박스 --- */
+.checkinContainer {
+  background-color: transparent;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.checkinContainer:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.checkinHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkinStats {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.checkinRate {
+  text-align: center;
+}
+
+.checkinSub {
+  color: #777;
+  font-size: 12px;
+}
+
+.progressBar {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progressFill {
+  width: 78%;
+  height: 100%;
+  background-color: #111;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+  margin-top: 16px;
+  padding: 0 8px;
+}
+
+/* --- 상단 Global Actions --- */
+.globalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* --- 테이블 컨테이너 --- */
+.tableContainer {
+  margin-top: 24px;
+}
+
+.tableTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* --- 로딩/에러 --- */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+.retryBtn {
+  background-color: #dc3545;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+  margin-top: 12px;
   font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+}
+.retryBtn:hover {
+  background-color: #c82333;
 }
 
-.dateApplyBtn:hover {
-  background-color: #218838;
+/* --- 안내/데이터 소스 --- */
+.noticeInfo {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+  margin-bottom: 24px;
 }
 
-.dateResetBtn {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+.noticeText {
   font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  color: #495057;
+  margin: 0;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.noticeText:last-child {
+  margin-bottom: 0;
 }
 
-.dateResetBtn:hover {
-  background-color: #5a6268;
+/* --- 무데이터 메시지 --- */
+.noDataMessage {
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
 }
 
-/* 모바일 반응형 - 날짜 선택기 */
+/* --- 반응형 --- */
 @media (max-width: 768px) {
-  .chartHeader {
+  .dashboardContainer {
+    padding: 16px;
+    gap: 32px;
+  }
+
+  .chartGrid {
+    flex-direction: column;
+  }
+
+  .chartContainer {
+    min-width: 100%;
+  }
+
+  .cardGroup {
+    flex-direction: column;
+  }
+
+  .card {
+    min-width: 100%;
+  }
+
+  .chartHeader,
+  .chartTitleRow {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .dateControls {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .dateInput {
     min-width: 120px;
   }
 }
 
-/* 티켓 테이블 스타일 */
+/* --- 테이블 좌측 정렬 유틸 --- */
 .ticketTableLeft {
   text-align: left !important;
 }
