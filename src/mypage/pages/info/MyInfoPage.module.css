@@ -2,7 +2,6 @@
   width: 100%;
   background: #f9fafb;
   min-height: 100vh;
-  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -18,7 +17,7 @@
 
 .pageTitle {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 1.5rem;
   border-bottom: 2px solid #e5e7eb;
