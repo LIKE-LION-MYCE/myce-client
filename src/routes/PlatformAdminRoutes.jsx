@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import PlatformAdminLayout from '../platform-admin/layout/PlatformAdminLayout';
 import SettlementHistory from '../platform-admin/pages/settlementHistory/SettlementHistory';
 import PlatformInquiry from '../platform-admin/pages/platformInquiry/PlatformInquiry';
-import RoleAdmins from '../platform-admin/pages/roleAdmins/RoleAdmins';
 import RoleUsers from '../platform-admin/pages/roleUsers/RoleUsers';
 import ExpoApplications from '../platform-admin/pages/expoApplications/ExpoApplications';
 import ExpoApplicationDetail from '../platform-admin/pages/expoApplicationsDetail/ExpoApplicationDetail';
@@ -32,7 +31,6 @@ function PlatformAdminRoutes() {
         <Route path="dashboard/usage" element={<UsageDashboard />} />
         <Route path="settlementHistory" element={<SettlementHistory />} />
         <Route path="inquiry" element={<PlatformInquiry />} />
-        <Route path="roleAdmins" element={<RoleAdmins />} />
         <Route path="roleUsers" element={<RoleUsers />} />
         <Route path="expoApplications" element={<ExpoApplications />} />
         <Route path="expoApplications/:id" element={<ExpoApplicationDetail />} />

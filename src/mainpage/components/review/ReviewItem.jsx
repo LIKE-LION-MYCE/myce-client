@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../../utils/dateUtils';
 import styles from './Review.module.css';
 
 const ReviewItem = ({ review, currentUserId, onEdit, onDelete }) => {
+  const { t } = useTranslation();
   const isOwner = currentUserId && currentUserId === review.memberId;
 
   const renderStars = (rating) => {
@@ -23,11 +25,11 @@ const ReviewItem = ({ review, currentUserId, onEdit, onDelete }) => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 1) {
-      return '오늘';
+      return t('components.review.item.time.today');
     } else if (diffDays === 2) {
-      return '어제';
+      return t('components.review.item.time.yesterday');
     } else if (diffDays <= 7) {
-      return `${diffDays - 1}일 전`;
+      return `${diffDays - 1}${t('components.review.item.time.daysAgo')}`;
     } else {
       return formatDate(dateString);
     }
@@ -47,7 +49,7 @@ const ReviewItem = ({ review, currentUserId, onEdit, onDelete }) => {
         <div className={styles.reviewMeta}>
           <span className={styles.reviewDate}>
             {formatReviewDate(review.createdAt)}
-            {review.updatedAt !== review.createdAt && ' (수정됨)'}
+            {review.updatedAt !== review.createdAt && ` ${t('components.review.item.time.edited')}`}
           </span>
           
           {isOwner && (
@@ -56,13 +58,13 @@ const ReviewItem = ({ review, currentUserId, onEdit, onDelete }) => {
                 className={styles.editBtn}
                 onClick={() => onEdit(review)}
               >
-                수정
+                {t('components.review.item.buttons.edit')}
               </button>
               <button 
                 className={styles.deleteBtn}
                 onClick={() => onDelete(review.id)}
               >
-                삭제
+                {t('components.review.item.buttons.delete')}
               </button>
             </div>
           )}

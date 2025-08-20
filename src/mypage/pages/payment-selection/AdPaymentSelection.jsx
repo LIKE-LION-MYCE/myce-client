@@ -19,7 +19,7 @@ const AdPaymentSelection = () => {
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       if (!adId) {
-        setError(t('mypage.paymentSelection.errors.noAdId', '결제 정보를 불러올 수 없습니다: 유효한 광고 ID가 없습니다.'));
+        setError(t('paymentSelection.errors.noAdId', '결제 정보를 불러올 수 없습니다: 유효한 광고 ID가 없습니다.'));
         setLoading(false);
         return;
       }
@@ -30,7 +30,7 @@ const AdPaymentSelection = () => {
         setError(null);
       } catch (err) {
         console.error("결제 상세 정보 조회 실패:", err);
-        setError(t('mypage.paymentSelection.errors.loadFailed', '결제 정보를 불러오는데 실패했습니다.'));
+        setError(t('paymentSelection.errors.loadFailed', '결제 정보를 불러오는데 실패했습니다.'));
       } finally {
         setLoading(false);
       }
@@ -62,11 +62,11 @@ const AdPaymentSelection = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{t('mypage.paymentSelection.title', '광고 결제하기')}</h1>
+      <h1 className={styles.title}>{t('paymentSelection.title', '광고 결제하기')}</h1>
 
       {paymentDetails && (
         <div className={styles.paymentSummary}>
-          <h2 className={styles.sectionTitle}>{t('mypage.paymentSelection.sections.paymentInfo', '결제 정보')}</h2>
+          <h2 className={styles.sectionTitle}>{t('paymentSelection.sections.paymentInfo', '결제 정보')}</h2>
           <div className={styles.summaryItem}>
             <span>광고명</span>
             <span> {name}</span>
@@ -76,14 +76,14 @@ const AdPaymentSelection = () => {
             <span> {buyer}</span>
           </div>
           <div className={styles.summaryItem}>
-            <span className={styles.totalAmountLabel}>{t('mypage.paymentSelection.summary.totalAmount', '총 결제 금액')}</span>
-            <span className={styles.totalAmount}> {amount}{t('mypage.paymentSelection.summary.currency', '원')}</span>
+            <span className={styles.totalAmountLabel}>{t('paymentSelection.summary.totalAmount', '총 결제 금액')}</span>
+            <span className={styles.totalAmount}> {amount}{t('paymentSelection.summary.currency', '원')}</span>
           </div>
         </div>
       )}
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('mypage.paymentSelection.sections.paymentMethod', '결제 수단')}</h2>
+        <h2 className={styles.sectionTitle}>{t('paymentSelection.sections.paymentMethod', '결제 수단')}</h2>
 
         <PaymentCardButton {...{ name, amount, buyer, targetType }} />
         <PaymentTransferButton {...{ name, amount, buyer, targetType }} />

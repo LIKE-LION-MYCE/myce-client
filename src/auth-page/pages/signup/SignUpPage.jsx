@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./SignUpPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -15,6 +16,7 @@ import DateInput from "../../../common/components/dateInput/DateInput";
 import { validatePhoneNumber } from "../../../utils/phoneFormatter";
 
 const SignUpPage = () => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     loginId: "",
@@ -52,18 +54,18 @@ const SignUpPage = () => {
     };
 
     if(!checkDuplicateId) {
-      triggerToastFail('아이디 중복 검사를 해주세요.');
+      triggerToastFail(t('signup.validation.duplicateIdCheck'));
       return;
     }
 
     if(!checkVerificationEmail) {
-      triggerToastFail('이메일 검증을 해주세요.');
+      triggerToastFail(t('signup.validation.emailVerification'));
       return;
     }
       
     signup({...form}).then((res) => {
       if (res.status === HttpStatusCode.Ok) {
-        alert('회원가입이 완료되었습니다.');
+        alert(t('signup.messages.success'));
         window.location.href = '/login';
       } else {
         onsole.log(`회원가입에 실패했습니다. ${res.status}`)
@@ -79,7 +81,7 @@ const SignUpPage = () => {
 
   const validateInput = () => {
     if (form.name.length < 2 || form.name.length > 10) {
-      triggerToastFail('이름은 2자 이상 10자 이하로 입력해주세요.');
+      triggerToastFail(t('signup.validation.nameLength'));
       return;
     }
 
@@ -87,26 +89,26 @@ const SignUpPage = () => {
 
     const password = form.password;
     if(password.length < 6 || password.length > 12) {
-      triggerToastFail('비밀번호는 6자 이상 12자 이하로 입력해주세요.');
+      triggerToastFail(t('signup.validation.passwordLength'));
       return;
     }
 
     if (password !== form.confirmPassword) {
-      triggerToastFail('비밀번호가 일치하지 않습니다.');
+      triggerToastFail(t('signup.validation.passwordMismatch'));
       return;
     }
 
     if(!validEmailFormat()) return;
 
     if(!form.phone || !validatePhoneNumber(form.phone)) {
-      triggerToastFail('전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)');
+      triggerToastFail(t('signup.validation.phoneFormat'));
       return;
     }
 
     const dateRegex = /^\d{4}\d{2}\d{2}$/;
     var birth = form.birth;
     if(!birth || !dateRegex.test(birth)) {
-      triggerToastFail('생년월일 형식이 올바르지 않습니다.(YYYYMMDD)');
+      triggerToastFail(t('signup.validation.birthFormat'));
       return;
     }
 
@@ -123,13 +125,13 @@ const SignUpPage = () => {
         console.log(isDuplicate);
         if(isDuplicate) {
           setCheckDuplicateId(false);
-          triggerToastFail('이미 존재하는 아이디입니다.');
+          triggerToastFail(t('signup.validation.duplicateId'));
         } else {
           setCheckDuplicateId(true);
-          triggerToastSuccess('사용 가능한 아이디입니다.');
+          triggerToastSuccess(t('signup.validation.availableId'));
         }
       } else {
-        triggerToastFail('아이디 중복 검증에 실패했습니다.');
+        triggerToastFail(t('signup.validation.duplicateCheckFailed'));
         console.log(`Fail to check duplicate login id. ${err}`);
       }
     })
@@ -139,8 +141,8 @@ const SignUpPage = () => {
     if(!validEmailFormat()) return;
 
     sendVerificatiionEmail(VERIFICATION_TYPE.SIGNUP, form.email)
-    .then(() => triggerToastSuccess('메일이 발송되었습니다.'))
-    .catch((err) => triggerToastFail('메일 발송에 실패했습니다.', err));
+    .then(() => triggerToastSuccess(t('signup.messages.emailSent')))
+    .catch((err) => triggerToastFail(t('signup.messages.emailSendFailed'), err));
   }
 
   const verifyEmailForVerification = () => {
@@ -148,7 +150,7 @@ const SignUpPage = () => {
     verifyVerificationEmail('SIGNUP',form.email, form.emailCode)
     .then((res) => {
       if(res.status === HttpStatusCode.Ok) {
-        triggerToastSuccess('인증이 완료되었습니다.');
+        triggerToastSuccess(t('signup.messages.verificationSuccess'));
         setCheckVerificationEmail(true);
       } else {
         triggerToastFail(response.data.message);
@@ -159,7 +161,7 @@ const SignUpPage = () => {
       if(res.data?.message) {
         triggerToastFail(res.data.message);
       } else {
-        triggerToastFail("인증에 실패했습니다.");
+        triggerToastFail(t('signup.messages.verificationFailed'));
         console.log(`Fail to verify email verification. ${err}`);
       }
     });
@@ -169,7 +171,7 @@ const SignUpPage = () => {
     const regLoginId = /^[a-zA-Z0-9]*$/;
     const loginId = form.loginId;
     if (loginId.length < 5 || loginId.length > 20 || !regLoginId.test(loginId)) {
-      triggerToastFail('로그인 아이디는 5자 이상 20자 이하의 영어와 숫자로만 입력해주세요.');
+      triggerToastFail(t('signup.validation.userIdFormat'));
       return false;
     }
 
@@ -179,7 +181,7 @@ const SignUpPage = () => {
   const validEmailFormat = () => {
     var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
     if(!form.email || regEmail.test(form.email)) {
-      triggerToastFail('이메일 형식이 올바르지 않습니다.');
+      triggerToastFail(t('signup.validation.emailFormat'));
       return false;
     }
 
@@ -202,23 +204,23 @@ const SignUpPage = () => {
 
   return (
     <AuthLayout>
-      <h2>회원가입</h2>
+      <h2>{t('signup.title')}</h2>
       <form onSubmit={handleSubmit} className={styles.signUpForm}>
         <label>
-          이름
+          {t('signup.form.name')}
           <input
             name="name"
-            placeholder="이름을 입력하세요"
+            placeholder={t('signup.form.namePlaceholder')}
             value={form.name}
             onChange={handleChange}
           />
         </label>
         <label>
-          아이디
+          {t('signup.form.userId')}
           <div className={styles.rowInput}>
             <input
               name="loginId"
-              placeholder="아이디를 입력하세요"
+              placeholder={t('signup.form.userIdPlaceholder')}
               value={form.loginId}
               onChange={handleChange}
             />
@@ -227,17 +229,17 @@ const SignUpPage = () => {
             onClick={checkDuplicateInputLoginId}
             disabled={checkDuplicateId}
             >
-              중복확인
+              {t('signup.form.duplicateCheck')}
             </button>
           </div>
         </label>
         <label>
-          비밀번호
+          {t('signup.form.password')}
           <div className={styles.passwordWrapper}>
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="비밀번호를 입력하세요"
+              placeholder={t('signup.form.passwordPlaceholder')}
               value={form.password}
               onChange={handleChange}
             />
@@ -250,12 +252,12 @@ const SignUpPage = () => {
           </div>
         </label>
         <label>
-          비밀번호 확인
+          {t('signup.form.confirmPassword')}
           <div className={styles.passwordWrapper}>
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
-              placeholder="비밀번호를 다시 입력하세요"
+              placeholder={t('signup.form.confirmPasswordPlaceholder')}
               value={form.confirmPassword}
               onChange={handleChange}
             />
@@ -272,11 +274,11 @@ const SignUpPage = () => {
           </div>
         </label>
         <label>
-          이메일
+          {t('signup.form.email')}
           <div className={styles.rowInput}>
             <input
               name="email"
-              placeholder="이메일을 입력하세요"
+              placeholder={t('signup.form.emailPlaceholder')}
               value={form.email}
               onChange={handleChange}
             />
@@ -284,7 +286,7 @@ const SignUpPage = () => {
             className={checkVerificationEmail ? styles.grayButton : styles.activeButton} 
             onClick={sendEmailForVerification}
             disabled={checkVerificationEmail}>
-              인증발송
+              {t('signup.form.sendVerification')}
             </button>
           </div>
         </label>
@@ -292,7 +294,7 @@ const SignUpPage = () => {
           <div className={styles.rowInput}>
             <input
               name="emailCode"
-              placeholder="인증번호를 입력하세요."
+              placeholder={t('signup.form.verificationCodePlaceholder')}
               value={form.emailCode}
               onChange={handleChange}
             />
@@ -300,12 +302,12 @@ const SignUpPage = () => {
             className={checkVerificationEmail ? styles.grayButton : styles.activeButton} 
             onClick={verifyEmailForVerification}
             disabled={checkVerificationEmail}>
-              확인
+              {t('signup.form.verify')}
             </button>
           </div>
         </label>
         <label>
-          생년월일
+          {t('signup.form.birth')}
           <DateInput
             name="birth"
             value={form.birth}
@@ -315,7 +317,7 @@ const SignUpPage = () => {
           />
         </label>
         <div className={styles.genderGroup}>
-          <label>성별</label>
+          <label>{t('signup.form.gender')}</label>
           <div className={styles.genderToggle}>
             <button
               name="gender"
@@ -324,7 +326,7 @@ const SignUpPage = () => {
               className={`${styles.genderBtn} ${styles.left} ${form.gender === 'MALE' ? styles.selected : ''}`}
               onClick={handleChange}
             >
-              남자
+              {t('signup.form.male')}
             </button>
             <div className={styles.divider}></div>
             <button
@@ -334,12 +336,12 @@ const SignUpPage = () => {
               className={`${styles.genderBtn} ${styles.right} ${form.gender === 'FEMALE' ? styles.selected : ''}`}
               onClick={handleChange}
             >
-              여자
+              {t('signup.form.female')}
             </button>
           </div>
         </div>
         <label>
-          핸드폰번호
+          {t('signup.form.phone')}
           <PhoneInput
             name="phone"
             value={form.phone}
@@ -348,11 +350,11 @@ const SignUpPage = () => {
           />
         </label>
         <button type="submit" className={styles.submitButton}>
-          회원가입
+          {t('signup.form.submitButton')}
         </button>
       </form>
       <p className={styles.loginLink}>
-        이미 계정이 있으신가요? <a href="/login">로그인</a>
+        {t('signup.footer.alreadyHaveAccount')} <a href="/login">{t('signup.footer.login')}</a>
       </p>
       
       {showFailToast && <ToastFail message={failMessage}/>}

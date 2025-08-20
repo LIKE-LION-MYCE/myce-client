@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import styles from "./PaymentDetailModal.module.css";
 
 function AdPaymentDetailModal({
@@ -14,6 +15,7 @@ function AdPaymentDetailModal({
   onCancel,
   onClose,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // '결제하기' 버튼을 클릭했을 때 실행될 함수를 정의
@@ -25,35 +27,35 @@ function AdPaymentDetailModal({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
-        <h2 className={styles.title}>광고 결제 정보</h2>
+        <h2 className={styles.title}>{t('adPaymentDetailModal.title')}</h2>
         <div className={styles.infoSection}>
           <div>
             <div className={styles.row}>
-              <span>광고명</span>
+              <span>{t('adPaymentDetailModal.fields.adTitle')}</span>
               <span>{advertisementTitle}</span>
             </div>
             <div className={styles.row}>
-              <span>신청자</span>
+              <span>{t('adPaymentDetailModal.fields.applicant')}</span>
               <span>{applicantName}</span>
             </div>
             <div className={styles.row}>
-              <span>게시 기간</span>
+              <span>{t('adPaymentDetailModal.fields.period')}</span>
               <span>{period}</span>
             </div>
           </div>
           <div className={styles.feeBox}>
             <div className={styles.row}>
-              <span>총 게시일</span>
-              <span>{totalDays}일</span>
+              <span>{t('adPaymentDetailModal.fields.totalDays')}</span>
+              <span>{totalDays}{t('adPaymentDetailModal.units.days')}</span>
             </div>
             <div className={styles.row}>
-              <span>일일 광고비</span>
-              <span>{feePerDay?.toLocaleString()}원</span>
+              <span>{t('adPaymentDetailModal.fields.dailyFee')}</span>
+              <span>{feePerDay?.toLocaleString()}{t('adPaymentDetailModal.units.currency')}</span>
             </div>
             <div className={`${styles.totalRow}`}>
-              <span>총 결제 금액</span>
+              <span>{t('adPaymentDetailModal.fields.totalAmount')}</span>
               <span className={styles.totalAmount}>
-                {totalAmount?.toLocaleString()}원
+                {totalAmount?.toLocaleString()}{t('adPaymentDetailModal.units.currency')}
               </span>
             </div>
           </div>
@@ -63,18 +65,18 @@ function AdPaymentDetailModal({
           {mode === "payment" ? (
             <>
               <button className={styles.whiteBtn} onClick={onCancel}>
-                취소
+                {t('adPaymentDetailModal.buttons.cancel')}
               </button>
               <button
                 className={styles.blackBtn}
                 onClick={handlePaymentSelection}
               >
-                결제하기
+                {t('adPaymentDetailModal.buttons.pay')}
               </button>
             </>
           ) : (
             <button className={styles.blackBtn} onClick={onClose}>
-              확인
+              {t('adPaymentDetailModal.buttons.confirm')}
             </button>
           )}
         </div>

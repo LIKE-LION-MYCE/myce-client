@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import styles from "./ReservationSuccess.module.css";
 import { Link, useParams } from "react-router-dom";
 import { getReservationSuccess } from "../../../api/service/reservation/reservationApi";
 
 export default function ReservationSuccess() {
+  const { t } = useTranslation();
   const { reservationId } = useParams();
   const [info, setInfo] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -16,7 +18,7 @@ export default function ReservationSuccess() {
         const data = await getReservationSuccess(reservationId);
         if (alive) setInfo(data);
       } catch (e) {
-        if (alive) setError(e?.response?.data?.message || e.message);
+        if (alive) setError(e?.response?.data?.message || t('reservation.success.messages.loadFailed'));
       }
     })();
     return () => {
@@ -31,58 +33,58 @@ export default function ReservationSuccess() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      alert("클립보드 복사에 실패했습니다.");
+      alert(t('reservation.success.messages.copyFailed'));
     }
   };
 
   if (error) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>예약 정보 조회 실패</h1>
+        <h1 className={styles.title}>{t('reservation.success.messages.loadFailed')}</h1>
         <p className={styles.subtitle}>{error}</p>
         <Link to="/" className={styles.homeButton}>
-          메인 페이지
+          {t('reservation.success.buttons.backToHome')}
         </Link>
       </div>
     );
   }
 
   if (!info) {
-    return <div className={styles.container}>로딩 중…</div>;
+    return <div className={styles.container}>{t('reservation.success.loading')}</div>;
   }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>박람회 예약 완료!</h1>
-      <p className={styles.subtitle}>티켓 정보가 이메일로 전송되었습니다</p>
+      <h1 className={styles.title}>{t('reservation.success.title')}</h1>
+      <p className={styles.subtitle}>{t('reservation.success.subtitle')}</p>
       <p className={styles.email}>{info.email}</p>
 
       <button
         className={styles.resendButton}
-        onClick={() => alert("이메일 재전송 API 연결 예정")}
+        onClick={() => alert(t('reservation.success.messages.resendApiPending'))}
       >
-        이메일 재전송
+        {t('reservation.success.buttons.resendEmail')}
       </button>
 
       <div className={styles.ticketBox}>
-        <span className={styles.ticketLabel}>예매 번호</span>
+        <span className={styles.ticketLabel}>{t('reservation.success.fields.reservationNumber')}</span>
         <div className={styles.ticketCodeBox}>
           <span className={styles.ticketCode}>{info.reservationCode}</span>
           <button className={styles.copyButton} onClick={handleCopy}>
-            {copied ? "복사됨!" : "복사"}
+            {copied ? t('reservation.success.buttons.copied') : t('reservation.success.buttons.copy')}
           </button>
         </div>
       </div>
 
       <div className={styles.helpBox}>
-        <p className={styles.helpText}>문제가 있으신가요?</p>
+        <p className={styles.helpText}>{t('reservation.success.messages.helpText')}</p>
         <Link to="/contact" className={styles.contactLink}>
-          <span className={styles.icon}>💬</span> 담당자 문의
+          <span className={styles.icon}>💬</span> {t('reservation.success.buttons.contactSupport')}
         </Link>
       </div>
 
       <Link to="/" className={styles.homeButton}>
-        메인 페이지
+        {t('reservation.success.buttons.backToHome')}
       </Link>
     </div>
   );

@@ -33,7 +33,14 @@ export const useExpoData = (initialSize = 10) => {
           page: pagination.page,
           size: pagination.size,
         });
-        setExpos(data.content); // Assuming 'content' holds the actual expo list
+        const sortedExpos = data.content.sort((a, b) => {
+          if (a.startDate === b.startDate) {
+            return new Date(a.endDate) - new Date(b.endDate);
+          }
+          return 0;
+        });
+
+        setExpos(sortedExpos);
         setPagination((prev) => ({
           ...prev,
           totalElements: data.totalElements,

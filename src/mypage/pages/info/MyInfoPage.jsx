@@ -38,25 +38,25 @@ const MyInfoPage = () => {
   const handleUpdateInfo = async () => {
     try {
       await updateMemberInfo(memberInfo);
-      alert(t('mypage.infoUpdated'));
+      alert(t('mypageGeneral.infoUpdated'));
       setOriginalInfo({...memberInfo});
       setIsEditMode(false);
     } catch (error) {
       console.error('회원 정보 수정 실패:', error);
-      alert(t('mypage.infoUpdateFailed'));
+      alert(t('mypageGeneral.infoUpdateFailed'));
     }
   };
 
   const handleWithdraw = async () => {
-    if (window.confirm(t('mypage.withdrawConfirm'))) {
+    if (window.confirm(t('mypageGeneral.withdrawConfirm'))) {
       try {
         await withdrawMember();
-        alert(t('mypage.withdrawSuccess'));
+        alert(t('mypageGeneral.withdrawSuccess'));
         localStorage.removeItem('access_token');
         window.location.href = '/';
       } catch (error) {
         console.error('회원 탈퇴 실패:', error);
-        alert(t('mypage.withdrawFailed'));
+        alert(t('mypageGeneral.withdrawFailed'));
       }
     }
   };
@@ -84,15 +84,15 @@ const MyInfoPage = () => {
   return (
     <div className={styles.wrapper}>
       {/* 전체 타이틀 */}
-      <h2 className={styles.pageTitle}>{t('mypage.userInfo')}</h2>
+      <h2 className={styles.pageTitle}>{t('mypageGeneral.userInfo')}</h2>
 
       {/* 흰색 박스 영역 전체 */}
       <section className={styles.card}>
-        <h2 className={styles.sectionTitle}>{t('mypage.basicInfo')}</h2>
+        <h2 className={styles.sectionTitle}>{t('mypageGeneral.basicInfo')}</h2>
 
         <div className={styles.formGrid}>
           <div className={styles.formGroup}>
-            <label>{t('mypage.name')}</label>
+            <label>{t('mypageGeneral.name')}</label>
             <input 
               type="text" 
               value={memberInfo.name} 
@@ -101,7 +101,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>{t('mypage.birthDate')}</label>
+            <label>{t('mypageGeneral.birthDate')}</label>
             <DateInput
               name="birth"
               value={memberInfo.birth}
@@ -113,11 +113,11 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>{t('mypage.userId')}</label>
+            <label>{t('mypageGeneral.userId')}</label>
             <input type="text" disabled value={memberInfo.loginId} className={`${styles.inputText} ${styles.disabled}`} />
           </div>
           <div className={styles.formGroup}>
-            <label>{t('mypage.phoneNumber')}</label>
+            <label>{t('mypageGeneral.phoneNumber')}</label>
             <PhoneInput
               name="phone"
               value={memberInfo.phone}
@@ -132,7 +132,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>{t('mypage.email')}</label>
+            <label>{t('mypageGeneral.email')}</label>
             <input 
               type="email" 
               value={memberInfo.email}
@@ -142,7 +142,7 @@ const MyInfoPage = () => {
             />
           </div>
           <div className={styles.genderGroup}>
-            <label>{t('mypage.gender')}</label>
+            <label>{t('mypageGeneral.gender')}</label>
             <div>
               <label>
                 <input 
@@ -152,7 +152,7 @@ const MyInfoPage = () => {
                   checked={memberInfo.gender === 'FEMALE'}
                   disabled={!isEditMode}
                   onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
-                /> {t('mypage.female')}
+                /> {t('mypageGeneral.female')}
               </label>
               <label>
                 <input 
@@ -162,7 +162,7 @@ const MyInfoPage = () => {
                   checked={memberInfo.gender === 'MALE'}
                   disabled={!isEditMode}
                   onChange={(e) => isEditMode && setMemberInfo({...memberInfo, gender: e.target.value})}
-                /> {t('mypage.male')}
+                /> {t('mypageGeneral.male')}
               </label>
             </div>
           </div>
@@ -171,15 +171,15 @@ const MyInfoPage = () => {
         <div className={styles.buttonGroup}>
           {!isEditMode ? (
             <>
-              <button className={styles.modifyBtn} onClick={handleEditToggle}>{t('mypage.modifyInfo')}</button>
+              <button className={styles.modifyBtn} onClick={handleEditToggle}>{t('mypageGeneral.modifyInfo')}</button>
               <button className={styles.passwordBtn} onClick={openModal}>
-                {t('mypage.changePassword')}
+                {t('mypageGeneral.changePassword')}
               </button>
             </>
           ) : (
             <>
-              <button className={styles.saveBtn} onClick={handleUpdateInfo}>{t('mypage.save')}</button>
-              <button className={styles.cancelBtn} onClick={handleEditToggle}>{t('mypage.cancel')}</button>
+              <button className={styles.saveBtn} onClick={handleUpdateInfo}>{t('mypageGeneral.save')}</button>
+              <button className={styles.cancelBtn} onClick={handleEditToggle}>{t('mypageGeneral.cancel')}</button>
             </>
           )}
         </div>
@@ -187,11 +187,11 @@ const MyInfoPage = () => {
 
       {/* 계정 관리 영역 */}
       <section className={styles.card}>
-        <h2 className={styles.sectionTitle}>{t('mypage.accountManagement')}</h2>
+        <h2 className={styles.sectionTitle}>{t('mypageGeneral.accountManagement')}</h2>
         <div className={styles.dangerBox}>
-          <strong>{t('mypage.withdraw')}</strong>
-          <p>{t('mypage.withdrawWarning')}</p>
-          <button className={styles.withdrawBtn} onClick={handleWithdraw}>{t('mypage.withdraw')}</button>
+          <strong>{t('mypageGeneral.withdraw')}</strong>
+          <p>{t('mypageGeneral.withdrawWarning')}</p>
+          <button className={styles.withdrawBtn} onClick={handleWithdraw}>{t('mypageGeneral.withdraw')}</button>
         </div>
       </section>
 

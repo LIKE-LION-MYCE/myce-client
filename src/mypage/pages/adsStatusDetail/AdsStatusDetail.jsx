@@ -96,7 +96,7 @@ function AdsStatusDetail() {
       setAdData(response.data);
     } catch (err) {
       console.error('광고 상세 정보 조회 실패:', err);
-      setError(t('mypage.adsStatus.detail.error'));
+      setError(t('mypageGeneral.adsStatus.detail.error'));
     } finally {
       setLoading(false);
     }
@@ -111,7 +111,7 @@ function AdsStatusDetail() {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.loading}>{t('mypage.adsStatus.detail.loading')}</div>
+        <div className={styles.loading}>{t('mypageGeneral.adsStatus.detail.loading')}</div>
       </div>
     );
   }
@@ -127,7 +127,7 @@ function AdsStatusDetail() {
   if (!adData) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.error}>{t('mypage.adsStatus.detail.notFound')}</div>
+        <div className={styles.error}>{t('mypageGeneral.adsStatus.detail.notFound')}</div>
       </div>
     );
   }
@@ -175,7 +175,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
+      alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -190,7 +190,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('정산 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
+      alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -206,7 +206,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('거절 사유 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
+      alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -294,52 +294,52 @@ function AdsStatusDetail() {
   const handleCancelConfirm = async () => {
     try {
       await cancelAdvertisementByStatus(id);
-      alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
+      alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
       handleCloseModal();
       fetchAdvertisementDetail(); // 데이터 새로고침
     } catch (error) {
       console.error('취소 실패:', error);
-      alert(t('mypage.adsStatus.detail.messages.cancelError'));
+      alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
     }
   };
 
   // 승인대기 취소 핸들러
   const handleCancelPendingApproval = async () => {
-    if (window.confirm(t('mypage.adsStatus.detail.messages.pendingApprovalCancelConfirm'))) {
+    if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.pendingApprovalCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('승인대기 취소 실패:', error);
-        alert(t('mypage.adsStatus.detail.messages.cancelError'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
 
   // 결제대기 취소 핸들러
   const handleCancelPendingPayment = async () => {
-    if (window.confirm(t('mypage.adsStatus.detail.messages.pendingPaymentCancelConfirm'))) {
+    if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.pendingPaymentCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('결제대기 취소 실패:', error);
-        alert(t('mypage.adsStatus.detail.messages.cancelError'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
   
   const handleCancelAdvertisement = async () => {
-    if (window.confirm(t('mypage.adsStatus.detail.messages.cancelConfirm'))) {
+    if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.cancelConfirm'))) {
       try {
         await deleteAdvertisement(id);
-        alert(t('mypage.adsStatus.detail.messages.cancelSuccess'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('취소 실패:', error);
-        alert(t('mypage.adsStatus.detail.messages.cancelError'));
+        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
@@ -355,7 +355,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
+      alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -405,13 +405,13 @@ function AdsStatusDetail() {
       <div className={styles.inner}>
         {/* 상단 헤더/상태 뱃지 */}
         <div className={styles.headerRow}>
-          <h2 className={styles.pageTitle}>{t('mypage.adsStatus.detail.title')}</h2>
+          <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.detail.title')}</h2>
           <span
             className={`${styles.statusBadge} ${
               styles[statusConf.badge.className]
             }`}
           >
-            {t(`mypage.adsStatus.status.${statusConf.badge.key}`)}
+            {t(`mypageGeneral.adsStatus.status.${statusConf.badge.key}`)}
           </span>
         </div>
         {/* infoGrid(흰색 박스) */}
@@ -422,49 +422,49 @@ function AdsStatusDetail() {
               {imageUrl ? (
                 <img
                   src={imageUrl}
-                  alt={t('mypage.adsStatus.detail.bannerImage')}
+                  alt={t('mypageGeneral.adsStatus.detail.bannerImage')}
                   className={styles.bannerImage}
                 />
               ) : (
-                <div className={styles.bannerImagePlaceholder}>{t('mypage.adsStatus.detail.bannerImage')}</div>
+                <div className={styles.bannerImagePlaceholder}>{t('mypageGeneral.adsStatus.detail.bannerImage')}</div>
               )}
             </div>
           </div>
           {/* 좌측 - 광고 정보 */}
           <div className={styles.infoSection}>
-            <label>{t('mypage.adsStatus.detail.adTitle')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.adTitle')}</label>
             <input value={title} readOnly className={styles.input} />
 
-            <label>{t('mypage.adsStatus.detail.adPosition')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.adPosition')}</label>
             <input value={adPositionName} readOnly className={styles.input} />
 
-            <label>{t('mypage.adsStatus.detail.displayPeriod')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.displayPeriod')}</label>
             <div className={styles.periodInputRow}>
               <input value={formatDate(displayStartDate)} readOnly className={styles.input} />
               <span style={{ margin: "0 8px" }}>~</span>
               <input value={formatDate(displayEndDate)} readOnly className={styles.input} />
             </div>
 
-            <label>{t('mypage.adsStatus.detail.linkUrl')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.linkUrl')}</label>
             <input value={linkUrl} readOnly className={styles.input} />
           </div>
           {/* 우측 - 신청자 정보 */}
           <div className={styles.infoSection}>
-            <label>{t('mypage.adsStatus.detail.applicantName')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.applicantName')}</label>
             <input value={ceoName} readOnly className={styles.input} />
 
-            <label>{t('mypage.adsStatus.detail.applicantPhone')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.applicantPhone')}</label>
             <input value={contactPhone} readOnly className={styles.input} />
 
-            <label>{t('mypage.adsStatus.detail.companyName')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.companyName')}</label>
             <input value={companyName} readOnly className={styles.input} />
 
-            <label>{t('mypage.adsStatus.detail.businessNumber')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.businessNumber')}</label>
             <input value={businessRegistrationNumber} readOnly className={styles.input} />
           </div>
           {/* 광고 소개: 두 칸 전체 */}
           <div className={styles.fullRow}>
-            <label>{t('mypage.adsStatus.detail.adDescription')}</label>
+            <label>{t('mypageGeneral.adsStatus.detail.adDescription')}</label>
             <textarea
               value={description}
               readOnly
@@ -481,13 +481,13 @@ function AdsStatusDetail() {
                     className={`${styles.btn} ${styles.blue}`}
                     onClick={() => handleButtonAction("viewPaymentInfo")}
                   >
-                    {t('mypage.adsStatus.detail.buttons.paymentInfo')}
+                    {t('mypageGeneral.adsStatus.detail.buttons.paymentInfo')}
                   </button>
                   <button
                     className={`${styles.btn} ${styles.purple}`}
                     onClick={() => handleButtonAction("refundHistory")}
                   >
-                    {t('mypage.adsStatus.detail.buttons.refundInfo')}
+                    {t('mypageGeneral.adsStatus.detail.buttons.refundInfo')}
                   </button>
                 </>
               )}
@@ -500,14 +500,14 @@ function AdsStatusDetail() {
                   onClick={() => handleButtonAction(button.action)}
                   disabled={button.disabled}
                 >
-                  {t(`mypage.adsStatus.detail.buttons.${button.action}`)}
+                  {t(`mypageGeneral.adsStatus.detail.buttons.${button.action}`)}
                 </button>
               ))}
               
               {/* 버튼이 없는 경우 */}
               {(!statusConf.buttons || (Array.isArray(statusConf.buttons) && statusConf.buttons.length === 0)) && (
                 <div className={styles.noButtonsMessage}>
-                  {t('mypage.adsStatus.detail.messages.noButtonsAvailable')}
+                  {t('mypageGeneral.adsStatus.detail.messages.noButtonsAvailable')}
                 </div>
               )}
             </div>
@@ -529,12 +529,12 @@ function AdsStatusDetail() {
             onPay={async () => {
               try {
                 await completeAdvertisementPayment(id);
-                alert(t('mypage.adsStatus.detail.messages.paymentSuccess'));
+                alert(t('mypageGeneral.adsStatus.detail.messages.paymentSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('결제 완료 실패:', error);
-                alert(t('mypage.adsStatus.detail.messages.paymentError') + ': ' + (error.response?.data?.message || error.message));
+                alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onCancel={handleCloseModal}
@@ -573,12 +573,12 @@ function AdsStatusDetail() {
             onRefund={!refundData.isRefundCompleted ? async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert(t('mypage.adsStatus.detail.messages.refundSuccess'));
+                alert(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
+                alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             } : null}
             onClose={handleCloseModal}
@@ -629,12 +629,12 @@ function AdsStatusDetail() {
             onRefund={async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert(t('mypage.adsStatus.detail.messages.refundSuccess'));
+                alert(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert(t('mypage.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
+                alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onClose={handleCloseModal}

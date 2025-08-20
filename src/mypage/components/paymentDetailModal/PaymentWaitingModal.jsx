@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import PaymentDetailModal from "./PaymentDetailModal";
 import styles from "./PaymentDetailModal.module.css";
 
@@ -21,6 +22,7 @@ function PaymentWaitingModal(props) {
     onClose,
   } = props;
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // '결제하기' 버튼을 클릭했을 때 실행될 함수를 정의
@@ -51,10 +53,10 @@ function PaymentWaitingModal(props) {
       onClose={onClose}
     >
       <button className={styles.whiteBtn} onClick={onCancel}>
-        취소
+        {t('paymentWaitingModal.buttons.cancel')}
       </button>
       <button className={styles.blackBtn} onClick={handlePaymentSelection}>
-        결제하기
+        {t('paymentWaitingModal.buttons.pay')}
       </button>
     </PaymentDetailModal>
   );

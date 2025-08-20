@@ -1,11 +1,13 @@
 // src/components/modal/NotificationModal.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './NotificationModal.module.css';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../../../api/service/notification/notificationApi';
 
 export default function NotificationModal({ onClose }) {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
@@ -23,7 +25,7 @@ export default function NotificationModal({ onClose }) {
       const data = await getNotifications();
       setNotifications(data);
     } catch (error) {
-      console.error('알림 조회 실패:', error);
+      console.error(t('components.notification.modal.errors.fetchFailed'), error);
     } finally {
       setLoading(false);
     }
@@ -48,7 +50,7 @@ export default function NotificationModal({ onClose }) {
       navigateToTarget(notification);
       onClose(); // 모달 닫기
     } catch (error) {
-      console.error('알림 처리 실패:', error);
+      console.error(t('components.notification.modal.errors.markReadFailed'), error);
     }
   };
 
@@ -72,7 +74,7 @@ export default function NotificationModal({ onClose }) {
         navigate(`/mypage/ads-status/${targetId}`);
         break;
       default:
-        console.warn('알 수 없는 알림 타입:', targetType);
+        console.warn(t('components.notification.modal.errors.unknownType'), targetType);
     }
   };
 
@@ -111,7 +113,7 @@ export default function NotificationModal({ onClose }) {
         prev.map(notification => ({ ...notification, isRead: true }))
       );
     } catch (error) {
-      console.error('모든 알림 읽음 처리 실패:', error);
+      console.error(t('components.notification.modal.errors.markAllReadFailed'), error);
     } finally {
       setMarkingAllAsRead(false);
     }
@@ -155,23 +157,19 @@ export default function NotificationModal({ onClose }) {
     const created = new Date(createdAt);
     const diffMinutes = Math.floor((now - created) / (1000 * 60));
     
-    if (diffMinutes < 1) return '방금';
-    if (diffMinutes < 60) return `${diffMinutes}분 전`;
+    if (diffMinutes < 1) return t('components.notification.modal.time.justNow');
+    if (diffMinutes < 60) return `${diffMinutes}${t('components.notification.modal.time.minutesAgo')}`;
     
     const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `${diffHours}시간 전`;
+    if (diffHours < 24) return `${diffHours}${t('components.notification.modal.time.hoursAgo')}`;
     
     const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}일 전`;
+    return `${diffDays}${t('components.notification.modal.time.daysAgo')}`;
   };
 
   // 상태 텍스트에 하이라이트 적용
   const highlightStatusText = (content) => {
-    const statusKeywords = [
-      '승인 대기', '승인 완료', '결제 대기', '게시 대기', '게시 중', 
-      '게시 종료', '정산 요청', '종료됨', '승인 거절', '취소 완료',
-      '취소 대기', '승인됨', '거절됨', '완료됨'
-    ];
+    const statusKeywords = t('components.notification.modal.statusKeywords', { returnObjects: true });
     
     let highlightedContent = content;
     
@@ -191,7 +189,7 @@ export default function NotificationModal({ onClose }) {
       <div className={styles.modalHeader}>
         <div className={styles.headerTitle}>
           <IoNotificationsOutline size={24} />
-          <span>알림</span>
+          <span>{t('components.notification.modal.title')}</span>
         </div>
         <div className={styles.headerActions}>
           <button 
@@ -199,10 +197,10 @@ export default function NotificationModal({ onClose }) {
             onClick={handleMarkAllAsReadClick}
             disabled={markingAllAsRead || !hasUnreadNotifications}
           >
-            {markingAllAsRead ? '처리중...' : '모두 읽음'}
+            {markingAllAsRead ? t('components.notification.modal.processing') : t('components.notification.modal.markAllRead')}
           </button>
           <button className={styles.close} onClick={onClose}>
-            ✕
+            {t('components.notification.modal.close')}
           </button>
         </div>
       </div>
@@ -213,7 +211,7 @@ export default function NotificationModal({ onClose }) {
           className={`${styles.tabButton} ${activeTab === 'general' ? styles.active : ''}`}
           onClick={() => setActiveTab('general')}
         >
-          일반 알림
+          {t('components.notification.modal.tabs.general')}
           {getUnreadCount('general') > 0 && (
             <span className={styles.tabBadge}>{getUnreadCount('general')}</span>
           )}
@@ -222,7 +220,7 @@ export default function NotificationModal({ onClose }) {
           className={`${styles.tabButton} ${activeTab === 'status' ? styles.active : ''}`}
           onClick={() => setActiveTab('status')}
         >
-          관리자 알림
+          {t('components.notification.modal.tabs.admin')}
           {getUnreadCount('status') > 0 && (
             <span className={styles.tabBadge}>{getUnreadCount('status')}</span>
           )}
@@ -231,10 +229,10 @@ export default function NotificationModal({ onClose }) {
       
       <ul className={styles.notificationList}>
         {loading ? (
-          <li className={styles.loadingItem}>알림을 불러오는 중...</li>
+          <li className={styles.loadingItem}>{t('components.notification.modal.loading')}</li>
         ) : filteredNotifications.length === 0 ? (
           <li className={styles.emptyItem}>
-            {activeTab === 'general' ? '일반 알림이 없습니다.' : '관리자 알림이 없습니다.'}
+            {activeTab === 'general' ? t('components.notification.modal.empty.general') : t('components.notification.modal.empty.admin')}
           </li>
         ) : (
           filteredNotifications.map((notification) => {
@@ -262,13 +260,13 @@ export default function NotificationModal({ onClose }) {
                   />
                   <div className={styles.notificationMeta}>
                     <span className={styles.typeBadge}>
-                      {notification.type === 'EXPO_REMINDER' ? '박람회' : 
-                       notification.type === 'EVENT_REMINDER' ? '행사' : 
-                       notification.type === 'QR_ISSUED' ? 'QR발급' : 
-                       notification.type === 'PAYMENT_COMPLETE' ? '결제완료' : 
-                       notification.type === 'RESERVATION_CONFIRM' ? '예매확정' :
-                       notification.type === 'EXPO_STATUS_CHANGE' ? '박람회' :
-                       notification.type === 'AD_STATUS_CHANGE' ? '광고' : '알림'}
+                      {notification.type === 'EXPO_REMINDER' ? t('components.notification.modal.types.expo') : 
+                       notification.type === 'EVENT_REMINDER' ? t('components.notification.modal.types.event') : 
+                       notification.type === 'QR_ISSUED' ? t('components.notification.modal.types.qrIssued') : 
+                       notification.type === 'PAYMENT_COMPLETE' ? t('components.notification.modal.types.paymentComplete') : 
+                       notification.type === 'RESERVATION_CONFIRM' ? t('components.notification.modal.types.reservationConfirm') :
+                       notification.type === 'EXPO_STATUS_CHANGE' ? t('components.notification.modal.types.expo') :
+                       notification.type === 'AD_STATUS_CHANGE' ? t('components.notification.modal.types.ad') : t('components.notification.modal.types.notification')}
                     </span>
                     <span className={styles.timeAgo}>{formatTimeAgo(notification.createdAt)}</span>
                     {!notification.isRead && <span className={styles.unreadDot} />}
@@ -284,20 +282,20 @@ export default function NotificationModal({ onClose }) {
       {showConfirmModal && (
         <div className={styles.confirmModalOverlay}>
           <div className={styles.confirmModal}>
-            <h3>모든 알림 읽음 처리</h3>
-            <p>읽지 않은 모든 알림을 읽음 처리하시겠습니까?</p>
+            <h3>{t('components.notification.modal.confirmModal.title')}</h3>
+            <p>{t('components.notification.modal.confirmModal.message')}</p>
             <div className={styles.confirmModalButtons}>
               <button 
                 className={styles.cancelButton}
                 onClick={() => setShowConfirmModal(false)}
               >
-                취소
+                {t('components.notification.modal.confirmModal.cancel')}
               </button>
               <button 
                 className={styles.confirmReadAllButton}
                 onClick={handleConfirmMarkAllAsRead}
               >
-                확인
+                {t('components.notification.modal.confirmModal.confirm')}
               </button>
             </div>
           </div>

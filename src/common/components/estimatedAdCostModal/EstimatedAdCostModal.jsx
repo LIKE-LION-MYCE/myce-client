@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getAdPositions } from '../../../api/service/user/adPositionApi';
 import { getActiveAdFees } from '../../../api/service/fee/feeApi';
 import styles from './EstimatedAdCostModal.module.css';
@@ -10,6 +11,7 @@ const EstimatedAdCostModal = ({
   displayEndDate, 
   selectedPositionId 
 }) => {
+  const { t } = useTranslation();
   const [adPositions, setAdPositions] = useState([]);
   const [adFees, setAdFees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ const EstimatedAdCostModal = ({
         console.log('광고 요금:', fees.data);
       } catch (err) {
         console.error('광고 정보 로드 실패:', err);
-        setError('광고 정보를 불러오는데 실패했습니다.');
+        setError(t('estimatedAdCostModal.error'));
       } finally {
         setLoading(false);
       }
@@ -90,76 +92,75 @@ const EstimatedAdCostModal = ({
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>예상 광고 이용료</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <h2 className={styles.title}>{t('estimatedAdCostModal.title')}</h2>
+          <button className={styles.closeButton} onClick={onClose}>{t('estimatedAdCostModal.buttons.close')}</button>
         </div>
 
         <div className={styles.content}>
           {loading ? (
-            <div className={styles.loading}>광고 정보를 불러오는 중...</div>
+            <div className={styles.loading}>{t('estimatedAdCostModal.loading')}</div>
           ) : error ? (
             <div className={styles.error}>{error}</div>
           ) : adCost ? (
             <>
               <div className={styles.summarySection}>
                 <div className={styles.summaryItem}>
-                  <span className={styles.label}>광고 기간:</span>
+                  <span className={styles.label}>{t('estimatedAdCostModal.summary.period')}</span>
                   <span className={styles.value}>
-                    {displayStartDate} ~ {displayEndDate} ({adCost.displayDays}일)
+                    {displayStartDate} ~ {displayEndDate} ({adCost.displayDays}{t('estimatedAdCostModal.summary.days')})
                   </span>
                 </div>
                 <div className={styles.summaryItem}>
-                  <span className={styles.label}>광고 위치:</span>
+                  <span className={styles.label}>{t('estimatedAdCostModal.summary.position')}</span>
                   <span className={styles.value}>{adCost.positionName}</span>
                 </div>
                 {adCost.positionDescription && (
                   <div className={styles.summaryItem}>
-                    <span className={styles.label}>위치 설명:</span>
+                    <span className={styles.label}>{t('estimatedAdCostModal.summary.description')}</span>
                     <span className={styles.value}>{adCost.positionDescription}</span>
                   </div>
                 )}
               </div>
 
               <div className={styles.costDetails}>
-                <h3 className={styles.sectionTitle}>상세 요금</h3>
+                <h3 className={styles.sectionTitle}>{t('estimatedAdCostModal.costDetails.title')}</h3>
                 
                 <div className={styles.costItem}>
-                  <span className={styles.itemLabel}>일 이용료</span>
-                  <span className={styles.itemValue}>{adCost.dailyFee.toLocaleString()}원/일</span>
+                  <span className={styles.itemLabel}>{t('estimatedAdCostModal.costDetails.dailyFee')}</span>
+                  <span className={styles.itemValue}>{adCost.dailyFee.toLocaleString()}{t('estimatedAdCostModal.costDetails.dailyUnit')}</span>
                 </div>
                 
                 <div className={styles.costItem}>
-                  <span className={styles.itemLabel}>광고 기간</span>
-                  <span className={styles.itemValue}>{adCost.displayDays}일</span>
+                  <span className={styles.itemLabel}>{t('estimatedAdCostModal.costDetails.period')}</span>
+                  <span className={styles.itemValue}>{adCost.displayDays}{t('estimatedAdCostModal.summary.days')}</span>
                 </div>
                 
                 <div className={styles.divider}></div>
                 
                 <div className={styles.totalSection}>
                   <div className={styles.totalItem}>
-                    <span className={styles.totalLabel}>예상 총 이용료</span>
-                    <span className={styles.finalAmount}>{adCost.totalCost.toLocaleString()}원</span>
+                    <span className={styles.totalLabel}>{t('estimatedAdCostModal.costDetails.totalCost')}</span>
+                    <span className={styles.finalAmount}>{adCost.totalCost.toLocaleString()}{t('estimatedAdCostModal.costDetails.currency')}</span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.notice}>
-                <h4 className={styles.noticeTitle}>💡 안내사항</h4>
+                <h4 className={styles.noticeTitle}>{t('estimatedAdCostModal.notice.title')}</h4>
                 <ul className={styles.noticeList}>
-                  <li>위 금액은 입력하신 정보를 바탕으로 한 예상 금액입니다.</li>
-                  <li>실제 결제 시 금액이 다를 수 있습니다.</li>
-                  <li>모든 요금은 부가세(VAT) 포함 금액입니다.</li>
-                  <li>광고 승인 후 결제가 진행됩니다.</li>
+                  {t('estimatedAdCostModal.notice.items', { returnObjects: true }).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </>
           ) : (
             <div className={styles.noData}>
               {!selectedPositionId ? 
-                "광고 위치를 선택해주세요." : 
+                t('estimatedAdCostModal.noData.selectPosition') : 
                 !displayStartDate || !displayEndDate ? 
-                "광고 기간을 입력해주세요." : 
-                "예상 이용료를 계산할 수 없습니다."
+                t('estimatedAdCostModal.noData.selectPeriod') : 
+                t('estimatedAdCostModal.noData.cannotCalculate')
               }
             </div>
           )}
@@ -167,7 +168,7 @@ const EstimatedAdCostModal = ({
 
         <div className={styles.footer}>
           <button className={styles.confirmButton} onClick={onClose}>
-            확인
+            {t('estimatedAdCostModal.buttons.confirm')}
           </button>
         </div>
       </div>

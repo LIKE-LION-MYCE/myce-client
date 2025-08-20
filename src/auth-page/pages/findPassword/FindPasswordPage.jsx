@@ -1,5 +1,6 @@
 // src/pages/findPassword/FindPassword.jsx
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./FindPasswordPage.module.css";
 import AuthLayout from "../../layout/AuthLayout";
 import { findPassword, sendVerificatiionEmail, VERIFICATION_TYPE, verifyVerificationEmail } from "../../../api/service/auth/AuthService";
@@ -9,6 +10,7 @@ import { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
 
 const FindPassword = () => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     loginId: "",
@@ -34,8 +36,8 @@ const FindPassword = () => {
     if(!validEmailFormat()) return;
 
     sendVerificatiionEmail(VERIFICATION_TYPE.FIND_PASSWORD, form.email)
-    .then(() => triggerToastSuccess('메일이 발송되었습니다.'))
-    .catch((err) => triggerToastFail('메일 발송에 실패했습니다.', err));
+    .then(() => triggerToastSuccess(t('findPassword.messages.emailSent')))
+    .catch((err) => triggerToastFail(t('findPassword.messages.emailSendFailed'), err));
   };
 
   const handleVerifyCode = () => {
@@ -45,7 +47,7 @@ const FindPassword = () => {
     .then((res) => {
       console.log('API 응답 객체 (res):', res);
       if(res.status === HttpStatusCode.Ok) {
-        triggerToastSuccess('인증이 완료되었습니다.');
+        triggerToastSuccess(t('findPassword.messages.verificationSuccess'));
         setCheckVerificationEmail(true);
       } else {
         triggerToastFail(res.data.message);
@@ -56,7 +58,7 @@ const FindPassword = () => {
       if(err.response && err.response.data && err.response.data.message) {
         triggerToastFail(err.response.data.message);
       } else {
-        triggerToastFail("인증에 실패했습니다.");
+        triggerToastFail(t('findPassword.messages.verificationFailed'));
         console.log(`Fail to verify email verification. ${err}`);
       }
     });
@@ -68,25 +70,25 @@ const FindPassword = () => {
     console.log("임시 비밀번호 발송");
 
     if(!form.name) {
-      triggerToastFail('이름을 입력해주세요.');
+      triggerToastFail(t('findPassword.validation.nameRequired'));
       return;
     }
 
     if(!form.loginId) {
-      triggerToastFail('로그인아이디를 입력해주세요.');
+      triggerToastFail(t('findPassword.validation.userIdRequired'));
       return;
     }
 
     if(!validEmailFormat()) return;
 
     if(!checkVerificationEmail) {
-      triggerToastFail('이메일 인증을 완료해주세요.');
+      triggerToastFail(t('findPassword.validation.emailVerificationRequired'));
       return;
     }
 
     findPassword(form.name, form.loginId, form.email)
     .then(res => {
-      alert('임시 비밀번호를 전송했습니다.');
+      alert(t('findPassword.messages.tempPasswordSent'));
       navigate('/login');
     })
     .catch(err => {
@@ -94,7 +96,7 @@ const FindPassword = () => {
       if(res.data?.message) {
         triggerToastFail(res.data.message);
       } else {
-        triggerToastFail('회원 정보를 찾을 수 없습니다.')
+        triggerToastFail(t('findPassword.messages.memberNotFound'))
       }
     })
   };
@@ -102,7 +104,7 @@ const FindPassword = () => {
   const validEmailFormat = () => {
     var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
     if(!form.email || regEmail.test(form.email)) {
-      triggerToastFail('이메일 형식이 올바르지 않습니다.');
+      triggerToastFail(t('findPassword.validation.emailFormat'));
       return false;
     }
 
@@ -125,32 +127,32 @@ const FindPassword = () => {
 
   return (
     <AuthLayout>
-      <h2>비밀번호 찾기</h2>
+      <h2>{t('findPassword.title')}</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label>
-          이름
+          {t('findPassword.form.name')}
           <input
             name="name"
-            placeholder="이름을 입력하세요"
+            placeholder={t('findPassword.form.namePlaceholder')}
             value={form.name}
             onChange={handleChange}
           />
         </label>
         <label>
-          아이디
+          {t('findPassword.form.userId')}
           <input
             name="loginId"
-            placeholder="아이디를 입력하세요"
+            placeholder={t('findPassword.form.userIdPlaceholder')}
             value={form.loginId}
             onChange={handleChange}
           />
         </label>
         <label>
-          이메일
+          {t('findPassword.form.email')}
           <div className={styles.rowInput}>
             <input
               name="email"
-              placeholder="가입시 사용한 이메일을 입력하세요"
+              placeholder={t('findPassword.form.emailPlaceholder')}
               value={form.email}
               onChange={handleChange}
             />
@@ -160,7 +162,7 @@ const FindPassword = () => {
               onClick={handleSendAuthCode}
               disabled={checkVerificationEmail}
             >
-              인증발송
+              {t('findPassword.form.sendVerification')}
             </button>
           </div>
         </label>
@@ -168,7 +170,7 @@ const FindPassword = () => {
           <div className={styles.rowInput}>
             <input
               name="emailCode"
-              placeholder="인증번호를 입력하세요."
+              placeholder={t('findPassword.form.verificationCodePlaceholder')}
               value={form.emailCode}
               onChange={handleChange}
             />
@@ -178,16 +180,16 @@ const FindPassword = () => {
               onClick={handleVerifyCode}
               disabled={checkVerificationEmail}
             >
-              확인
+              {t('findPassword.form.verify')}
             </button>
           </div>
         </label>
         <button type="submit" className={styles.submitButton}>
-          임시 비밀번호 발송
+          {t('findPassword.form.submitButton')}
         </button>
       </form>
       <p className={styles.loginLink}>
-        <a href="/login">로그인으로 돌아가기</a>
+        <a href="/login">{t('findPassword.footer.backToLogin')}</a>
       </p>
       {showFailToast && <ToastFail message={failMessage}/>}
       {showSuccessToast && <ToastSuccess message={successMessage}/>}

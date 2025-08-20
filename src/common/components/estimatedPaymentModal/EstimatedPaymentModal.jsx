@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getActiveExpoFee } from '../../../api/service/fee/feeApi';
 import styles from './EstimatedPaymentModal.module.css';
 
@@ -9,6 +10,7 @@ const EstimatedPaymentModal = ({
   displayEndDate, 
   isPremium 
 }) => {
+  const { t } = useTranslation();
   const [feeData, setFeeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +38,7 @@ const EstimatedPaymentModal = ({
         setFeeData(response.data);
       } catch (err) {
         console.error('요금 정보 로드 실패:', err);
-        setError('요금 정보를 불러오는데 실패했습니다.');
+        setError(t('estimatedPaymentModal.error'));
       } finally {
         setLoading(false);
       }
@@ -88,54 +90,54 @@ const EstimatedPaymentModal = ({
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>예상 결제금액</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <h2 className={styles.title}>{t('estimatedPaymentModal.title')}</h2>
+          <button className={styles.closeButton} onClick={onClose}>{t('estimatedPaymentModal.buttons.close')}</button>
         </div>
 
         <div className={styles.content}>
           {loading ? (
-            <div className={styles.loading}>요금 정보를 불러오는 중...</div>
+            <div className={styles.loading}>{t('estimatedPaymentModal.loading')}</div>
           ) : error ? (
             <div className={styles.error}>{error}</div>
           ) : payment ? (
             <>
               <div className={styles.summarySection}>
                 <div className={styles.summaryItem}>
-                  <span className={styles.label}>게시 기간:</span>
+                  <span className={styles.label}>{t('estimatedPaymentModal.summary.period')}</span>
                   <span className={styles.value}>
-                    {displayStartDate} ~ {displayEndDate} ({payment.displayDays}일)
+                    {displayStartDate} ~ {displayEndDate} ({payment.displayDays}{t('estimatedPaymentModal.summary.days')})
                   </span>
                 </div>
                 <div className={styles.summaryItem}>
-                  <span className={styles.label}>요금제:</span>
+                  <span className={styles.label}>{t('estimatedPaymentModal.summary.plan')}</span>
                   <span className={styles.value}>
-                    {isPremium ? '프리미엄' : '기본'}
+                    {isPremium ? t('estimatedPaymentModal.summary.premium') : t('estimatedPaymentModal.summary.basic')}
                   </span>
                 </div>
               </div>
 
               <div className={styles.paymentDetails}>
-                <h3 className={styles.sectionTitle}>상세 요금</h3>
+                <h3 className={styles.sectionTitle}>{t('estimatedPaymentModal.paymentDetails.title')}</h3>
                 
                 <div className={styles.paymentItem}>
-                  <span className={styles.itemLabel}>일 사용료</span>
-                  <span className={styles.itemValue}>{payment.dailyUsageFee.toLocaleString()}원/일</span>
+                  <span className={styles.itemLabel}>{t('estimatedPaymentModal.paymentDetails.dailyUsageFee')}</span>
+                  <span className={styles.itemValue}>{payment.dailyUsageFee.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.dailyUnit')}</span>
                 </div>
                 
                 <div className={styles.paymentItem}>
-                  <span className={styles.itemLabel}>기간별 사용료 ({payment.displayDays}일)</span>
-                  <span className={styles.itemValue}>{payment.totalUsageFee.toLocaleString()}원</span>
+                  <span className={styles.itemLabel}>{t('estimatedPaymentModal.paymentDetails.periodUsageFee')} ({payment.displayDays}{t('estimatedPaymentModal.summary.days')})</span>
+                  <span className={styles.itemValue}>{payment.totalUsageFee.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                 </div>
                 
                 <div className={styles.paymentItem}>
-                  <span className={styles.itemLabel}>기본 등록금</span>
-                  <span className={styles.itemValue}>{payment.basicDeposit.toLocaleString()}원</span>
+                  <span className={styles.itemLabel}>{t('estimatedPaymentModal.paymentDetails.basicDeposit')}</span>
+                  <span className={styles.itemValue}>{payment.basicDeposit.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                 </div>
                 
                 {isPremium && (
                   <div className={styles.paymentItem}>
-                    <span className={styles.itemLabel}>프리미엄 이용료</span>
-                    <span className={styles.itemValue}>{payment.premiumDeposit.toLocaleString()}원</span>
+                    <span className={styles.itemLabel}>{t('estimatedPaymentModal.paymentDetails.premiumFee')}</span>
+                    <span className={styles.itemValue}>{payment.premiumDeposit.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                   </div>
                 )}
                 
@@ -143,37 +145,37 @@ const EstimatedPaymentModal = ({
                 
                 <div className={styles.totalSection}>
                   <div className={styles.totalItem}>
-                    <span className={styles.totalLabel}>예상 등록금</span>
-                    <span className={styles.totalValue}>{payment.depositAmount.toLocaleString()}원</span>
+                    <span className={styles.totalLabel}>{t('estimatedPaymentModal.paymentDetails.estimatedDeposit')}</span>
+                    <span className={styles.totalValue}>{payment.depositAmount.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                   </div>
                   <div className={styles.totalItem}>
-                    <span className={styles.totalLabel}>예상 사용료</span>
-                    <span className={styles.totalValue}>{payment.totalUsageFee.toLocaleString()}원</span>
+                    <span className={styles.totalLabel}>{t('estimatedPaymentModal.paymentDetails.estimatedUsageFee')}</span>
+                    <span className={styles.totalValue}>{payment.totalUsageFee.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                   </div>
                   <div className={styles.totalItem}>
-                    <span className={styles.totalLabel}>예상 총 결제금액</span>
-                    <span className={styles.finalAmount}>{payment.totalAmount.toLocaleString()}원</span>
+                    <span className={styles.totalLabel}>{t('estimatedPaymentModal.paymentDetails.estimatedTotal')}</span>
+                    <span className={styles.finalAmount}>{payment.totalAmount.toLocaleString()}{t('estimatedPaymentModal.paymentDetails.currency')}</span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.notice}>
-                <h4 className={styles.noticeTitle}>💡 안내사항</h4>
+                <h4 className={styles.noticeTitle}>{t('estimatedPaymentModal.notice.title')}</h4>
                 <ul className={styles.noticeList}>
-                  <li>위 금액은 입력하신 정보를 바탕으로 한 예상 금액입니다.</li>
-                  <li>실제 결제 시 금액이 다를 수 있습니다.</li>
-                  <li>모든 요금은 부가세(VAT) 포함 금액입니다.</li>
+                  {t('estimatedPaymentModal.notice.items', { returnObjects: true }).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </>
           ) : (
-            <div className={styles.error}>결제 금액을 계산할 수 없습니다.</div>
+            <div className={styles.error}>{t('estimatedPaymentModal.cannotCalculate')}</div>
           )}
         </div>
 
         <div className={styles.footer}>
           <button className={styles.confirmButton} onClick={onClose}>
-            확인
+            {t('estimatedPaymentModal.buttons.confirm')}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoNotifications } from 'react-icons/io5';
 import styles from './NotificationButton.module.css';
 import NotificationModal from './NotificationModal';
@@ -6,6 +7,7 @@ import { getNotifications } from '../../../api/service/notification/notification
 import { useNotification } from '../../../context/NotificationContext';
 
 export default function NotificationButton({notification}) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount, updateUnreadCount } = useNotification();
 
@@ -19,7 +21,7 @@ export default function NotificationButton({notification}) {
       const unreadNotifications = notifications.filter(n => !n.isRead);
       updateUnreadCount(unreadNotifications.length);
     } catch (error) {
-      console.error('읽지 않은 알림 개수 조회 실패:', error);
+      console.error(t('components.notification.button.errorFetch'), error);
     }
   };
 
