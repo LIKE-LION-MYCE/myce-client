@@ -11,10 +11,19 @@ export default function CategoryTabs({ categories, onCategoryChange }) {
   const translateCategory = (category) => {
     const categoryMap = {
       '전체': t('homepage.categories.all'),
-      '기술/IT': t('homepage.categories.technology'),
-      '패션/뷰티': t('homepage.categories.fashion'),
-      '푸드/음료': t('homepage.categories.food'),
-      '문화/예술': t('homepage.categories.culture')
+      'IT/테크/보안': t('homepage.categories.tech'),
+      '뷰티/라이프스타일': t('homepage.categories.fashion'),
+      '의료/헬스케어': t('homepage.categories.medical'),
+      '예술/디자인/기타': t('homepage.categories.culture'),
+      '식품/1차산업': t('homepage.categories.food'),
+      '제조/생산': t('homepage.categories.create'),
+      '건설/인프라': t('homepage.categories.infra'),
+      '모빌리티/조선/해양': t('homepage.categories.mobility'),
+      '에너지/환경': t('homepage.categories.energy'),
+      '리테일/유통/물류': t('homepage.categories.retail'),
+      '방위산업/우주': t('homepage.categories.space'),
+      '교육/학습': t('homepage.categories.education'),
+      '경영/금융/서비스': t('homepage.categories.service')
     };
     return categoryMap[category] || category;
   };

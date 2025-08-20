@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './AdRejectInfoModal.module.css';
 
 function AdRejectInfoModal({ description, rejectedAt, onClose }) {
+  const { t } = useTranslation();
+  
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString('ko-KR', {
       year: 'numeric',
@@ -16,7 +19,7 @@ function AdRejectInfoModal({ description, rejectedAt, onClose }) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3>광고 거절 사유</h3>
+          <h3>{t('adRejectInfoModal.title')}</h3>
           <button className={styles.closeBtn} onClick={onClose}>
             ✕
           </button>
@@ -24,23 +27,23 @@ function AdRejectInfoModal({ description, rejectedAt, onClose }) {
         
         <div className={styles.content}>
           <div className={styles.section}>
-            <label>거절 일시</label>
+            <label>{t('adRejectInfoModal.rejectedAt')}</label>
             <div className={styles.info}>
-              {rejectedAt ? formatDate(rejectedAt) : '-'}
+              {rejectedAt ? formatDate(rejectedAt) : t('adRejectInfoModal.noDate')}
             </div>
           </div>
           
           <div className={styles.section}>
-            <label>거절 사유</label>
+            <label>{t('adRejectInfoModal.rejectionReason')}</label>
             <div className={styles.description}>
-              {description || '거절 사유가 제공되지 않았습니다.'}
+              {description || t('adRejectInfoModal.noReason')}
             </div>
           </div>
         </div>
         
         <div className={styles.footer}>
           <button className={styles.confirmBtn} onClick={onClose}>
-            확인
+            {t('adRejectInfoModal.confirmButton')}
           </button>
         </div>
       </div>

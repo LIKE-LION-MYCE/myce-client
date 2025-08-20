@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import styles from "./ReservationPending.module.css"; // CSS 파일 경로 수정
 import { Link, useParams } from "react-router-dom";
 import { getReservationPending } from "../../../api/service/reservation/reservationApi";
 
 export default function ReservationPending() {
+  const { t } = useTranslation();
   const { reservationId } = useParams();
   // state 변수 이름을 더 명확하게 accountInfo로 변경했습니다.
   const [accountInfo, setAccountInfo] = useState(null);
@@ -17,7 +19,7 @@ export default function ReservationPending() {
         setAccountInfo(data);
       } catch (e) {
         setError(
-          e?.response?.data?.message || "예약 정보를 불러오는 데 실패했습니다."
+          e?.response?.data?.message || t('reservation.pending.messages.loadFailed')
         );
       }
     })();
@@ -28,76 +30,76 @@ export default function ReservationPending() {
     if (!textToCopy) return;
     try {
       await navigator.clipboard.writeText(textToCopy);
-      alert(`${type}가 복사되었습니다.`);
+      alert(t('reservation.pending.messages.copied', { type }));
     } catch {
-      alert("클립보드 복사에 실패했습니다.");
+      alert(t('reservation.pending.messages.copyFailed'));
     }
   };
 
   if (error) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>정보 조회 실패</h1>
+        <h1 className={styles.title}>{t('reservation.pending.error')}</h1>
         <p className={styles.subtitle}>{error}</p>
         <Link to="/" className={styles.homeButton}>
-          메인 페이지
+          {t('reservation.pending.buttons.backToHome')}
         </Link>
       </div>
     );
   }
 
   if (!accountInfo) {
-    return <div className={styles.container}>로딩 중…</div>;
+    return <div className={styles.container}>{t('reservation.pending.loading')}</div>;
   }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>가상계좌가 발급되었습니다</h1>
+      <h1 className={styles.title}>{t('reservation.pending.title')}</h1>
       <p className={styles.subtitle}>
-        예약을 완료하려면 아래 계좌 정보로 입금해주세요.
+        {t('reservation.pending.subtitle')}
       </p>
 
       {/* 가상계좌 정보를 보여주는 UI로 변경했습니다. */}
       <div className={styles.infoBox}>
         <div className={styles.infoRow}>
-          <span>은행</span>
+          <span>{t('reservation.pending.fields.bank')}</span>
           <strong>{accountInfo.accountBank}</strong>
         </div>
         <div className={styles.infoRow}>
-          <span>계좌번호</span>
+          <span>{t('reservation.pending.fields.accountNumber')}</span>
           <div className={styles.copyable}>
             <strong>{accountInfo.accountNumber}</strong>
             <button
               className={styles.copyButton}
-              onClick={() => handleCopy(accountInfo.accountNumber, "계좌번호")}
+              onClick={() => handleCopy(accountInfo.accountNumber, t('reservation.pending.fields.accountNumber'))}
             >
-              복사
+              {t('reservation.pending.buttons.copy')}
             </button>
           </div>
         </div>
         <div className={styles.infoRow}>
-          <span>입금금액</span>
+          <span>{t('reservation.pending.fields.amount')}</span>
           <strong>{accountInfo.amount.toLocaleString()}원</strong>
         </div>
         <div className={styles.infoRow}>
-          <span>입금기한</span>
+          <span>{t('reservation.pending.fields.dueDate')}</span>
           <strong className={styles.dueDate}>{accountInfo.dueDate}</strong>
         </div>
       </div>
 
       <p className={styles.notice}>
-        * 입금기한이 지나면 예약은 자동으로 취소됩니다.
+        {t('reservation.pending.messages.notice')}
       </p>
 
       <div className={styles.helpBox}>
-        <p className={styles.helpText}>문제가 있으신가요?</p>
+        <p className={styles.helpText}>{t('reservation.pending.messages.helpText')}</p>
         <Link to="/contact" className={styles.contactLink}>
-          <span className={styles.icon}>💬</span> 담당자 문의
+          <span className={styles.icon}>💬</span> {t('reservation.pending.buttons.contactSupport')}
         </Link>
       </div>
 
       <Link to="/" className={styles.homeButton}>
-        메인 페이지로 돌아가기
+        {t('reservation.pending.buttons.backToHome')}
       </Link>
     </div>
   );
