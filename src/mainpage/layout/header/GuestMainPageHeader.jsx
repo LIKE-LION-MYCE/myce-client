@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate 임포트
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./GuestMainPageHeader.module.css";
 import LanguageSelector from "../../../common/components/language/LanguageSelector";
@@ -7,14 +7,13 @@ import { useExpoData } from "../../../hooks/useExpoData";
 
 const GuestMainPageHeader = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const { expos, setFilters } = useExpoData();
 
-  // 외부 클릭 시 검색 결과 닫기
   useEffect(() => {
     const handleDocumentClick = () => {
       setShowSearchResults(false);
@@ -44,31 +43,29 @@ const GuestMainPageHeader = () => {
   const goToHome = () => {
     console.log("홈으로 이동");
     setActiveMenu(null);
-    navigate("/"); // 홈페이지로 이동
+    navigate("/");
   };
 
   const goToLogin = () => {
     console.log("로그인 페이지로 이동");
-    navigate("/login"); // 로그인 페이지로 이동
+    navigate("/login");
   };
 
   const goToJoin = () => {
     console.log("회원가입 페이지로 이동");
-    navigate("/signUp"); // 회원가입 페이지로 이동
+    navigate("/signUp");
   };
 
   const goToStudy = () => {
     console.log("예매 확인 페이지로 이동");
-    navigate("/guest-reservation"); // 예매 확인 페이지로 이동
+    navigate("/guest-reservation");
   };
 
-  // 검색 기능
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
     if (query.trim().length > 0) {
-      // 검색어가 있을 때 필터링된 결과 표시
       const filtered = expos.filter(
         (expo) =>
           expo.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -88,7 +85,6 @@ const GuestMainPageHeader = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // 검색 결과 페이지로 이동하면서 검색어 전달
       navigate(`/expo-list?search=${encodeURIComponent(searchQuery.trim())}`);
       setShowSearchResults(false);
     }
@@ -102,118 +98,98 @@ const GuestMainPageHeader = () => {
 
   return (
     <header className={styles.header}>
-      {/* 상단 줄 */}
+      {/* 상단 줄: 로고, 검색, 언어 선택 */}
       <div className={styles.topRow}>
-        <div className={styles.topLeft} onClick={goToHome}>
-          <img src="/myce_logo.png" alt="MYCE" className={styles.logo} />
-        </div>
-        <div
-          className={`${styles.searchContainer} ${
-            showSearchResults && searchResults.length > 0
-              ? styles.withDropdown
-              : ""
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <form onSubmit={handleSearchSubmit}>
-            <input
-              type="text"
-              placeholder={t("nav.searchPlaceholder")}
-              className={styles.searchInput}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
-            />
-            <button type="submit" className={styles.searchButton}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </form>
-          {showSearchResults && searchResults.length > 0 && (
-            <div className={styles.searchResultsDropdown}>
-              {searchResults.slice(0, 5).map((expo) => (
-                <div
-                  key={expo.expoId || expo.id}
-                  className={styles.searchResultItem}
-                  onClick={() => handleSearchResultClick(expo)}
-                >
-                  <div className={styles.searchResultImage}>
-                    <img
-                      src={expo.thumbnailUrl || "/default-expo-image.jpg"}
-                      alt={expo.title}
-                      onError={(e) => {
-                        e.target.src = "/default-expo-image.jpg";
-                      }}
-                    />
-                  </div>
-                  <div className={styles.searchResultContent}>
-                    <div className={styles.searchResultTitle}>{expo.title}</div>
-                    <div className={styles.searchResultLocation}>
-                      {expo.location}
-                    </div>
-                    <div className={styles.searchResultDate}>
-                      {expo.startDate &&
-                        expo.endDate &&
-                        `${new Date(expo.startDate).toLocaleDateString(
-                          "ko-KR"
-                        )} ~ ${new Date(expo.endDate).toLocaleDateString(
-                          "ko-KR"
-                        )}`}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {searchResults.length > 5 && (
-                <div
-                  className={styles.searchResultMore}
-                  onClick={() =>
-                    handleSearchSubmit({ preventDefault: () => {} })
-                  }
-                >
-                  더 많은 결과 보기
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <div className={styles.promoContainer}>
-          <img
-            src="/coupon_create_cover1-1.jpg"
-            alt="할인 쿠폰"
-            className={styles.promoImage}
-          />
-          <div className={styles.promoText}>
-            <div>박람회 할인</div>
-            <div>얼리버드 티켓 모음</div>
+        <div className={styles.leftGroup}>
+          <div className={styles.topLeft} onClick={goToHome}>
+            <img src="/myce_logo.png" alt="MYCE" className={styles.logo} />
           </div>
-        </div>
-        <div className={styles.topRightActions}>
-          <LanguageSelector />
-        </div>
-      </div>
-
-      {/* 하단 줄 */}
-      <div className={styles.bottomRow}>
-        <nav className={styles.navigation}>
           {menuItems.map((item) => (
             <button
               key={item.name}
-              className={`${styles.navButton} ${
-                activeMenu === item.name ? styles.active : ""
-              }`}
+              className={`${styles.navButton} ${activeMenu === item.name ? styles.active : ""
+                }`}
               onClick={() => handleMenuClick(item)}
             >
               {item.name}
             </button>
           ))}
-        </nav>
+          <div
+            className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
+              ? styles.withDropdown
+              : ""
+              }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                placeholder={t("nav.searchPlaceholder")}
+                className={styles.searchInput}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+              />
+              <button type="submit" className={styles.searchButton}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </form>
+            {showSearchResults && searchResults.length > 0 && (
+              <div className={styles.searchResultsDropdown}>
+                {searchResults.slice(0, 5).map((expo) => (
+                  <div
+                    key={expo.expoId || expo.id}
+                    className={styles.searchResultItem}
+                    onClick={() => handleSearchResultClick(expo)}
+                  >
+                    <div className={styles.searchResultImage}>
+                      <img
+                        src={expo.thumbnailUrl || "/default-expo-image.jpg"}
+                        alt={expo.title}
+                        onError={(e) => {
+                          e.target.src = "/default-expo-image.jpg";
+                        }}
+                      />
+                    </div>
+                    <div className={styles.searchResultContent}>
+                      <div className={styles.searchResultTitle}>{expo.title}</div>
+                      <div className={styles.searchResultLocation}>
+                        {expo.location}
+                      </div>
+                      <div className={styles.searchResultDate}>
+                        {expo.startDate &&
+                          expo.endDate &&
+                          `${new Date(expo.startDate).toLocaleDateString(
+                            "ko-KR"
+                          )} ~ ${new Date(expo.endDate).toLocaleDateString(
+                            "ko-KR"
+                          )}`}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {searchResults.length > 5 && (
+                  <div
+                    className={styles.searchResultMore}
+                    onClick={() =>
+                      handleSearchSubmit({ preventDefault: () => { } })
+                    }
+                  >
+                    더 많은 결과 보기
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
         <div className={styles.rightActions}>
           <button className={styles.actionButton} onClick={goToLogin}>
             <svg
@@ -231,6 +207,24 @@ const GuestMainPageHeader = () => {
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
             <span className={styles.actionText}>{t("nav.login")}</span>
+          </button>
+          <button className={styles.actionButton} onClick={goToJoin}>
+            <svg
+              className={styles.actionIcon}
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span className={styles.actionText}>{t("nav.join")}</span>
           </button>
           <button className={styles.actionButton} onClick={goToStudy}>
             <svg
@@ -254,8 +248,11 @@ const GuestMainPageHeader = () => {
               {t("nav.reservationCheck")}
             </span>
           </button>
+            <LanguageSelector />
         </div>
       </div>
+
+
     </header>
   );
 };
