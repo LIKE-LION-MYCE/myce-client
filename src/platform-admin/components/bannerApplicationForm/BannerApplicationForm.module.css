@@ -1,3 +1,5 @@
+/* ===== BannerApplicationForm.module.css (FULL, underline 복구) ===== */
+
 /* 전체 컨테이너 */
 .container {
   width: 800px;
@@ -46,49 +48,83 @@
   position: relative;
 }
 
+/* 라벨 */
 .label {
   font-size: 13px;
   font-weight: 500;
-  color: #777;
-  margin-bottom: 4px;
+  color: #6b7280;
+  margin-bottom: 6px;
 }
 
+/* 표시용 텍스트: 인풋처럼 보이도록 '밑줄' 추가 */
+.displayField {
+  padding: 10px 0 8px 0;          /* 위아래 여백 */
+  font-size: 15px;
+  color: #111827;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+  background: transparent;
+  border-bottom: 1px solid #e5e7eb; /* ← 밑줄 복구 */
+}
+
+/* (참고) 입력 필드 – 지금은 사용 안 하지만 혹시 몰라 유지 */
 .inputField {
-  padding: 10px 36px 10px 0;
+  padding: 12px 16px;
   font-size: 14px;
   color: #333;
-  border: none;
-  border-bottom: 1px solid #ccc;
-  background-color: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #ffffff;
   outline: none;
   width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
-/* 날짜 input 묶음 */
+.inputField:focus {
+  border-color: #3b82f6;
+}
+
+/* 날짜 input 묶음 (현재는 displayField로 대체했지만 유틸로 남김) */
 .dateGroup {
   display: flex;
   gap: 12px;
   width: 100%;
 }
 
-/* 설명 textarea */
+/* 설명(읽기전용) — 스크롤 없이 내용에 맞춰 자동 확장 */
 .textarea {
   width: 100%;
   font-size: 14px;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
+  line-height: 1.6;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  background-color: #fff;
-  color: #333;
-  height: 150px;
-  overflow-y: auto;
+  background-color: #f9fafb;
+  color: #374151;
+
+  /* 자동 확장 */
+  height: auto;
+  min-height: 60px;
+  overflow: visible;
+
   resize: none;
+  box-sizing: border-box;
+  font-family: 'Pretendard', sans-serif;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* width 비율 유틸 */
 .full {
   flex: 0 0 100%;
 }
+
 .half {
   flex: 0 0 calc(50% - 10px);
 }
