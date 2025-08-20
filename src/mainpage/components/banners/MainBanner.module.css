@@ -87,8 +87,6 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .banner {
-    height: 40vh; /* 모바일에서는 높이 더 줄임 */
-    margin-top: -70px;
     padding-top: 70px;
   }
   
