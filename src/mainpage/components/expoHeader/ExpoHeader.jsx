@@ -47,7 +47,7 @@ const ExpoHeader = ({
               title={bookmarkStatus?.isBookmarked ? t('expoDetail.expoHeader.buttons.bookmarkRemove', '북마크 제거') : t('expoDetail.expoHeader.buttons.bookmarkAdd', '북마크 추가')}
             >
               {bookmarkStatus?.isBookmarked ? (
-                <MdBookmark size={24} style={{ color: '#000000' }} />
+                <MdBookmark size={24} style={{ color: '#d32f2f' }} />
               ) : (
                 <FiBookmark size={24} />
               )}
@@ -56,16 +56,6 @@ const ExpoHeader = ({
 
           <div className={styles.titleSection}>
             <h1 className={styles.title}>{basicInfo.title}</h1>
-            {/* 1:1 상담하기 버튼 */}
-            <button 
-              className={styles.chatButton}
-              onClick={onChatStart}
-              disabled={loading}
-              title={t('expoDetail.expoHeader.buttons.consultationTitle', '1:1 상담 채팅')}
-            >
-              <FiMessageCircle className={styles.chatIcon} />
-              <span>{t('expoDetail.expoHeader.buttons.consultation', '1:1 상담하기')}</span>
-            </button>
           </div>
           
           <div className={styles.basicDetails}>
@@ -88,6 +78,19 @@ const ExpoHeader = ({
               <FiUsers className={styles.icon} />
               <span>{t('expoDetail.expoHeader.currentReservations', '현재 {{count}}명 예약', { count: basicInfo.currentReservationCount?.toLocaleString() || 0 })}</span>
             </div>
+          </div>
+
+          {/* 1:1 상담하기 버튼을 현재 예약 밑으로 이동 */}
+          <div className={styles.chatButtonWrapper}>
+            <button 
+              className={styles.chatButton}
+              onClick={onChatStart}
+              disabled={loading}
+              title={t('expoDetail.expoHeader.buttons.consultationTitle', '1:1 상담 채팅')}
+            >
+              <FiMessageCircle className={styles.chatIcon} />
+              <span>{t('expoDetail.expoHeader.buttons.consultation', '1:1 상담하기')}</span>
+            </button>
           </div>
         </div>
         
