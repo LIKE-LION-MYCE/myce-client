@@ -20,6 +20,7 @@
   flex-wrap: wrap;
 }
 
+/* Events와 동일한 필터 박스 톤 */
 .filterGroup {
   display: flex;
   align-items: center;
@@ -29,6 +30,7 @@
   gap: 8px;
 }
 
+/* 공통 셀렉트 */
 .select {
   border: none;
   background: transparent;
@@ -39,6 +41,7 @@
   padding-right: 4px;
 }
 
+/* 검색 인풋 */
 .input {
   border: none;
   background: transparent;
@@ -47,17 +50,39 @@
   width: 160px;
 }
 
+/* 날짜 인풋 */
+.dateInput {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+/* ~ 구분자 */
+.rangeSep {
+  color: #999;
+  font-size: 13px;
+  padding: 0 2px;
+}
+
+/* 검색 아이콘 */
 .searchIcon {
   color: #888;
   font-size: 16px;
   cursor: pointer;
 }
 
+/* 오른쪽 버튼 영역 */
 .buttons {
   display: flex;
+  align-items: center;
   gap: 12px;
 }
 
+/* 액션 버튼 */
 .actionBtn {
   display: flex;
   align-items: center;
@@ -72,7 +97,7 @@
   transition: background-color 0.2s ease;
 }
 
-/* QR 재발급 버튼 */
+/* 엑셀 추출 버튼 */
 .qrBtn {
   background-color: #ececec;
   color: #1e2a38;
@@ -84,6 +109,7 @@
   color: #1e2a38;
 }
 
+/* 아이콘 */
 .icon {
   font-size: 14px;
   margin-right: 4px;

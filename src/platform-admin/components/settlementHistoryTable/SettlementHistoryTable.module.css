@@ -62,21 +62,26 @@
 }
 
 .badgeSuccess {
-  background-color: #28a745;
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
 }
 
 .badgePending {
-  background-color: #ffc107;
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c; /* 진한 주황 */
 }
 
 .badgeFailed {
-  background-color: #dc3545;
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
 .badgeRefunded {
-  background-color: #6c757d;
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }
 
 .badgePartialRefunded {
-  background-color: #ffc107;
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }

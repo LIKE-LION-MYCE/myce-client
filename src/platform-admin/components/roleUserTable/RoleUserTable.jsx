@@ -31,12 +31,10 @@ const getFormattedValue = (key, value) => {
     null: '-',
   };
 
-
   const isDeleteMap = {
     true: '활성',
     false: '비활성',
   };
-
 
   if (key === 'gender') {
     return genderMap[value] || value;
@@ -45,10 +43,14 @@ const getFormattedValue = (key, value) => {
     return roleMap[value] || value;
   }
   if (key === 'delete') {
-    return isDeleteMap[String(!value)] || value; // delete의 반대 값으로 활성/비활성 판단
+    return isDeleteMap[String(!value)] || value; // delete(true) → 비활성
+  }
+  if (key === 'isActive') {
+    return value ? '활성' : '비활성';
   }
   if (key === 'createdAt') {
     const date = new Date(value);
+    if (isNaN(date.getTime())) return '-';
 
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -87,6 +89,21 @@ function RoleUserTable({ data }) {
     setExpandedRow(expandedRow === index ? null : index);
   };
 
+  // delete 필드 → 활성/비활성 배지 렌더링
+  const renderStatusBadge = (fromKey, rawValue) => {
+    const isActive = fromKey === 'delete' ? !rawValue : !!rawValue;
+    const label = getFormattedValue(fromKey, rawValue);
+    return (
+      <span
+        className={`${styles.badge} ${
+          isActive ? styles.badgeActive : styles.badgeInactive
+        }`}
+      >
+        {label}
+      </span>
+    );
+  };
+
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
@@ -110,7 +127,9 @@ function RoleUserTable({ data }) {
               >
                 {columns.map((col) => (
                   <td key={col.key} className={styles.td}>
-                    {getFormattedValue(col.key, row[col.key])}
+                    {col.key === 'delete'
+                      ? renderStatusBadge('delete', row[col.key])
+                      : getFormattedValue(col.key, row[col.key])}
                   </td>
                 ))}
               </tr>,
@@ -119,16 +138,21 @@ function RoleUserTable({ data }) {
                   <td colSpan={columns.length}>
                     <div className={styles.detailBox}>
                       {Object.entries(row).map(([key, value]) => {
-                        if (key === 'gradeImageUrl') {
-                          return null;
-                        }
+                        if (key === 'gradeImageUrl') return null;
+
+                        const label = fieldLabelMap[key] || key;
+                        const isStatusKey =
+                          key === 'delete' || key === 'isActive';
+
                         return (
                           <div key={key} className={styles.detailItem}>
-                            <div className={styles.detailLabel}>
-                              {fieldLabelMap[key] || key}
-                            </div>
+                            <div className={styles.detailLabel}>{label}</div>
                             <div className={styles.detailValue}>
-                              {getFormattedValue(key, value)}
+                              {isStatusKey ? (
+                                renderStatusBadge(key, value)
+                              ) : (
+                                getFormattedValue(key, value)
+                              )}
                             </div>
                           </div>
                         );

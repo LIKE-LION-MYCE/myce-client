@@ -92,7 +92,7 @@
   padding: 12px 16px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   color: #374151;
   background: #ffffff;
   transition: all 0.2s ease;
@@ -132,9 +132,9 @@
 
 .submitBtn,
 .cancelBtn {
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 10px 10px;
+  font-size: 12px;
+  font-weight: 500;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -144,11 +144,11 @@
 
 .submitBtn {
   color: white;
-  background: #374151;
+  background: #111827;
 }
 
 .submitBtn:hover {
-  background: #111827;
+  background: #374151;
 }
 
 .cancelBtn {
@@ -411,7 +411,7 @@
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   color: #374151;
   background: #ffffff;
   transition: all 0.2s ease;
@@ -454,9 +454,9 @@
 
 .saveBtn,
 .cancelEditBtn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 10px 10px;
+  font-size: 12px;
+  font-weight: 500;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -465,11 +465,11 @@
 
 .saveBtn {
   color: white;
-  background: #374151;
+  background: #111827;
 }
 
 .saveBtn:hover {
-  background: #111827;
+  background: #374151;
 }
 
 .cancelEditBtn {
@@ -522,11 +522,11 @@
 }
 
 .toggleSwitch input:checked + .toggleSlider {
-  background-color: #2196F3;
+  background-color: #1e2a38;
 }
 
 .toggleSwitch input:focus + .toggleSlider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #1e2a38;
 }
 
 .toggleSwitch input:checked + .toggleSlider:before {
