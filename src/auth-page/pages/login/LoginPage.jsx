@@ -156,14 +156,6 @@ const LoginPage = () => {
               />
               Google로 로그인
             </button>
-            <button className={styles.socialButton}>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png"
-                alt="깃허브"
-                className={styles.socialIcon}
-              />
-              GitHub로 로그인
-            </button>
           </div>
 
           <div className={styles.loginFooter}>
