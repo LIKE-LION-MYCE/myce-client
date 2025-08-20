@@ -85,8 +85,10 @@ const MySavedExpoPage = () => {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
-        <div className={styles.loading}>{t('savedExpo.loading')}</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+          <div className={styles.loading}>{t('savedExpo.loading')}</div>
+        </div>
       </div>
     );
   }
@@ -94,24 +96,28 @@ const MySavedExpoPage = () => {
   if (error) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
-        <div className={styles.error}>{error}</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+          <div className={styles.error}>{error}</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
-      {favoriteExpos.length > 0 ? (
-        <div className={styles.list}>
-          {favoriteExpos.map((expo) => (
-            <SavedExpoCard key={expo.expoId} expo={expo} />
-          ))}
-        </div>
-      ) : (
-        <div className={styles.noData}>{t('savedExpo.noData')}</div>
-      )}
+      <div className={styles.container}>
+        <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+        {favoriteExpos.length > 0 ? (
+          <div className={styles.list}>
+            {favoriteExpos.map((expo) => (
+              <SavedExpoCard key={expo.expoId} expo={expo} />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.noData}>{t('savedExpo.noData')}</div>
+        )}
+      </div>
     </div>
   );
 };

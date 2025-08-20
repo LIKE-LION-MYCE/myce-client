@@ -164,8 +164,10 @@ const MyReservationPage = () => {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
-        <div className={styles.loading}>{t('common.loading')}</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
+          <div className={styles.loading}>{t('common.loading')}</div>
+        </div>
       </div>
     );
   }
@@ -173,30 +175,34 @@ const MyReservationPage = () => {
   if (error) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
-        <div className={styles.error}>{error}</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
+          <div className={styles.error}>{error}</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
-      {reservations.length > 0 ? (
-        <>
-          <div className={styles.list}>
-            {reservations.map((reservation) => (
-              <ReservationCard 
-                key={reservation.reservationId} 
-                reservation={reservation}
-              />
-            ))}
-          </div>
-          {renderPagination()}
-        </>
-      ) : (
-        <div className={styles.noData}>{t('reservation.noData')}</div>
-      )}
+      <div className={styles.container}>
+        <h2 className={styles.pageTitle}>{t('reservation.title')}</h2>
+        {reservations.length > 0 ? (
+          <>
+            <div className={styles.list}>
+              {reservations.map((reservation) => (
+                <ReservationCard 
+                  key={reservation.reservationId} 
+                  reservation={reservation}
+                />
+              ))}
+            </div>
+            {renderPagination()}
+          </>
+        ) : (
+          <div className={styles.noData}>{t('reservation.noData')}</div>
+        )}
+      </div>
     </div>
   );
 };

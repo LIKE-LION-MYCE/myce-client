@@ -9,8 +9,7 @@ const SystemSettings = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t('mypageGeneral.systemSettings')}</h1>
-        <p className={styles.description}>시스템 환경을 설정할 수 있습니다.</p>
+        <h2 className={styles.pageTitle}>{t('mypageGeneral.systemSettings')}</h2>
       </div>
       
       <div className={styles.content}>
