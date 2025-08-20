@@ -21,9 +21,6 @@ function OperatorApplicationForm({businessData}) {
 
   return (
     <div className={styles.container}>
-      {/* 제목 추가 */}
-      <div className={styles.sectionTitle}>비즈니스 정보</div>
-
       <div className={styles.formGrid}>
         {/* 회사명 */}
         <div className={styles.formGroup}>
