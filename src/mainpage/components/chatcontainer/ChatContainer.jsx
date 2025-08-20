@@ -130,9 +130,23 @@ export default function ChatContainer() {
     const fetchChatRooms = async () => {
       try {
         const response = await instance.get("/chats/rooms");
-        setChatRooms(response.data.chatRooms);
-        if (response.data.chatRooms.length > 0) {
-          setSelectedRoom(response.data.chatRooms[0]);
+        const rooms = response.data.chatRooms;
+        setChatRooms(rooms);
+        
+        // 🆕 백엔드에서 받은 실제 상태로 버튼 상태 초기화
+        const initialButtonStates = {};
+        rooms.forEach((room) => {
+          if (isPlatformRoom(room)) {
+            // 백엔드에서 currentState 정보 활용
+            const backendState = room.currentState || "AI_ACTIVE"; // 기본값
+            initialButtonStates[room.roomCode] = backendState;
+            console.log("🔄 초기 상태 동기화 - roomCode:", room.roomCode, "backendState:", backendState);
+          }
+        });
+        setButtonStates(initialButtonStates);
+        
+        if (rooms.length > 0) {
+          setSelectedRoom(rooms[0]);
         }
       } catch (error) {
         console.error("채팅방 목록 조회 실패:", error);
@@ -438,7 +452,7 @@ export default function ChatContainer() {
                 fullPayload: payload
               });
 
-              // 관리자나 AI가 읽었을 때 → 특정 메시지의 "1" 제거
+              // 관리자나 AI가 읽었을 때 → 특정 메시지의 "1" 제거 + unreadCounts 즉시 업데이트
               if (readerType === "ADMIN" || readerType === "AI") {
                 try {
                   if (messageId) {
@@ -456,6 +470,16 @@ export default function ChatContainer() {
                         updateMessage(msg.id, { unreadCount: 0 });
                       }
                     });
+                  }
+
+                  // 🆕 관리자나 AI가 읽었을 때 → unreadCounts 즉시 업데이트  
+                  const roomCode = unreadData.roomCode || payload.roomCode;
+                  if (roomCode) {
+                    console.log(`🔄 즉시 unreadCounts 업데이트: ${roomCode} → 0`);
+                    setUnreadCounts(prev => ({
+                      ...prev,
+                      [roomCode]: 0
+                    }));
                   }
                   
                   // Background refetch for accuracy after 1.5 seconds
