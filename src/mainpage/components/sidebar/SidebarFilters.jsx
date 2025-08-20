@@ -44,7 +44,7 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
   };
 
   const handleResetFilters = () => {
-    setFilters({});
+    setFilters({ sort: 'startDate,asc' });
   };
 
   return (
@@ -88,11 +88,11 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
 
       <div className={styles.filterSection}>
         <h4>{t('homepage.sidebarFilters.category.title', '카테고리')}</h4>
-        <div className={styles.categoryList}>
+        <div className={styles.categoryGrid}>
           {categories.map((cat) => (
             <button
               key={cat}
-              className={`${styles.categoryButton} ${filters.category === cat ? styles.active : ''}`}
+              className={`${styles.categoryButton} ${filters.category === cat || (filters.category === undefined && cat === '전체') ? styles.active : ''}`}
               onClick={() => handleCategoryChange(cat)}
             >
               {translateCategory(cat)}

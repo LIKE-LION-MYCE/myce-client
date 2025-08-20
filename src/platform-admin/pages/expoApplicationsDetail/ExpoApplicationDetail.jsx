@@ -176,7 +176,7 @@ function ExpoApplicationDetail() {
   } else if (expo?.status === 'PENDING_PAYMENT') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
-        <button className={styles.approveBtn} onClick={handlePaymentDetailView}>결제 내역</button>
+        <button className={styles.approveBtn} onClick={handlePaymentDetailView}>결제 정보</button>
       </div>
     );
   } else if (expo?.status === 'REJECTED') {
@@ -217,9 +217,11 @@ function ExpoApplicationDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>신청자 정보</h4>
         <ApplicantForm applicantData={expo?.applicant} />
       </div>
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>운영사 정보</h4>
         <OperatorApplicationForm businessData={expo?.business} />
       </div>
 

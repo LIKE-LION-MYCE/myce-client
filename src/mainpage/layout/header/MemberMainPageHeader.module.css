@@ -32,6 +32,7 @@
 
 /* 검색창 스타일 - NOL interpark와 완전히 동일 */
 .searchContainer {
+  position: relative;
   display: flex;
   align-items: center;
   background-color: white;
@@ -42,6 +43,16 @@
   flex: 1;
   max-width: 600px;
   height: 64px;
+}
+
+.searchContainer.withDropdown {
+  border-radius: 32px 32px 0 0;
+}
+
+.searchContainer form {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .searchInput {
@@ -237,6 +248,113 @@
   font-size: 1.0rem;
   color: #29292d;
   font-family: 'GmarketSansMedium', sans-serif;
+}
+
+/* 검색 결과 드롭다운 스타일 */
+.searchResultsDropdown {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: -1px;
+  right: -1px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.searchResultsDropdown::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+  gap: 12px;
+}
+
+.searchResultItem:hover {
+  background-color: #f8f9fa;
+}
+
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+
+.searchResultImage {
+  flex-shrink: 0;
+  width: 45px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.searchResultImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.searchResultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchResultTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  font-family: 'GmarketSansMedium', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultLocation {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: 'GmarketSansMedium', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultDate {
+  font-size: 11px;
+  color: #9ca3af;
+  font-family: 'GmarketSansMedium', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultMore {
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #000000;
+  cursor: pointer;
+  border-top: 1px solid #f3f4f6;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.searchResultMore:hover {
+  background-color: #e5e7eb;
 }
 
 /* Clean focus styles */

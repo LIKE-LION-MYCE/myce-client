@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BsFillChatDotsFill } from 'react-icons/bs';
 import { getAllUnreadCounts } from '../../../api/service/chat/chatService';
 import ChatModal from '../../../components/shared/chat/ChatModal';
 import LoginPromptModal from '../../../components/shared/chat/LoginPromptModal';
@@ -103,7 +104,7 @@ export default function FloatingChatButton({ autoOpen = false }) {
         title={isAuthenticated ? "상담 채팅 열기" : "로그인 후 상담 서비스를 이용하세요"}
       >
         <span className={styles.icon}>
-          💬
+          <BsFillChatDotsFill size={22} />
         </span>
         {isAuthenticated && totalUnreadCount > 0 && (
           <span className={styles.badge}>{totalUnreadCount}</span>

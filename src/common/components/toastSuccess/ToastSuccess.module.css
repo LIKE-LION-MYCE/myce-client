@@ -13,7 +13,7 @@
   font-size: 14px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   z-index: 9999;
-  animation: fadeInOut 1s ease-in-out forwards;
+  animation: fadeInOut 2s ease-in-out forwards;
 }
 
 @keyframes fadeInOut {
@@ -25,8 +25,8 @@
     opacity: 1;
     transform: translateY(0);
   }
-  80% {
-    opacity: 1;
+  70% {
+    opacity: 1;  /* 여기서 1초 가까이 유지됨 */
     transform: translateY(0);
   }
   100% {

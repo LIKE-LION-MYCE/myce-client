@@ -12,7 +12,7 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .sectionTitle {
@@ -49,8 +49,8 @@
 
 /* --- 상태 뱃지 --- */
 .statusBadge {
-  margin-left : 10px;
-  margin-bottom : 10px;
+  margin-left : 6px;
+  margin-bottom : 7px;
   padding: 4px 10px;
   border-radius: 16px;
   font-size: 12px;

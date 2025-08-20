@@ -300,9 +300,11 @@ function ExpoCurrentDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>신청자 정보</h4>
         <ApplicantForm applicantData={expo?.applicant} />
       </div>
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>운영사 정보</h4>
         <OperatorApplicationForm businessData={expo?.business} />
       </div>
 

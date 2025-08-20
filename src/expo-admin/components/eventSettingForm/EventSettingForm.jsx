@@ -291,7 +291,7 @@ function EventSettingForm({ onSubmit, onCancel, editingEvent, expoStartDate, exp
             <input
               name="contactEmail"
               className={styles.inputField}
-              placeholder="이메일 입력"
+              placeholder="예 : example@company.com"
               value={form.contactEmail}
               onChange={handleChange}
               aria-invalid={!!errors.contactEmail}

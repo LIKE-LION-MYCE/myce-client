@@ -633,6 +633,7 @@ function PlatformInquiry() {
           console.log('🚨 Platform admin update received:', updateData);
           
           if (updateData.type === 'HANDOFF_REQUEST' || 
+              updateData.type === 'PLATFORM_HANDOFF_REQUEST' ||  // 🆕 새로운 플랫폼 알림 타입 추가
               (updateData.type === 'BUTTON_STATE_UPDATE' && 
                updateData.payload?.state === 'WAITING_FOR_ADMIN')) {
             
@@ -657,6 +658,7 @@ function PlatformInquiry() {
           console.log('🔍 Global handler - checking room message for handoff:', { data, roomCode });
           
           if (data.type === 'AI_HANDOFF_REQUEST' || 
+              data.type === 'PLATFORM_HANDOFF_REQUEST' ||  // 🆕 새로운 플랫폼 알림 타입 추가
               (data.type === 'BUTTON_STATE_UPDATE' && 
                data.payload?.state === 'WAITING_FOR_ADMIN')) {
             

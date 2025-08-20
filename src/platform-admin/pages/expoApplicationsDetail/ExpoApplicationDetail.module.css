@@ -2,9 +2,11 @@
 .operatorContainer {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 50px;
   padding: 32px;
-  width: 1200px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* --- Section --- */
@@ -18,7 +20,8 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .divider {
@@ -30,8 +33,8 @@
 .sectionHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 1rem;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .backArrow {
@@ -45,16 +48,23 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
-  margin-bottom: 7px;
+  color: #333;
 }
 
 .backArrow:hover {
   color: #999;
 }
 
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
 .statusBadge {
-  margin-left : 10px;
-  margin-bottom : 10px;
+  margin-left : 6px;
+  margin-bottom : 8px;
   padding: 4px 10px;
   border-radius: 16px;
   font-size: 12px;
@@ -70,8 +80,8 @@
 }
 
 .승인_완료 {
-  background-color: #ebf9f1; /* 연한 초록 */
-  color: #2a9c68;            /* 진한 초록 */
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .승인_거절 {
