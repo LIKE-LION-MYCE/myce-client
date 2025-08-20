@@ -121,11 +121,7 @@
   margin: 0 0 8px 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ff6b35;
 }
 
 .header p {
@@ -215,7 +211,7 @@
   gap: 8px;
   width: 100%;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ff6b35;
   color: white;
   border: none;
   border-radius: 12px;
@@ -223,12 +219,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .loginButton:hover {
+  background: #ff5722;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
 }
 
 .loginButton:active {
@@ -248,8 +243,8 @@
   width: 100%;
   padding: 16px 24px;
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #ff6b35;
+  border: 2px solid #ff6b35;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
@@ -258,8 +253,9 @@
 }
 
 .signupButton:hover {
-  background: #667eea;
-  color: white;
+  background: rgba(255, 107, 53, 0.1);
+  border-color: #ff6b35;
+  color: #ff6b35;
   transform: translateY(-1px);
 }
 
