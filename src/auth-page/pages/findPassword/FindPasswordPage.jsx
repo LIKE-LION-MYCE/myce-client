@@ -6,6 +6,7 @@ import { findPassword, sendVerificatiionEmail, VERIFICATION_TYPE, verifyVerifica
 import ToastFail from "../../../common/components/toastFail/ToastFail";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
 import { HttpStatusCode } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FindPassword = () => {
   const [form, setForm] = useState({
@@ -19,6 +20,7 @@ const FindPassword = () => {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [checkVerificationEmail, setCheckVerificationEmail] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +86,8 @@ const FindPassword = () => {
 
     findPassword(form.name, form.loginId, form.email)
     .then(res => {
-      triggerToastSuccess('임시 비밀번호를 전송했습니다.');
+      alert('임시 비밀번호를 전송했습니다.');
+      navigate('/login');
     })
     .catch(err => {
       const res = err.response;

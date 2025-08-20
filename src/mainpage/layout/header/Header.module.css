@@ -1,20 +1,27 @@
 .header {
   width: 100%;
-  padding: 1rem 1.5rem;
   background-color: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 50;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
 
-.left {
+/* 상단 줄 스타일 */
+.topRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.topLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .logo {
@@ -24,32 +31,126 @@
 }
 
 .brand {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #b45309; /* 갈색톤 */
+  color: #1e40af;
+  letter-spacing: 0.05em;
 }
 
-.right {
+/* 검색창 스타일 */
+.searchContainer {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0 2rem;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #495057;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  padding: 0.75rem;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  color: #374151;
+}
+
+.topRightLinks {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.topRightLinks span {
+  white-space: nowrap;
+}
+
+/* 하단 줄 스타일 */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-radius: 0;
+}
+
+.navButton:hover {
+  color: #1e40af;
+  background-color: #f8f9fa;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .loginText {
-  color: #9CA3AF; /* 회색 텍스트 */
+  color: #6b7280;
   font-size: 0.875rem;
-}
-
-.button {
-  background-color: black;
-  color: white;
-  font-size: 0.875rem;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 0.25rem;
   cursor: pointer;
 }
 
-.button:hover {
-  background-color: #333;
+.loginText:hover {
+  color: #374151;
+}
+
+.actionButton {
+  background: none;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
 }

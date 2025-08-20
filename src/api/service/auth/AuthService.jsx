@@ -28,6 +28,8 @@ const reissue = async () => {
 const setAccessTokenToStorage = (res) => {
     const accessToken = res.headers.authorization;
     localStorage.setItem('access_token', accessToken.split(" ")[1]);
+    // 인증 상태 변경 이벤트 발생
+    window.dispatchEvent(new Event('auth-change'));
 }
 
 const sendVerificatiionEmail = async (verificationType, email) => {
@@ -53,7 +55,15 @@ const findPassword = async (name, loginId, email) => {
 }
 
 const logout = async () => {
-    return await instance.post(`${AUTH_PREFIX}/logout`);
+    const result = await instance.post(`${AUTH_PREFIX}/logout`);
+    localStorage.removeItem('access_token');
+    // 인증 상태 변경 이벤트 발생
+    window.dispatchEvent(new Event('auth-change'));
+    return result;
+}
+
+const changePassword = async ({currentPassword, newPassword, confirmPassword}) => {
+    return await instance.put('/members/password', {currentPassword, newPassword, confirmPassword});
 }
 
 
@@ -78,6 +88,7 @@ export {
     checkDuplicateLoginId,
     findId,
     findPassword,
+    changePassword,
     googleLogin,
     kakaoLogin,
     VERIFICATION_TYPE

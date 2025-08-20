@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FiArrowLeft } from 'react-icons/fi';
 import styles from './ExpoDetail.module.css';
 import { 
@@ -27,6 +28,7 @@ import { isTokenExpired, decodeJWT } from "../../../api/utils/jwtUtils";
 import { getOrCreateExpoChatRoom } from "../../../api/service/chat/chatService";
 
 export default function ExpoDetail() {
+  const { t } = useTranslation();
   const { expoId } = useParams();
   const navigate = useNavigate();
   const [basicInfo, setBasicInfo] = useState(null);
@@ -154,19 +156,19 @@ export default function ExpoDetail() {
       
       // 성공 메시지
       if (result.isBookmarked) {
-        alert('북마크에 추가되었습니다.');
+        alert(t('expoDetail.expoDetailMain.alerts.bookmarkAdded', '북마크에 추가되었습니다.'));
       } else {
-        alert('북마크에서 제거되었습니다.');
+        alert(t('expoDetail.expoDetailMain.alerts.bookmarkRemoved', '북마크에서 제거되었습니다.'));
       }
       
     } catch (err) {
       console.error("찜하기 토글 실패:", err);
       
       if (err.response?.status === 401) {
-        alert('로그인이 필요한 서비스입니다.');
+        alert(t('expoDetail.expoDetailMain.alerts.loginRequired', '로그인이 필요한 서비스입니다.'));
         localStorage.removeItem('access_token');
       } else {
-        alert("찜하기 처리에 실패했습니다.");
+        alert(t('expoDetail.expoDetailMain.alerts.bookmarkError', '찜하기 처리에 실패했습니다.'));
       }
     }
   };
@@ -274,7 +276,7 @@ export default function ExpoDetail() {
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.container}>
-          <div className={styles.loading}>로딩 중...</div>
+          <div className={styles.loading}>{t('expoDetail.expoDetailMain.loading', '로딩 중...')}</div>
         </div>
       </div>
     );
@@ -294,7 +296,7 @@ export default function ExpoDetail() {
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.container}>
-          <div className={styles.error}>박람회 정보를 찾을 수 없습니다.</div>
+          <div className={styles.error}>{t('expoDetail.expoDetailMain.errors.expoNotFound', '박람회 정보를 찾을 수 없습니다.')}</div>
         </div>
       </div>
     );
@@ -319,7 +321,7 @@ export default function ExpoDetail() {
         <div className={styles.backButtonSection}>
           <button className={styles.backButton} onClick={handleGoBack}>
             <FiArrowLeft size={20} />
-            <span>이전으로</span>
+            <span>{t('expoDetail.expoDetailMain.navigation.back', '이전으로')}</span>
           </button>
         </div>
 
@@ -344,31 +346,31 @@ export default function ExpoDetail() {
             className={`${styles.tab} ${activeTab === 'info' ? styles.active : ''}`}
             onClick={() => setActiveTab('info')}
           >
-            상세 정보
+            {t('expoDetail.expoDetailMain.tabs.info', '상세 정보')}
           </button>
           <button 
             className={`${styles.tab} ${activeTab === 'tickets' ? styles.active : ''}`}
             onClick={() => setActiveTab('tickets')}
           >
-            티켓 정보
+            {t('expoDetail.expoDetailMain.tabs.tickets', '티켓 정보')}
           </button>
           <button 
             className={`${styles.tab} ${activeTab === 'booths' ? styles.active : ''}`}
             onClick={() => setActiveTab('booths')}
           >
-            부스 정보 ({booths?.length || 0})
+            {t('expoDetail.expoDetailMain.tabs.booths', '부스 정보')} ({booths?.length || 0})
           </button>
           <button 
             className={`${styles.tab} ${activeTab === 'events' ? styles.active : ''}`}
             onClick={() => setActiveTab('events')}
           >
-            이벤트 ({events?.length || 0})
+            {t('expoDetail.expoDetailMain.tabs.events', '이벤트')} ({events?.length || 0})
           </button>
           <button 
             className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
             onClick={() => setActiveTab('reviews')}
           >
-            리뷰 ({reviews?.totalElements || 0})
+            {t('expoDetail.expoDetailMain.tabs.reviews', '리뷰')} ({reviews?.totalElements || 0})
           </button>
         </div>
 

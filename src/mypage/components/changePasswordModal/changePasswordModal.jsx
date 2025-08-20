@@ -1,11 +1,35 @@
 import React, { useState } from "react";
 import styles from "./changePasswordModal.module.css";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { changePassword } from "../../../api/service/auth/AuthService";
 
 const ChangePasswordModal = ({ onClose }) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [password, setPassword] = useState({
+    'currentPassword': '',
+    'newPassword': '',
+    'confirmPassword': ''
+  });
+
+  const handleInputChange = (field, value) => {
+    setPassword(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleChangePassword = () => {
+    changePassword({...password})
+    .then(res => {
+      alert('비밀번호가 변경되었습니다.');
+      onClose();
+    })
+    .catch(err => {
+      alert('비밀번호 변경에 실패했습니다.');
+    })
+  }
 
   return (
     <div className={styles.overlay}>
@@ -21,6 +45,8 @@ const ChangePasswordModal = ({ onClose }) => {
             <input
               type={showCurrent ? "text" : "password"}
               placeholder="현재 비밀번호를 입력하세요"
+              value={password.currentPassword}
+              onChange={(e) => handleInputChange('currentPassword', e.target.value)}
             />
             <button
               className={styles.eyeButton}
@@ -38,6 +64,8 @@ const ChangePasswordModal = ({ onClose }) => {
             <input
               type={showNew ? "text" : "password"}
               placeholder="새 비밀번호를 입력하세요"
+              value={password.newPassword}
+              onChange={(e) => handleInputChange('newPassword', e.target.value)}
             />
             <button
               className={styles.eyeButton}
@@ -56,6 +84,8 @@ const ChangePasswordModal = ({ onClose }) => {
             <input
               type={showConfirm ? "text" : "password"}
               placeholder="새 비밀번호를 다시 입력하세요"
+              value={password.confirmPassword}
+              onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
             />
             <button
               className={styles.eyeButton}
@@ -67,7 +97,7 @@ const ChangePasswordModal = ({ onClose }) => {
           </div>
         </div>
 
-        <div className={styles.buttonGroup}>
+        <div className={styles.buttonGroup} onClick={handleChangePassword}>
           <button className={styles.confirm}>비밀번호 변경</button>
           <button className={styles.cancel} onClick={onClose}>
             취소

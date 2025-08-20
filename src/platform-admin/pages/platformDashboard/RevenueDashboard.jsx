@@ -158,12 +158,12 @@ function RevenueDashboard() {
             <p className={styles.cardLabel}>{item.label}</p>
             <p className={styles.cardValue}>{item.value.toLocaleString()}</p>
             <div className={styles.cardChange}>
-              {item.isTrending ? (
+              {item.trending ? (
                 <FiArrowUpRight className={styles.upIcon} />
               ) : (
                 <FiArrowDownRight className={styles.downIcon} />
               )}
-              <span>{item.change || 0}% 지난 기간 대비</span>
+              <span>{item.change.toFixed(2) || 0}% 지난 기간 대비</span>
             </div>
           </div>
         ))}

@@ -6,24 +6,21 @@
 .currentLanguage {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 6px 8px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  background: transparent;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  color: #1f2937;
+  font-size: 18px;
+  color: #29292d;
   transition: all 0.2s ease;
-  min-width: 80px;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: 'GmarketSansMedium', sans-serif;
+  height: 32px;
 }
 
 .currentLanguage:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background: #e9ecef;
 }
 
 .languageFlag {
@@ -31,11 +28,18 @@
   line-height: 1;
 }
 
+.globeIcon {
+  font-size: 1.5rem;
+  filter: grayscale(1) brightness(0.2);
+}
+
 .languageName {
   font-weight: 600;
-  font-size: 12px;
-  color: #111827;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  color: #29292d;
+  font-family: 'GmarketSansMedium', sans-serif;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .chevron {
