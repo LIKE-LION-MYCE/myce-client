@@ -20,9 +20,6 @@ function OperatorApplicationForm({ applicantData }) {
 
   return (
     <div className={styles.container}>
-      {/* 제목 추가 */}
-      <div className={styles.sectionTitle}>신청자 정보</div>
-
       <div className={styles.formGrid}>
         {/* 신청자 아이디 */}
         <div className={styles.formGroup}>

@@ -1,0 +1,235 @@
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  position: relative;
+}
+
+.bannerImageRow {
+  grid-column: 1 / 3;
+  margin-top: 0;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bannerImageWrapper {
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.bannerImagePlaceholder {
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 60px 20px;
+}
+
+.bannerImage {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  display: block;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.infoSection label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #232323;
+  letter-spacing: -0.1px;
+}
+
+.input {
+  width: 100%;
+  font-size: 15px;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  background: transparent;
+  color: #444;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  border-bottom-color: #357ec7;
+}
+
+.input[readonly] {
+  background: transparent;
+  color: #666;
+  border-bottom-color: #f0f0f0;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 78px;
+  font-size: 15px;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  background: transparent;
+  color: #444;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.textarea:focus {
+  border-bottom-color: #357ec7;
+}
+
+.fullRow {
+  grid-column: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.periodInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin: 24px 0 0 0;
+}
+
+.btn {
+  min-width: 180px;
+  padding: 15px 0;
+  border-radius: 8px;
+  border: none;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  transition: background 0.13s;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.pink {
+  background: #fa7575;
+  color: #fff;
+}
+.pink:disabled {
+  background: #fffbe4;
+  color: #b28a15;
+  cursor: not-allowed;
+}
+
+.black {
+  background: #222;
+  color: #fff;
+}
+.black:disabled {
+  background: #e6e6e6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.blue {
+  background: #357ec7;
+  color: #fff;
+}
+.blue:hover {
+  background: #2563eb;
+}
+.blue:disabled {
+  background: #e6e6e6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.red {
+  background: #dc2626;
+  color: #fff;
+}
+.red:hover {
+  background: #b91c1c;
+}
+.red:disabled {
+  background: #fee2e2;
+  color: #dc2626;
+  cursor: not-allowed;
+}
+
+.purple {
+  background: #8b5cf6;
+  color: #fff;
+}
+.purple:hover {
+  background: #7c3aed;
+}
+.purple:disabled {
+  background: #e6e6e6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.orange {
+  background: #ff9500;
+  color: #fff;
+}
+.orange:hover {
+  background: #ea580c;
+}
+.orange:disabled {
+  background: #e6e6e6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.green {
+  background: #28a745;
+  color: #fff;
+}
+.green:hover {
+  background: #22c55e;
+}
+.green:disabled {
+  background: #e6e6e6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 버튼이 없을 때 표시할 메시지 스타일 */
+.noButtonsMessage {
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}

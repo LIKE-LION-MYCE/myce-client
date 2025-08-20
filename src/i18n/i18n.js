@@ -434,12 +434,12 @@ const mainResources = {
         systemSettings: "시스템 설정",
         languageSettings: "언어 설정",
         advertiserMenu: "광고주 메뉴",
-        adStatusMenu: "광고 현황",
+        adStatusMenu: "광고 신청 현황",
         expoAdminMenu: "박람회 관리자 메뉴",
         expoStatusMenu: "박람회 신청 현황",
         // 박람회 신청 현황 상세
         expoStatus: {
-          title: "신청 박람회 현황",
+          title: "박람회 신청 현황",
           loading: "로딩 중...",
           loadError: "신청 박람회를 불러오는데 실패했습니다.",
           noData: "신청한 박람회가 없습니다.",
@@ -576,7 +576,7 @@ const mainResources = {
         withdrawSuccess: "회원 탈퇴가 완료되었습니다.",
         withdrawFailed: "회원 탈퇴에 실패했습니다.",
         adsStatus: {
-          title: "내 광고 현황",
+          title: "광고 신청 현황",
           totalAds: "총 {{count}}개의 광고",
           noAds: "등록된 광고가 없습니다.",
           loadError: "광고 목록을 불러오는데 실패했습니다.",
@@ -766,7 +766,7 @@ const mainResources = {
       },
       // 박람회 신청 현황
       expoStatus: {
-        title: "신청 박람회 현황",
+        title: "박람회 신청 현황",
         loading: "로딩 중...",
         loadError: "신청 박람회를 불러오는데 실패했습니다.",
         noData: "신청한 박람회가 없습니다.",

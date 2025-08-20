@@ -20,6 +20,7 @@ function ExpoSettingForm() {
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [categories, setCategories] = useState([]);
   const [expoStatus, setExpoStatus] = useState('');
@@ -113,7 +114,8 @@ function ExpoSettingForm() {
     setTimeout(() => setShowFailToast(false), 2000);
   };
 
-  const triggerToast = () => {
+  const triggerToast = (message) => {
+    setSuccessMessage(message);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
   };
@@ -137,7 +139,7 @@ function ExpoSettingForm() {
       await updateMyExpoDescription(expoId, dataToSend);
 
       setIsEditing(false);
-      triggerToast();
+      triggerToast('박람회 설명란이 수정되었습니다.');
       fetchExpoInfo();
     } catch (error) {
       const message = error?.response?.data?.message || error.message;
@@ -157,7 +159,7 @@ function ExpoSettingForm() {
 
   return (
     <div className={styles.container}>
-      {showToast && <ToastSuccess />}
+      {showToast && <ToastSuccess message={successMessage} />}
       {showFailToast && <ToastFail message={errorMessage} />}
 
       <div className={styles.topRow}>

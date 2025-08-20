@@ -1,13 +1,27 @@
 .wrapper {
+  width: 100%;
   background: #f9fafb;
-  min-height: 600px;
+  min-height: 100vh;
+  box-sizing: border-box;
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.container {
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 32px;
+  box-sizing: border-box;
 }
 
 .pageTitle {
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
 }
 
 .list {
@@ -19,12 +33,17 @@
 .card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  border: 1px solid #e0e0e0;
   padding: 24px;
   display: flex;
   gap: 20px;
   width: calc(50% - 10px);
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #c0c0c0;
 }
 
 .info {
@@ -36,14 +55,15 @@
 
 .titleRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .titleRow h3 {
   font-weight: 700;
   font-size: 1.3rem;
   margin: 0;
+  color: #1a1a1a;
 }
 
 .statusBadge {
@@ -92,6 +112,12 @@
 .detailRow strong {
   font-weight: 600;
   margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.detailRow p {
+  margin: 0;
+  color: #444;
 }
 
 .buttons {
@@ -112,7 +138,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: #222;
+  background-color: #333;
 }
 
 .secondaryBtn {
@@ -186,8 +212,8 @@
 }
 
 .pageBtn.active {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #000000;
+  border-color: #000000;
   color: #fff;
   font-weight: 600;
 }
