@@ -97,7 +97,6 @@ function PaymentVirtualBankButton({
                 merchantUid: rsp.merchant_uid,
                 amount: amount,
                 targetType: targetType,
-                targetId: 0, // 임시 ID 사용
                 usedMileage: usedMileage || 0,
                 savedMileage: savedMileage || 0,
                 reserverInfos: reserverInfos,
