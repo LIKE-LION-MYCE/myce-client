@@ -13,19 +13,40 @@
 .topRow {
   display: flex;
   align-items: center;
-  padding: 1rem 2rem;
+  justify-content: space-between;
+  min-height: 4.5rem;
+  padding: 0.5rem 0.5rem 0rem 1rem;
   gap: 1rem;
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  /* flex: 1; */
+  margin-left: 2rem;
+  /* 필요에 따라 주석 처리 */
+}
+
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* 기존 .rightActions의 gap을 여기에 적용 */
+  margin-right: 2rem;
+  /* 기존 .rightActions의 margin을 여기에 적용 */
 }
 
 .topLeft {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-left: 8rem;
+  margin-left: 0;
+  /* 기존 8rem 삭제 */
 }
 
 .logo {
-  height: 50px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
@@ -41,8 +62,9 @@
   padding: 0;
   margin-left: 1rem;
   flex: 1;
-  max-width: 600px;
-  height: 64px;
+  max-width: 300px;
+  height: 42px;
+  margin-left: 1rem;
 }
 
 .searchContainer.withDropdown {
@@ -60,7 +82,7 @@
   border: none;
   background: transparent;
   padding: 0 28px;
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   color: #374151;
   outline: none;
   height: 100%;
@@ -87,8 +109,8 @@
 }
 
 .searchButton svg {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 /* 프로모션 배너 스타일 */
@@ -115,11 +137,11 @@
 .promoText {
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 0.9rem;
   line-height: 1.2;
   color: #374151;
   white-space: nowrap;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .promoText div:first-child {
@@ -136,14 +158,14 @@
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
-  margin-right: 8rem;
+  margin-right: 2rem;
 }
 
 .topRightLinks {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: #6b7280;
   margin-left: auto;
 }
@@ -170,19 +192,20 @@
 .navButton {
   background: none;
   border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.25rem;
+  margin-left: 0;
+  padding: 0.75rem 0.8rem;
+  font-size: 1.0rem;
   font-weight: 500;
   color: #29292d;
   cursor: pointer;
   transition: color 0.2s ease;
   border-radius: 0;
   position: relative;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60px;
+  min-height: 1rem;
   line-height: 1;
 }
 
@@ -213,7 +236,7 @@
   gap: 0.5rem;
   margin-right: 8rem;
   height: 40px;
-  font-size: 1.0rem;
+  font-size: 0.8rem;
 }
 
 .actionButton {
@@ -228,7 +251,7 @@
   cursor: pointer;
   color: #29292d;
   transition: all 0.2s ease;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   height: 32px;
   min-width: fit-content;
 }
@@ -245,9 +268,9 @@
 
 .actionText {
   font-weight: 600;
-  font-size: 1.0rem;
+  font-size: 0.9rem;
   color: #29292d;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 /* 검색 결과 드롭다운 스타일 */
@@ -264,12 +287,15 @@
   z-index: 1000;
   max-height: 300px;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
 }
 
 .searchResultsDropdown::-webkit-scrollbar {
-  display: none; /* WebKit */
+  display: none;
+  /* WebKit */
 }
 
 .searchResultItem {
@@ -314,28 +340,28 @@
 }
 
 .searchResultTitle {
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1f2937;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .searchResultLocation {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #6b7280;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .searchResultDate {
-  font-size: 11px;
+  font-size: 0.7rem;
   color: #9ca3af;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -344,13 +370,13 @@
 .searchResultMore {
   padding: 12px 20px;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #000000;
   cursor: pointer;
   border-top: 1px solid #f3f4f6;
   background-color: #f8f9fa;
   transition: background-color 0.2s ease;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .searchResultMore:hover {
@@ -359,96 +385,98 @@
 
 /* Clean focus styles */
 .menuItem:focus {
- outline: none;
+  outline: none;
 }
 
 .logoutBtn:focus,
 .mypageBtn:focus {
- outline: 2px solid #000000;
- outline-offset: 2px;
+  outline: 2px solid #000000;
+  outline-offset: 2px;
 }
 
 @media (max-width: 1024px) {
- .navbar {
-   padding: 0 24px;
- }
+  .navbar {
+    padding: 0 24px;
+  }
 
- .menuSection {
-   gap: 8px;
- }
+  .menuSection {
+    gap: 8px;
+  }
 
- .menuItem {
-   padding: 20px 24px;
- }
+  .menuItem {
+    padding: 20px 24px;
+  }
 
- .menuText {
-   font-size: 15px;
- }
+  .menuText {
+    font-size: 0.9rem;
+  }
 
- .menuText::after {
-   bottom: -22px;
- }
+  .menuText::after {
+    bottom: -22px;
+  }
 }
 
 @media (max-width: 768px) {
- .navbar {
-   padding: 0 16px;
-   height: 70px;
- }
+  .navbar {
+    padding: 0 16px;
+    height: 70px;
+  }
 
- .logoImage {
-   height: 35px;
- }
+  .logoImage {
+    height: 35px;
+  }
 
- .menuSection {
-   gap: 4px;
- }
+  .menuSection {
+    gap: 4px;
+  }
 
- .menuItem {
-   padding: 16px 20px;
- }
+  .menuItem {
+    padding: 16px 20px;
+  }
 
- .menuText {
-   font-size: 14px;
- }
+  .menuText {
+    font-size: 0.8rem;
+  }
 
- .menuText::after {
-   bottom: -18px;
- }
+  .menuText::after {
+    bottom: -18px;
+  }
 
- .rightSection {
-   gap: 16px;
- }
+  .rightSection {
+    gap: 16px;
+  }
 
- .logoutBtn, .mypageBtn {
-   padding: 10px 18px;
-   font-size: 13px;
- }
+  .logoutBtn,
+  .mypageBtn {
+    padding: 10px 18px;
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 640px) {
- .navbar {
-   padding: 0 12px;
- }
+  .navbar {
+    padding: 0 12px;
+  }
 
- .menuSection {
-   gap: 0;
- }
+  .menuSection {
+    gap: 0;
+  }
 
- .menuItem {
-   padding: 14px 16px;
- }
+  .menuItem {
+    padding: 14px 16px;
+  }
 
- .menuText::after {
-   bottom: -16px;
- }
+  .menuText::after {
+    bottom: -16px;
+  }
 
- .rightSection {
-   gap: 12px;
- }
+  .rightSection {
+    gap: 12px;
+  }
 
- .logoutBtn, .mypageBtn {
-   padding: 8px 14px;
-   font-size: 12px;
- }
+  .logoutBtn,
+  .mypageBtn {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+  }
 }

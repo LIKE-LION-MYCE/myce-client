@@ -6,7 +6,6 @@ import styles from "./MemberMainPageHeader.module.css";
 import NotificationButton from "../../components/notification/NotificationButton";
 import LanguageSelector from "../../../common/components/language/LanguageSelector";
 import { logout } from "../../../api/service/auth/AuthService";
-import { useNotification } from "../../../context/NotificationContext";
 import { getUserInfoFromToken } from "../../../api/utils/jwtUtils";
 import { useExpoData } from "../../../hooks/useExpoData";
 
@@ -53,11 +52,11 @@ const MemberMainPageHeader = ({ notification }) => {
     { name: t("nav.adApply"), path: "/ad-apply" },
     ...(isPlatformAdmin
       ? [
-          {
-            name: t("nav.platformAdmin"),
-            path: "/platform/admin/dashboard/revenue",
-          },
-        ]
+        {
+          name: t("nav.platformAdmin"),
+          path: "/platform/admin/dashboard/revenue",
+        },
+      ]
       : []),
   ];
 
@@ -139,118 +138,100 @@ const MemberMainPageHeader = ({ notification }) => {
     <header className={styles.header}>
       {/* 상단 줄 */}
       <div className={styles.topRow}>
-        <div className={styles.topLeft} onClick={handleLogoClick}>
-          <img src="/myce_logo.png" alt="MYCE" className={styles.logo} />
-        </div>
-        <div
-          className={`${styles.searchContainer} ${
-            showSearchResults && searchResults.length > 0
-              ? styles.withDropdown
-              : ""
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <form onSubmit={handleSearchSubmit}>
-            <input
-              type="text"
-              placeholder={t("nav.searchPlaceholder")}
-              className={styles.searchInput}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
-            />
-            <button type="submit" className={styles.searchButton}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </form>
-          {showSearchResults && searchResults.length > 0 && (
-            <div className={styles.searchResultsDropdown}>
-              {searchResults.slice(0, 5).map((expo) => (
-                <div
-                  key={expo.expoId || expo.id}
-                  className={styles.searchResultItem}
-                  onClick={() => handleSearchResultClick(expo)}
-                >
-                  <div className={styles.searchResultImage}>
-                    <img
-                      src={expo.thumbnailUrl || "/default-expo-image.jpg"}
-                      alt={expo.title}
-                      onError={(e) => {
-                        e.target.src = "/default-expo-image.jpg";
-                      }}
-                    />
-                  </div>
-                  <div className={styles.searchResultContent}>
-                    <div className={styles.searchResultTitle}>{expo.title}</div>
-                    <div className={styles.searchResultLocation}>
-                      {expo.location}
-                    </div>
-                    <div className={styles.searchResultDate}>
-                      {expo.startDate &&
-                        expo.endDate &&
-                        `${new Date(expo.startDate).toLocaleDateString(
-                          "ko-KR"
-                        )} ~ ${new Date(expo.endDate).toLocaleDateString(
-                          "ko-KR"
-                        )}`}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {searchResults.length > 5 && (
-                <div
-                  className={styles.searchResultMore}
-                  onClick={() =>
-                    handleSearchSubmit({ preventDefault: () => {} })
-                  }
-                >
-                  더 많은 결과 보기
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <div className={styles.promoContainer}>
-          <img
-            src="/coupon_create_cover1-1.jpg"
-            alt="할인 쿠폰"
-            className={styles.promoImage}
-          />
-          <div className={styles.promoText}>
-            <div>박람회 할인</div>
-            <div>얼리버드 티켓 모음</div>
+        {/* 로고, 메뉴, 검색창을 포함하는 왼쪽 그룹 */}
+        <div className={styles.leftGroup}>
+          <div className={styles.topLeft} onClick={handleLogoClick}>
+            <img src="/myce_logo.png" alt="MYCE" className={styles.logo} />
           </div>
-        </div>
-        <div className={styles.topRightActions}>
-          <NotificationButton notification={notification} />
-          <LanguageSelector />
-        </div>
-      </div>
-
-      {/* 하단 줄 */}
-      <div className={styles.bottomRow}>
-        <nav className={styles.navigation}>
           {menuItems.map((item) => (
             <button
               key={item.name}
-              className={`${styles.navButton} ${
-                activeMenu === item.name ? styles.active : ""
-              }`}
+              className={`${styles.navButton} ${activeMenu === item.name ? styles.active : ""
+                }`}
               onClick={() => handleMenuClick(item)}
             >
               {item.name}
             </button>
           ))}
-        </nav>
-        <div className={styles.rightActions}>
+          <div
+            className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
+                ? styles.withDropdown
+                : ""
+              }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                placeholder={t("nav.searchPlaceholder")}
+                className={styles.searchInput}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+              />
+              <button type="submit" className={styles.searchButton}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </form>
+            {showSearchResults && searchResults.length > 0 && (
+              <div className={styles.searchResultsDropdown}>
+                {searchResults.slice(0, 5).map((expo) => (
+                  <div
+                    key={expo.expoId || expo.id}
+                    className={styles.searchResultItem}
+                    onClick={() => handleSearchResultClick(expo)}
+                  >
+                    <div className={styles.searchResultImage}>
+                      <img
+                        src={expo.thumbnailUrl || "/default-expo-image.jpg"}
+                        alt={expo.title}
+                        onError={(e) => {
+                          e.target.src = "/default-expo-image.jpg";
+                        }}
+                      />
+                    </div>
+                    <div className={styles.searchResultContent}>
+                      <div className={styles.searchResultTitle}>{expo.title}</div>
+                      <div className={styles.searchResultLocation}>
+                        {expo.location}
+                      </div>
+                      <div className={styles.searchResultDate}>
+                        {expo.startDate &&
+                          expo.endDate &&
+                          `${new Date(expo.startDate).toLocaleDateString(
+                            "ko-KR"
+                          )} ~ ${new Date(expo.endDate).toLocaleDateString(
+                            "ko-KR"
+                          )}`}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {searchResults.length > 5 && (
+                  <div
+                    className={styles.searchResultMore}
+                    onClick={() =>
+                      handleSearchSubmit({ preventDefault: () => { } })
+                    }
+                  >
+                    더 많은 결과 보기
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 로그아웃, 마이페이지, 알림, 언어 선택을 포함하는 오른쪽 그룹 */}
+        <div className={styles.rightGroup}>
           <button className={styles.actionButton} onClick={handleLogoutClick}>
             <svg
               className={styles.actionIcon}
@@ -288,6 +269,9 @@ const MemberMainPageHeader = ({ notification }) => {
             </svg>
             <span className={styles.actionText}>{t("nav.mypage")}</span>
           </button>
+
+          <NotificationButton notification={notification} />
+          <LanguageSelector />
         </div>
       </div>
     </header>
