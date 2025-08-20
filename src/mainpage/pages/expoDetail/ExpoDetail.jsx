@@ -276,7 +276,21 @@ export default function ExpoDetail() {
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.container}>
-          <div className={styles.loading}>{t('expoDetail.expoDetailMain.loading', '로딩 중...')}</div>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}>
+              <div className={styles.spinnerRing}></div>
+              <div className={styles.spinnerRing}></div>
+              <div className={styles.spinnerRing}></div>
+            </div>
+            <div className={styles.loadingText}>
+              <span>{t('expoDetail.expoDetailMain.loading', '박람회 정보를 불러오고 있습니다')}</span>
+              <div className={styles.loadingDots}>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

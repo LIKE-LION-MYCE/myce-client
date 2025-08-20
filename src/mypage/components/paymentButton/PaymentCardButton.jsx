@@ -4,15 +4,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
 import { requestRefund } from "../../../api/service/payment/RefundService";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
-function PaymentCardButton({ name, amount, buyer, targetType }) {
+function PaymentCardButton({ name, amount, buyer, targetType, onPaymentStart, onPaymentEnd }) {
   const [loading, setLoading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handlePay = async () => {
     if (!window.IMP) {
-      alert("결제 모듈이 준비되지 않았습니다.");
+      showFailMessage("결제 모듈이 준비되지 않았습니다.");
       return;
     }
     if (loading) return;
@@ -32,6 +49,7 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
+            onPaymentStart?.();
             try {
               const res = await instance.post(`/payment/verify`, {
                 impUid: rsp.imp_uid,
@@ -45,15 +63,17 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
               console.log("merchant_uid:", rsp.merchant_uid);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
+                onPaymentEnd?.();
                 if (targetType === "EXPO") {
-                  alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
-                  navigate(`/mypage/expo-status/${id}`);
+                  showSuccessMessage("결제 검증 성공! 박람회 결제가 완료되었습니다.");
+                  setTimeout(() => navigate(`/mypage/expo-status/${id}`), 1000);
                 } else {
-                  alert("결제 검증 성공! 광고 결제가 완료되었습니다.");
-                  navigate(`/mypage/ads-status/${id}`);
+                  showSuccessMessage("결제 검증 성공! 광고 결제가 완료되었습니다.");
+                  setTimeout(() => navigate(`/mypage/ads-status/${id}`), 1000);
                 }
               } else {
-                alert(
+                onPaymentEnd?.();
+                showFailMessage(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
               }
@@ -69,15 +89,18 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
                   merchantUid: rsp.merchant_uid,
                   reason: "서버 처리 오류로 인한 자동 환불",
                 });
-                alert(
+                onPaymentEnd?.();
+                showFailMessage(
                   "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
                 );
               } catch (refundError) {
-                alert("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
+                onPaymentEnd?.();
+                showFailMessage("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
               }
             }
           } else {
-            alert("결제가 취소되었습니다. 다시 시도해주세요.");
+            onPaymentEnd?.();
+            showFailMessage("결제가 취소되었습니다. 다시 시도해주세요.");
             if (targetType === "EXPO") {
               navigate(`/mypage/expo-status/${id}`);
             } else {
@@ -87,7 +110,8 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
         }
       );
     } catch (e) {
-      alert(
+      onPaymentEnd?.();
+      showFailMessage(
         "예약 정보 처리 중 오류가 발생했습니다: " +
           (e.response?.data?.message || e.message)
       );
@@ -112,6 +136,8 @@ function PaymentCardButton({ name, amount, buyer, targetType }) {
           "카드 결제"
         )}
       </button>
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </>
   );
 }

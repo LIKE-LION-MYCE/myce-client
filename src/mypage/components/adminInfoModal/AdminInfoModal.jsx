@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './AdminInfoModal.module.css';
 
 const AdminInfoModal = ({ 
@@ -7,20 +8,21 @@ const AdminInfoModal = ({
   onClose,
   onNavigateToAdminPage
 }) => {
+  const { t } = useTranslation();
   // Use the passed adminName, with a fallback
-  const adminId = adminName || "관리자 ID 없음";
+  const adminId = adminName || t('adminInfoModal.messages.noAdminId');
   
   // Map over the codesData array to extract the code property
   const subordinateCodes = codesData?.map(item => ({
     code: item.code,
-    action: "복사"
+    action: t('adminInfoModal.buttons.copy')
   })) || [];
 
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code).then(() => {
-      alert('코드가 복사되었습니다.');
+      alert(t('adminInfoModal.messages.codeCopied'));
     }).catch(() => {
-      alert('복사에 실패했습니다.');
+      alert(t('adminInfoModal.messages.copyFailed'));
     });
   };
 
@@ -28,7 +30,7 @@ const AdminInfoModal = ({
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h2 className={styles.title}>관리자 정보</h2>
+          <h2 className={styles.title}>{t('adminInfoModal.title')}</h2>
           <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>
@@ -36,14 +38,14 @@ const AdminInfoModal = ({
 
         <div className={styles.content}>
           <div className={styles.section}>
-            <div className={styles.label}>관리자 아이디</div>
+            <div className={styles.label}>{t('adminInfoModal.fields.adminId')}</div>
             <div className={styles.adminId}>{adminId}</div>
           </div>
 
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <div className={styles.label}>하위 관리자 코드</div>
+            <div className={styles.label}>{t('adminInfoModal.fields.subordinateCodes')}</div>
             <div className={styles.codeList}>
               {subordinateCodes.length > 0 ? (
                 subordinateCodes.map((item, index) => (
@@ -58,7 +60,7 @@ const AdminInfoModal = ({
                   </div>
                 ))
               ) : (
-                <div className={styles.noCodeMessage}>하위 관리자 코드가 없습니다.</div>
+                <div className={styles.noCodeMessage}>{t('adminInfoModal.messages.noCodes')}</div>
               )}
             </div>
           </div>
@@ -68,7 +70,7 @@ const AdminInfoModal = ({
           className={styles.navigateButton}
           onClick={onNavigateToAdminPage}
         >
-          관리자 페이지 이동
+          {t('adminInfoModal.buttons.navigateToAdmin')}
         </button>
       </div>
     </div>

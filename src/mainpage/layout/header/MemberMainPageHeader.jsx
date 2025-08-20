@@ -76,7 +76,7 @@ const MemberMainPageHeader = ({notification}) => {
         <div className={styles.searchContainer}>
           <input 
             type="text" 
-            placeholder="박람회를 검색해보세요" 
+            placeholder={t('nav.searchPlaceholder')} 
             className={styles.searchInput}
           />
           <button className={styles.searchButton}>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import AuthLayout from "../../layout/AuthLayout";
 import styles from "./FindIdPage.module.css";
 import { findId, sendVerificatiionEmail, verifyVerificationEmail, VERIFICATION_TYPE } from "../../../api/service/auth/AuthService";
@@ -8,6 +9,7 @@ import { HttpStatusCode } from "axios";
 import IdFoundModal from "../../components/bannerCancelDetailModal/IdFoundModal";
 
 function FindIdPage() {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [authCode, setAuthCode] = useState("");
@@ -23,14 +25,14 @@ function FindIdPage() {
     e.preventDefault();
 
     if(!name) {
-      triggerToastFail('이름을 입력해주세요.');
+      triggerToastFail(t('findId.validation.nameRequired'));
       return;
     }
 
     if(!validEmailFormat()) return;
 
     if(!checkVerificationEmail) {
-      triggerToastFail('이메일 인증을 완료해주세요.');
+      triggerToastFail(t('findId.validation.emailVerificationRequired'));
       return;
     }
 
@@ -42,7 +44,7 @@ function FindIdPage() {
     .catch((err) => {
       const res = err.response;
       if(res.data?.message) triggerToastFail(res.data?.message);
-      else triggerToastFail('아이디를 찾을 수 없습니다.');
+      else triggerToastFail(t('findId.messages.idNotFound'));
   });
 
     console.log("아이디 찾기 요청", { name, email, authCode });
@@ -52,8 +54,8 @@ const sendEmailForVerification = () => {
     if(!validEmailFormat()) return;
 
     sendVerificatiionEmail(VERIFICATION_TYPE.FIND_ID, email)
-    .then(() => triggerToastSuccess('메일이 발송되었습니다.'))
-    .catch((err) => triggerToastFail('메일 발송에 실패했습니다.', err));
+    .then(() => triggerToastSuccess(t('findId.messages.emailSent')))
+    .catch((err) => triggerToastFail(t('findId.messages.emailSendFailed'), err));
   }
 
   const verifyEmailForVerification = () => {
@@ -62,7 +64,7 @@ const sendEmailForVerification = () => {
     .then((res) => {
       console.log('API 응답 객체 (res):', res);
       if(res.status === HttpStatusCode.Ok) {
-        triggerToastSuccess('인증이 완료되었습니다.');
+        triggerToastSuccess(t('findId.messages.verificationSuccess'));
         setCheckVerificationEmail(true);
       } else {
         triggerToastFail(res.data.message);
@@ -73,7 +75,7 @@ const sendEmailForVerification = () => {
       if(err.response && err.response.data && err.response.data.message) {
         triggerToastFail(err.response.data.message);
       } else {
-        triggerToastFail("인증에 실패했습니다.");
+        triggerToastFail(t('findId.messages.verificationFailed'));
         console.log(`Fail to verify email verification. ${err}`);
       }
     });
@@ -82,7 +84,7 @@ const sendEmailForVerification = () => {
   const validEmailFormat = () => {
     var regEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
     if(!email || regEmail.test(email)) {
-      triggerToastFail('이메일 형식이 올바르지 않습니다.');
+      triggerToastFail(t('findId.validation.emailFormat'));
       return false;
     }
 
@@ -111,24 +113,24 @@ const sendEmailForVerification = () => {
   };
 
   return (
-    <AuthLayout title="아이디 찾기">
-      <h2>아이디 찾기</h2>
+    <AuthLayout title={t('findId.title')}>
+      <h2>{t('findId.title')}</h2>
       <form className={styles.signUpForm} onSubmit={handleSubmit}>
-        <label htmlFor="name">이름</label>
+        <label htmlFor="name">{t('findId.form.name')}</label>
         <input
           id="name"
           type="text"
-          placeholder="이름을 입력하세요"
+          placeholder={t('findId.form.namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label htmlFor="email">이메일</label>
+        <label htmlFor="email">{t('findId.form.email')}</label>
         <div className={styles.rowInput}>
           <input
             id="email"
             type="email"
-            placeholder="가입한 이메일을 입력하세요"
+            placeholder={t('findId.form.emailPlaceholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -138,14 +140,14 @@ const sendEmailForVerification = () => {
             onClick={sendEmailForVerification}
             disabled={checkVerificationEmail}
           >
-            인증발송
+            {t('findId.form.sendVerification')}
           </button>
         </div>
 
         <div className={styles.rowInput}>
           <input
             type="text"
-            placeholder="인증번호를 입력하세요."
+            placeholder={t('findId.form.verificationCodePlaceholder')}
             value={authCode}
             onChange={(e) => setAuthCode(e.target.value)}
           />
@@ -155,16 +157,16 @@ const sendEmailForVerification = () => {
             onClick={verifyEmailForVerification}
             disabled={checkVerificationEmail}
           >
-            확인
+            {t('findId.form.verify')}
           </button>
         </div>
 
         <button type="submit" className={styles.submitButton}>
-          아이디 찾기
+          {t('findId.form.submitButton')}
         </button>
 
         <div className={styles.loginLink}>
-          <a href="/login">로그인으로 돌아가기</a>
+          <a href="/login">{t('findId.footer.backToLogin')}</a>
         </div>
       </form>
 
