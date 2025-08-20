@@ -78,6 +78,9 @@ const SystemMessage = ({ type, payload, timestamp }) => {
     case 'HANDOFF_TO_OPERATOR':
       console.log('🎭 SystemMessage - Rendering HANDOFF_TO_OPERATOR');
       return renderHandoffToOperator();
+    case 'ADMIN_HANDOFF_ACCEPTED':
+      console.log('🎭 SystemMessage - Rendering ADMIN_HANDOFF_ACCEPTED');
+      return renderAdminInterventionStart(); // Same UI as ADMIN_INTERVENTION_START
     case 'HANDOFF_TO_AI':
       console.log('🎭 SystemMessage - Rendering HANDOFF_TO_AI');
       return renderHandoffToAI();
