@@ -223,7 +223,7 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/settingMessage" />}
             active={selectedMenu === '/platform/admin/settingMessage'}
           >
-            발송 메시지
+            발송 메시지 설정
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin/adPosition" />}
