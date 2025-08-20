@@ -1,34 +1,23 @@
 .container {
-  max-width: 1400px;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 3rem 1rem;
 }
 .title {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 800;
   background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 0 auto; /* 중앙 정렬 */
+  margin: 0 auto;
   letter-spacing: -0.04em;
   position: relative;
-  text-align: center; /* 중앙 정렬 */
-  width: fit-content; /* 언더라인이 텍스트 너비에 맞게 */
+  text-align: center;
+  width: fit-content;
   margin-bottom: 2.5rem;
 }
 
-.title::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 50%; /* 중앙에서 시작 */
-  transform: translateX(-50%); /* 중앙 정렬 */
-  width: 190px; /* 너비 줄임 */
-  height: 3px;
-  background: linear-gradient(90deg, #000, #000);
-  border-radius: 2px;
-}
 
 .loading, .error {
   text-align: center;
@@ -40,14 +29,14 @@
 .loading {
   background-color: #f8f9fa;
   color: #666;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .error {
   background-color: #fff5f5;
   color: #e53e3e;
-  border: 1px solid #fed7d7;
-  font-size: 1rem;
+  border: 0.0625rem solid #fed7d7;
+  font-size: 1.125rem;
 }
 
 .reviewsGrid {

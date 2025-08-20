@@ -1,6 +1,6 @@
 /* src/mainpage/layout/footer/MainPageFooter.module.css */
 .footer {
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   padding: 3rem 0 2rem;
   font-size: 0.875rem;
   color: #6b7280;
@@ -8,6 +8,7 @@
   border-top: none !important;
   position: relative;
   margin-top: 0;
+  width: 100%;
 }
 
 .footer::before {

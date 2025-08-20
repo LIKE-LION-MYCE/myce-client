@@ -1,7 +1,21 @@
 .wrapper {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   width: 100%;
+  max-width: 100rem;
+  margin: 0 auto;
   padding: 3rem 2rem 1.5rem 2rem;
   position: relative;
+}
+
+.wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 2.1rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 .wrapper::before {
@@ -10,7 +24,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 0.0625rem;
 }
 
 .header {
@@ -22,7 +36,8 @@
 }
 
 .title {
-  font-size: 2rem;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 2.25rem;
   font-weight: 800;
   background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
   -webkit-background-clip: text;
@@ -33,30 +48,19 @@
   position: relative;
 }
 
-.title::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 170px;
-  height: 3px;
-  background: linear-gradient(90deg, #000, #000);
-  border-radius: 2px;
-}
 
 .container {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   width: 100%;
   display: flex;
-  gap: 0;
-  justify-content: center; /* 중앙 정렬 */
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  overflow-x: auto;
-  scrollbar-width: none;
+  border-radius: 1rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.3);
   position: relative;
-  padding: 0.5rem; /* 패딩 추가 */
-  min-height: 60px; /* 최소 높이 설정 */
+  padding: 0.5rem;
 }
 
 .container::-webkit-scrollbar {
@@ -64,21 +68,23 @@
 }
 
 .tab {
-  padding: 0.75rem 1.25rem; /* 패딩 조정 */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 0.75rem 1.25rem;
   position: relative;
-  color: #64748b;
-  font-weight: 600;
-  font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
+  color: rgba(41, 41, 45, 0.5);
+  font-weight: 400;
+  font-size: 1.125rem;
   white-space: nowrap;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
-  border-radius: 10px; /* 둥근 모서리 줄임 */
+  border-radius: 0.625rem;
   min-width: fit-content;
-  overflow: visible; /* 오버플로우 변경 */
-  flex-shrink: 0; /* 탭이 줄어들지 않도록 */
+  overflow: visible;
+  flex-shrink: 0;
+  margin: 0.125rem;
 }
 
 .tab::before {
@@ -94,21 +100,28 @@
   border-radius: 10px; /* 탭과 같은 둥근 모서리 */
 }
 
-.tab:hover {
-  color: #475569;
-  transform: translateY(-2px);
-}
-
-.tab:hover::before {
-  opacity: 1;
+.tab:hover:not(.active) {
+  color: rgba(71, 85, 105, 0.8);
 }
 
 .active {
   color: #000;
-  font-weight: 800;
-  background: #ffffff;
-  transform: translateY(-1px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  position: relative;
+}
+
+.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  height: 2px;
+  background: #000;
+  z-index: 10;
 }
 
 .active::before {
@@ -136,11 +149,6 @@
   backdrop-filter: blur(20px);
 }
 
-/* 호버 시 주변 탭들이 살짝 흐려지는 효과 */
-.container:hover .tab:not(:hover):not(.active) {
-  opacity: 0.6;
-  transform: scale(0.98);
-}
 
 /* 부드러운 포커스 효과 */
 .tab:focus-visible {
@@ -148,8 +156,73 @@
   outline-offset: 2px;
 }
 
+/* 첫 번째 줄 스타일 */
+.firstRow {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-height: 3.75rem;
+}
+
+.firstRow::-webkit-scrollbar {
+  display: none;
+}
+
+/* 두 번째 줄 스타일 */
+.secondRow {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 토글 버튼 스타일 */
+.toggleButton {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.arrowDown {
+  transform: rotate(90deg);
+}
+
+.arrowUp {
+  transform: rotate(-90deg);
+}
+
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .wrapper {
     padding: 2rem 1.5rem 1rem 1.5rem;
   }
@@ -161,22 +234,17 @@
   .container {
     gap: 0;
     padding: 0.375rem;
-    border-radius: 14px;
+    border-radius: 0.875rem;
   }
   
   .tab {
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
-    border-radius: 10px;
-  }
-  
-  .active::after {
-    width: 20px;
-    height: 2px;
+    border-radius: 0.625rem;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
   .wrapper {
     padding: 1.5rem 1rem 0.75rem 1rem;
   }
@@ -191,17 +259,12 @@
   
   .container {
     padding: 0.25rem;
-    border-radius: 12px;
+    border-radius: 0.75rem;
   }
   
   .tab {
     padding: 0.625rem 1rem;
     font-size: 0.85rem;
-    border-radius: 8px;
-  }
-  
-  .active::after {
-    width: 16px;
-    height: 2px;
+    border-radius: 0.5rem;
   }
 }
