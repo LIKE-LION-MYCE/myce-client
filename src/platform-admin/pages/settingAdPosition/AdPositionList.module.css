@@ -2,7 +2,6 @@
 .operatorContainer {
   display: flex;
   flex-direction: column;
-  gap: 50px;
   padding: 32px;
   width: 1200px;
   box-sizing: border-box;
@@ -13,14 +12,13 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap : 8px;
 }
 
 /* 제목 타이포 동일 */
 .sectionTitle {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 10px;
 }
 
 /* 제목과 버튼을 같은 줄에 */
@@ -28,7 +26,6 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 1rem;
 }
 
 /* 티켓 등록 버튼과 동일 스타일 */
