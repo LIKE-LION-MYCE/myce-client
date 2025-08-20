@@ -150,7 +150,7 @@ const UpcomingCardList = ({
       <div className={styles.sectionHeader}>
         <div>
           <h2 className={styles.title}>{t("homepage.upcoming.title", "오픈 예정")}</h2>
-          <p className={styles.subtitle}>{t("homepage.upcoming.subtitle", "곧 시작될 흥미진진한 이벤트들을 만나보세요")}</p>
+          <p className={styles.subtitle}>{t("homepage.upcoming.subtitleNew", "곧 개최될 박람회를 소개합니다")}</p>
         </div>
       </div>
       
@@ -171,7 +171,7 @@ const UpcomingCardList = ({
           onClick={handleViewAll}
           className={styles.viewAllButton}
         >
-{t("homepage.upcoming.viewAllButton", "오픈 예정 공연 전체보기")}
+전체보기
           <svg className={styles.arrowIcon} viewBox="0 0 24 24">
             <path d="M9 5l7 7-7 7" />
           </svg>

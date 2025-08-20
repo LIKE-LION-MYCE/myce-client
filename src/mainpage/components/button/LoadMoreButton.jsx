@@ -12,7 +12,7 @@ export default function LoadMoreButton() {
     <div className={styles.buttonContainer}>
       <Link to="/expo-list" className={styles.link}>
       <button className={styles.viewAllButton}>
-        {t('homepage.loadMore.viewAll', '전체 보기')}
+        전체보기
         <svg className={styles.arrowIcon} viewBox="0 0 24 24">
           <path d="M9 5l7 7-7 7" />
         </svg>

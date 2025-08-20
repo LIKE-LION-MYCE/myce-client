@@ -88,7 +88,7 @@ export default function CategoryTabs({ categories, onCategoryChange }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>{t('homepage.categories.ongoingEvents', '진행중인 박람회')}</h2>
+        <h2 className={styles.title}>{t('homepage.categories.ongoingExpos', '진행중인 박람회')}</h2>
       </div>
       <div className={styles.container} ref={containerRef}>
         <div className={styles.firstRow}>
