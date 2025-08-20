@@ -23,7 +23,7 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
   };
 
   const handleResetFilters = () => {
-    setFilters({});
+    setFilters({ sort: 'startDate,asc' });
   };
 
   return (
