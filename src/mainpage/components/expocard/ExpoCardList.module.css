@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.2rem;
-  max-width: 1400px; 
+  max-width: 100rem; 
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -18,8 +18,8 @@
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
 }
 
 .thumbnail {
@@ -64,15 +64,15 @@
   background: rgba(0, 0, 0, 0.3);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(0.25rem);
 }
 
 .bookmark:hover {
@@ -81,11 +81,11 @@
 }
 
 .title {
-  font-size: 1rem; 
+  font-size: 1.125rem; 
   font-weight: 700;
   margin-bottom: 0.25rem;
   line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); 
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5); 
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -93,7 +93,7 @@
 }
 
 .date {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #f3f4f6;
   opacity: 1;
   visibility: visible;

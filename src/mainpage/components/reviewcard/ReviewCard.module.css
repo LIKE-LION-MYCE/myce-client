@@ -1,29 +1,29 @@
 .reviewCard {
   background: white;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 0.0625rem solid #e5e7eb;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .reviewCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
 }
 
 .textOnly {
-  padding: 1.25rem; /* 1.5rem → 1.25rem 패딩 줄임 */
+  padding: 1.25rem;
 }
 
 .withImage {
   display: flex;
-  min-height: 160px; /* 200px → 160px 높이 줄임 */
+  min-height: 10rem;
 }
 
 .imageSection {
-  width: 120px; /* 150px → 120px 너비 줄임 */
-  min-width: 120px;
+  width: 7.5rem;
+  min-width: 7.5rem;
   flex-shrink: 0;
 }
 
@@ -35,23 +35,23 @@
 
 .contentSection {
   flex: 1;
-  padding: 1.25rem; /* 1.5rem → 1.25rem 패딩 줄임 */
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
 }
 
 .genre {
-  font-size: 0.8125rem; /* 0.75rem → 0.8125rem 글자 크기 증가 */
+  font-size: 0.9375rem;
   color: #6b7280;
   margin-bottom: 0.5rem;
   line-height: 1.2;
 }
 
 .reviewTitle {
-  font-size: 1rem; /* 1.125rem → 1rem 제목 크기 줄임 */
+  font-size: 1.125rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 0.5rem; /* 0.75rem → 0.5rem 간격 줄임 */
+  margin-bottom: 0.5rem;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -60,13 +60,13 @@
 }
 
 .reviewContent {
-  font-size: 0.8125rem; /* 0.875rem → 0.8125rem 내용 크기 줄임 */
+  font-size: 0.9375rem;
   color: #4b5563;
-  line-height: 1.4; /* 1.5 → 1.4 줄간격 줄임 */
-  margin-bottom: 0.75rem; /* 1rem → 0.75rem 간격 줄임 */
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
   flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* 4 → 3 줄 제한 */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -85,14 +85,14 @@
 }
 
 .avatar {
-  width: 22px; /* 24px → 22px 아바타 크기 줄임 */
-  height: 22px;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .authorName {
-  font-size: 0.8125rem; /* 0.875rem → 0.8125rem 크기 줄임 */
+  font-size: 0.9375rem;
   color: #374151;
   font-weight: 500;
 }
@@ -105,18 +105,18 @@
 
 .star {
   color: #fbbf24;
-  font-size: 0.8125rem; /* 0.875rem → 0.8125rem 별 크기 줄임 */
+  font-size: 0.9375rem;
 }
 
 .rating {
-  font-size: 0.8125rem; /* 0.875rem → 0.8125rem 평점 크기 줄임 */
+  font-size: 0.9375rem;
   font-weight: 600;
   color: #111827;
   margin-left: 0.25rem;
 }
 
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .withImage {
     flex-direction: column;
     min-height: auto;
@@ -124,7 +124,7 @@
   
   .imageSection {
     width: 100%;
-    height: 140px; /* 160px → 140px 높이 줄임 */
+    height: 8.75rem;
   }
   
   .contentSection {
@@ -132,15 +132,15 @@
   }
   
   .reviewTitle {
-    font-size: 0.9375rem; /* 1rem → 0.9375rem 크기 줄임 */
+    font-size: 1rem;
   }
   
   .reviewContent {
-    -webkit-line-clamp: 2; /* 3 → 2 줄 제한 */
+    -webkit-line-clamp: 2;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .textOnly {
     padding: 1rem;
   }
@@ -150,12 +150,12 @@
   }
   
   .reviewTitle {
-    font-size: 0.875rem; /* 0.95rem → 0.875rem 크기 줄임 */
+    font-size: 0.9375rem;
     margin-bottom: 0.5rem;
   }
   
   .reviewContent {
-    font-size: 0.75rem; /* 0.8125rem → 0.75rem 크기 줄임 */
+    font-size: 0.875rem;
   }
   
   .authorSection {

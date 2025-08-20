@@ -85,6 +85,7 @@ export default function MainPage() {
       <div className="relative">
         <MainBanner banners={mainBanners} />
       </div>
+      <UpcomingCardList />
       <CategoryTabs
         onCategoryChange={handleCategoryChange}
         categories={categories}
@@ -96,8 +97,6 @@ export default function MainPage() {
         onBookmarkToggle={handleBookmarkToggle}
       />
       <LoadMoreButton />
-
-      <UpcomingCardList />
 
       <FooterBanner banners={footerBanners} />
       <BestReviews />
