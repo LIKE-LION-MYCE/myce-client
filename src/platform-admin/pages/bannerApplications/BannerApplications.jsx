@@ -98,7 +98,7 @@ function BannerApplications() {
           setCurrentPage(0);
           if (tab === '전체') {
             setIsFilterMode(false);
-          } else {
+          } else {s=
             setIsFilterMode(true);
           }
         }}

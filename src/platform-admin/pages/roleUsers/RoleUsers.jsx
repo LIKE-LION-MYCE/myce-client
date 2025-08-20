@@ -1,88 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import styles from './RoleUsers.module.css';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import RoleUserTable from '../../components/roleUserTable/RoleUserTable';
 import Pagination from '../../../common/components/pagination/Pagination';
+import { fetchMemberData, fetchFilteredData } from '../../../api/service/platform-admin/member/PlatformMemberService';
 
 function RoleUsers() {
+
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [pageInfo, setPageInfo] = useState({
-    content: [
-      {
-        id: 1,
-        username: 'user_hong',
-        name: '홍길동',
-        gender: '남성',
-        birth: '1990-03-15',
-        email: 'hong@example.com',
-        phone: '010-1234-5678',
-        createdAt: '2025-07-20 09:15:30',
-        mileage: 3200,
-        isActive: true,
-      },
-      {
-        id: 2,
-        username: 'lee_sy',
-        name: '이서윤',
-        gender: '여성',
-        birth: '1992-08-10',
-        email: 'seoyoon@example.com',
-        phone: '010-8888-4444',
-        createdAt: '2025-06-25 14:10:45',
-        mileage: 15000,
-        isActive: false,
-      },
-      {
-        id: 3,
-        username: 'kimjiho93',
-        name: '김지호',
-        gender: '남성',
-        birth: '1993-12-05',
-        email: 'jiho.kim@example.com',
-        phone: '010-5555-1212',
-        createdAt: '2025-08-01 17:45:00',
-        mileage: 750,
-        isActive: true,
-      },
-      {
-        id: 4,
-        username: 'minachoi',
-        name: '최민아',
-        gender: '여성',
-        birth: '1989-04-18',
-        email: 'mina@example.com',
-        phone: '010-7777-9999',
-        createdAt: '2025-07-28 11:00:00',
-        mileage: 0,
-        isActive: false,
-      },
-      {
-        id: 5,
-        username: 'jspark85',
-        name: '박지성',
-        gender: '남성',
-        birth: '1985-01-09',
-        email: 'jspark@example.com',
-        phone: '010-0000-0000',
-        createdAt: '2025-07-01 08:00:00',
-        mileage: 4800,
-        isActive: true,
-      },
-    ],
-    totalPages: 1,
-    totalElements: 5,
-    size: 10,
-    number: 0,
-  });
+  const [pageInfo, setPageInfo] = useState([]);
+
+  const fetchMembers= async () => {
+    try {
+      let resData;
+
+      const isFiltered = searchText;
+
+      if (isFiltered) {
+        resData = await fetchFilteredData({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+          keyword: searchText || '',
+        });
+      } else {
+        resData = await fetchMemberData({
+          page: currentPage,
+          latestFirst: sortOrder === 'desc',
+        });
+      }
+      console.log(resData);
+      setPageInfo(resData);
+    } catch (error) {
+      console.error(error);
+      triggerToastFail('데이터를 불러오지 못했습니다.');
+    }
+  }
+
+  useEffect(() => {
+    fetchMembers();
+  }, [sortOrder, searchText, currentPage]);
 
 
   const handlePageChange = (page) => {
-    setPageInfo((prev) => ({
-      ...prev,
-      number: page,
-    }));
+    console.log("페이지 변경,", page) ;
+    setCurrentPage(page);
   };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    console.log('setFailMessage');
+    setTimeout(() => setShowFailToast(false), 3000);
+  }
 
   return (
     <div className={styles.emailsWrapper}>
@@ -92,7 +67,10 @@ function RoleUsers() {
             <input
               type="text"
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={(e) => {
+                setSearchText(e.target.value)
+                setCurrentPage(0);
+              }}
               placeholder="아이디, 이름 검색"
               className={styles.input}
             />
@@ -102,7 +80,10 @@ function RoleUsers() {
           <div className={styles.filterGroup}>
             <select
               value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
+              onChange={(e) => {
+                setSortOrder(e.target.value);
+                setCurrentPage(0);
+              }}
               className={styles.select}
             >
               <option value="desc">최신순</option>
@@ -117,6 +98,7 @@ function RoleUsers() {
 
       {/* 페이징 */}
       <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

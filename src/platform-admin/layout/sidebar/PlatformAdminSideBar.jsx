@@ -194,12 +194,6 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('role')}
         >
           <MenuItem
-            component={<Link to="/platform/admin/roleAdmins" />}
-            active={selectedMenu === '/platform/admin/roleAdmins'}
-          >
-            박람회 관리자 계정
-          </MenuItem>
-          <MenuItem
             component={<Link to="/platform/admin/roleUsers" />}
             active={selectedMenu === '/platform/admin/roleUsers'}
           >
