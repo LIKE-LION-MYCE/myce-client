@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './UpcomingCardList.module.css';
 import UpcomingCard from '../upcomingcard/UpcomingCard';
 import { getPendingPublishExpos } from '../../../api/service/user/expoApi';
+import LoadingSpinner from '../../../components/shared/LoadingSpinner';
 import '../../../i18n/i18n_homepage.js'; // homepage용 i18n 파일 import
 
 const UpcomingCardList = ({ 
@@ -106,10 +107,10 @@ const UpcomingCardList = ({
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner}></div>
-          <div>{t("homepage.upcoming.loading", "이벤트를 불러오는 중...")}</div>
-        </div>
+        <LoadingSpinner 
+          size="medium" 
+          message={t("homepage.upcoming.loading", "이벤트를 불러오는 중...")} 
+        />
       </div>
     );
   }
