@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { reviewAPI } from '../../../api/service/review/ReviewService';
 import ReviewItem from './ReviewItem';
 import ReviewForm from './ReviewForm';
@@ -6,6 +7,7 @@ import Pagination from '../../../common/components/pagination/Pagination';
 import styles from './Review.module.css';
 
 const ReviewList = ({ expoId, userInfo }) => {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -35,7 +37,7 @@ const ReviewList = ({ expoId, userInfo }) => {
         setTotalElements(response.data.totalElements);
       }
     } catch (error) {
-      console.error('리뷰 조회 실패:', error);
+      console.error(t('components.review.list.errors.fetchFailed'), error);
     } finally {
       setLoading(false);
     }
@@ -53,7 +55,7 @@ const ReviewList = ({ expoId, userInfo }) => {
         setHasReviewed(reviewedResponse.data);
       }
     } catch (error) {
-      console.error('리뷰 권한 확인 실패:', error);
+      console.error(t('components.review.list.errors.permissionCheckFailed'), error);
     }
   };
 
@@ -71,13 +73,13 @@ const ReviewList = ({ expoId, userInfo }) => {
       if (editingReview) {
         const response = await reviewAPI.updateReview(editingReview.id, reviewData);
         if (response.success) {
-          alert('리뷰가 수정되었습니다.');
+          alert(t('components.review.list.alerts.updated'));
           setEditingReview(null);
         }
       } else {
         const response = await reviewAPI.createReview({ ...reviewData, expoId });
         if (response.success) {
-          alert('리뷰가 작성되었습니다.');
+          alert(t('components.review.list.alerts.created'));
           setCanWriteReview(false);
           setHasReviewed(true);
         }
@@ -85,8 +87,8 @@ const ReviewList = ({ expoId, userInfo }) => {
       setShowForm(false);
       await fetchReviews();
     } catch (error) {
-      console.error('리뷰 처리 실패:', error);
-      alert(error.response?.data?.message || '리뷰 처리 중 오류가 발생했습니다.');
+      console.error(t('components.review.list.errors.processFailed'), error);
+      alert(error.response?.data?.message || t('components.review.list.alerts.error'));
     }
   };
 
@@ -96,28 +98,28 @@ const ReviewList = ({ expoId, userInfo }) => {
   };
 
   const handleDeleteReview = async (reviewId) => {
-    if (!window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+    if (!window.confirm(t('components.review.list.alerts.deleteConfirm'))) {
       return;
     }
 
     try {
       const response = await reviewAPI.deleteReview(reviewId);
       if (response.success) {
-        alert('리뷰가 삭제되었습니다.');
+        alert(t('components.review.list.alerts.deleted'));
         setCanWriteReview(true);
         setHasReviewed(false);
         await fetchReviews();
       }
     } catch (error) {
-      console.error('리뷰 삭제 실패:', error);
-      alert(error.response?.data?.message || '리뷰 삭제 중 오류가 발생했습니다.');
+      console.error(t('components.review.list.errors.deleteFailed'), error);
+      alert(error.response?.data?.message || t('components.review.list.alerts.error'));
     }
   };
 
   return (
     <div className={styles.reviewContainer}>
       <div className={styles.reviewHeader}>
-        <h3>리뷰 ({totalElements})</h3>
+        <h3>{t('components.review.list.title')} ({totalElements})</h3>
         
         <div className={styles.headerActions}>
           <div className={styles.sortButtons}>
@@ -125,13 +127,13 @@ const ReviewList = ({ expoId, userInfo }) => {
               className={`${styles.sortBtn} ${sortBy === 'latest' ? styles.active : ''}`}
               onClick={() => handleSortChange('latest')}
             >
-              최신순
+              {t('components.review.list.sort.latest')}
             </button>
             <button 
               className={`${styles.sortBtn} ${sortBy === 'rating' ? styles.active : ''}`}
               onClick={() => handleSortChange('rating')}
             >
-              평점순
+              {t('components.review.list.sort.rating')}
             </button>
           </div>
 
@@ -143,7 +145,7 @@ const ReviewList = ({ expoId, userInfo }) => {
                 setShowForm(true);
               }}
             >
-              리뷰 작성
+              {t('components.review.list.buttons.write')}
             </button>
           )}
         </div>
@@ -151,7 +153,7 @@ const ReviewList = ({ expoId, userInfo }) => {
 
       {userInfo && !canWriteReview && !hasReviewed && (
         <div className={styles.noPermissionMessage}>
-          박람회에 참석한 후 리뷰를 작성할 수 있습니다.
+          {t('components.review.list.messages.noPermission')}
         </div>
       )}
 
@@ -167,7 +169,7 @@ const ReviewList = ({ expoId, userInfo }) => {
       )}
 
       {loading ? (
-        <div className={styles.loading}>리뷰를 불러오는 중...</div>
+        <div className={styles.loading}>{t('components.review.list.messages.loading')}</div>
       ) : (
         <>
           <div className={styles.reviewList}>
@@ -183,7 +185,7 @@ const ReviewList = ({ expoId, userInfo }) => {
               ))
             ) : (
               <div className={styles.noReviews}>
-                아직 작성된 리뷰가 없습니다.
+                {t('components.review.list.messages.noReviews')}
               </div>
             )}
           </div>

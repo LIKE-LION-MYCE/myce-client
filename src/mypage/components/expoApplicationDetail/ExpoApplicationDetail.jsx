@@ -20,12 +20,12 @@ function ExpoApplicationDetail({
   // 디버그: i18n 키 테스트 (더 자세히)
   console.log('=== ExpoApplicationDetail i18n Debug ===');
   console.log('Current language:', localStorage.getItem('language') || 'ko');
-  console.log('Test expoStatus:', t('mypage.expoStatus.title'));
-  console.log('Test detail section:', t('mypage.expoStatus.detail.loading'));
-  console.log('Test buttons section:', t('mypage.expoStatus.detail.buttons.paymentRequest'));
-  console.log('Test fields section exists:', typeof t('mypage.expoStatus.detail.fields'));
-  console.log('Test fields.description:', t('mypage.expoStatus.detail.fields.description'));
-  console.log('Test fields.companyName:', t('mypage.expoStatus.detail.fields.companyName'));
+  console.log('Test expoStatus:', t('mypageGeneral.expoStatus.title'));
+  console.log('Test detail section:', t('mypageGeneral.expoStatus.detail.loading'));
+  console.log('Test buttons section:', t('mypageGeneral.expoStatus.detail.buttons.paymentRequest'));
+  console.log('Test fields section exists:', typeof t('mypageGeneral.expoStatus.detail.fields'));
+  console.log('Test fields.description:', t('mypageGeneral.expoStatus.detail.fields.description'));
+  console.log('Test fields.companyName:', t('mypageGeneral.expoStatus.detail.fields.companyName'));
   const [form, setForm] = useState({});
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState('');
@@ -141,37 +141,37 @@ function ExpoApplicationDetail({
         <div className={styles.receiptButtons}>
           {/* 결제 관련 버튼 */}
           {isStatus(status, ['PENDING_PAYMENT', '결제대기', '결제 대기']) && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>{t('mypage.expoStatus.detail.buttons.paymentRequest')}</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>{t('mypageGeneral.expoStatus.detail.buttons.paymentRequest')}</button>
           )}
           
           {/* 환불 관련 버튼 */}
           {isStatus(status, ['PENDING_PUBLISH', 'PUBLISHED', '게시대기', '게시 대기', '게시중', '게시 중']) && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypage.expoStatus.detail.buttons.refundRequest')}</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypageGeneral.expoStatus.detail.buttons.refundRequest')}</button>
           )}
           {isStatus(status, ['PENDING_CANCEL', 'CANCELLED', '취소대기', '취소 대기', '취소됨', '취소 완료']) && (
             <>
               {expoData?.paymentInfo ? (
-                <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypage.expoStatus.detail.buttons.refundInfo')}</button>
+                <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypageGeneral.expoStatus.detail.buttons.refundInfo')}</button>
               ) : (
-                <span className={styles.infoMessage}>{t('mypage.expoStatus.detail.defaultValues.noPaymentRefundInfo')}</span>
+                <span className={styles.infoMessage}>{t('mypageGeneral.expoStatus.detail.defaultValues.noPaymentRefundInfo')}</span>
               )}
             </>
           )}
           
           {/* 정산 관련 버튼 */}
           {isStatus(status, ['PUBLISH_ENDED', '게시종료', '게시 종료']) && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>{t('mypage.expoStatus.detail.buttons.settlementRequest')}</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>{t('mypageGeneral.expoStatus.detail.buttons.settlementRequest')}</button>
           )}
           {isStatus(status, ['SETTLEMENT_REQUESTED', '정산요청', '정산 요청']) && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypage.expoStatus.detail.buttons.settlementInfo')}</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypageGeneral.expoStatus.detail.buttons.settlementInfo')}</button>
           )}
           {isStatus(status, ['COMPLETED', '종료됨']) && (
-            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypage.expoStatus.detail.buttons.settlementCompleted')}</button>
+            <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypageGeneral.expoStatus.detail.buttons.settlementCompleted')}</button>
           )}
           
           {/* 결제 정보 조회 버튼 */}
           {canViewPaymentInfo(status) && (
-            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>{t('mypage.expoStatus.detail.buttons.paymentInfo')}</button>
+            <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>{t('mypageGeneral.expoStatus.detail.buttons.paymentInfo')}</button>
           )}
         </div>
         
@@ -179,7 +179,7 @@ function ExpoApplicationDetail({
         <div className={styles.actionButtons}>
           {/* 취소 신청 버튼 */}
           {isStatus(status, ['PENDING_APPROVAL', 'PENDING_PAYMENT', '승인대기', '승인 대기', '결제대기', '결제 대기']) && (
-            <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>{t('mypage.expoStatus.detail.buttons.cancelRequest')}</button>
+            <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>{t('mypageGeneral.expoStatus.detail.buttons.cancelRequest')}</button>
           )}
           
           
@@ -198,9 +198,9 @@ function ExpoApplicationDetail({
       return (
         <div className={styles.adminButtonGroup}>
           {/* 관리자 정보 버튼 */}
-          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>{t('mypage.expoStatus.detail.buttons.adminInfo')}</button>
+          <button className={`${styles.adminButton}`} onClick={onAdminInfoClick}>{t('mypageGeneral.expoStatus.detail.buttons.adminInfo')}</button>
           {/* 관리자 페이지로 이동 버튼 */}
-          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>{t('mypage.expoStatus.detail.buttons.adminPage')}</button>
+          <button className={`${styles.adminPageButton}`} onClick={onAdminPageClick}>{t('mypageGeneral.expoStatus.detail.buttons.adminPage')}</button>
         </div>
       );
     }
@@ -211,7 +211,7 @@ function ExpoApplicationDetail({
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.pageTitle}>{form.name || t('mypage.expoStatus.detail.pageTitle')}</h2>
+          <h2 className={styles.pageTitle}>{form.name || t('mypageGeneral.expoStatus.detail.pageTitle')}</h2>
           {renderStatusTag()}
           {renderAdminButton()}
         </div>
@@ -222,57 +222,57 @@ function ExpoApplicationDetail({
         <div className={styles.posterSection}>
           <img
             src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
-            alt={t('mypage.expoStatus.detail.altText.poster')}
+            alt={t('mypageGeneral.expoStatus.detail.altText.poster')}
             className={styles.posterImage}
           />
         </div>
         <div className={styles.infoSection}>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.expoName')}</label>
-              <div className={styles.infoValue}>{form.name || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.expoName')}</label>
+              <div className={styles.infoValue}>{form.name || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.location')}</label>
-              <div className={styles.infoValue}>{form.location || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.location')}</label>
+              <div className={styles.infoValue}>{form.location || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.capacity')}</label>
-              <div className={styles.infoValue}>{form.capacity ? `${form.capacity}명` : t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.capacity')}</label>
+              <div className={styles.infoValue}>{form.capacity ? `${form.capacity}명` : t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.period')}</label>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.period')}</label>
               <div className={styles.infoValue}>{`${form.startDate || ''} ~ ${form.endDate || ''}`}</div>
             </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.operatingTime')}</label>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.operatingTime')}</label>
               <div className={styles.infoValue}>{`${form.startTime || ''} ~ ${form.endTime || ''}`}</div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.postPeriod')}</label>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.postPeriod')}</label>
               <div className={styles.infoValue}>{`${form.postStartDate || ''} ~ ${form.postEndDate || ''}`}</div>
             </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.premium')}</label>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.premium')}</label>
               <div className={styles.toggleWrapper}>
                 <ToggleSwitch checked={isPremium} disabled />
               </div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.category')}</label>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.category')}</label>
               <div className={styles.badgeRow}>
                 {form.category && form.category !== '카테고리 없음' ? (
                   form.category.split(', ').map((cat, index) => (
                     <div key={index} className={styles.badge}>{cat.trim()}</div>
                   ))
                 ) : (
-                  <div className={styles.badge}>{t('mypage.expoStatus.detail.defaultValues.noCategory')}</div>
+                  <div className={styles.badge}>{t('mypageGeneral.expoStatus.detail.defaultValues.noCategory')}</div>
                 )}
               </div>
             </div>
@@ -281,39 +281,39 @@ function ExpoApplicationDetail({
         
         {/* 회사 정보 섹션 */}
         <div className={styles.additionalInfoSection}>
-          <h3 className={styles.sectionTitle}>{t('mypage.expoStatus.detail.fields.companyInfo')}</h3>
+          <h3 className={styles.sectionTitle}>{t('mypageGeneral.expoStatus.detail.fields.companyInfo')}</h3>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.companyName')}</label>
-              <div className={styles.infoValue}>{form.companyName || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.companyName')}</label>
+              <div className={styles.infoValue}>{form.companyName || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.companyAddress')}</label>
-              <div className={styles.infoValue}>{form.companyAddress || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.companyAddress')}</label>
+              <div className={styles.infoValue}>{form.companyAddress || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.businessNumber')}</label>
-              <div className={styles.infoValue}>{form.businessRegistrationNumber || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.businessNumber')}</label>
+              <div className={styles.infoValue}>{form.businessRegistrationNumber || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
           
-          <h4 className={styles.subSectionTitle}>{t('mypage.expoStatus.detail.fields.ceoInfo')}</h4>
+          <h4 className={styles.subSectionTitle}>{t('mypageGeneral.expoStatus.detail.fields.ceoInfo')}</h4>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoName')}</label>
-              <div className={styles.infoValue}>{form.ceoName || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.ceoName')}</label>
+              <div className={styles.infoValue}>{form.ceoName || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoContact')}</label>
-              <div className={styles.infoValue}>{form.ceoContact || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.ceoContact')}</label>
+              <div className={styles.infoValue}>{form.ceoContact || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
-              <label className={styles.infoLabel}>{t('mypage.expoStatus.detail.fields.ceoEmail')}</label>
-              <div className={styles.infoValue}>{form.ceoEmail || t('mypage.expoStatus.detail.defaultValues.noInfo')}</div>
+              <label className={styles.infoLabel}>{t('mypageGeneral.expoStatus.detail.fields.ceoEmail')}</label>
+              <div className={styles.infoValue}>{form.ceoEmail || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
         </div>
@@ -321,30 +321,30 @@ function ExpoApplicationDetail({
         {/* 상세 설명 섹션 */}
         <div className={styles.additionalInfoSection}>
           <h3 className={styles.sectionTitle}>
-            {t('mypage.expoStatus.detail.fields.description') !== 'mypage.expoStatus.detail.fields.description' 
-              ? t('mypage.expoStatus.detail.fields.description') 
+            {t('mypageGeneral.expoStatus.detail.fields.description') !== 'mypage.expoStatus.detail.fields.description' 
+              ? t('mypageGeneral.expoStatus.detail.fields.description') 
               : (localStorage.getItem('language') === 'en' ? 'Description' : 
                  localStorage.getItem('language') === 'ja' ? '詳細説明' : '상세 설명')}
           </h3>
           <div className={styles.descriptionContent}>
-            {form.description || t('mypage.expoStatus.detail.defaultValues.noDescription')}
+            {form.description || t('mypageGeneral.expoStatus.detail.defaultValues.noDescription')}
           </div>
         </div>
         
         {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
         {canViewTicketInfo(status) && (
           <div className={styles.additionalInfoSection}>
-            <h3 className={styles.sectionTitle}>{t('mypage.expoStatus.detail.fields.ticketInfo')}</h3>
+            <h3 className={styles.sectionTitle}>{t('mypageGeneral.expoStatus.detail.fields.ticketInfo')}</h3>
             <div className={styles.ticketContainer}>
               {form.tickets && form.tickets.length > 0 ? (
                 <>
                   {/* 티켓 헤더 */}
                   <div className={styles.ticketHeader}>
                     <div className={styles.ticketHeaderInfo}>
-                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketName')}</span>
-                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketPrice')}</span>
-                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketQuantity')}</span>
-                      <span className={styles.headerLabel}>{t('mypage.expoStatus.detail.fields.ticketType')}</span>
+                      <span className={styles.headerLabel}>{t('mypageGeneral.expoStatus.detail.fields.ticketName')}</span>
+                      <span className={styles.headerLabel}>{t('mypageGeneral.expoStatus.detail.fields.ticketPrice')}</span>
+                      <span className={styles.headerLabel}>{t('mypageGeneral.expoStatus.detail.fields.ticketQuantity')}</span>
+                      <span className={styles.headerLabel}>{t('mypageGeneral.expoStatus.detail.fields.ticketType')}</span>
                     </div>
                   </div>
                   {/* 티켓 목록 */}
@@ -355,14 +355,14 @@ function ExpoApplicationDetail({
                         <span className={styles.ticketPrice}>{ticket.price?.toLocaleString()}원</span>
                         <span className={styles.ticketQuantity}>{ticket.totalQuantity}개</span>
                         <span className={styles.ticketType}>
-                          {ticket.type === 'EARLY_BIRD' ? t('mypage.expoStatus.detail.ticketTypes.earlyBird') : t('mypage.expoStatus.detail.ticketTypes.general')}
+                          {ticket.type === 'EARLY_BIRD' ? t('mypageGeneral.expoStatus.detail.ticketTypes.earlyBird') : t('mypageGeneral.expoStatus.detail.ticketTypes.general')}
                         </span>
                       </div>
                     </div>
                   ))}
                 </>
               ) : (
-                <div className={styles.noTickets}>{t('mypage.expoStatus.detail.defaultValues.noTickets')}</div>
+                <div className={styles.noTickets}>{t('mypageGeneral.expoStatus.detail.defaultValues.noTickets')}</div>
               )}
             </div>
           </div>

@@ -20,29 +20,29 @@ const QRModal = ({
 
   // 날짜 포맷 함수
   const formatDate = (date) => {
-    if (!date) return t('mypage.qrModal.common.notAvailable', 'N/A');
+    if (!date) return t('qrModal.common.notAvailable', 'N/A');
     return new Date(date).toLocaleDateString('ko-KR');
   };
 
   const formatDateRange = (startDate, endDate) => {
-    if (!startDate || !endDate) return t('mypage.qrModal.common.notAvailable', 'N/A');
+    if (!startDate || !endDate) return t('qrModal.common.notAvailable', 'N/A');
     const start = formatDate(startDate);
     const end = formatDate(endDate);
     return `${start} ~ ${end}`;
   };
 
   const formatTimeRange = (startTime, endTime) => {
-    if (!startTime || !endTime) return t('mypage.qrModal.common.notAvailable', 'N/A');
+    if (!startTime || !endTime) return t('qrModal.common.notAvailable', 'N/A');
     return `${startTime} ~ ${endTime}`;
   };
 
   // QR 상태 한글 변환
   const formatQrStatus = (status) => {
     const statusMap = {
-      'ACTIVE': t('mypage.qrModal.qrStatus.active', '사용 가능'),
-      'USED': t('mypage.qrModal.qrStatus.used', '사용됨'),
-      'EXPIRED': t('mypage.qrModal.qrStatus.expired', '만료됨'),
-      'APPROVED': t('mypage.qrModal.qrStatus.approved', '활성화 대기')
+      'ACTIVE': t('qrModal.qrStatus.active', '사용 가능'),
+      'USED': t('qrModal.qrStatus.used', '사용됨'),
+      'EXPIRED': t('qrModal.qrStatus.expired', '만료됨'),
+      'APPROVED': t('qrModal.qrStatus.approved', '활성화 대기')
     };
     return statusMap[status] || status;
   };
@@ -98,23 +98,23 @@ const QRModal = ({
               <h4 className={styles.detailsTitle}>티켓 상세 정보</h4>
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.ticketInfo.ticketName', '티켓명')}</span>
-                  <span className={styles.infoValue}>{reservationInfo?.ticketName || t('mypage.qrModal.common.notAvailable', 'N/A')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.ticketInfo.ticketName', '티켓명')}</span>
+                  <span className={styles.infoValue}>{reservationInfo?.ticketName || t('qrModal.common.notAvailable', 'N/A')}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.ticketInfo.ticketType', '티켓 타입')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.ticketInfo.ticketType', '티켓 타입')}</span>
                   <span className={styles.infoValue}>
-                    {reservationInfo?.ticketType === 'GENERAL' ? t('mypage.qrModal.ticketTypes.general', '일반') : 
-                     reservationInfo?.ticketType === 'EARLY_BIRD' ? t('mypage.qrModal.ticketTypes.earlyBird', '얼리버드') : 
-                     reservationInfo?.ticketType || t('mypage.qrModal.common.notAvailable', 'N/A')}
+                    {reservationInfo?.ticketType === 'GENERAL' ? t('qrModal.ticketTypes.general', '일반') : 
+                     reservationInfo?.ticketType === 'EARLY_BIRD' ? t('qrModal.ticketTypes.earlyBird', '얼리버드') : 
+                     reservationInfo?.ticketType || t('qrModal.common.notAvailable', 'N/A')}
                   </span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.ticketInfo.usageStartDate', '사용 시작일')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.ticketInfo.usageStartDate', '사용 시작일')}</span>
                   <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseStartDate)}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.ticketInfo.usageEndDate', '사용 종료일')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.ticketInfo.usageEndDate', '사용 종료일')}</span>
                   <span className={styles.infoValue}>{formatDate(reservationInfo?.ticketUseEndDate)}</span>
                 </div>
               </div>
@@ -123,26 +123,26 @@ const QRModal = ({
             <div className={styles.ticketInfo}>
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.participantInfo.participant', '참여자')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.participantInfo.participant', '참여자')}</span>
                   <span className={styles.infoValue}>{reserver?.name}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.participantInfo.reservationNumber', '예매번호')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.participantInfo.reservationNumber', '예매번호')}</span>
                   <span className={styles.infoValue}>{reservationInfo?.reservationCode}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.participantInfo.reservationDate', '예매일')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.participantInfo.reservationDate', '예매일')}</span>
                   <span className={styles.infoValue}>{formatDate(reservationInfo?.createdAt)}</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>{t('mypage.qrModal.participantInfo.qrStatus', 'QR 상태')}</span>
+                  <span className={styles.infoLabel}>{t('qrModal.participantInfo.qrStatus', 'QR 상태')}</span>
                   <span className={`${styles.infoValue} ${getQrStatusClass(reserver?.qrStatus)}`}>
                     {formatQrStatus(reserver?.qrStatus)}
                   </span>
                 </div>
                 {reserver?.qrUsedAt && (
                   <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>{t('mypage.qrModal.participantInfo.usageDateTime', '사용일시')}</span>
+                    <span className={styles.infoLabel}>{t('qrModal.participantInfo.usageDateTime', '사용일시')}</span>
                     <span className={styles.infoValue}>
                       {new Date(reserver.qrUsedAt).toLocaleString('ko-KR')}
                     </span>
@@ -166,9 +166,9 @@ const QRModal = ({
           <div className={styles.rightSection}>
             <div className={styles.qrContainer}>
               <div className={styles.qrBox}>
-                <img src={qrImgUrl} alt={t('mypage.qrModal.qr.altText', 'QR 코드')} className={styles.qrImg} />
+                <img src={qrImgUrl} alt={t('qrModal.qr.altText', 'QR 코드')} className={styles.qrImg} />
               </div>
-              <p className={styles.qrDesc}>{t('mypage.qrModal.qr.description', '입장 시 QR코드를 제시해주세요')}</p>
+              <p className={styles.qrDesc}>{t('qrModal.qr.description', '입장 시 QR코드를 제시해주세요')}</p>
             </div>
           </div>
         </div>
@@ -180,10 +180,10 @@ const QRModal = ({
             className={styles.congestionBtn}
             onClick={() => setCongestionModalOpen(true)}
           >
-            {t('mypage.qrModal.buttons.congestionCheck', '실시간 혼잡도 조회')}
+            {t('qrModal.buttons.congestionCheck', '실시간 혼잡도 조회')}
           </button>
           <button className={styles.saveBtn} onClick={handleSaveQR}>
-            {t('mypage.qrModal.buttons.saveQr', 'QR코드 저장')}
+            {t('qrModal.buttons.saveQr', 'QR코드 저장')}
           </button>
         </div>
 

@@ -81,7 +81,7 @@ const MyPageSidebar = () => {
         <p className={styles.grade}>{userInfo.gradeDescription}</p>
         <p className={styles.mileage}>
           <img src="/images/icons/mileage.png" alt="마일리지" className={styles.mileageIcon} />
-          {t('mypage.mileage')} : {(userInfo.mileage || 0).toLocaleString()} point
+          {t('mypageGeneral.mileage')} : {(userInfo.mileage || 0).toLocaleString()} point
         </p>
       </div>
       <nav className={styles.menu}>
@@ -93,7 +93,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.userInfo')}
+              {t('mypageGeneral.userInfo')}
             </NavLink>
           </li>
           <li>
@@ -103,7 +103,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.reservation')}
+              {t('mypageGeneral.reservation')}
             </NavLink>
           </li>
           <li>
@@ -113,7 +113,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.savedExpo')}
+              {t('mypageGeneral.savedExpo')}
             </NavLink>
           </li>
           <li>
@@ -123,11 +123,11 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.systemSettings')}
+              {t('mypageGeneral.systemSettings')}
             </NavLink>
           </li>
         </ul>
-        <div className={styles.sectionLabel}>{t('mypage.advertiserMenu')}</div>
+        <div className={styles.sectionLabel}>{t('mypageGeneral.advertiserMenu')}</div>
         <ul>
           <li>
             <NavLink
@@ -136,11 +136,11 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.adStatusMenu')}
+              {t('mypageGeneral.adStatusMenu')}
             </NavLink>
           </li>
         </ul>
-        <div className={styles.sectionLabel}>{t('mypage.expoAdminMenu')}</div>
+        <div className={styles.sectionLabel}>{t('mypageGeneral.expoAdminMenu')}</div>
         <ul>
           <li>
             <NavLink
@@ -149,7 +149,7 @@ const MyPageSidebar = () => {
                 isActive ? styles.active : undefined
               }
             >
-              {t('mypage.expoStatusMenu')}
+              {t('mypageGeneral.expoStatusMenu')}
             </NavLink>
           </li>
         </ul>

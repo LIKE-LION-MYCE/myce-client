@@ -13,14 +13,14 @@ const AdsStatusPage = () => {
   const navigate = useNavigate();
 
   const STATUS_MAP = {
-    PENDING_APPROVAL: { label: t('mypage.adsStatus.status.PENDING_APPROVAL'), className: "badgePENDING_APPROVAL" },
-    PENDING_PAYMENT: { label: t('mypage.adsStatus.status.PENDING_PAYMENT'), className: "badgePENDING_PAYMENT" },
-    PENDING_PUBLISH: { label: t('mypage.adsStatus.status.PENDING_PUBLISH'), className: "badgePENDING_PUBLISH" },
-    PENDING_CANCEL: { label: t('mypage.adsStatus.status.PENDING_CANCEL'), className: "badgePENDING_CANCEL" },
-    PUBLISHED: { label: t('mypage.adsStatus.status.PUBLISHED'), className: "badgePUBLISHED" },
-    REJECTED: { label: t('mypage.adsStatus.status.REJECTED'), className: "badgeREJECTED" },
-    CANCELLED: { label: t('mypage.adsStatus.status.CANCELLED'), className: "badgeCANCELLED" },
-    COMPLETED: { label: t('mypage.adsStatus.status.COMPLETED'), className: "badgeCOMPLETED" },
+    PENDING_APPROVAL: { label: t('mypageGeneral.adsStatus.status.PENDING_APPROVAL'), className: "badgePENDING_APPROVAL" },
+    PENDING_PAYMENT: { label: t('mypageGeneral.adsStatus.status.PENDING_PAYMENT'), className: "badgePENDING_PAYMENT" },
+    PENDING_PUBLISH: { label: t('mypageGeneral.adsStatus.status.PENDING_PUBLISH'), className: "badgePENDING_PUBLISH" },
+    PENDING_CANCEL: { label: t('mypageGeneral.adsStatus.status.PENDING_CANCEL'), className: "badgePENDING_CANCEL" },
+    PUBLISHED: { label: t('mypageGeneral.adsStatus.status.PUBLISHED'), className: "badgePUBLISHED" },
+    REJECTED: { label: t('mypageGeneral.adsStatus.status.REJECTED'), className: "badgeREJECTED" },
+    CANCELLED: { label: t('mypageGeneral.adsStatus.status.CANCELLED'), className: "badgeCANCELLED" },
+    COMPLETED: { label: t('mypageGeneral.adsStatus.status.COMPLETED'), className: "badgeCOMPLETED" },
   };
 
   const getStatusLabel = (status) => {
@@ -46,10 +46,10 @@ const AdsStatusPage = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>{t('mypage.adsStatus.table.title')}</th>
-              <th>{t('mypage.adsStatus.table.location')}</th>
-              <th>{t('mypage.adsStatus.table.period')}</th>
-              <th>{t('mypage.adsStatus.table.status')}</th>
+              <th>{t('mypageGeneral.adsStatus.table.title')}</th>
+              <th>{t('mypageGeneral.adsStatus.table.location')}</th>
+              <th>{t('mypageGeneral.adsStatus.table.period')}</th>
+              <th>{t('mypageGeneral.adsStatus.table.status')}</th>
             </tr>
           </thead>
           <tbody>
@@ -60,7 +60,7 @@ const AdsStatusPage = () => {
                 tabIndex={0}
                 onClick={() => onRowClick(ad)}
                 style={{ cursor: "pointer" }}
-                aria-label={t('mypage.adsStatus.aria.goToDetail', { title: ad.title })}
+                aria-label={t('mypageGeneral.adsStatus.aria.goToDetail', { title: ad.title })}
               >
                 <td>{ad.title}</td>
                 <td>{ad.adPositionName}</td>
@@ -95,7 +95,7 @@ const AdsStatusPage = () => {
       setTotalElements(totalElements);
     } catch (err) {
       console.error('광고 목록 조회 실패:', err);
-      setError(t('mypage.adsStatus.loadError'));
+      setError(t('mypageGeneral.adsStatus.loadError'));
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ const AdsStatusPage = () => {
     if (currentPage > 1) {
       pages.push(
         <button key="prev" onClick={() => setCurrentPage(currentPage - 1)} className={styles.pageBtn}>
-          {t('mypage.adsStatus.pagination.prev')}
+          {t('mypageGeneral.adsStatus.pagination.prev')}
         </button>
       );
     }
@@ -136,7 +136,7 @@ const AdsStatusPage = () => {
     if (currentPage < totalPages) {
       pages.push(
         <button key="next" onClick={() => setCurrentPage(currentPage + 1)} className={styles.pageBtn}>
-          {t('mypage.adsStatus.pagination.next')}
+          {t('mypageGeneral.adsStatus.pagination.next')}
         </button>
       );
     }
@@ -167,15 +167,15 @@ const AdsStatusPage = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.pageTitle}>{t('mypage.adsStatus.title')}</h2>
+        <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.title')}</h2>
         <div className={styles.summary}>
-          {t('mypage.adsStatus.totalAds', { count: totalElements })}
+          {t('mypageGeneral.adsStatus.totalAds', { count: totalElements })}
         </div>
       </div>
 
       {advertisements.length === 0 ? (
         <div className={styles.emptyState}>
-          <p>{t('mypage.adsStatus.noAds')}</p>
+          <p>{t('mypageGeneral.adsStatus.noAds')}</p>
         </div>
       ) : (
         <>

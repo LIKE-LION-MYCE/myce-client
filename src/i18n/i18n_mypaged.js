@@ -3,9 +3,8 @@
 const resources = {
   ko: {
     translation: {
-      mypage: {
-        // PaymentSelection
-        paymentSelection: {
+      // PaymentSelection
+      paymentSelection: {
           title: "결제하기",
           sections: {
             paymentInfo: "결제 정보",
@@ -59,14 +58,12 @@ const resources = {
             notAvailable: "N/A"
           }
         }
-      }
     }
   },
   en: {
     translation: {
-      mypage: {
-        // PaymentSelection
-        paymentSelection: {
+      // PaymentSelection
+      paymentSelection: {
           title: "Payment",
           sections: {
             paymentInfo: "Payment Information",
@@ -120,14 +117,12 @@ const resources = {
             notAvailable: "N/A"
           }
         }
-      }
     }
   },
   ja: {
     translation: {
-      mypage: {
-        // PaymentSelection
-        paymentSelection: {
+      // PaymentSelection
+      paymentSelection: {
           title: "決済",
           sections: {
             paymentInfo: "決済情報",
@@ -181,7 +176,6 @@ const resources = {
             notAvailable: "N/A"
           }
         }
-      }
     }
   }
 };

@@ -9,13 +9,13 @@ const SystemSettings = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t('mypage.systemSettings')}</h1>
+        <h1 className={styles.title}>{t('mypageGeneral.systemSettings')}</h1>
         <p className={styles.description}>시스템 환경을 설정할 수 있습니다.</p>
       </div>
       
       <div className={styles.content}>
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('mypage.languageSettings')}</h2>
+          <h2 className={styles.sectionTitle}>{t('mypageGeneral.languageSettings')}</h2>
           <div className={styles.sectionContent}>
             <p className={styles.sectionDescription}>
               {t('language.selectLanguage')}

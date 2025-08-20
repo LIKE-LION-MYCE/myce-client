@@ -1,86 +1,51 @@
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import styles from "./UsageGuidelines.module.css";
 
 const UsageGuidelines = ({ type }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const expoGuidelines = [
     {
-      title: "신청 자격",
-      items: [
-        "법인 사업자 또는 개인 사업자만 신청 가능합니다.",
-        "박람회에 대한 상세 정보를 작성 하셔야 합니다.",
-        "신청 시 사업자 관련 정보 제출이 필요합니다"
-      ]
+      title: t('usageGuidelines.expo.sections.eligibility.title'),
+      items: t('usageGuidelines.expo.sections.eligibility.items', { returnObjects: true })
     },
     {
-      title: "승인 기준",
-      items: [
-        "박람회 내용이 건전하고 법적 문제가 없어야 합니다.",
-        "제출된 서류가 완전하고 정확해야 합니다.",
-        "플랫폼 정책에 부합하는 박람회여야 합니다.",
-        "중복 신청이 아니어야 합니다."
-      ]
+      title: t('usageGuidelines.expo.sections.approval.title'),
+      items: t('usageGuidelines.expo.sections.approval.items', { returnObjects: true })
     },
     {
-      title: "주의사항",
-      items: [
-        "승인 후 박람회 정보 변경 시 재승인이 필요할 수 있습니다.",
-        "게시 기간은 박람회 개최 기간을 초과할 수 없습니다.",
-        "부적절한 내용 발견 시 승인이 취소될 수 있습니다.",
-        "결제 완료 후 취소 시 수수료가 발생할 수 있습니다."
-      ]
+      title: t('usageGuidelines.expo.sections.precautions.title'),
+      items: t('usageGuidelines.expo.sections.precautions.items', { returnObjects: true })
     },
     {
-      title: "환불 정책",
-      items: [
-        "게시 대기 중 취소: 이용료 + 일 사용료 100% 환불",
-        "게시 중 취소: (일 사용료 * 남은 게시 기간) 환불",
-        "박람회 개최 일주일 이내 취소: 환불 불가"
-      ]
+      title: t('usageGuidelines.expo.sections.refund.title'),
+      items: t('usageGuidelines.expo.sections.refund.items', { returnObjects: true })
     }
   ];
 
   const adGuidelines = [
     {
-      title: "광고 규정",
-      items: [
-        "법적으로 문제없는 건전한 광고 내용이어야 합니다.",
-        "타인의 저작권을 침해하지 않는 이미지를 사용해야 합니다.",
-        "허위 또는 과장 광고는 금지됩니다.",
-        "성인 콘텐츠, 도박, 불법 상품 광고는 불가합니다."
-      ]
+      title: t('usageGuidelines.ad.sections.regulations.title'),
+      items: t('usageGuidelines.ad.sections.regulations.items', { returnObjects: true })
     },
     {
-      title: "이미지 규격",
-      items: [
-        "파일 형식: JPG, PNG, GIF, WebP만 허용",
-        "파일 크기: 10MB 이하",
-        "권장 해상도: 1200x628px (가로:세로 = 1.91:1)",
-        "텍스트가 포함된 경우 가독성을 고려해주세요."
-      ]
+      title: t('usageGuidelines.ad.sections.imageSpecs.title'),
+      items: t('usageGuidelines.ad.sections.imageSpecs.items', { returnObjects: true })
     },
     {
-      title: "게시 정책",
-      items: [
-        "광고 심사는 영업일 기준 1-3일 소요됩니다.",
-        "부적절한 광고로 판단 시 승인이 거절될 수 있습니다.",
-        "게시 중 정책 위반 발견 시 즉시 게시가 중단됩니다.",
-        "동일 광고 위치에 중복 예약은 불가능합니다."
-      ]
+      title: t('usageGuidelines.ad.sections.policy.title'),
+      items: t('usageGuidelines.ad.sections.policy.items', { returnObjects: true })
     },
     {
-      title: "환불 정책",
-      items: [
-        "게시 대기 중 취소: 일 사용료 100% 환불",
-        "게시 중 취소: (일 사용료 * 남은 게시 기간) 환불",
-        "광고 게시 시작 일주일 이내 취소: 환불 불가"
-      ]
+      title: t('usageGuidelines.ad.sections.refund.title'),
+      items: t('usageGuidelines.ad.sections.refund.items', { returnObjects: true })
     }
   ];
 
   const guidelines = type === "expo" ? expoGuidelines : adGuidelines;
-  const title = type === "expo" ? "박람회 신청 주의사항" : "광고 신청 주의사항";
+  const title = t(`usageGuidelines.${type}.title`);
 
   return (
     <div className={styles.container}>

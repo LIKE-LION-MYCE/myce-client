@@ -48,6 +48,45 @@ const resources = {
           }
         },
 
+        // NonMemberPurchaseModal
+        purchaseModal: {
+          title: "비회원 구매",
+          notice: "비회원은 한 번에 1매만 구매 가능합니다.",
+          email: {
+            label: "이메일",
+            placeholder: "예약 확인용 이메일",
+            sendCode: "인증번호 발송",
+            sending: "발송 중...",
+            resend: "재전송"
+          },
+          code: {
+            label: "인증 코드",
+            placeholder: "인증 코드를 입력하세요",
+            verify: "확인",
+            verifying: "확인 중...",
+            verified: "인증 완료"
+          },
+          summary: {
+            total: "총 결제 금액",
+            currency: "원"
+          },
+          buttons: {
+            cancel: "취소",
+            purchase: "구매하기",
+            processing: "처리 중..."
+          },
+          alerts: {
+            invalidEmail: "유효한 이메일 주소를 입력해주세요.",
+            codeSent: "인증 코드가 발송되었습니다.",
+            codeSendFailed: "인증 코드 발송에 실패했습니다.",
+            enterCode: "인증 코드를 입력해주세요.",
+            emailVerified: "이메일이 성공적으로 인증되었습니다.",
+            invalidCode: "인증 코드가 올바르지 않습니다.",
+            verifyFirst: "이메일 인증을 먼저 완료해주세요.",
+            purchaseFailed: "티켓 구매 준비에 실패했습니다. 다시 시도해주세요."
+          }
+        },
+
         // NonMemberReservationDetailPage
         reservationDetail: {
           title: "예매 정보 확인",
@@ -175,6 +214,45 @@ const resources = {
           }
         },
 
+        // NonMemberPurchaseModal
+        purchaseModal: {
+          title: "Non-member Purchase",
+          notice: "Non-members can only purchase 1 ticket at a time.",
+          email: {
+            label: "Email",
+            placeholder: "Email for reservation confirmation",
+            sendCode: "Send Verification Code",
+            sending: "Sending...",
+            resend: "Resend"
+          },
+          code: {
+            label: "Verification Code",
+            placeholder: "Enter verification code",
+            verify: "Verify",
+            verifying: "Verifying...",
+            verified: "Verified"
+          },
+          summary: {
+            total: "Total Payment Amount",
+            currency: "KRW"
+          },
+          buttons: {
+            cancel: "Cancel",
+            purchase: "Purchase",
+            processing: "Processing..."
+          },
+          alerts: {
+            invalidEmail: "Please enter a valid email address.",
+            codeSent: "Verification code has been sent.",
+            codeSendFailed: "Failed to send verification code.",
+            enterCode: "Please enter the verification code.",
+            emailVerified: "Email has been successfully verified.",
+            invalidCode: "The verification code is incorrect.",
+            verifyFirst: "Please complete email verification first.",
+            purchaseFailed: "Failed to prepare ticket purchase. Please try again."
+          }
+        },
+
         // NonMemberReservationDetailPage
         reservationDetail: {
           title: "Reservation Information",
@@ -299,6 +377,45 @@ const resources = {
             enterReservationNumber: "予約番号を入力してください。",
             reservationNotFound: "入力されたメールアドレスと予約番号に該当する予約情報が見つかりません。",
             reservationError: "予約照会中にエラーが発生しました。もう一度お試しください。"
+          }
+        },
+
+        // NonMemberPurchaseModal
+        purchaseModal: {
+          title: "非会員購入",
+          notice: "非会員は一度に1枚のみ購入可能です。",
+          email: {
+            label: "メールアドレス",
+            placeholder: "予約確認用メールアドレス",
+            sendCode: "認証番号送信",
+            sending: "送信中...",
+            resend: "再送信"
+          },
+          code: {
+            label: "認証コード",
+            placeholder: "認証コードを入力してください",
+            verify: "確認",
+            verifying: "確認中...",
+            verified: "認証完了"
+          },
+          summary: {
+            total: "総決済金額",
+            currency: "円"
+          },
+          buttons: {
+            cancel: "キャンセル",
+            purchase: "購入する",
+            processing: "処理中..."
+          },
+          alerts: {
+            invalidEmail: "有効なメールアドレスを入力してください。",
+            codeSent: "認証コードが送信されました。",
+            codeSendFailed: "認証コードの送信に失敗しました。",
+            enterCode: "認証コードを入力してください。",
+            emailVerified: "メールアドレスの認証が正常に完了しました。",
+            invalidCode: "認証コードが正しくありません。",
+            verifyFirst: "メール認証を先に完了してください。",
+            purchaseFailed: "チケット購入の準備に失敗しました。もう一度お試しください。"
           }
         },
 
