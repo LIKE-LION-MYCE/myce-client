@@ -7,23 +7,13 @@
   box-sizing: border-box;
 }
 
-.header {
-  border-bottom: 2px solid #f0f0f0;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.title {
+.pageTitle {
   font-size: 24px;
   font-weight: bold;
   color: #1a1a1a;
-  margin: 0 0 8px 0;
-}
-
-.description {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
 }
 
 .content {
@@ -33,7 +23,7 @@
 }
 
 .section {
-  padding: 24px;
+  padding: 0 24px;
 }
 
 .sectionTitle {
