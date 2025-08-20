@@ -7,6 +7,9 @@ import homepageI18n from './i18n_homepage.js';
 import expoDetailI18n from './i18n_expodetail.js';
 import nonmemberI18n from './i18n_nonmember.js';
 import mypageI18n from './i18n_mypaged.js';
+import commonOptionsI18n from './i18n_commonoptions.js';
+import componentsI18n from './i18n_components.js';
+import receiptI18n from './i18n_receipt.js';
 
 // 리소스 병합 함수
 const mergeResources = (mainResources, ...additionalResources) => {
@@ -58,6 +61,184 @@ const mainResources = {
         login: "로그인",
         signup: "회원가입",
         reservationCheck: "예매 확인"
+      },
+      // 공통 컴포넌트
+      components: {
+        // 취소 수수료 테이블
+        cancelFeeTable: {
+          headers: {
+            date: "취소일",
+            fee: "취소수수료"
+          },
+          data: {
+            within7days: "예약 후 7일 이내",
+            days8to5: "예약 후 8일 ~ 행사 5일 이내",
+            days5to3: "행사 5일 ~ 3일 전",
+            days2to1: "행사 2일 전 ~ 하루 전",
+            eventDay: "행사 당일",
+            noFee: "없음",
+            fee10percent: "티켓금액의 10%",
+            fee20percent: "티켓금액의 20%",
+            fee30percent: "티켓금액의 30%",
+            fee95percent: "티켓금액의 95%"
+          }
+        },
+        // 알림 관련
+        notification: {
+          button: {
+            errorFetch: "읽지 않은 알림 개수 조회 실패:"
+          },
+          modal: {
+            title: "알림",
+            markAllRead: "모두 읽음",
+            processing: "처리중...",
+            close: "✕",
+            tabs: {
+              general: "일반 알림",
+              admin: "관리자 알림"
+            },
+            loading: "알림을 불러오는 중...",
+            empty: {
+              general: "일반 알림이 없습니다.",
+              admin: "관리자 알림이 없습니다."
+            },
+            types: {
+              expo: "박람회",
+              event: "행사",
+              qrIssued: "QR발급",
+              paymentComplete: "결제완료",
+              reservationConfirm: "예매확정",
+              ad: "광고",
+              notification: "알림"
+            },
+            time: {
+              justNow: "방금",
+              minutesAgo: "분 전",
+              hoursAgo: "시간 전",
+              daysAgo: "일 전"
+            },
+            statusKeywords: [
+              "승인 대기", "승인 완료", "결제 대기", "게시 대기", "게시 중",
+              "게시 종료", "정산 요청", "종료됨", "승인 거절", "취소 완료",
+              "취소 대기", "승인됨", "거절됨", "완료됨"
+            ],
+            confirmModal: {
+              title: "모든 알림 읽음 처리",
+              message: "읽지 않은 모든 알림을 읽음 처리하시겠습니까?",
+              cancel: "취소",
+              confirm: "확인"
+            },
+            errors: {
+              fetchFailed: "알림 조회 실패:",
+              markReadFailed: "알림 처리 실패:",
+              markAllReadFailed: "모든 알림 읽음 처리 실패:",
+              unknownType: "알 수 없는 알림 타입:"
+            }
+          }
+        },
+        // 리뷰 시스템
+        review: {
+          // ReviewForm
+          form: {
+            title: {
+              create: "리뷰 작성",
+              edit: "리뷰 수정"
+            },
+            rating: {
+              label: "평점",
+              points: "점"
+            },
+            title: {
+              label: "제목",
+              placeholder: "리뷰 제목을 입력해주세요"
+            },
+            content: {
+              label: "리뷰 내용",
+              placeholder: "박람회에 대한 솔직한 리뷰를 작성해주세요"
+            },
+            required: "*",
+            buttons: {
+              cancel: "취소",
+              create: "작성",
+              edit: "수정"
+            },
+            alerts: {
+              titleRequired: "제목을 입력해주세요.",
+              contentRequired: "리뷰 내용을 입력해주세요."
+            }
+          },
+          // ReviewItem
+          item: {
+            time: {
+              today: "오늘",
+              yesterday: "어제",
+              daysAgo: "일 전",
+              edited: "(수정됨)"
+            },
+            buttons: {
+              edit: "수정",
+              delete: "삭제"
+            }
+          },
+          // ReviewList
+          list: {
+            title: "리뷰",
+            sort: {
+              latest: "최신순",
+              rating: "평점순"
+            },
+            buttons: {
+              write: "리뷰 작성"
+            },
+            messages: {
+              noPermission: "박람회에 참석한 후 리뷰를 작성할 수 있습니다.",
+              loading: "리뷰를 불러오는 중...",
+              noReviews: "아직 작성된 리뷰가 없습니다."
+            },
+            alerts: {
+              created: "리뷰가 작성되었습니다.",
+              updated: "리뷰가 수정되었습니다.",
+              deleted: "리뷰가 삭제되었습니다.",
+              deleteConfirm: "정말로 이 리뷰를 삭제하시겠습니까?",
+              error: "리뷰 처리 중 오류가 발생했습니다."
+            },
+            errors: {
+              fetchFailed: "리뷰 조회 실패:",
+              permissionCheckFailed: "리뷰 권한 확인 실패:",
+              processFailed: "리뷰 처리 실패:",
+              deleteFailed: "리뷰 삭제 실패:"
+            }
+          }
+        }
+      },
+      // 푸터
+      footer: {
+        company: {
+          name: "(주)MYCE",
+          address: "주소: 서울특별시 강남구 테크노로 123 (삼성동, 마이스타워)",
+          businessNumber: "사업자등록번호: 123-45-67890｜대표이사: 김찍찍",
+          ecommerce: "통신판매업신고: 2025-서울강남-0123",
+          tourism: "관광사업증 등록번호: 제2025-000045호",
+          hosting: "호스팅서비스제공자: (주)MYCE"
+        },
+        customerService: {
+          title: "고객센터",
+          fax: "팩스: 02-6000-2025",
+          email: "이메일: support@myce.live",
+          chatService: "좌측 하단의 상담 서비스 버튼을 통해 전문 상담원 또는 AI 챗봇 상담을 이용하실 수 있습니다."
+        },
+        privacy: {
+          title: "개인정보 보호책임자",
+          department: "담당부서: 개발팀",
+          contact: "연락처: privacy@myce.co.kr",
+          hours: "처리시간: 평일 09:00~18:00 (주말, 공휴일 제외)"
+        },
+        legal: {
+          disclaimer: "(주)MYCE는 일부 상품의 통신판매중개자로서 통신판매의 당사자가 아니므로, 상품의 예약, 이용 및 환불 등 거래와 관련된 의무와 책임은 판매자에게 있으며 (주)MYCE는 일체 책임을 지지 않습니다.",
+          terms: "이용약관",
+          privacy: "개인정보 처리방침",
+          copyright: "ⓒ MYCE Co., Ltd. All rights reserved."
+        }
       },
       // 메인페이지
       mainpage:{
@@ -243,7 +424,7 @@ const mainResources = {
          }
        },
        // 마이페이지
-      mypage: {
+      mypageGeneral: {
         title: "마이페이지",
         userInfo: "회원 정보",
         reservation: "예매 내역",
@@ -728,6 +909,184 @@ const mainResources = {
         signup: "Sign Up",
         reservationCheck: "Check Reservation"
       },
+      // Common Components
+      components: {
+        // Cancel Fee Table
+        cancelFeeTable: {
+          headers: {
+            date: "Cancellation Date",
+            fee: "Cancellation Fee"
+          },
+          data: {
+            within7days: "Within 7 days after booking",
+            days8to5: "8 days after booking ~ 5 days before event",
+            days5to3: "5 days ~ 3 days before event",
+            days2to1: "2 days ~ 1 day before event",
+            eventDay: "Event day",
+            noFee: "None",
+            fee10percent: "10% of ticket price",
+            fee20percent: "20% of ticket price",
+            fee30percent: "30% of ticket price",
+            fee95percent: "95% of ticket price"
+          }
+        },
+        // Notification Related
+        notification: {
+          button: {
+            errorFetch: "Failed to fetch unread notification count:"
+          },
+          modal: {
+            title: "Notifications",
+            markAllRead: "Mark All as Read",
+            processing: "Processing...",
+            close: "✕",
+            tabs: {
+              general: "General Notifications",
+              admin: "Admin Notifications"
+            },
+            loading: "Loading notifications...",
+            empty: {
+              general: "No general notifications.",
+              admin: "No admin notifications."
+            },
+            types: {
+              expo: "Expo",
+              event: "Event",
+              qrIssued: "QR Issued",
+              paymentComplete: "Payment Complete",
+              reservationConfirm: "Reservation Confirmed",
+              ad: "Advertisement",
+              notification: "Notification"
+            },
+            time: {
+              justNow: "Just now",
+              minutesAgo: "minutes ago",
+              hoursAgo: "hours ago",
+              daysAgo: "days ago"
+            },
+            statusKeywords: [
+              "Pending Approval", "Approved", "Pending Payment", "Pending Publication", "Published",
+              "Publication Ended", "Settlement Requested", "Completed", "Rejected", "Cancelled",
+              "Pending Cancellation", "Approved", "Rejected", "Completed"
+            ],
+            confirmModal: {
+              title: "Mark All Notifications as Read",
+              message: "Do you want to mark all unread notifications as read?",
+              cancel: "Cancel",
+              confirm: "Confirm"
+            },
+            errors: {
+              fetchFailed: "Failed to fetch notifications:",
+              markReadFailed: "Failed to process notification:",
+              markAllReadFailed: "Failed to mark all notifications as read:",
+              unknownType: "Unknown notification type:"
+            }
+          }
+        },
+        // Review System
+        review: {
+          // ReviewForm
+          form: {
+            title: {
+              create: "Write Review",
+              edit: "Edit Review"
+            },
+            rating: {
+              label: "Rating",
+              points: "points"
+            },
+            title: {
+              label: "Title",
+              placeholder: "Please enter review title"
+            },
+            content: {
+              label: "Review Content",
+              placeholder: "Please write an honest review about the exhibition"
+            },
+            required: "*",
+            buttons: {
+              cancel: "Cancel",
+              create: "Submit",
+              edit: "Update"
+            },
+            alerts: {
+              titleRequired: "Please enter a title.",
+              contentRequired: "Please enter review content."
+            }
+          },
+          // ReviewItem
+          item: {
+            time: {
+              today: "Today",
+              yesterday: "Yesterday",
+              daysAgo: "days ago",
+              edited: "(edited)"
+            },
+            buttons: {
+              edit: "Edit",
+              delete: "Delete"
+            }
+          },
+          // ReviewList
+          list: {
+            title: "Reviews",
+            sort: {
+              latest: "Latest",
+              rating: "Rating"
+            },
+            buttons: {
+              write: "Write Review"
+            },
+            messages: {
+              noPermission: "You can write a review after attending the exhibition.",
+              loading: "Loading reviews...",
+              noReviews: "No reviews have been written yet."
+            },
+            alerts: {
+              created: "Review has been created.",
+              updated: "Review has been updated.",
+              deleted: "Review has been deleted.",
+              deleteConfirm: "Are you sure you want to delete this review?",
+              error: "An error occurred while processing the review."
+            },
+            errors: {
+              fetchFailed: "Failed to fetch reviews:",
+              permissionCheckFailed: "Failed to check review permission:",
+              processFailed: "Failed to process review:",
+              deleteFailed: "Failed to delete review:"
+            }
+          }
+        }
+      },
+      // Footer
+      footer: {
+        company: {
+          name: "MYCE Co., Ltd.",
+          address: "Address: 123 Techno-ro, Gangnam-gu, Seoul (Samseong-dong, MYCE Tower)",
+          businessNumber: "Business Registration Number: 123-45-67890｜CEO: Kim ZZick",
+          ecommerce: "E-commerce Registration: 2025-Seoul Gangnam-0123",
+          tourism: "Tourism Business License: No. 2025-000045",
+          hosting: "Hosting Service Provider: MYCE Co., Ltd."
+        },
+        customerService: {
+          title: "Customer Service",
+          fax: "Fax: 02-6000-2025",
+          email: "Email: support@myce.live",
+          chatService: "You can use professional consultant or AI chatbot consultation through the consultation service button at the bottom left."
+        },
+        privacy: {
+          title: "Privacy Protection Officer",
+          department: "Department: Development Team",
+          contact: "Contact: privacy@myce.co.kr",
+          hours: "Business Hours: Weekdays 09:00~18:00 (Excluding weekends and holidays)"
+        },
+        legal: {
+          disclaimer: "MYCE Co., Ltd. is a telecommunications sales intermediary for some products and is not a party to telecommunications sales, so the obligations and responsibilities related to transactions such as product reservations, use, and refunds belong to the seller, and MYCE Co., Ltd. assumes no responsibility.",
+          terms: "Terms of Service",
+          privacy: "Privacy Policy",
+          copyright: "ⓒ MYCE Co., Ltd. All rights reserved."
+        }
+      },
       // Main Page
       mainpage: {
         adForm: {
@@ -912,7 +1271,7 @@ const mainResources = {
            }
          },
        // My Page
-       mypage: {
+       mypageGeneral: {
         title: "My Page",
         userInfo: "User Information",
         reservation: "Reservation History",
@@ -1396,6 +1755,184 @@ const mainResources = {
         login: "ログイン",
         signup: "会員登録",
         reservationCheck: "予約確認"
+      },
+      // 共通コンポーネント
+      components: {
+        // キャンセル手数料テーブル
+        cancelFeeTable: {
+          headers: {
+            date: "キャンセル日",
+            fee: "キャンセル手数料"
+          },
+          data: {
+            within7days: "予約後7日以内",
+            days8to5: "予約後8日〜イベント5日以内",
+            days5to3: "イベント5日〜3日前",
+            days2to1: "イベント2日前〜1日前",
+            eventDay: "イベント当日",
+            noFee: "なし",
+            fee10percent: "チケット料金の10%",
+            fee20percent: "チケット料金の20%",
+            fee30percent: "チケット料金の30%",
+            fee95percent: "チケット料金の95%"
+          }
+        },
+        // 通知関連
+        notification: {
+          button: {
+            errorFetch: "未読通知数の取得に失敗しました:"
+          },
+          modal: {
+            title: "通知",
+            markAllRead: "すべて既読",
+            processing: "処理中...",
+            close: "✕",
+            tabs: {
+              general: "一般通知",
+              admin: "管理者通知"
+            },
+            loading: "通知を読み込み中...",
+            empty: {
+              general: "一般通知はありません。",
+              admin: "管理者通知はありません。"
+            },
+            types: {
+              expo: "展示会",
+              event: "イベント",
+              qrIssued: "QR発行",
+              paymentComplete: "決済完了",
+              reservationConfirm: "予約確定",
+              ad: "広告",
+              notification: "通知"
+            },
+            time: {
+              justNow: "たった今",
+              minutesAgo: "分前",
+              hoursAgo: "時間前",
+              daysAgo: "日前"
+            },
+            statusKeywords: [
+              "承認待ち", "承認完了", "決済待ち", "公開待ち", "公開中",
+              "公開終了", "精算依頼", "終了", "承認拒否", "キャンセル完了",
+              "キャンセル待ち", "承認済み", "拒否", "完了"
+            ],
+            confirmModal: {
+              title: "すべての通知を既読処理",
+              message: "未読のすべての通知を既読処理しますか？",
+              cancel: "キャンセル",
+              confirm: "確認"
+            },
+            errors: {
+              fetchFailed: "通知の取得に失敗しました:",
+              markReadFailed: "通知処理に失敗しました:",
+              markAllReadFailed: "すべての通知の既読処理に失敗しました:",
+              unknownType: "不明な通知タイプ:"
+            }
+          }
+        },
+        // レビューシステム
+        review: {
+          // ReviewForm
+          form: {
+            title: {
+              create: "レビュー作成",
+              edit: "レビュー編集"
+            },
+            rating: {
+              label: "評価",
+              points: "点"
+            },
+            title: {
+              label: "タイトル",
+              placeholder: "レビューのタイトルを入力してください"
+            },
+            content: {
+              label: "レビュー内容",
+              placeholder: "展示会についての正直なレビューを書いてください"
+            },
+            required: "*",
+            buttons: {
+              cancel: "キャンセル",
+              create: "作成",
+              edit: "編集"
+            },
+            alerts: {
+              titleRequired: "タイトルを入力してください。",
+              contentRequired: "レビュー内容を入力してください。"
+            }
+          },
+          // ReviewItem
+          item: {
+            time: {
+              today: "今日",
+              yesterday: "昨日",
+              daysAgo: "日前",
+              edited: "(編集済み)"
+            },
+            buttons: {
+              edit: "編集",
+              delete: "削除"
+            }
+          },
+          // ReviewList
+          list: {
+            title: "レビュー",
+            sort: {
+              latest: "最新順",
+              rating: "評価順"
+            },
+            buttons: {
+              write: "レビュー作成"
+            },
+            messages: {
+              noPermission: "展示会に参加後、レビューを作成できます。",
+              loading: "レビューを読み込み中...",
+              noReviews: "まだレビューが作成されていません。"
+            },
+            alerts: {
+              created: "レビューが作成されました。",
+              updated: "レビューが更新されました。",
+              deleted: "レビューが削除されました。",
+              deleteConfirm: "本当にこのレビューを削除しますか？",
+              error: "レビュー処理中にエラーが発生しました。"
+            },
+            errors: {
+              fetchFailed: "レビューの取得に失敗しました:",
+              permissionCheckFailed: "レビュー権限の確認に失敗しました:",
+              processFailed: "レビュー処理に失敗しました:",
+              deleteFailed: "レビューの削除に失敗しました:"
+            }
+          }
+        }
+      },
+      // フッター
+      footer: {
+        company: {
+          name: "株式会社MYCE",
+          address: "住所: ソウル特別市江南区テクノロ123 (三成洞、MYCEタワー)",
+          businessNumber: "事業者登録番号: 123-45-67890｜代表取締役: キム・ジクジク",
+          ecommerce: "通信販売業申告: 2025-ソウル江南-0123",
+          tourism: "観光事業証登録番号: 第2025-000045号",
+          hosting: "ホスティングサービス提供者: 株式会社MYCE"
+        },
+        customerService: {
+          title: "カスタマーサービス",
+          fax: "ファックス: 02-6000-2025",
+          email: "メール: support@myce.live",
+          chatService: "左下の相談サービスボタンから専門相談員またはAIチャットボット相談をご利用いただけます。"
+        },
+        privacy: {
+          title: "個人情報保護責任者",
+          department: "担当部署: 開発チーム",
+          contact: "連絡先: privacy@myce.co.kr",
+          hours: "処理時間: 平日 09:00~18:00 (週末、祝日除く)"
+        },
+        legal: {
+          disclaimer: "株式会社MYCEは一部商品の通信販売仲介者として通信販売の当事者ではないため、商品の予約、利用および払い戻しなど取引に関連する義務と責任は販売者にあり、株式会社MYCEは一切の責任を負いません。",
+          terms: "利用規約",
+          privacy: "個人情報処理方針",
+          copyright: "ⓒ MYCE Co., Ltd. All rights reserved."
+        }
       },
       // メインページ
       mainpage: {
@@ -2041,7 +2578,7 @@ const mainResources = {
 };
 
 // 모든 리소스 병합
-const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n, nonmemberI18n, mypageI18n);
+const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n, nonmemberI18n, mypageI18n, commonOptionsI18n, componentsI18n, receiptI18n);
 
 i18n
   .use(LanguageDetector)

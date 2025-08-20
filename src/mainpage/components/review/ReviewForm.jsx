@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Review.module.css';
 
 const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -37,12 +39,12 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      alert('제목을 입력해주세요.');
+      alert(t('components.review.form.alerts.titleRequired'));
       return;
     }
     
     if (!formData.content.trim()) {
-      alert('리뷰 내용을 입력해주세요.');
+      alert(t('components.review.form.alerts.contentRequired'));
       return;
     }
 
@@ -68,23 +70,23 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
   return (
     <div className={styles.reviewFormContainer}>
       <div className={styles.reviewFormHeader}>
-        <h4>{initialData ? '리뷰 수정' : '리뷰 작성'}</h4>
+        <h4>{initialData ? t('components.review.form.title.edit') : t('components.review.form.title.create')}</h4>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.reviewForm}>
         <div className={styles.formGroup}>
           <label htmlFor="rating" className={styles.label}>
-            평점 <span className={styles.required}>*</span>
+            {t('components.review.form.rating.label')} <span className={styles.required}>{t('components.review.form.required')}</span>
           </label>
           <div className={styles.ratingContainer}>
             {renderStarRating()}
-            <span className={styles.ratingText}>{formData.rating}점</span>
+            <span className={styles.ratingText}>{formData.rating}{t('components.review.form.rating.points')}</span>
           </div>
         </div>
 
         <div className={styles.formGroup}>
           <label htmlFor="title" className={styles.label}>
-            제목 <span className={styles.required}>*</span>
+            {t('components.review.form.title.label')} <span className={styles.required}>{t('components.review.form.required')}</span>
           </label>
           <input
             type="text"
@@ -93,14 +95,14 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
             value={formData.title}
             onChange={handleInputChange}
             className={styles.input}
-            placeholder="리뷰 제목을 입력해주세요"
+            placeholder={t('components.review.form.title.placeholder')}
             maxLength={100}
           />
         </div>
 
         <div className={styles.formGroup}>
           <label htmlFor="content" className={styles.label}>
-            리뷰 내용 <span className={styles.required}>*</span>
+            {t('components.review.form.content.label')} <span className={styles.required}>{t('components.review.form.required')}</span>
           </label>
           <textarea
             id="content"
@@ -108,7 +110,7 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
             value={formData.content}
             onChange={handleInputChange}
             className={styles.textarea}
-            placeholder="박람회에 대한 솔직한 리뷰를 작성해주세요"
+            placeholder={t('components.review.form.content.placeholder')}
             rows={6}
           />
         </div>
@@ -119,13 +121,13 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
             onClick={onCancel}
             className={styles.cancelBtn}
           >
-            취소
+            {t('components.review.form.buttons.cancel')}
           </button>
           <button
             type="submit"
             className={styles.submitBtn}
           >
-            {initialData ? '수정' : '작성'}
+            {initialData ? t('components.review.form.buttons.edit') : t('components.review.form.buttons.create')}
           </button>
         </div>
       </form>

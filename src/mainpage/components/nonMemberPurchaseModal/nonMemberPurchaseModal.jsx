@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./nonMemberPurchaseModal.module.css"; // fix case
 import { FiX } from "react-icons/fi";
 import {
@@ -16,6 +17,7 @@ export default function NonMemberPurchaseModal({
   onClose,
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -40,19 +42,19 @@ export default function NonMemberPurchaseModal({
 
   const handleSendCode = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      alert("유효한 이메일 주소를 입력해주세요.");
+      alert(t('nonmember.purchaseModal.alerts.invalidEmail'));
       return;
     }
     
     setIsSendingEmail(true);
     try {
       await sendVerificatiionEmail(VERIFICATION_TYPE.NONMEMBER_VERIFY, email);
-      alert("인증 코드가 발송되었습니다.");
+      alert(t('nonmember.purchaseModal.alerts.codeSent'));
       setIsCodeSent(true);
       setTimer(180); // 3 minutes timer
     } catch (error) {
       console.error("인증 코드 발송 실패:", error);
-      alert("인증 코드 발송에 실패했습니다.");
+      alert(t('nonmember.purchaseModal.alerts.codeSendFailed'));
     } finally {
       setIsSendingEmail(false);
     }
@@ -60,7 +62,7 @@ export default function NonMemberPurchaseModal({
 
   const handleVerifyCode = async () => {
     if (!verificationCode) {
-      alert("인증 코드를 입력해주세요.");
+      alert(t('nonmember.purchaseModal.alerts.enterCode'));
       return;
     }
     
@@ -71,12 +73,12 @@ export default function NonMemberPurchaseModal({
         email,
         verificationCode
       );
-      alert("이메일이 성공적으로 인증되었습니다.");
+      alert(t('nonmember.purchaseModal.alerts.emailVerified'));
       setIsVerified(true);
       setTimer(0);
     } catch (error) {
       console.error("이메일 인증 실패:", error);
-      alert("인증 코드가 올바르지 않습니다.");
+      alert(t('nonmember.purchaseModal.alerts.invalidCode'));
     } finally {
       setIsVerifyingCode(false);
     }
@@ -86,7 +88,7 @@ export default function NonMemberPurchaseModal({
     // Added async
     if (!isVerified) {
       // 이 확인 로직이 있어야 함
-      alert("이메일 인증을 먼저 완료해주세요.");
+      alert(t('nonmember.purchaseModal.alerts.verifyFirst'));
       return;
     }
 
@@ -127,7 +129,7 @@ export default function NonMemberPurchaseModal({
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
-      alert("티켓 구매 준비에 실패했습니다. 다시 시도해주세요.");
+      alert(t('nonmember.purchaseModal.alerts.purchaseFailed'));
       setIsLoading(false);
     }
   };
@@ -136,7 +138,7 @@ export default function NonMemberPurchaseModal({
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h3>비회원 구매</h3>
+          <h3>{t('nonmember.purchaseModal.title')}</h3>
           <button className={styles.closeBtn} onClick={onClose}>
             <FiX size={24} />
           </button>
@@ -144,15 +146,15 @@ export default function NonMemberPurchaseModal({
 
         <div className={styles.content}>
           <div className={styles.notice}>
-            <p>비회원은 한 번에 1매만 구매 가능합니다.</p>
+            <p>{t('nonmember.purchaseModal.notice')}</p>
           </div>
           <div className={styles.ticketInfo}>
             <h4>{ticket.name}</h4>
-            <p className={styles.price}>{ticket.price?.toLocaleString()}원</p>
+            <p className={styles.price}>{ticket.price?.toLocaleString()}{t('nonmember.purchaseModal.summary.currency')}</p>
           </div>
 
           <div className={styles.emailSection}>
-            <label htmlFor="email-input">이메일</label>
+            <label htmlFor="email-input">{t('nonmember.purchaseModal.email.label')}</label>
             <div className={styles.inputWithButton}>
               <input
                 id="email-input"
@@ -163,7 +165,7 @@ export default function NonMemberPurchaseModal({
                   setIsVerified(false);
                   setIsCodeSent(false);
                 }}
-                placeholder="예약 확인용 이메일"
+                placeholder={t('nonmember.purchaseModal.email.placeholder')}
                 className={styles.emailInput}
                 disabled={isCodeSent}
               />
@@ -175,12 +177,12 @@ export default function NonMemberPurchaseModal({
                 {isSendingEmail ? (
                   <span className={styles.loadingContent}>
                     <span className={styles.spinner}></span>
-                    발송 중...
+                    {t('nonmember.purchaseModal.email.sending')}
                   </span>
                 ) : isCodeSent ? (
-                  `재전송 (${timer}s)`
+                  `${t('nonmember.purchaseModal.email.resend')} (${timer}s)`
                 ) : (
-                  "인증번호 발송"
+                  t('nonmember.purchaseModal.email.sendCode')
                 )}
               </button>
             </div>
@@ -188,14 +190,14 @@ export default function NonMemberPurchaseModal({
 
           {isCodeSent && (
             <div className={styles.verificationSection}>
-              <label htmlFor="code-input">인증 코드</label>
+              <label htmlFor="code-input">{t('nonmember.purchaseModal.code.label')}</label>
               <div className={styles.inputWithButton}>
                 <input
                   id="code-input"
                   type="text"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
-                  placeholder="인증 코드를 입력하세요"
+                  placeholder={t('nonmember.purchaseModal.code.placeholder')}
                   className={styles.codeInput}
                   disabled={isVerified}
                 />
@@ -207,12 +209,12 @@ export default function NonMemberPurchaseModal({
                   {isVerifyingCode ? (
                     <span className={styles.loadingContent}>
                       <span className={styles.spinner}></span>
-                      확인 중...
+                      {t('nonmember.purchaseModal.code.verifying')}
                     </span>
                   ) : isVerified ? (
-                    "인증 완료"
+                    t('nonmember.purchaseModal.code.verified')
                   ) : (
-                    "확인"
+                    t('nonmember.purchaseModal.code.verify')
                   )}
                 </button>
               </div>
@@ -220,22 +222,22 @@ export default function NonMemberPurchaseModal({
           )}
 
           <div className={styles.summary}>
-            <span>총 결제 금액</span>
+            <span>{t('nonmember.purchaseModal.summary.total')}</span>
             <span className={styles.totalPrice}>
-              {(ticket.price * quantity).toLocaleString()}원
+              {(ticket.price * quantity).toLocaleString()}{t('nonmember.purchaseModal.summary.currency')}
             </span>
           </div>
 
           <div className={styles.actions}>
             <button className={styles.cancelBtn} onClick={onClose}>
-              취소
+              {t('nonmember.purchaseModal.buttons.cancel')}
             </button>
             <button
               className={styles.purchaseBtn}
               onClick={handlePurchase}
               disabled={!isVerified || isLoading}
             >
-              {isLoading ? "처리 중..." : "구매하기"}
+              {isLoading ? t('nonmember.purchaseModal.buttons.processing') : t('nonmember.purchaseModal.buttons.purchase')}
             </button>
           </div>
         </div>

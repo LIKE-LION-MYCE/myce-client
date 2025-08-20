@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { getActiveExpoFee, getActiveAdFees } from "../../../api/service/fee/feeApi";
 import styles from "./PricingInfo.module.css";
 
 const PricingInfo = ({ type }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [pricingData, setPricingData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ const PricingInfo = ({ type }) => {
         }
       } catch (err) {
         console.error('요금제 정보 로드 실패:', err);
-        setError('요금제 정보를 불러오는데 실패했습니다.');
+        setError(t(`pricingInfo.${type}.error`));
         // 에러 시 기본 데이터 표시
         setPricingData(getDefaultPricingData(type));
       } finally {
@@ -45,27 +47,27 @@ const PricingInfo = ({ type }) => {
     
     feeList.forEach(fee => {
       categories.push({
-        category: fee.name || "박람회 요금제",
+        category: fee.name || t('pricingInfo.expo.categories.default'),
         items: [
           {
-            name: "일 사용료",
-            price: `${Number(fee.dailyUsageFee || fee.daily_usage_fee || 0).toLocaleString()}원/일`,
-            description: "박람회 게시 1일당 사용료"
+            name: t('pricingInfo.expo.items.dailyUsage'),
+            price: `${Number(fee.dailyUsageFee || fee.daily_usage_fee || 0).toLocaleString()}${t('pricingInfo.expo.units.daily')}`,
+            description: t('pricingInfo.expo.descriptions.dailyUsage')
           },
           {
-            name: "기본 등록금 (보증금)",
-            price: `${Number(fee.deposit || 0).toLocaleString()}원`,
-            description: "박람회 등록 시 필요한 기본 보증금"
+            name: t('pricingInfo.expo.items.basicDeposit'),
+            price: `${Number(fee.deposit || 0).toLocaleString()}${t('pricingInfo.expo.units.currency')}`,
+            description: t('pricingInfo.expo.descriptions.basicDeposit')
           },
           {
-            name: "프리미엄 이용료",
-            price: `${Number(fee.premiumDeposit || fee.premium_deposit || 0).toLocaleString()}원`,
-            description: "프리미엄 기능 이용 시 추가 요금"
+            name: t('pricingInfo.expo.items.premiumFee'),
+            price: `${Number(fee.premiumDeposit || fee.premium_deposit || 0).toLocaleString()}${t('pricingInfo.expo.units.currency')}`,
+            description: t('pricingInfo.expo.descriptions.premiumFee')
           },
           {
-            name: "티켓 수수료",
-            price: `${Number(fee.settlementCommission || fee.settlement_commission || 0)}%`,
-            description: "티켓 판매 시 발생하는 수수료율"
+            name: t('pricingInfo.expo.items.ticketCommission'),
+            price: `${Number(fee.settlementCommission || fee.settlement_commission || 0)}${t('pricingInfo.expo.units.percent')}`,
+            description: t('pricingInfo.expo.descriptions.ticketCommission')
           }
         ]
       });
@@ -80,13 +82,13 @@ const PricingInfo = ({ type }) => {
       return getDefaultPricingData("ad");
     }
 
-    // 모든 광고 위치를 하나의 "기본 요금제" 카테고리로 묶음
+    // 모든 광고 위치를 하나의 "기본 요금제" 카테곦0리로 묶음
     const categories = [{
-      category: "기본 요금제",
+      category: t('pricingInfo.ad.categories.basic'),
       items: feeList.map(fee => ({
         name: fee.position, // 위치명을 아이템 이름으로 사용 (예: "메인 배너", "사이드 배너")
-        price: `${Number(fee.feePerDay || 0).toLocaleString()}원/일`,
-        description: `${fee.position} 위치에 광고 게시 시 일당 요금`
+        price: `${Number(fee.feePerDay || 0).toLocaleString()}${t('pricingInfo.expo.units.daily')}`,
+        description: `${fee.position} ${t('pricingInfo.expo.descriptions.adPosition')}`
       }))
     }];
 
@@ -97,22 +99,22 @@ const PricingInfo = ({ type }) => {
   const getDefaultPricingData = (dataType) => {
     if (dataType === "expo") {
       return [{
-        category: "박람회 기본 요금",
+        category: t('pricingInfo.expo.categories.basic'),
         items: [
-          { name: "표준 박람회", price: "문의", description: "기본 박람회 개최 서비스" }
+          { name: t('pricingInfo.expo.items.standard'), price: t('pricingInfo.expo.units.inquiry'), description: t('pricingInfo.expo.descriptions.standard') }
         ]
       }];
     } else {
       return [{
-        category: "광고 기본 요금",
+        category: t('pricingInfo.ad.categories.default'),
         items: [
-          { name: "기본 광고", price: "문의", description: "기본 광고 게시 서비스" }
+          { name: t('pricingInfo.ad.items.basicAd'), price: t('pricingInfo.expo.units.inquiry'), description: t('pricingInfo.ad.descriptions.basicAd') }
         ]
       }];
     }
   };
 
-  const title = type === "expo" ? "박람회 요금제 안내" : "광고 요금제 안내";
+  const title = t(`pricingInfo.${type}.title`);
 
   return (
     <div className={styles.container}>
@@ -126,7 +128,7 @@ const PricingInfo = ({ type }) => {
       {isExpanded && (
         <div className={styles.content}>
           {loading ? (
-            <div className={styles.loading}>요금제 정보를 불러오는 중...</div>
+            <div className={styles.loading}>{t(`pricingInfo.${type}.loading`)}</div>
           ) : error ? (
             <div className={styles.error}>{error}</div>
           ) : (
@@ -149,10 +151,11 @@ const PricingInfo = ({ type }) => {
               ))}
             
               <div className={styles.notice}>
-                <h4 className={styles.noticeTitle}>💡 참고사항</h4>
+                <h4 className={styles.noticeTitle}>{t('pricingInfo.expo.notice.title')}</h4>
                 <ul className={styles.noticeList}>
-                  <li>모든 요금은 부가세(VAT) 포함 입니다.</li>
-                  <li>문의사항은 고객센터로 연락해주세요.</li>
+                  {t('pricingInfo.expo.notice.items', { returnObjects: true }).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
           </>

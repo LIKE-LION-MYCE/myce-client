@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './RefundModal.module.css';
 import instance from '../../../api/lib/axios';
 
 const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
+  const { t } = useTranslation();
   const [refundInfo, setRefundInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [reason, setReason] = useState('개인 사정');
+  const [reason, setReason] = useState('personal');
 
   // 환불 정보 조회
   const getRefundPreview = async () => {
@@ -15,7 +17,7 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
       const response = await instance.get(`/refund/reservation/${reservationId}/preview`);
       setRefundInfo(response.data);
     } catch (error) {
-      alert(error.response?.data?.message || '환불 정보를 가져올 수 없습니다.');
+      alert(error.response?.data?.message || t('refundModal.messages.errorFetch'));
       onClose();
     } finally {
       setLoading(false);
@@ -24,16 +26,17 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
 
   // 실제 환불 처리
   const handleRefund = async () => {
-    if (!window.confirm('정말로 환불하시겠습니까?')) return;
+    if (!window.confirm(t('refundModal.messages.confirmRefund'))) return;
     
     try {
       setProcessing(true);
-      await instance.post(`/refund/reservation/${reservationId}?reason=${encodeURIComponent(reason)}`);
-      alert('환불이 완료되었습니다.');
+      const reasonKey = t(`refundModal.reasons.${reason}`);
+      await instance.post(`/refund/reservation/${reservationId}?reason=${encodeURIComponent(reasonKey)}`);
+      alert(t('refundModal.messages.refundCompleted'));
       onRefundComplete();
       onClose();
     } catch (error) {
-      alert(error.response?.data?.message || '환불 처리 중 오류가 발생했습니다.');
+      alert(error.response?.data?.message || t('refundModal.messages.errorProcess'));
     } finally {
       setProcessing(false);
     }
@@ -51,35 +54,35 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3>예매 취소 및 환불</h3>
+          <h3>{t('refundModal.title')}</h3>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>환불 정보를 확인하는 중...</div>
+          <div className={styles.loading}>{t('refundModal.loading')}</div>
         ) : refundInfo ? (
           <div className={styles.content}>
             <div className={styles.infoSection}>
-              <h4>환불 정보</h4>
+              <h4>{t('refundModal.sections.refundInfo')}</h4>
               <div className={styles.infoItem}>
-                <span>원본 결제금액:</span>
-                <span>{refundInfo.originalAmount?.toLocaleString()}원</span>
+                <span>{t('refundModal.fields.originalAmount')}:</span>
+                <span>{refundInfo.originalAmount?.toLocaleString()}{t('refundModal.units.currency')}</span>
               </div>
               <div className={styles.infoItem}>
-                <span>환불 수수료:</span>
-                <span className={styles.fee}>-{refundInfo.refundFee?.toLocaleString()}원</span>
+                <span>{t('refundModal.fields.refundFee')}:</span>
+                <span className={styles.fee}>-{refundInfo.refundFee?.toLocaleString()}{t('refundModal.units.currency')}</span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.highlight}>실제 환불금액:</span>
-                <span className={styles.highlight}>{refundInfo.actualRefundAmount?.toLocaleString()}원</span>
+                <span className={styles.highlight}>{t('refundModal.fields.actualRefundAmount')}:</span>
+                <span className={styles.highlight}>{refundInfo.actualRefundAmount?.toLocaleString()}{t('refundModal.units.currency')}</span>
               </div>
               <div className={styles.infoItem}>
-                <span>복원 마일리지:</span>
-                <span className={styles.positive}>+{refundInfo.restoreMileage?.toLocaleString()}P</span>
+                <span>{t('refundModal.fields.restoreMileage')}:</span>
+                <span className={styles.positive}>+{refundInfo.restoreMileage?.toLocaleString()}{t('refundModal.units.points')}</span>
               </div>
               <div className={styles.infoItem}>
-                <span>차감 마일리지:</span>
-                <span className={styles.negative}>-{refundInfo.deductMileage?.toLocaleString()}P</span>
+                <span>{t('refundModal.fields.deductMileage')}:</span>
+                <span className={styles.negative}>-{refundInfo.deductMileage?.toLocaleString()}{t('refundModal.units.points')}</span>
               </div>
               <div className={styles.feeDescription}>
                 <small>{refundInfo.feeDescription}</small>
@@ -87,17 +90,17 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
             </div>
 
             <div className={styles.reasonSection}>
-              <label htmlFor="reason">취소 사유:</label>
+              <label htmlFor="reason">{t('refundModal.fields.cancelReason')}:</label>
               <select 
                 id="reason" 
                 value={reason} 
                 onChange={(e) => setReason(e.target.value)}
                 className={styles.reasonSelect}
               >
-                <option value="개인 사정">개인 사정</option>
-                <option value="일정 변경">일정 변경</option>
-                <option value="건강상 이유">건강상 이유</option>
-                <option value="기타">기타</option>
+                <option value="personal">{t('refundModal.reasons.personal')}</option>
+                <option value="schedule">{t('refundModal.reasons.schedule')}</option>
+                <option value="health">{t('refundModal.reasons.health')}</option>
+                <option value="other">{t('refundModal.reasons.other')}</option>
               </select>
             </div>
 
@@ -107,20 +110,20 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
                 onClick={onClose}
                 disabled={processing}
               >
-                취소
+                {t('refundModal.buttons.cancel')}
               </button>
               <button 
                 className={styles.refundBtn} 
                 onClick={handleRefund}
                 disabled={processing || refundInfo.actualRefundAmount <= 0}
               >
-                {processing ? '처리중...' : '환불 신청'}
+                {processing ? t('refundModal.buttons.processing') : t('refundModal.buttons.refund')}
               </button>
             </div>
 
             {refundInfo.actualRefundAmount <= 0 && (
               <div className={styles.warning}>
-                환불 불가 기간입니다. 수수료가 100%로 환불금액이 없습니다.
+                {t('refundModal.messages.noRefundWarning')}
               </div>
             )}
           </div>
