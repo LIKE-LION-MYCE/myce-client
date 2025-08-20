@@ -17,6 +17,27 @@ function ExpoApplicationDetail({
 }) {
   const { t } = useTranslation();
   
+  // 카테고리 번역 매핑 함수
+  const translateCategory = (category) => {
+    const categoryMap = {
+      '전체': t('homepage.categories.all'),
+      'IT/테크/보안': t('homepage.categories.tech'),
+      '뷰티/라이프스타일': t('homepage.categories.fashion'),
+      '의료/헬스케어': t('homepage.categories.medical'),
+      '예술/디자인/기타': t('homepage.categories.culture'),
+      '식품/1차산업': t('homepage.categories.food'),
+      '제조/생산': t('homepage.categories.create'),
+      '건설/인프라': t('homepage.categories.infra'),
+      '모빌리티/조선/해양': t('homepage.categories.mobility'),
+      '에너지/환경': t('homepage.categories.energy'),
+      '리테일/유통/물류': t('homepage.categories.retail'),
+      '방위산업/우주': t('homepage.categories.space'),
+      '교육/학습': t('homepage.categories.education'),
+      '경영/금융/서비스': t('homepage.categories.service')
+    };
+    return categoryMap[category] || category;
+  };
+  
   // 디버그: i18n 키 테스트 (더 자세히)
   console.log('=== ExpoApplicationDetail i18n Debug ===');
   console.log('Current language:', localStorage.getItem('language') || 'ko');
@@ -269,7 +290,7 @@ function ExpoApplicationDetail({
               <div className={styles.badgeRow}>
                 {form.category && form.category !== '카테고리 없음' ? (
                   form.category.split(', ').map((cat, index) => (
-                    <div key={index} className={styles.badge}>{cat.trim()}</div>
+                    <div key={index} className={styles.badge}>{translateCategory(cat.trim())}</div>
                   ))
                 ) : (
                   <div className={styles.badge}>{t('mypageGeneral.expoStatus.detail.defaultValues.noCategory')}</div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./PaymentDetailModal.module.css";
 
 // "children"으로 버튼 컴포넌트/요소 주입받음
@@ -15,6 +16,8 @@ function PaymentDetailModal({
   children,
   onClose,
 }) {
+  const { t } = useTranslation();
+  
   // 디버깅용 로그
   console.log('PaymentDetailModal - isPremium:', isPremium);
   console.log('PaymentDetailModal - depositAmount:', depositAmount);
@@ -30,48 +33,48 @@ function PaymentDetailModal({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
-        <h2 className={styles.title}>결제 내역</h2>
+        <h2 className={styles.title}>{t('paymentDetailModal.title')}</h2>
         <div className={styles.infoSection}>
           <div>
             <div className={styles.row}>
-              <span>박람회명</span>
+              <span>{t('paymentDetailModal.fields.expoName')}</span>
               <span>{expoName}</span>
             </div>
             <div className={styles.row}>
-              <span>신청자</span>
+              <span>{t('paymentDetailModal.fields.applicant')}</span>
               <span>{applicant}</span>
             </div>
             <div className={styles.row}>
-              <span>게시 기간</span>
+              <span>{t('paymentDetailModal.fields.period')}</span>
               <span>{period}</span>
             </div>
           </div>
           <div className={styles.feeBox}>
             <div className={styles.row}>
-              <span>총 게시 일수</span>
-              <span>{totalDays}일</span>
+              <span>{t('paymentDetailModal.fields.totalDays')}</span>
+              <span>{totalDays}{t('paymentDetailModal.units.days')}</span>
             </div>
             <div className={styles.row}>
-              <span>일일 사용료</span>
-              <span>{dailyUsageFee?.toLocaleString()}원</span>
+              <span>{t('paymentDetailModal.fields.dailyUsageFee')}</span>
+              <span>{dailyUsageFee?.toLocaleString()}{t('paymentDetailModal.units.currency')}</span>
             </div>
             <div className={styles.row}>
-              <span>사용료 총액</span>
-              <span>{usageFeeAmount?.toLocaleString()}원</span>
+              <span>{t('paymentDetailModal.fields.usageFeeAmount')}</span>
+              <span>{usageFeeAmount?.toLocaleString()}{t('paymentDetailModal.units.currency')}</span>
             </div>
             <div className={styles.row}>
-              <span>기본 등록금</span>
-              <span>{depositAmount?.toLocaleString()}원</span>
+              <span>{t('paymentDetailModal.fields.basicDeposit')}</span>
+              <span>{depositAmount?.toLocaleString()}{t('paymentDetailModal.units.currency')}</span>
             </div>
             {isPremium && premiumDepositAmount > 0 && (
               <div className={styles.row}>
-                <span>프리미엄 이용료</span>
-                <span>{premiumDepositAmount?.toLocaleString()}원</span>
+                <span>{t('paymentDetailModal.fields.premiumFee')}</span>
+                <span>{premiumDepositAmount?.toLocaleString()}{t('paymentDetailModal.units.currency')}</span>
               </div>
             )}
             <div className={styles.totalRow}>
-              <span>총 결제 금액</span>
-              <span>{calculatedTotalAmount?.toLocaleString()}원</span>
+              <span>{t('paymentDetailModal.fields.totalAmount')}</span>
+              <span>{calculatedTotalAmount?.toLocaleString()}{t('paymentDetailModal.units.currency')}</span>
             </div>
           </div>
         </div>

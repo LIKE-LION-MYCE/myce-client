@@ -8,6 +8,8 @@ import {
 } from "../../../api/service/reservation/reservationApi";
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import { requestRefund } from "../../../api/service/payment/RefundService";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 
 function PaymentTransferButton({
@@ -21,14 +23,31 @@ function PaymentTransferButton({
   savedMileage,
   reserverInfos,
   sessionId,
+  onPaymentStart,
+  onPaymentEnd,
 }) {
   const [loading, setLoading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const buyerName = reserverInfos[0]?.name;
   const buyerEmail = reserverInfos[0]?.email;
   const buyerTel = reserverInfos[0]?.phone;
   const reservationId = searchParams.get("preReservationId");
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const handlePay = async () => {
     // 모든 개인정보 검증
@@ -37,26 +56,26 @@ function PaymentTransferButton({
     );
     
     if (hasIncompleteInfo) {
-      alert("모든 개인정보를 입력해주세요.");
+      showFailMessage("모든 개인정보를 입력해주세요.");
       return;
     }
     
     // amount가 0 이하이거나, buyerName, buyerEmail 등 필수 정보가 없는 경우를 체크하여 결제를 막는 방어 코드를 추가
     if (amount <= 0 && usedMileage === 0) {
       // 마일리지 전액 사용으로 0원 결제는 예외
-      alert("결제할 금액이 없습니다.");
+      showFailMessage("결제할 금액이 없습니다.");
       return;
     }
     if (!buyerName || !buyerEmail || !buyerTel) {
-      alert("구매자 정보가 올바르지 않습니다.");
+      showFailMessage("구매자 정보가 올바르지 않습니다.");
       return;
     }
     if (!reservationId) {
-      alert("예약 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
+      showFailMessage("예약 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
       return;
     }
     if (!window.IMP) {
-      alert("결제 모듈이 준비되지 않았습니다.");
+      showFailMessage("결제 모듈이 준비되지 않았습니다.");
       return;
     }
     if (loading) return;
@@ -92,6 +111,7 @@ function PaymentTransferButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
+            onPaymentStart?.();
             try {
               // 새로운 통합 API 사용
               const res = await instance.post("/payment/reservation/verify", {
@@ -113,13 +133,17 @@ function PaymentTransferButton({
               console.log("백엔드 응답 데이터:", res.data);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
-                alert("결제 검증 성공! 예매가 완료되었습니다.");
+                onPaymentEnd?.();
+                showSuccessMessage("결제 검증 성공! 예매가 완료되었습니다.");
                 // 백엔드 응답의 실제 reservationId 사용
                 const actualReservationId = res.data.reservationId || reservationId;
                 console.log("리다이렉트할 reservationId:", actualReservationId);
-                navigate(`/reservation-success/${actualReservationId}`);
+                setTimeout(() => {
+                  navigate(`/reservation-success/${actualReservationId}`);
+                }, 1000);
               } else {
-                alert(
+                onPaymentEnd?.();
+                showFailMessage(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
               }
@@ -135,13 +159,15 @@ function PaymentTransferButton({
                   merchantUid: rsp.merchant_uid,
                   reason: "서버 처리 오류로 인한 자동 환불",
                 });
-                alert(
+                onPaymentEnd?.();
+                showFailMessage(
                   "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
                 );
                 // reservation 데이터 삭제
                 await deleteReservationPending(reservationId);
               } catch (refundError) {
-                alert("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
+                onPaymentEnd?.();
+                showFailMessage("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
               }
             }
           } else {
@@ -157,14 +183,16 @@ function PaymentTransferButton({
               );
             }
 
-            alert("결제가 취소되었습니다. 다시 시도해주세요.");
+            onPaymentEnd?.();
+            showFailMessage("결제가 취소되었습니다. 다시 시도해주세요.");
 
             navigate(`/detail/${expoId}`);
           }
         }
       );
     } catch (e) {
-      alert(
+      onPaymentEnd?.();
+      showFailMessage(
         "예약 정보 처리 중 오류가 발생했습니다: " +
           (e.response?.data?.message || e.message)
       );
@@ -189,6 +217,8 @@ function PaymentTransferButton({
           "계좌 이체"
         )}
       </button>
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </>
   );
 }

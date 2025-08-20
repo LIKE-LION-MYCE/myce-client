@@ -21,10 +21,19 @@ const resources = {
         categories: {
           ongoingEvents: "진행중인 행사",
           all: "전체",
-          technology: "기술/IT",
-          fashion: "패션/뷰티",
-          food: "푸드/음료",
-          culture: "문화/예술"
+          tech: "IT/테크/보안",
+          fashion: "뷰티/라이프스타일",
+          medical: "의료/헬스케어",
+          culture: "예술/디자인/기타",
+          food: "식품/1차산업",
+          create: "제조/생산",
+          infra: "건설/인프라",
+          mobility: "모빌리티/조선/해양",
+          energy: "에너지/환경",
+          retail: "리테일/유통/물류",
+          space: "방위산업/우주",
+          education: "교육/학습",
+          service: "경영/금융/서비스"
         },
         
         // 메인 배너
@@ -270,10 +279,19 @@ const resources = {
         categories: {
           ongoingEvents: "Ongoing Events",
           all: "All",
-          technology: "Tech/IT",
-          fashion: "Fashion/Beauty",
-          food: "Food/Beverage",
-          culture: "Culture/Art"
+          tech: "IT/Tech/Security",
+          fashion: "Beauty/Lifestyle",
+          medical: "Medical/Healthcare",
+          culture: "Art/Design/Others",
+          food: "Food/Primary Industry",
+          create: "Manufacturing/Production",
+          infra: "Construction/Infrastructure",
+          mobility: "Mobility/Shipbuilding/Maritime",
+          energy: "Energy/Environment",
+          retail: "Retail/Distribution/Logistics",
+          space: "Defense/Aerospace",
+          education: "Education/Learning",
+          service: "Business/Finance/Service"
         },
         
         // Main banner
@@ -519,10 +537,19 @@ const resources = {
         categories: {
           ongoingEvents: "開催中のイベント",
           all: "すべて",
-          technology: "技術/IT",
-          fashion: "ファッション/美容",
-          food: "フード/飲料",
-          culture: "文化/芸術"
+          tech: "IT/テック/セキュリティ",
+          fashion: "ビューティ/ライフスタイル",
+          medical: "医療/ヘルスケア",
+          culture: "芸術/デザイン/その他",
+          food: "食品/1次産業",
+          create: "製造/生産",
+          infra: "建設/インフラ",
+          mobility: "モビリティ/造船/海洋",
+          energy: "エネルギー/環境",
+          retail: "リテール/流通/物流",
+          space: "防衛産業/宇宙",
+          education: "教育/学習",
+          service: "経営/金融/サービス"
         },
         
         // メインバナー
