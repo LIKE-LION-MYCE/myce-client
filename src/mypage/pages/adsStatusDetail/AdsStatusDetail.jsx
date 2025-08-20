@@ -411,7 +411,7 @@ function AdsStatusDetail() {
               styles[statusConf.badge.className]
             }`}
           >
-            {t(`mypage.adsStatus.status.${statusConf.badge.key}`)}
+            {t(`mypageGeneral.adsStatus.status.${statusConf.badge.key}`)}
           </span>
         </div>
         {/* infoGrid(흰색 박스) */}
@@ -500,7 +500,7 @@ function AdsStatusDetail() {
                   onClick={() => handleButtonAction(button.action)}
                   disabled={button.disabled}
                 >
-                  {t(`mypage.adsStatus.detail.buttons.${button.action}`)}
+                  {t(`mypageGeneral.adsStatus.detail.buttons.${button.action}`)}
                 </button>
               ))}
               

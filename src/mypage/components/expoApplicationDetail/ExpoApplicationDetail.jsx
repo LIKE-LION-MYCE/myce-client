@@ -86,7 +86,7 @@ function ExpoApplicationDetail({
       return null;
     }
 
-    const statusText = t(`mypage.expoStatus.status.${statusConfig.key}`);
+    const statusText = t(`expoStatus.status.${statusConfig.key}`);
     
     return (
       <span className={`${styles.statusTag} ${styles[statusConfig.style]}`}>
