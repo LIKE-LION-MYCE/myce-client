@@ -7,7 +7,9 @@ import PlatformAdminRoutes from './PlatformAdminRoutes';
 
 function AppRouteBody() {
 
-  const matchExpoAdmin = useMatch("/expos/:expoId/admin/*") || useMatch("/expos/:expoId/admin");
+  const matchAdminWildcard = useMatch("/expos/:expoId/admin/*");
+  const matchAdminRoot = useMatch("/expos/:expoId/admin");
+  const matchExpoAdmin = !!(matchAdminWildcard || matchAdminRoot);
   
   console.log('🔍 Current location:', window.location.pathname);
   console.log('🔍 ExpoAdmin match result:', matchExpoAdmin);
