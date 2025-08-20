@@ -25,7 +25,7 @@ function ExpoApplicationForm({ expoData }) {
         </div>
 
         <div className={styles.formGrid}>
-          <div className={`${styles.formGroup} ${styles.full}`}>
+          <div className={styles.formGroup}>
             <label className={styles.label}>카테고리</label>
             <div className={styles.badgeRow}>
               {(() => {
@@ -55,94 +55,62 @@ function ExpoApplicationForm({ expoData }) {
             </div>
           </div>
 
+          <div className={styles.formGroup}>
+            <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
+            <div className={styles.toggleWrapper}>
+              <ToggleSwitch checked={isPremium} disabled />
+              <span className={`${styles.toggleStatus} ${isPremium ? styles.active : styles.inactive}`}>
+                {isPremium ? '신청' : '미신청'}
+              </span>
+            </div>
+          </div>
+
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 이름</label>
-            <input
-              className={styles.inputField}
-              value={form.title || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {form.title || '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>박람회 위치</label>
-            <input
-              className={styles.inputField}
-              value={form.location || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {form.location || '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>상세 위치</label>
-            <input
-              className={styles.inputField}
-              value={form.locationDetail || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {form.locationDetail || '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>최대 수용 인원</label>
-            <input
-              type="number"
-              className={styles.inputField}
-              value={form.maxReserverCount || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {form.maxReserverCount ? `${form.maxReserverCount.toLocaleString()}명` : '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>개최 기간</label>
-            <div className={styles.dateGroup}>
-              <input
-                type="date"
-                className={styles.inputField}
-                value={form.startDate || ''}
-                readOnly
-              />
-              <input
-                type="date"
-                className={styles.inputField}
-                value={form.endDate || ''}
-                readOnly
-              />
+            <div className={styles.displayField}>
+              {form.startDate && form.endDate ? `${form.startDate} ~ ${form.endDate}` : '-'}
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>운영 시간</label>
-            <div className={styles.dateGroup}>
-              <input
-                type="time"
-                className={styles.inputField}
-                value={form.startTime || ''}
-                readOnly
-              />
-              <input
-                type="time"
-                className={styles.inputField}
-                value={form.endTime || ''}
-                readOnly
-              />
+            <div className={styles.displayField}>
+              {form.startTime && form.endTime ? `${form.startTime} ~ ${form.endTime}` : '-'}
             </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>게시 기간</label>
-            <div className={styles.dateGroup}>
-              <input
-                type="date"
-                className={styles.inputField}
-                value={form.displayStartDate || ''}
-                readOnly
-              />
-              <input
-                type="date"
-                className={styles.inputField}
-                value={form.displayEndDate || ''}
-                readOnly
-              />
+            <div className={styles.displayField}>
+              {form.displayStartDate && form.displayEndDate ? `${form.displayStartDate} ~ ${form.displayEndDate}` : '-'}
             </div>
             {form.status === 'PENDING_PUBLISH' && form.displayStartDate && (
               <div className={styles.autoPublishNotice}>
@@ -155,23 +123,14 @@ function ExpoApplicationForm({ expoData }) {
             )}
           </div>
 
-          <div className={`${styles.formGroup} ${styles.full}`}>
-            <label className={styles.label}>프리미엄 상위 노출 신청 여부</label>
-            <div className={styles.toggleWrapper}>
-              <ToggleSwitch checked={isPremium} disabled />
-            </div>
-          </div>
-
         </div>
       </div>
 
-      <div className={`${styles.formGroup} ${styles.full}`}>
+      <div className={`${styles.formGroup} ${styles.full} ${styles.lastFormGroup}`}>
         <label className={styles.label}>설명</label>
-        <textarea
-          className={styles.textarea}
-          value={form.description || ''}
-          readOnly
-        />
+        <div className={styles.textarea}>
+          {form.description || '설명이 없습니다.'}
+        </div>
       </div>
     </div>
   );
