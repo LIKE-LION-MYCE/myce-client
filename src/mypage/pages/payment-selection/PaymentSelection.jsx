@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./PaymentSelection.module.css";
 import { getExpoPaymentDetail } from "../../../api/service/user/memberApi";
 import Spinner from "../../../common/components/spinner/Spinner";
+import PaymentSpinner from "../../../common/components/spinner/PaymentSpinner";
 
 // 3가지 결제 버튼 컴포넌트를 모두 import 합니다.
 import PaymentCardButton from "../../components/paymentButton/PaymentCardButton";
@@ -17,6 +18,7 @@ const PaymentSelection = () => {
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   useEffect(() => {
     const fetchPaymentDetails = async () => {
@@ -94,6 +96,7 @@ const PaymentSelection = () => {
 
   return (
     <div className={styles.container}>
+      {paymentProcessing && <PaymentSpinner />}
       <h1 className={styles.title}>{t('paymentSelection.title', '결제하기')}</h1>
 
       {paymentDetails && (
@@ -120,8 +123,16 @@ const PaymentSelection = () => {
         <h2 className={styles.sectionTitle}>{t('paymentSelection.sections.paymentMethod', '결제 수단')}</h2>
 
         {/* 기존 버튼들을 실제 컴포넌트로 교체 */}
-        <PaymentCardButton {...{ name, amount, buyer, targetType }} />
-        <PaymentTransferButton {...{ name, amount, buyer, targetType }} />
+        <PaymentCardButton 
+          {...{ name, amount, buyer, targetType }}
+          onPaymentStart={() => setPaymentProcessing(true)}
+          onPaymentEnd={() => setPaymentProcessing(false)}
+        />
+        <PaymentTransferButton 
+          {...{ name, amount, buyer, targetType }}
+          onPaymentStart={() => setPaymentProcessing(true)}
+          onPaymentEnd={() => setPaymentProcessing(false)}
+        />
       </div>
     </div>
   );

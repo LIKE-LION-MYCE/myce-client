@@ -19,6 +19,8 @@ function PaymentVirtualBankButton({
   savedMileage,
   reserverInfos,
   sessionId,
+  onPaymentStart,
+  onPaymentEnd,
 }) {
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
@@ -89,6 +91,7 @@ function PaymentVirtualBankButton({
         },
         async function (rsp) {
           if (rsp.success) {
+            onPaymentStart?.();
             // 결제 성공 시 백엔드에 imp_uid, merchant_uid 전달해서 검증 요청
             try {
               // 새로운 통합 API 사용
@@ -111,6 +114,7 @@ function PaymentVirtualBankButton({
               console.log("백엔드 응답 데이터:", res.data);
 
               if (res.status === 200 && res.data.status === "PENDING") {
+                onPaymentEnd?.();
                 alert(
                   "결제 검증 성공! 예매가 완료되었습니다. 금일까지 가상 계좌에 입금해주세요."
                 );
@@ -119,6 +123,7 @@ function PaymentVirtualBankButton({
                 console.log("리다이렉트할 reservationId:", actualReservationId);
                 navigate(`/reservation-pending/${actualReservationId}`);
               } else {
+                onPaymentEnd?.();
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
@@ -128,11 +133,13 @@ function PaymentVirtualBankButton({
               console.error("에러 응답:", err.response?.data);
               console.error("에러 상태:", err.response?.status);
               
+              onPaymentEnd?.();
               const errorMessage = err.response?.data?.message || err.message || "알 수 없는 오류";
               alert(`결제 처리 중 오류가 발생했습니다: ${errorMessage}`);
               // 사전 예약 데이터 정리는 백엔드에서 처리
             }
           } else {
+            onPaymentEnd?.();
             console.log("결제가 취소되었습니다.");
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
             navigate(`/detail/${expoId}`);
@@ -140,6 +147,7 @@ function PaymentVirtualBankButton({
         }
       );
     } catch (e) {
+      onPaymentEnd?.();
       alert(
         "예약 정보 처리 중 오류가 발생했습니다: " +
           (e.response?.data?.message || e.message)

@@ -21,6 +21,8 @@ function PaymentTransferButton({
   savedMileage,
   reserverInfos,
   sessionId,
+  onPaymentStart,
+  onPaymentEnd,
 }) {
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
@@ -92,6 +94,7 @@ function PaymentTransferButton({
         // 아임포트 결제창 호출 후, 결과는 이 콜백 함수 안에서 비동기적으로 처리
         async function (rsp) {
           if (rsp.success) {
+            onPaymentStart?.();
             try {
               // 새로운 통합 API 사용
               const res = await instance.post("/payment/reservation/verify", {
@@ -113,12 +116,14 @@ function PaymentTransferButton({
               console.log("백엔드 응답 데이터:", res.data);
 
               if (res.status === 200 && res.data.status === "SUCCESS") {
+                onPaymentEnd?.();
                 alert("결제 검증 성공! 예매가 완료되었습니다.");
                 // 백엔드 응답의 실제 reservationId 사용
                 const actualReservationId = res.data.reservationId || reservationId;
                 console.log("리다이렉트할 reservationId:", actualReservationId);
                 navigate(`/reservation-success/${actualReservationId}`);
               } else {
+                onPaymentEnd?.();
                 alert(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
@@ -135,12 +140,14 @@ function PaymentTransferButton({
                   merchantUid: rsp.merchant_uid,
                   reason: "서버 처리 오류로 인한 자동 환불",
                 });
+                onPaymentEnd?.();
                 alert(
                   "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
                 );
                 // reservation 데이터 삭제
                 await deleteReservationPending(reservationId);
               } catch (refundError) {
+                onPaymentEnd?.();
                 alert("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
               }
             }
@@ -157,6 +164,7 @@ function PaymentTransferButton({
               );
             }
 
+            onPaymentEnd?.();
             alert("결제가 취소되었습니다. 다시 시도해주세요.");
 
             navigate(`/detail/${expoId}`);
@@ -164,6 +172,7 @@ function PaymentTransferButton({
         }
       );
     } catch (e) {
+      onPaymentEnd?.();
       alert(
         "예약 정보 처리 중 오류가 발생했습니다: " +
           (e.response?.data?.message || e.message)

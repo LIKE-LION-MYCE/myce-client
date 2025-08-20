@@ -11,6 +11,7 @@ import { getExpoBasicInfo } from "../../../api/service/expo/expoDetailApi";
 import { getPaymentSummary } from "../../../api/service/reservation/reservationApi";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import DateInput from "../../../common/components/dateInput/DateInput";
+import PaymentSpinner from "../../../common/components/spinner/PaymentSpinner";
 
 export default function ExpoPayment() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ export default function ExpoPayment() {
   const [paymentSummary, setPaymentSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const {
     ticketId,
@@ -320,6 +322,7 @@ export default function ExpoPayment() {
 
   return (
     <div className={styles.container}>
+      {paymentProcessing && <PaymentSpinner />}
       {/* 왼쪽 개인 정보 입력 */}
       <section className={styles.leftSection}>
         <form className={styles.form}>
@@ -756,6 +759,8 @@ export default function ExpoPayment() {
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
               sessionId={sessionId}
+              onPaymentStart={() => setPaymentProcessing(true)}
+              onPaymentEnd={() => setPaymentProcessing(false)}
             />
             <PaymentVirtualBankButton
               targetType={TARGET_TYPE}
@@ -768,6 +773,8 @@ export default function ExpoPayment() {
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
               sessionId={sessionId}
+              onPaymentStart={() => setPaymentProcessing(true)}
+              onPaymentEnd={() => setPaymentProcessing(false)}
             />
             <PaymentTransferButton
               targetType={TARGET_TYPE}
@@ -780,6 +787,8 @@ export default function ExpoPayment() {
               savedMileage={Math.floor(totalAfterApply * mileageRate)}
               reserverInfos={reserverInfos}
               sessionId={sessionId}
+              onPaymentStart={() => setPaymentProcessing(true)}
+              onPaymentEnd={() => setPaymentProcessing(false)}
             />
           </div>
         </div>
