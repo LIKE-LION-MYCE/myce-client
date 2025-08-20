@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoNotifications } from 'react-icons/io5';
+import { BsBell } from 'react-icons/bs';
 import styles from './NotificationButton.module.css';
 import NotificationModal from './NotificationModal';
 import { getNotifications } from '../../../api/service/notification/notificationApi';
@@ -38,10 +38,7 @@ export default function NotificationButton({notification}) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.notificationWrapper} onClick={toggleModal}>
-        <svg className={styles.notificationIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
+        <BsBell style={{ strokeWidth: 0.5 }}/>
         {unreadCount > 0 && (
           <div className={styles.notificationBadge}>
             {unreadCount > 99 ? '99+' : unreadCount}

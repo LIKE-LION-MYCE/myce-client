@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoLanguage, IoChevronDown } from 'react-icons/io5';
+import { BsGlobe2 } from 'react-icons/bs';
 import styles from './LanguageSelector.module.css';
 
 const LanguageSelector = () => {
@@ -28,7 +28,7 @@ const LanguageSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t('common.selectLanguage', '언어 선택')}
       >
-        <span className={styles.globeIcon}>🌐</span>
+        <BsGlobe2 style={{ strokeWidth: 0 }}/>
       </button>
       
       {isOpen && (
