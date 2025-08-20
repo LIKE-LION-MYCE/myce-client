@@ -23,15 +23,7 @@ export default function ChatContainer() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [error, setError] = useState(null);
 
-  // 🚀 Redis 성능 측정 상태 (캐시 히트만 측정)
-  const [afterRedisResults, setAfterRedisResults] = useState({
-    messageLoad: [],
-    messageSend: [],
-    unreadCount: []
-  });
 
-  // 캐시 워밍업 추적 (첫 번째 접근은 측정에서 제외)
-  const [cacheWarmedRooms, setCacheWarmedRooms] = useState(new Set());
 
   // Use proven working chat scroll implementation
   const {
@@ -54,40 +46,7 @@ export default function ChatContainer() {
   // For compatibility with SharedChatArea
   const isInitialLoad = loadingMessages;
 
-  // 🚀 Redis 캐시 히트 성능 결과 출력 함수
-  const showPerformanceResults = () => {
-    console.log('📊 [Redis Cache Hit] 성능 측정 결과 요약:');
-    console.log('⚠️  첫 번째 접근(캐시 미스)은 측정에서 제외, 두 번째 접근부터 측정');
-    
-    if (afterRedisResults.messageLoad.length > 0) {
-      const avgLoad = afterRedisResults.messageLoad.reduce((a, b) => a + b, 0) / afterRedisResults.messageLoad.length;
-      console.log(`📂 메시지 로딩 평균 (캐시 히트): ${avgLoad.toFixed(2)}ms (${afterRedisResults.messageLoad.length}회 측정)`);
-    } else {
-      console.log('📂 메시지 로딩: 측정 데이터 없음 (캐시 워밍업 필요)');
-    }
-    
-    if (afterRedisResults.messageSend.length > 0) {
-      const avgSend = afterRedisResults.messageSend.reduce((a, b) => a + b, 0) / afterRedisResults.messageSend.length;
-      console.log(`💬 메시지 전송 평균: ${avgSend.toFixed(2)}ms (${afterRedisResults.messageSend.length}회 측정)`);
-    }
-    
-    if (afterRedisResults.unreadCount.length > 0) {
-      const avgUnread = afterRedisResults.unreadCount.reduce((a, b) => a + b, 0) / afterRedisResults.unreadCount.length;
-      console.log(`🔔 미읽음 카운트 평균 (캐시 히트): ${avgUnread.toFixed(2)}ms (${afterRedisResults.unreadCount.length}회 측정)`);
-    } else {
-      console.log('🔔 미읽음 카운트: 측정 데이터 없음 (캐시 워밍업 필요)');
-    }
-    
-    console.log(`🔥 캐시 워밍업 완료된 채팅방: ${cacheWarmedRooms.size}개`);
-    
-    // Before 결과와 비교
-    console.log('📈 성능 개선 비교:');
-    if (afterRedisResults.messageLoad.length > 0) {
-      const currentAvg = afterRedisResults.messageLoad.reduce((a, b) => a + b, 0) / afterRedisResults.messageLoad.length;
-      const improvement = ((684.40 - currentAvg) / 684.40 * 100).toFixed(1);
-      console.log(`Before: 684.40ms → After (캐시 히트): ${currentAvg.toFixed(2)}ms (${improvement}% 개선)`);
-    }
-  };
+
 
   // 플랫폼 상담방인지 확인하는 헬퍼 함수
   const isPlatformRoom = (room) => {
@@ -191,22 +150,6 @@ export default function ChatContainer() {
         
         const response = await getAllUnreadCounts();
         
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-        
-        console.log(`✅ [After Redis] 미읽음 카운트 조회 완료: ${duration.toFixed(2)}ms`);
-        
-        // 성능 결과 저장
-        setAfterRedisResults(prev => ({
-          ...prev,
-          unreadCount: [...prev.unreadCount, duration]
-        }));
-        
-        // 로컬 스토리지에도 저장
-        const existingData = JSON.parse(localStorage.getItem('afterRedis_unreadCount') || '[]');
-        existingData.push(duration);
-        localStorage.setItem('afterRedis_unreadCount', JSON.stringify(existingData));
-        
         const counts = {};
         response.data.unreadCounts.forEach((item) => {
           counts[item.roomCode] = item.unreadCount;
@@ -240,16 +183,7 @@ export default function ChatContainer() {
 
     const loadRoomMessages = async () => {
       try {
-        const isFirstAccess = !cacheWarmedRooms.has(roomCode);
-        
-        if (isFirstAccess) {
-          console.log("🔥 [캐시 워밍업] 첫 번째 접근 - 측정 제외:", roomCode);
-        } else {
-          console.log("🚀 [캐시 히트] 두 번째+ 접근 - 측정 시작:", roomCode);
-        }
-        
-        const startTime = performance.now();
-        
+
         resetMessages();
         await loadInitialMessages(roomCode);
         
@@ -586,10 +520,6 @@ export default function ChatContainer() {
     }
 
     const messageContent = newMessage.trim();
-    console.log("🔍 [After Redis] 메시지 전송 시작:", messageContent, "to room:", selectedRoom.roomCode);
-    
-    // 🚀 성능 측정 시작
-    const startTime = performance.now();
 
     // WebSocket으로 메시지 전송
     ChatWebSocketService.sendMessage(selectedRoom.roomCode, messageContent);
@@ -845,27 +775,6 @@ export default function ChatContainer() {
 
   return (
     <div className={styles.chatWrapper}>
-      {/* 🚀 성능 테스트 버튼 (개발용) */}
-      {process.env.NODE_ENV === 'development' && (
-        <button 
-          onClick={showPerformanceResults}
-          style={{
-            position: 'fixed',
-            top: '10px',
-            right: '10px',
-            padding: '10px 15px',
-            backgroundColor: '#28a745',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            zIndex: 9999,
-            fontSize: '12px'
-          }}
-        >
-          🚀 Redis 캐시 히트 성능
-        </button>
-      )}
       
       {/* Left: Chat Room List */}
       <aside className={styles.chatList}>
