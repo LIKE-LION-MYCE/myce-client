@@ -4,15 +4,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
 import { requestRefund } from "../../../api/service/payment/RefundService";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart, onPaymentEnd }) {
   const [loading, setLoading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handlePay = async () => {
     if (!window.IMP) {
-      alert("결제 모듈이 준비되지 않았습니다.");
+      showFailMessage("결제 모듈이 준비되지 않았습니다.");
       return;
     }
     if (loading) return;
@@ -49,15 +66,15 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
               if (res.status === 200 && res.data.status === "SUCCESS") {
                 onPaymentEnd?.();
                 if (targetType === "EXPO") {
-                  alert("결제 검증 성공! 박람회 결제가 완료되었습니다.");
-                  navigate(`/mypage/expo-status/${id}`);
+                  showSuccessMessage("결제 검증 성공! 박람회 결제가 완료되었습니다.");
+                  setTimeout(() => navigate(`/mypage/expo-status/${id}`), 1000);
                 } else {
-                  alert("결제 검증 성공! 광고 결제가 완료되었습니다.");
-                  navigate(`/mypage/ads-status/${id}`);
+                  showSuccessMessage("결제 검증 성공! 광고 결제가 완료되었습니다.");
+                  setTimeout(() => navigate(`/mypage/ads-status/${id}`), 1000);
                 }
               } else {
                 onPaymentEnd?.();
-                alert(
+                showFailMessage(
                   "결제 검증에 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요."
                 );
               }
@@ -74,17 +91,17 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
                   reason: "서버 처리 오류로 인한 자동 환불",
                 });
                 onPaymentEnd?.();
-                alert(
+                showFailMessage(
                   "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
                 );
               } catch (refundError) {
                 onPaymentEnd?.();
-                alert("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
+                showFailMessage("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
               }
             }
           } else {
             onPaymentEnd?.();
-            alert("결제가 취소되었습니다. 다시 시도해주세요.");
+            showFailMessage("결제가 취소되었습니다. 다시 시도해주세요.");
             if (targetType === "EXPO") {
               navigate(`/mypage/expo-status/${id}`);
             } else {
@@ -95,7 +112,7 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
       );
     } catch (e) {
       onPaymentEnd?.();
-      alert(
+      showFailMessage(
         "예약 정보 처리 중 오류가 발생했습니다: " +
           (e.response?.data?.message || e.message)
       );
@@ -120,6 +137,8 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
           "계좌 이체"
         )}
       </button>
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </>
   );
 }
