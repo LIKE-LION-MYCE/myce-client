@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getExpos } from "../api/service/user/expoApi";
+import { useLoading } from "../context/LoadingContext";
 
 export const useExpoData = (initialSize = 10) => {
   const [expos, setExpos] = useState([]);
@@ -15,7 +16,7 @@ export const useExpoData = (initialSize = 10) => {
   const [filters, setFilters] = useState({
     sort: 'startDate,asc'
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, setIsLoading } = useLoading(); // 전역 로딩 상태 사용
   const [error, setError] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -25,7 +26,6 @@ export const useExpoData = (initialSize = 10) => {
 
   useEffect(() => {
     const fetchExpos = async () => {
-      setIsLoading(true);
       setError(null);
       try {
         const data = await getExpos({
@@ -51,13 +51,11 @@ export const useExpoData = (initialSize = 10) => {
         }));
       } catch (err) {
         setError(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchExpos();
   }, [filters, pagination.page, pagination.size, refreshTrigger]); // Add pagination dependencies
 
-  return { expos, filters, setFilters, isLoading, error, refresh, pagination, setPagination };
+  return { expos, setExpos, filters, setFilters, isLoading, error, refresh, pagination, setPagination };
 };
