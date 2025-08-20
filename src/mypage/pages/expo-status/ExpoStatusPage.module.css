@@ -1,6 +1,6 @@
 .container {
   padding: 2rem;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   border-radius: 0.75rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -83,8 +83,8 @@
 }
 
 .pageButton.activePage {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #000000;
+  border-color: #000000;
   color: #fff;
   font-weight: 600;
 }

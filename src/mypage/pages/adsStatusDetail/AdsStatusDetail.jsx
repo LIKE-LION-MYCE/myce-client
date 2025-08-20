@@ -8,6 +8,7 @@ import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentR
 import AdRejectInfoModal from "../../components/rejectInfoModal/AdRejectInfoModal";
 import AdCancelModal from "../../components/cancelModal/AdCancelModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
+import AdsInfoGrid from "../../components/adApplicationDetail/AdApplicationDetail";
 
 // 단순화된 버튼 설정 (i18n 적용은 component 내부에서)
 const ALL_BUTTONS = [
@@ -415,104 +416,12 @@ function AdsStatusDetail() {
           </span>
         </div>
         {/* infoGrid(흰색 박스) */}
-        <div className={styles.infoGrid}>
-          {/* 배너 이미지: infoGrid 내부 맨 위, 2칸 전체 */}
-          <div className={styles.bannerImageRow}>
-            <div className={styles.bannerImageWrapper}>
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={t('mypageGeneral.adsStatus.detail.bannerImage')}
-                  className={styles.bannerImage}
-                />
-              ) : (
-                <div className={styles.bannerImagePlaceholder}>{t('mypageGeneral.adsStatus.detail.bannerImage')}</div>
-              )}
-            </div>
-          </div>
-          {/* 좌측 - 광고 정보 */}
-          <div className={styles.infoSection}>
-            <label>{t('mypageGeneral.adsStatus.detail.adTitle')}</label>
-            <input value={title} readOnly className={styles.input} />
-
-            <label>{t('mypageGeneral.adsStatus.detail.adPosition')}</label>
-            <input value={adPositionName} readOnly className={styles.input} />
-
-            <label>{t('mypageGeneral.adsStatus.detail.displayPeriod')}</label>
-            <div className={styles.periodInputRow}>
-              <input value={formatDate(displayStartDate)} readOnly className={styles.input} />
-              <span style={{ margin: "0 8px" }}>~</span>
-              <input value={formatDate(displayEndDate)} readOnly className={styles.input} />
-            </div>
-
-            <label>{t('mypageGeneral.adsStatus.detail.linkUrl')}</label>
-            <input value={linkUrl} readOnly className={styles.input} />
-          </div>
-          {/* 우측 - 신청자 정보 */}
-          <div className={styles.infoSection}>
-            <label>{t('mypageGeneral.adsStatus.detail.applicantName')}</label>
-            <input value={ceoName} readOnly className={styles.input} />
-
-            <label>{t('mypageGeneral.adsStatus.detail.applicantPhone')}</label>
-            <input value={contactPhone} readOnly className={styles.input} />
-
-            <label>{t('mypageGeneral.adsStatus.detail.companyName')}</label>
-            <input value={companyName} readOnly className={styles.input} />
-
-            <label>{t('mypageGeneral.adsStatus.detail.businessNumber')}</label>
-            <input value={businessRegistrationNumber} readOnly className={styles.input} />
-          </div>
-          {/* 광고 소개: 두 칸 전체 */}
-          <div className={styles.fullRow}>
-            <label>{t('mypageGeneral.adsStatus.detail.adDescription')}</label>
-            <textarea
-              value={description}
-              readOnly
-              className={styles.textarea}
-            />
-          </div>
-          {/* 버튼: 두 칸 전체 */}
-          <div className={styles.fullRow}>
-            <div className={styles.buttonRow}>
-              {/* 조건부 버튼 렌더링 (취소 완료만 - 결제 정보 유무로 구분) */}
-              {statusConf.buttons === "conditional" && (
-                <>
-                  <button
-                    className={`${styles.btn} ${styles.blue}`}
-                    onClick={() => handleButtonAction("viewPaymentInfo")}
-                  >
-                    {t('mypageGeneral.adsStatus.detail.buttons.paymentInfo')}
-                  </button>
-                  <button
-                    className={`${styles.btn} ${styles.purple}`}
-                    onClick={() => handleButtonAction("refundHistory")}
-                  >
-                    {t('mypageGeneral.adsStatus.detail.buttons.refundInfo')}
-                  </button>
-                </>
-              )}
-              
-              {/* 일반 버튼 렌더링 */}
-              {statusConf.buttons && Array.isArray(statusConf.buttons) && statusConf.buttons.length > 0 && statusConf.buttons.map((button, index) => (
-                <button
-                  key={index}
-                  className={`${styles.btn} ${styles[button.color]}`}
-                  onClick={() => handleButtonAction(button.action)}
-                  disabled={button.disabled}
-                >
-                  {t(`mypageGeneral.adsStatus.detail.buttons.${button.action}`)}
-                </button>
-              ))}
-              
-              {/* 버튼이 없는 경우 */}
-              {(!statusConf.buttons || (Array.isArray(statusConf.buttons) && statusConf.buttons.length === 0)) && (
-                <div className={styles.noButtonsMessage}>
-                  {t('mypageGeneral.adsStatus.detail.messages.noButtonsAvailable')}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <AdsInfoGrid 
+          adData={adData}
+          statusConf={statusConf}
+          handleButtonAction={handleButtonAction}
+          formatDate={formatDate}
+        />
 
         {/* 모달: 조건부 렌더링 */}
         {console.log('모달 렌더링 체크:', { modalType, paymentData, refundData })}

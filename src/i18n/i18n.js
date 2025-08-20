@@ -434,7 +434,7 @@ const mainResources = {
         systemSettings: "시스템 설정",
         languageSettings: "언어 설정",
         advertiserMenu: "광고주 메뉴",
-        adStatusMenu: "광고 현황",
+        adStatusMenu: "광고 신청 현황",
         expoAdminMenu: "박람회 관리자 메뉴",
         expoStatusMenu: "박람회 신청 현황",
         // 박람회 신청 현황 상세
