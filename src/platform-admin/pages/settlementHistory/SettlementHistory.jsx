@@ -10,7 +10,6 @@ import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 import { fetchAllPaymentInfo, fetchFilteredPaymentInfo, callExcelDownload } from '../../../api/service/platform-admin/settlement-history/SettlementHistoryService';
 
-
 const typeMap = [null, 'EXPO', 'AD'];
 
 function SettlementHistory() {
@@ -42,19 +41,16 @@ function SettlementHistory() {
   const fetchSettlementData = async () => {
     try {
       let resData;
-
       const isFiltered = searchText || startDate || endDate || currentTab !== '전체';
 
       if (isFiltered) {
-        console.log("currentTab : ", currentTab);
-        console.log("type : ", typeMap[currentTab]);
         resData = await fetchFilteredPaymentInfo({
           page: currentPage,
           latestFirst: sortOrder === 'desc',
           keyword: searchText,
           type: typeMap[currentTab],
-          startDate: startDate,
-          endDate: endDate,
+          startDate,
+          endDate,
         });
       } else {
         resData = await fetchAllPaymentInfo({
@@ -62,7 +58,6 @@ function SettlementHistory() {
           latestFirst: sortOrder === 'desc',
         });
       }
-      console.log(resData);
 
       setPageInfo({
         ...resData,
@@ -84,18 +79,17 @@ function SettlementHistory() {
 
   const handleExcelDownload = async (e) => {
     e.preventDefault();
-    console.log('엑셀 다운로드 실행 : ', startDate, endDate);
     if (isDownloading) return;
     setIsDownloading(true);
     try {
       const response = await callExcelDownload({
         keyword: searchText,
-        type: typeMap[currentTab], // Pass the correct type based on the tab
-        startDate: startDate,
-        endDate: endDate,
+        type: typeMap[currentTab],
+        startDate,
+        endDate,
       });
       const contentDisposition = response.headers['content-disposition'];
-      let fileName = '플랫폼_정산_내역_' + '.xlsx';
+      let fileName = '플랫폼_정산_내역_.xlsx';
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
         if (fileNameMatch && fileNameMatch.length === 2) {
@@ -133,6 +127,7 @@ function SettlementHistory() {
 
       <div className={styles.topControls}>
         <div className={styles.filters}>
+          {/* 검색 */}
           <div className={styles.filterGroup}>
             <input
               type="text"
@@ -147,6 +142,7 @@ function SettlementHistory() {
             <FiSearch className={styles.searchIcon} />
           </div>
 
+          {/* 정렬 */}
           <div className={styles.filterGroup}>
             <select
               value={sortOrder}
@@ -162,20 +158,27 @@ function SettlementHistory() {
           </div>
         </div>
 
+        {/* 날짜 범위 + 엑셀 버튼 */}
         <form onSubmit={handleExcelDownload} className={styles.buttons}>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className={styles.dateInput}
-          />
-          <span>~</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className={styles.dateInput}
-          />
+          <div className={styles.filterGroup}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className={styles.dateInput}
+            />
+          </div>
+
+          <span className={styles.rangeSep}>~</span>
+
+          <div className={styles.filterGroup}>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className={styles.dateInput}
+            />
+          </div>
 
           <button
             type="submit"

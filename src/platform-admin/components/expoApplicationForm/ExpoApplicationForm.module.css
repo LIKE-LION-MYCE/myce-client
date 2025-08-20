@@ -4,7 +4,6 @@
   font-family: 'Pretendard', sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 32px;
   box-sizing: border-box;
 }
 

@@ -154,7 +154,7 @@ function BannerApplicationsDetail() {
   } else if (rawStatus === 'PENDING_PAYMENT') {
     buttonGroup = (
       <div className={styles.buttonGroup}>
-        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 내역</button>
+        <button className={styles.approveBtn} onClick={() => setShowPaymentDetail(true)}>결제 정보</button>
       </div>
     );
   }
@@ -176,10 +176,12 @@ function BannerApplicationsDetail() {
 
       {/* 신청자 정보 */}
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>신청자 정보</h4>
         <ApplicantForm applicantData={bannerData?.applicant} />
       </div>
 
       <div className={styles.section}>
+        <h4 className={styles.sectionTitle}>운영사 정보</h4>
         {businessData && <OperatorApplicationForm businessData={businessData} />}
       </div>
 

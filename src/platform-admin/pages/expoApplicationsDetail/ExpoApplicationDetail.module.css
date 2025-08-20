@@ -2,7 +2,7 @@
 .operatorContainer {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 50px;
   padding: 32px;
   width: 100%;
   max-width: 100%;
@@ -63,6 +63,8 @@
 }
 
 .statusBadge {
+  margin-left : 6px;
+  margin-bottom : 8px;
   padding: 4px 10px;
   border-radius: 16px;
   font-size: 12px;
@@ -78,8 +80,8 @@
 }
 
 .승인_완료 {
-  background-color: #ebf9f1; /* 연한 초록 */
-  color: #2a9c68;            /* 진한 초록 */
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .승인_거절 {

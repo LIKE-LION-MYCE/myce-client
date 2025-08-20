@@ -2,7 +2,7 @@
 .operatorContainer {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 50px;
   padding: 32px;
   width: 100%;
   max-width: 100%;
@@ -56,6 +56,9 @@
 }
 
 .statusBadge {
+  margin-left : 6px;
+  margin-bottom : 2px;
+  margin-right : 4px;
   padding: 4px 10px;
   border-radius: 16px;
   font-size: 12px;
@@ -147,25 +150,24 @@
   padding: 10px 81px;
   font-size: 14px;
   font-weight: 400;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 6px;
-  background-color: white;
-  color: #333;
+  background-color: #1e2a38;
+  color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .infoBtn:hover {
-  background-color: #f9f9f9;
-  border-color: #999;
+  background-color: #17212c;
 }
 
 .infoBtnShort {
-  padding: 10px 30px;
+  padding: 8px 30px;
   font-size: 14px;
   font-weight: 400;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 20px;
   background-color: white;
   color: #333;
   cursor: pointer;

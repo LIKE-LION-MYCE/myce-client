@@ -18,7 +18,7 @@ function ExpoApplicationForm({ expoData }) {
       <div className={styles.topRow}>
         <div className={styles.profileWrapper}>
           <img
-            src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
+            src={form.thumbnailUrl || ""}
             alt="포스터"
             className={styles.profileImage}
           />

@@ -169,7 +169,7 @@ function PlatformAdminSideBar() {
 
         <SubMenu
           icon={<MdOutlineOndemandVideo />}
-          label="배너 관리"
+          label="광고 관리"
           open={openSubMenus.includes('banner')}
           onOpenChange={() => toggleSubMenu('banner')}
         >
@@ -177,13 +177,13 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/bannerApplications" />}
             active={selectedMenu === '/platform/admin/bannerApplications'}
           >
-            배너 신청 관리
+            광고 신청 관리
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin/bannerCurrent" />}
             active={selectedMenu === '/platform/admin/bannerCurrent'}
           >
-            현재 배너 관리
+            현재 광고 관리
           </MenuItem>
         </SubMenu>
 
@@ -235,7 +235,7 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/adPosition" />}
             active={selectedMenu === '/platform/admin/adPosition'}
           >
-            배너 타입 설정
+            광고 타입 설정
           </MenuItem>
         </SubMenu>
       </Menu>

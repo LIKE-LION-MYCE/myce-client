@@ -29,7 +29,7 @@
 }
 
 .td {
-  padding: 12px 16px;
+  padding: 10px 16px;
   font-size: 14px;
   color: #222;
   text-align: center;
@@ -87,6 +87,26 @@
   font-weight: 500;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+/* --- Status Badge --- */
+.badge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badgeActive {
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
+}
+
+.badgeInactive {
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }
 
 .saveBtn {
