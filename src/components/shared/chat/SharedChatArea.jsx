@@ -181,16 +181,8 @@ export default function SharedChatArea({
               if (message.type === 'SYSTEM_MESSAGE' || 
                   message.senderType === 'SYSTEM') {
                 
-                // Skip persistent system messages that are too recent (likely duplicates from WebSocket)
-                if (message.senderType === 'SYSTEM' && !message.type) {
-                  const messageTime = new Date(message.sentAt);
-                  const now = new Date();
-                  const timeDiffMinutes = (now - messageTime) / (1000 * 60);
-                  
-                  if (timeDiffMinutes < 2) {
-                    return null; // Skip rendering this duplicate
-                  }
-                }
+                // Removed overly aggressive time-based filtering
+                // Let React handle duplicates with proper keys (message.id || index)
                 
                 // Handle persistent system messages from database
                 if (message.senderType === 'SYSTEM' && message.content) {
@@ -206,6 +198,13 @@ export default function SharedChatArea({
                       type: systemType,
                       message: "상담원이 인계받았습니다",
                       aiSummary: systemMessage || "대화 요약을 불러올 수 없습니다",
+                      timestamp: message.sentAt,
+                      messageId: message.id
+                    };
+                  } else if (systemType === 'ADMIN_HANDOFF_ACCEPTED') {
+                    systemPayload = {
+                      type: systemType,
+                      message: systemMessage || "관리자가 상담에 참여했습니다",
                       timestamp: message.sentAt,
                       messageId: message.id
                     };
