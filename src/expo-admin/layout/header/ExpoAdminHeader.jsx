@@ -14,6 +14,12 @@ const pathMap = {
   '/expos/:expoId/admin/inquiry': ['문의'],
 };
 
+// prefix 라벨 매핑
+const prefixMap = {
+  '/expos/:expoId/admin': 'Dashboards',
+  '/expos/:expoId/admin/qrcheckin': 'QR CheckIn',
+};
+
 // 경로 내 :expoId를 무시하고 매칭하기 위한 헬퍼 함수
 function normalizePath(pathname) {
   const segments = pathname.split('/').filter(Boolean);
@@ -32,12 +38,14 @@ function ExpoAdminHeader() {
     .find((key) => currentPath.startsWith(key));
 
   const crumbs = matchedKey ? pathMap[matchedKey] : [];
-  const isDashboard = matchedKey === '/expos/:expoId/admin';
+
+  // 경로별 prefix 라벨 선택: 매칭 없으면 기본 'Pages'
+  const prefixLabel = (matchedKey && prefixMap[matchedKey]) || 'Pages';
 
   return (
     <nav className={styles.breadcrumb}>
       <span className={`${styles.item} ${styles.prefix}`}>
-        {isDashboard ? 'Dashboards' : 'Pages'}
+        {prefixLabel}
       </span>
       {crumbs.map((label, idx) => {
         const isLast = idx === crumbs.length - 1;

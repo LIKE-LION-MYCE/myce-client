@@ -226,16 +226,16 @@ function PlatformAdminSideBar() {
             발송 메시지
           </MenuItem>
           <MenuItem
-            component={<Link to="/platform/admin/settingAmount" />}
-            active={selectedMenu === '/platform/admin/settingAmount'}
-          >
-            금액 설정
-          </MenuItem>
-          <MenuItem
             component={<Link to="/platform/admin/adPosition" />}
             active={selectedMenu === '/platform/admin/adPosition'}
           >
             광고 타입 설정
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/platform/admin/settingAmount" />}
+            active={selectedMenu === '/platform/admin/settingAmount'}
+          >
+            금액 설정
           </MenuItem>
         </SubMenu>
       </Menu>
