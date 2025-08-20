@@ -30,7 +30,7 @@ function Setting() {
 
   const showToast = (type, message) => {
     setToast({ type, message });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), 2000);
   };
 
   const getStatusText = (status) => {
@@ -56,7 +56,7 @@ function Setting() {
         setTickets(Array.isArray(list) ? list : []);
       } catch (err) {
         console.error(err);
-        showToast('fail', '데이터 로드에 실패했어요.');
+        showToast('fail', '데이터 로드에 실패했습니다.');
       }
     })();
   }, [expoId]);
@@ -67,7 +67,7 @@ function Setting() {
       setTickets(Array.isArray(list) ? list : []);
     } catch (err) {
       console.error(err);
-      showToast('fail', '티켓 목록을 새로고침하지 못했어요.');
+      showToast('fail', '티켓 목록을 새로고침하지 못했습니다.');
     }
   };
 

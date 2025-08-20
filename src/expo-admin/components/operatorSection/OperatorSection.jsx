@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable */
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   FaUserTie, FaUserFriends, FaEnvelope, FaPhone,
@@ -13,32 +14,36 @@ import OperatorImageUpload from '../operatorImageUpload/OperatorImageUpload';
 import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
 
-const FIXED_LOGO_URL = 'https://cdn.example.com/placeholder-logo.png'; // 원하는 고정 URL로 변경
+const FIXED_LOGO_URL = 'https://cdn.example.com/placeholder-logo.png';
+const HIDE_LOGO_PREVIEW = true;
+const DAUM_POSTCODE_URL = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
 
 function OperatorSection() {
   const { expoId } = useParams();
+
   const [form, setForm] = useState({});
   const [originalForm, setOriginalForm] = useState({});
   const [errors, setErrors] = useState({});
-
   const [isEditing, setIsEditing] = useState(false);
 
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [failMessage, setFailMessage] = useState('');
 
-  const triggerSuccessToast = () => {
+  const postcodeScriptLoaded = useRef(false);
+
+  const triggerSuccessToast = (message) => {
+    setSuccessMessage(message || '성공적으로 처리되었습니다.');
     setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 5000);
+    setTimeout(() => setShowSuccessToast(false), 2000);
   };
 
   const triggerToastFail = (message) => {
     setFailMessage(message);
     setShowFailToast(true);
-    setTimeout(() => setShowFailToast(false), 5000);
+    setTimeout(() => setShowFailToast(false), 2000);
   };
-
-  const HIDE_LOGO_PREVIEW = true;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -54,7 +59,23 @@ function OperatorSection() {
         triggerToastFail(msg);
       }
     };
+
+    const loadDaumPostcode = () => {
+      if (postcodeScriptLoaded.current) return;
+      if (document.querySelector(`script[src="${DAUM_POSTCODE_URL}"]`)) {
+        postcodeScriptLoaded.current = true;
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = DAUM_POSTCODE_URL;
+      script.async = true;
+      script.onload = () => { postcodeScriptLoaded.current = true; };
+      script.onerror = () => { triggerToastFail('주소 검색 스크립트 로드에 실패했습니다.'); };
+      document.body.appendChild(script);
+    };
+
     fetchProfile();
+    loadDaumPostcode();
   }, [expoId]);
 
   const runValidation = (data) => {
@@ -95,6 +116,7 @@ function OperatorSection() {
       setIsEditing(true);
       return;
     }
+
     const e = runValidation(form);
     setErrors(e);
     if (Object.keys(e).length > 0) return;
@@ -102,10 +124,10 @@ function OperatorSection() {
     try {
       const payload = { ...form, logoUrl: FIXED_LOGO_URL };
       await updateMyBusinessProfile(expoId, payload);
-      triggerSuccessToast();
+      triggerSuccessToast('운영사 정보가 수정되었습니다.');
       setOriginalForm(payload);
+      setForm(payload);
       setIsEditing(false);
-      // window.location.reload();
     } catch (error) {
       const msg =
         error?.response?.status === 403
@@ -124,7 +146,7 @@ function OperatorSection() {
   };
 
   const formatPhoneNumber = (value) => {
-    const onlyNums = value.replace(/[^0-9]/g, '');
+    const onlyNums = String(value || '').replace(/[^0-9]/g, '');
     if (onlyNums.startsWith('02')) {
       if (onlyNums.length <= 2) return onlyNums;
       if (onlyNums.length <= 5) return onlyNums.replace(/(\d{2})(\d{1,3})/, '$1-$2');
@@ -138,15 +160,15 @@ function OperatorSection() {
   };
 
   const formatBusinessNumber = (value) => {
-    const nums = value.replace(/\D/g, '');
+    const nums = String(value || '').replace(/\D/g, '');
     if (nums.length <= 3) return nums;
     if (nums.length <= 5) return nums.replace(/(\d{3})(\d{1,2})/, '$1-$2');
     return nums.replace(/(\d{3})(\d{2})(\d{1,5})/, '$1-$2-$3').slice(0, 12);
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
     if (!isEditing) return;
+    const { name, value } = e.target;
     let newValue = value;
     if (name === 'contactPhone') newValue = formatPhoneNumber(value);
     else if (name === 'businessRegistrationNumber') newValue = formatBusinessNumber(value);
@@ -155,6 +177,26 @@ function OperatorSection() {
   };
 
   const handleImageUpload = () => {};
+
+  // 카카오 도로명 주소 검색
+  const openAddressSearch = () => {
+    if (!isEditing) return;
+    if (!postcodeScriptLoaded.current || !(window && window.daum && window.daum.Postcode)) {
+      triggerToastFail('주소 검색을 아직 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const roadAddr = data.roadAddress || '';
+        setForm((prev) => ({
+          ...prev,
+          address: roadAddr, // 도로명 주소만 저장
+          // postcode: data.zonecode // 필요시 사용
+        }));
+        setErrors((prev) => ({ ...prev, address: '' }));
+      },
+    }).open();
+  };
 
   const renderField = (name, label, IconComp) => {
     const val = form[name] ?? '';
@@ -187,6 +229,48 @@ function OperatorSection() {
     );
   };
 
+  // 주소 전용 렌더 (도로명 주소 input 클릭 시 팝업)
+  const renderAddressField = () => {
+    const addr = form.address ?? '';
+    return (
+      <>
+        <label className={styles.label}>주소</label>
+
+        {isEditing ? (
+          <div className={styles.inputWrap}>
+            <input
+              className={styles.inputField}
+              name="address"
+              value={addr}
+              placeholder="도로명 주소를 검색해 주세요"
+              readOnly
+              onClick={openAddressSearch}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openAddressSearch();
+                }
+              }}
+              title="클릭하여 도로명 주소를 검색"
+              style={{ cursor: 'pointer' }}
+              autoComplete="off"
+            />
+            <FaMapMarkerAlt className={styles.icon} />
+          </div>
+        ) : (
+          <div className={styles.readOnlyWrap}>
+            <div className={styles.readOnlyBox}>
+              <span className={styles.readOnlyText}>{addr || '-'}</span>
+            </div>
+            <FaMapMarkerAlt className={styles.icon} />
+          </div>
+        )}
+
+        {errors.address && <p className={styles.errorText}>{errors.address}</p>}
+      </>
+    );
+  };
+
   return (
     <div className={styles.container}>
       {!HIDE_LOGO_PREVIEW && (
@@ -215,7 +299,7 @@ function OperatorSection() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.full}`}>
-          {renderField('address', '주소', FaMapMarkerAlt)}
+          {renderAddressField()}
         </div>
 
         <div className={`${styles.formGroup} ${styles.half}`}>
@@ -240,7 +324,7 @@ function OperatorSection() {
         )}
       </div>
 
-      {showSuccessToast && <ToastSuccess />}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
       {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );

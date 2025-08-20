@@ -169,7 +169,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="부스명을 입력하세요"
+              placeholder="부스명 입력"
               className={styles.inputField}
               maxLength={100}
             />
@@ -196,7 +196,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
               name="description"
               value={form.description}
               onChange={handleChange}
-              placeholder="부스에 대한 간단한 설명을 입력하세요"
+              placeholder="부스 설명 입력"
               className={styles.inputField}
             />
             {errors.description && <p className={styles.errorText}>{errors.description}</p>}
@@ -212,7 +212,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
               name="contactName"
               value={form.contactName}
               onChange={handleChange}
-              placeholder="담당자명을 입력하세요"
+              placeholder="담당자명을 입력"
               className={styles.inputField}
               maxLength={30}
             />
@@ -226,7 +226,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
               name="contactPhone"
               value={form.contactPhone}
               onChange={handleChange}
-              placeholder="010-1234-5678"
+              placeholder="예 : 010-1234-5678"
               className={styles.inputField}
               inputMode="numeric"
             />
@@ -240,7 +240,7 @@ function BoothSettingForm({ onSubmit, onCancel, editingBooth, expoIsPremium }) {
               name="contactEmail"
               value={form.contactEmail}
               onChange={handleChange}
-              placeholder="example@company.com"
+              placeholder="예 : example@company.com"
               className={styles.inputField}
               maxLength={100}
             />

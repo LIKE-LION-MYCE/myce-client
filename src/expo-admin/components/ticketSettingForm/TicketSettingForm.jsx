@@ -105,34 +105,38 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
     setForm((prev) => {
       let next = { ...prev, [name]: value };
 
-      // 판매 시작일: 게시기간 내로 클램프
+      // 판매 시작일: 게시기간 내로 클램프 (유지)
       if (name === 'saleStartDate') {
         const clamped = expoLoaded
           ? clampDate(value, displayStartDate || undefined, displayEndDate || undefined)
           : value;
         next.saleStartDate = clamped;
 
-        // 종료일 보정
+        // 종료일 보정: 종료일은 "박람회 종료일(expoEndDate)"을 상한으로
         if (next.saleEndDate && next.saleEndDate < clamped) next.saleEndDate = clamped;
-        if (expoLoaded && displayEndDate && next.saleEndDate && next.saleEndDate > displayEndDate) {
-          next.saleEndDate = displayEndDate;
+        if (expoLoaded && expoEndDate && next.saleEndDate && next.saleEndDate > expoEndDate) {
+          next.saleEndDate = expoEndDate;
         }
-        // 사용일 보정
+        // 사용일 보정 (기존 유지)
         if (next.useStartDate && next.useStartDate < clamped) next.useStartDate = clamped;
         if (next.useEndDate && next.useEndDate < (next.useStartDate || clamped)) {
           next.useEndDate = next.useStartDate || clamped;
         }
       }
 
-      // 판매 종료일: [판매 시작일, 게시 종료일]
+      // 판매 종료일: [판매 시작일(또는 게시 시작일), 박람회 종료일] 로 클램프
       if (name === 'saleEndDate') {
         const minStart = next.saleStartDate || prev.saleStartDate;
         next.saleEndDate = expoLoaded
-          ? clampDate(value, minStart || displayStartDate || undefined, displayEndDate || undefined)
+          ? clampDate(
+              value,
+              minStart || displayStartDate || undefined,
+              expoEndDate || undefined
+            )
           : value;
       }
 
-      // 사용 시작일: 행사기간 내 + 판매 시작일 이후
+      // 사용 시작일: 행사기간 내 + 판매 시작일 이후 (유지)
       if (name === 'useStartDate') {
         const minBySale = next.saleStartDate || prev.saleStartDate;
         let min = expoStartDate || undefined;
@@ -140,14 +144,14 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
         const clamped = expoLoaded ? clampDate(value, min, expoEndDate || undefined) : value;
         next.useStartDate = clamped;
 
-        // 종료일 보정
+        // 종료일 보정 (유지)
         if (next.useEndDate && next.useEndDate < clamped) next.useEndDate = clamped;
         if (expoLoaded && expoEndDate && next.useEndDate && next.useEndDate > expoEndDate) {
           next.useEndDate = expoEndDate;
         }
       }
 
-      // 사용 종료일: [사용 시작일, 행사 종료일]
+      // 사용 종료일: [사용 시작일, 행사 종료일] (유지)
       if (name === 'useEndDate') {
         const minUseStart = next.useStartDate || prev.useStartDate || expoStartDate || undefined;
         next.useEndDate = expoLoaded
@@ -185,7 +189,7 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
   const runValidation = () => {
     const e = {};
 
-    // 왼쪽 컬럼: 이름/타입/설명 (각각 독립적으로 검사)
+    // 왼쪽 컬럼: 이름/타입/설명
     if (isBlank(form.name)) e.name = '티켓 이름은 필수입니다.';
     else if (form.name.length > 100) e.name = '티켓 이름은 100자 이하여야 합니다.';
 
@@ -209,19 +213,21 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
     if (isBlank(form.saleStartDate)) e.saleStartDate = '판매 시작일은 필수입니다.';
     if (isBlank(form.saleEndDate)) e.saleEndDate = '판매 종료일은 필수입니다.';
 
-    // 판매기간 제약(두 값이 있을 때만 비교)
+    // 판매기간 제약
     if (!e.saleStartDate && !e.saleEndDate && form.saleStartDate && form.saleEndDate) {
       if (form.saleEndDate < form.saleStartDate) {
         e.saleEndDate = '판매 종료일은 시작일과 같거나 이후여야 합니다.';
       }
+      // 시작일은 게시기간 내 (유지)
       if (displayStartDate && form.saleStartDate < displayStartDate) {
         e.saleStartDate = '판매 시작일은 게시 시작일과 같거나 이후여야 합니다.';
       }
       if (displayEndDate && form.saleStartDate > displayEndDate) {
         e.saleStartDate = '판매 시작일은 게시 종료일과 같거나 이전이어야 합니다.';
       }
-      if (displayEndDate && form.saleEndDate > displayEndDate) {
-        e.saleEndDate = '판매 종료일은 게시 종료일과 같거나 이전이어야 합니다.';
+      // 종료일은 "박람회 종료일" 이내
+      if (expoEndDate && form.saleEndDate > expoEndDate) {
+        e.saleEndDate = '판매 종료일은 박람회 종료일과 같거나 이전이어야 합니다.';
       }
     }
 
@@ -229,7 +235,7 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
     if (isBlank(form.useStartDate)) e.useStartDate = '사용 시작일은 필수입니다.';
     if (isBlank(form.useEndDate)) e.useEndDate = '사용 종료일은 필수입니다.';
 
-    // 사용기간 제약(두 값이 있을 때만 비교)
+    // 사용기간 제약 (유지)
     if (!e.useStartDate && !e.useEndDate && form.useStartDate && form.useEndDate) {
       if (form.useEndDate < form.useStartDate) {
         e.useEndDate = '사용 종료일은 시작일과 같거나 이후여야 합니다.';
@@ -424,7 +430,8 @@ function TicketSettingForm({ open, onClose, onSubmit, editingTicket }) {
                           (expoLoaded && displayStartDate ? displayStartDate : undefined)) ||
                         undefined
                       }
-                      max={expoLoaded && displayEndDate ? displayEndDate : undefined}
+                      // 판매 종료일의 상한은 "박람회 종료일"
+                      max={expoLoaded && expoEndDate ? expoEndDate : undefined}
                       aria-invalid={!!errors.saleEndDate}
                     />
                   </div>
