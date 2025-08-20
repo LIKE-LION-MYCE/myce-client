@@ -150,7 +150,7 @@ const UpcomingCardList = ({
       <div className={styles.sectionHeader}>
         <div>
           <h2 className={styles.title}>{t("homepage.upcoming.title", "오픈 예정")}</h2>
-          <p className={styles.subtitle}>{t("homepage.upcoming.subtitle", "곧 시작될 흥미진진한 이벤트들을 만나보세요")}</p>
+          <p className={styles.subtitle}>{t("homepage.upcoming.subtitleNew", "곧 개최될 박람회를 소개합니다")}</p>
         </div>
       </div>
       
