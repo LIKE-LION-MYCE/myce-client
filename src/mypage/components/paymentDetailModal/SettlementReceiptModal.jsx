@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './SettlementReceiptModal.module.css';
 import { requestExpoSettlement } from '../../../api/service/user/memberApi';
 
 const bankOptions = ['토스뱅크', '카카오뱅크', '신한은행', '국민은행', '우리은행', '하나은행', '기업은행', 'NH농협은행'];
 
 const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false, bankInfo = null }) => {
+  const { t } = useTranslation();
+  
   if (!receiptData) return null;
 
   const [settlementForm, setSettlementForm] = useState({
@@ -25,14 +28,14 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
     if (name === 'bankAccount') {
       // 숫자와 하이픈이 아닌 문자가 포함된 경우 경고
       if (/[^0-9-]/.test(value)) {
-        warningMessage = '계좌번호는 숫자와 하이픈(-)만 입력 가능합니다.';
+        warningMessage = t('settlementReceiptModal.messages.accountNumberWarning');
       }
       // 계좌번호: 숫자와 하이픈만 허용
       filteredValue = value.replace(/[^0-9-]/g, '');
     } else if (name === 'receiverName') {
       // 한글, 영어, 공백이 아닌 문자가 포함된 경우 경고
       if (/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s]/.test(value)) {
-        warningMessage = '예금주는 한글, 영어, 공백만 입력 가능합니다.';
+        warningMessage = t('settlementReceiptModal.messages.accountHolderWarning');
       }
       // 예금주: 한글, 영어, 공백만 허용 (자모 포함)
       filteredValue = value.replace(/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s]/g, '');
@@ -53,18 +56,18 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
 
   const handleSubmitSettlement = async () => {
     if (!settlementForm.bankName || !settlementForm.bankAccount || !settlementForm.receiverName) {
-      alert('모든 은행 정보를 입력해주세요.');
+      alert(t('settlementReceiptModal.messages.allFieldsRequired'));
       return;
     }
 
     try {
       setLoading(true);
       await requestExpoSettlement(expoId, settlementForm);
-      alert('정산 신청이 완료되었습니다.');
+      alert(t('settlementReceiptModal.messages.submitSuccess'));
       onClose();
     } catch (err) {
       console.error('정산 신청 실패:', err);
-      const errorMessage = err.response?.data?.message || '정산 신청에 실패했습니다.';
+      const errorMessage = err.response?.data?.message || t('settlementReceiptModal.messages.submitError');
       alert(errorMessage);
     } finally {
       setLoading(false);
@@ -74,34 +77,34 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h2 className={styles.title}>정산 내역 확인</h2>
+        <h2 className={styles.title}>{t('settlementReceiptModal.title')}</h2>
         <div className={styles.contentLayout}>
           {/* 왼쪽 섹션: 박람회 정보 + 티켓 판매 내역 */}
           <div className={styles.leftSection}>
             <div className={styles.infoGrid}>
               <div className={styles.infoItem}>
-                <span className={styles.label}>박람회명</span>
+                <span className={styles.label}>{t('settlementReceiptModal.fields.expoName')}</span>
                 <span className={styles.value}>{receiptData.expoTitle}</span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.label}>정산 요청일</span>
+                <span className={styles.label}>{t('settlementReceiptModal.fields.settlementRequestDate')}</span>
                 <span className={styles.value}>{new Date(receiptData.settlementRequestDate).toLocaleDateString('ko-KR')}</span>
               </div>
             </div>
 
             {receiptData.ticketSales && receiptData.ticketSales.length > 0 && (
               <div className={styles.ticketSalesSection}>
-                <h3>티켓 판매 내역</h3>
+                <h3>{t('settlementReceiptModal.ticketSales.title')}</h3>
                 <div className={styles.ticketSalesHeader}>
-                  <span>티켓명</span>
-                  <span>판매 개수</span>
-                  <span>총 판매 금액</span>
+                  <span>{t('settlementReceiptModal.ticketSales.headers.ticketName')}</span>
+                  <span>{t('settlementReceiptModal.ticketSales.headers.soldCount')}</span>
+                  <span>{t('settlementReceiptModal.ticketSales.headers.totalSales')}</span>
                 </div>
                 {receiptData.ticketSales.map((ticket, index) => (
                   <div key={index} className={styles.ticketSalesItem}>
                     <span>{ticket.ticketName}</span>
-                    <span>{ticket.soldCount}개</span>
-                    <span>{ticket.totalSales.toLocaleString()}원</span>
+                    <span>{ticket.soldCount}{t('settlementReceiptModal.units.pieces')}</span>
+                    <span>{ticket.totalSales.toLocaleString()}{t('settlementReceiptModal.units.currency')}</span>
                   </div>
                 ))}
               </div>
@@ -112,44 +115,44 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
           <div className={styles.rightSection}>
             <div className={styles.summarySection}>
               <div className={styles.summaryItem}>
-                <span className={styles.label}>총 판매 금액</span>
-                <span className={styles.value}>{receiptData.totalRevenue.toLocaleString()}원</span>
+                <span className={styles.label}>{t('settlementReceiptModal.fields.totalRevenue')}</span>
+                <span className={styles.value}>{receiptData.totalRevenue.toLocaleString()}{t('settlementReceiptModal.units.currency')}</span>
               </div>
               <div className={styles.summaryItem}>
-                <span className={styles.label}>플랫폼 수수료 ({receiptData.commissionRate}%)</span>
-                <span className={styles.value}>-{receiptData.fee.toLocaleString()}원</span>
+                <span className={styles.label}>{t('settlementReceiptModal.fields.platformFee')} ({receiptData.commissionRate}{t('settlementReceiptModal.units.percent')})</span>
+                <span className={styles.value}>-{receiptData.fee.toLocaleString()}{t('settlementReceiptModal.units.currency')}</span>
               </div>
               <div className={styles.divider}></div>
               <div className={`${styles.summaryItem} ${styles.netProfit}`}>
-                <span className={styles.label}>순수익</span>
-                <span className={styles.value}>{receiptData.finalSettlementAmount.toLocaleString()}원</span>
+                <span className={styles.label}>{t('settlementReceiptModal.fields.netProfit')}</span>
+                <span className={styles.value}>{receiptData.finalSettlementAmount.toLocaleString()}{t('settlementReceiptModal.units.currency')}</span>
               </div>
             </div>
 
             {/* 은행계좌 입력/조회 섹션 */}
             <div className={styles.settlementFormSection}>
-              <h3 className={styles.formTitle}>정산 신청 정보</h3>
+              <h3 className={styles.formTitle}>{t('settlementReceiptModal.settlementForm.title')}</h3>
               {readOnly && bankInfo ? (
                 // 조회 모드: 은행정보 표시
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
-                    <span className={styles.label}>은행</span>
-                    <span className={styles.value}>{bankInfo.bankName || '정보 없음'}</span>
+                    <span className={styles.label}>{t('settlementReceiptModal.fields.bank')}</span>
+                    <span className={styles.value}>{bankInfo.bankName || t('settlementReceiptModal.messages.noInfo')}</span>
                   </div>
                   <div className={styles.infoItem}>
-                    <span className={styles.label}>계좌번호</span>
-                    <span className={styles.value}>{bankInfo.bankAccount || '정보 없음'}</span>
+                    <span className={styles.label}>{t('settlementReceiptModal.fields.accountNumber')}</span>
+                    <span className={styles.value}>{bankInfo.bankAccount || t('settlementReceiptModal.messages.noInfo')}</span>
                   </div>
                   <div className={styles.infoItem}>
-                    <span className={styles.label}>예금주명</span>
-                    <span className={styles.value}>{bankInfo.receiverName || '정보 없음'}</span>
+                    <span className={styles.label}>{t('settlementReceiptModal.fields.accountHolder')}</span>
+                    <span className={styles.value}>{bankInfo.receiverName || t('settlementReceiptModal.messages.noInfo')}</span>
                   </div>
                 </div>
               ) : (
                 // 입력 모드: 폼 표시
                 <div className={styles.formGrid}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>은행</label>
+                    <label className={styles.formLabel}>{t('settlementReceiptModal.settlementForm.labels.bank')}</label>
                     <select
                       name="bankName"
                       className={styles.formSelect}
@@ -157,7 +160,7 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
                       onChange={handleFormChange}
                       disabled={loading}
                     >
-                      <option value="">은행을 선택해주세요</option>
+                      <option value="">{t('settlementReceiptModal.settlementForm.placeholders.bankSelect')}</option>
                       {bankOptions.map((bank) => (
                         <option key={bank} value={bank}>
                           {bank}
@@ -167,14 +170,14 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>계좌번호</label>
+                    <label className={styles.formLabel}>{t('settlementReceiptModal.settlementForm.labels.accountNumber')}</label>
                     <input
                       type="text"
                       name="bankAccount"
                       className={styles.formInput}
                       value={settlementForm.bankAccount}
                       onChange={handleFormChange}
-                      placeholder="계좌번호를 입력해주세요 (숫자와 하이픈만)"
+                      placeholder={t('settlementReceiptModal.settlementForm.placeholders.accountNumber')}
                       disabled={loading}
                     />
                     {inputWarning.bankAccount && (
@@ -185,14 +188,14 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>예금주명</label>
+                    <label className={styles.formLabel}>{t('settlementReceiptModal.settlementForm.labels.accountHolder')}</label>
                     <input
                       type="text"
                       name="receiverName"
                       className={styles.formInput}
                       value={settlementForm.receiverName}
                       onChange={handleFormChange}
-                      placeholder="예금주명을 입력해주세요 (한글, 영어만)"
+                      placeholder={t('settlementReceiptModal.settlementForm.placeholders.accountHolder')}
                       disabled={loading}
                     />
                     {inputWarning.receiverName && (
@@ -209,7 +212,7 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
 
         <div className={styles.buttonArea}>
           <button className={styles.closeButton} onClick={onClose} disabled={loading}>
-            닫기
+            {t('settlementReceiptModal.buttons.close')}
           </button>
           {!readOnly && (
             <button 
@@ -217,7 +220,7 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
               onClick={handleSubmitSettlement}
               disabled={loading}
             >
-              {loading ? '신청 중...' : '정산 신청'}
+              {loading ? t('settlementReceiptModal.buttons.submitting') : t('settlementReceiptModal.buttons.submit')}
             </button>
           )}
         </div>

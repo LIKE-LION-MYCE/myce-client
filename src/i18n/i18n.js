@@ -10,6 +10,7 @@ import mypageI18n from './i18n_mypaged.js';
 import commonOptionsI18n from './i18n_commonoptions.js';
 import componentsI18n from './i18n_components.js';
 import receiptI18n from './i18n_receipt.js';
+import authI18n from './i18n_auth.js';
 
 // 리소스 병합 함수
 const mergeResources = (mainResources, ...additionalResources) => {
@@ -60,7 +61,8 @@ const mainResources = {
         logout: "로그아웃",
         login: "로그인",
         signup: "회원가입",
-        reservationCheck: "예매 확인"
+        reservationCheck: "예매 확인",
+        searchPlaceholder: "박람회를 검색해보세요"
       },
       // 공통 컴포넌트
       components: {
@@ -140,7 +142,7 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            title: {
+            pageTitle: {
               create: "리뷰 작성",
               edit: "리뷰 수정"
             },
@@ -148,7 +150,7 @@ const mainResources = {
               label: "평점",
               points: "점"
             },
-            title: {
+            reviewTitle: {
               label: "제목",
               placeholder: "리뷰 제목을 입력해주세요"
             },
@@ -907,7 +909,8 @@ const mainResources = {
         logout: "Logout",
         login: "Login",
         signup: "Sign Up",
-        reservationCheck: "Check Reservation"
+        reservationCheck: "Check Reservation",
+        searchPlaceholder: "Search for exhibitions"
       },
       // Common Components
       components: {
@@ -987,7 +990,7 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            title: {
+            pageTitle: {
               create: "Write Review",
               edit: "Edit Review"
             },
@@ -995,7 +998,7 @@ const mainResources = {
               label: "Rating",
               points: "points"
             },
-            title: {
+            reviewTitle: {
               label: "Title",
               placeholder: "Please enter review title"
             },
@@ -1754,7 +1757,8 @@ const mainResources = {
         logout: "ログアウト",
         login: "ログイン",
         signup: "会員登録",
-        reservationCheck: "予約確認"
+        reservationCheck: "予約確認",
+        searchPlaceholder: "博覧会を検索してください"
       },
       // 共通コンポーネント
       components: {
@@ -1834,7 +1838,7 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            title: {
+            pageTitle: {
               create: "レビュー作成",
               edit: "レビュー編集"
             },
@@ -1842,7 +1846,7 @@ const mainResources = {
               label: "評価",
               points: "点"
             },
-            title: {
+            reviewTitle: {
               label: "タイトル",
               placeholder: "レビューのタイトルを入力してください"
             },
@@ -2578,7 +2582,7 @@ const mainResources = {
 };
 
 // 모든 리소스 병합
-const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n, nonmemberI18n, mypageI18n, commonOptionsI18n, componentsI18n, receiptI18n);
+const resources = mergeResources(mainResources, homepageI18n, expoDetailI18n, nonmemberI18n, mypageI18n, commonOptionsI18n, componentsI18n, receiptI18n, authI18n);
 
 i18n
   .use(LanguageDetector)
