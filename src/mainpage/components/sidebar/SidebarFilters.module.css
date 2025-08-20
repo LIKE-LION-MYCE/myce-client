@@ -1,88 +1,181 @@
 /* SidebarFilters.module.css */
 
 .sidebar {
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 2rem;
   font-size: 0.95rem;
   width: 100%;
+  min-width: 320px;
   box-sizing: border-box;
+  position: relative;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
 }
 
 .search {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.875rem 1.125rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #f5f5f5;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.search:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.2);
+}
+
+.search::placeholder {
+  color: #888888;
+  font-weight: 400;
 }
 
 .filterSection {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  position: relative;
 }
 
 .filterSection h4 {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #333333;
+  font-family: 'GmarketSansMedium', sans-serif;
+  position: relative;
+  padding-left: 0;
 }
 
-.regionList,
-.categoryList {
+.filterSection h4::before {
+ display: none;
+}
+
+.regionList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
 .durationButtons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .filterButton,
 .categoryButton {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background-color 0.2s;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  color: #555555;
+}
+
+.categoryButton {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  text-align: center;
 }
 
 .filterButton:hover,
 .categoryButton:hover {
-  background-color: #e0e0e0;
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+  color: #333333;
+}
+
+.filterButton.active,
+.categoryButton.active {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.filterButton.active:hover,
+.categoryButton.active:hover {
+  background: #000000;
+  border-color: #000000;
 }
 
 .datePickerWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.datePickerWrapper span {
+  font-size: 0.9rem;
+  color: #333333;
+  font-weight: 600;
+  font-family: 'GmarketSansMedium', sans-serif;
 }
 
 .datePickerWrapper input[type="date"] {
-  width: 100%;
-  padding: 0.3rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  padding: 0.875rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #f5f5f5;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  color: #333333;
+}
+
+.datePickerWrapper input[type="date"]:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.2);
 }
 
 .resetButton {
   width: 100%;
-  padding: 0.6rem;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 1rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  font-family: 'GmarketSansMedium', sans-serif;
+  transition: all 0.2s ease;
 }
 
 .resetButton:hover {
-  background-color: #d32f2f;
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
 }
