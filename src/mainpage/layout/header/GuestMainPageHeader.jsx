@@ -37,7 +37,12 @@ const GuestMainPageHeader = () => {
 
   const handleMenuClick = (item) => {
     setActiveMenu(item.name);
-    navigate(item.path);
+    // 박람회 목록 클릭 시 상태를 전체로 설정
+    if (item.path === '/expo-list') {
+      navigate('/expo-list?status=all');
+    } else {
+      navigate(item.path);
+    }
   };
 
   const goToHome = () => {
@@ -66,14 +71,10 @@ const GuestMainPageHeader = () => {
     setSearchQuery(query);
 
     if (query.trim().length > 0) {
+      // 검색어가 있을 때 필터링된 결과 표시 (제목만)
       const filtered = expos.filter(
         (expo) =>
-          expo.title.toLowerCase().includes(query.toLowerCase()) ||
-          expo.location.toLowerCase().includes(query.toLowerCase()) ||
-          (expo.categories &&
-            expo.categories.some((cat) =>
-              cat.toLowerCase().includes(query.toLowerCase())
-            ))
+          expo.title.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filtered);
       setShowSearchResults(true);

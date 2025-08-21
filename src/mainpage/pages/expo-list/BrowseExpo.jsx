@@ -21,30 +21,48 @@ export default function BrowseExpo() {
     setPagination,
   } = useExpoData(16);
 
-  // 클라이언트 사이드 검색 필터링 (헤더 검색과 동일한 로직)
+  // 클라이언트 사이드 검색 및 상태 필터링
   const filteredExpos = React.useMemo(() => {
-    if (!filters.keyword || !expos?.length) return expos;
+    let result = expos || [];
     
-    const query = filters.keyword.toLowerCase();
-    return expos.filter(expo => 
-      expo.title.toLowerCase().includes(query) ||
-      expo.location.toLowerCase().includes(query) ||
-      (expo.categories && expo.categories.some(cat => 
-        cat.toLowerCase().includes(query)
-      ))
-    );
-  }, [expos, filters.keyword]);
+    // 키워드 필터링 (제목만)
+    if (filters.keyword && result.length) {
+      const query = filters.keyword.toLowerCase();
+      result = result.filter(expo => 
+        expo.title.toLowerCase().includes(query)
+      );
+    }
+    
+    // 상태 필터링 (클라이언트 사이드)
+    if (filters.status && filters.status !== 'all' && result.length) {
+      result = result.filter(expo => expo.status === filters.status);
+    }
+    
+    return result;
+  }, [expos, filters.keyword, filters.status]);
   const {
     categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
 
-  // URL에서 search 파라미터를 읽어서 필터에 적용
+  // URL에서 search와 status 파라미터를 읽어서 필터에 적용
   useEffect(() => {
     const searchQuery = searchParams.get('search');
+    const statusQuery = searchParams.get('status');
+    
+    const newFilters = {};
+    
     if (searchQuery && searchQuery !== filters.keyword) {
-      setFilters(prev => ({ ...prev, keyword: searchQuery }));
+      newFilters.keyword = searchQuery;
+    }
+    
+    if (statusQuery && statusQuery !== filters.status) {
+      newFilters.status = statusQuery;
+    }
+    
+    if (Object.keys(newFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...newFilters }));
     }
   }, [searchParams, setFilters]);
 
@@ -78,7 +96,7 @@ export default function BrowseExpo() {
           <h2 className={styles.title}>
             전체 행사{" "}
             <span className={styles.count}>
-              {pagination.totalElements}개의 행사
+              {filteredExpos?.length || 0}개의 행사
             </span>
           </h2>
           <ExpoCardList

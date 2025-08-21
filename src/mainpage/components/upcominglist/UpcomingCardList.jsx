@@ -99,8 +99,9 @@ const UpcomingCardList = ({
   };
 
   const handleViewAll = () => {
-    console.log('View all events clicked');
-    // 전체보기 페이지로 이동
+    console.log('View all upcoming events clicked');
+    // 오픈 예정 상태로 필터링된 전체보기 페이지로 이동
+    navigate('/expo-list?status=PENDING_PUBLISH');
   };
 
   // 로딩 상태
