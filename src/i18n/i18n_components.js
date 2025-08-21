@@ -210,11 +210,11 @@ const resources = {
             loading: "알림을 불러오는 중...",
             empty: {
               general: "새로운 알림이 없습니다.",
-              admin: "상태 변경 알림이 없습니다.",
+              admin: "신청 관리 알림이 없습니다.",
             },
             tabs: {
               general: "일반",
-              admin: "상태 변경",
+              admin: "신청 관리",
             },
             time: {
               justNow: "방금 전",
