@@ -7,6 +7,7 @@ import { deleteReservationPending } from "../../../api/service/reservation/reser
 import { isTokenExpired } from "../../../api/utils/jwtUtils";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner/LoadingSpinner";
 
 function PaymentVirtualBankButton({
   targetType,
@@ -190,10 +191,7 @@ function PaymentVirtualBankButton({
         disabled={loading}
       >
         {loading ? (
-          <span className={styles.loadingContent}>
-            <span className={styles.spinner}></span>
-            처리 중...
-          </span>
+          <LoadingSpinner size="small" message="처리 중..." />
         ) : (
           "가상 계좌"
         )}

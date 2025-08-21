@@ -7,6 +7,8 @@ import {
   saveFavorite,
   deleteFavorite,
 } from "../../../api/service/user/FavoriteService";
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 // 메인 i18n.js에서 모든 리소스를 병합하므로 별도 import 불필요
 
 export default function ExpoCardList({
@@ -16,6 +18,9 @@ export default function ExpoCardList({
 }) {
   const { t } = useTranslation();
   const [internalExpos, setInternalExpos] = useState([]);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,11 +31,23 @@ export default function ExpoCardList({
     }
   }, [expos]);
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handleBookmarkToggle = async (e, expoId) => {
     e.stopPropagation();
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      alert(t("homepage.expoCard.bookmark.loginRequired", "비회원은 북마크 기능을 이용하실 수 없습니다"));
+      showFailMessage(t("homepage.expoCard.bookmark.loginRequired", "로그인이 필요한 서비스입니다"));
       return;
     }
 
@@ -53,12 +70,19 @@ export default function ExpoCardList({
         )
       );
 
+      // Show success message
+      if (newIsBookmarkStatus) {
+        showSuccessMessage(t("homepage.expoCard.bookmark.added", "북마크에 추가되었습니다"));
+      } else {
+        showSuccessMessage(t("homepage.expoCard.bookmark.removed", "북마크에서 제거되었습니다"));
+      }
+
       if (onBookmarkActionComplete) {
         onBookmarkActionComplete();
       }
     } catch (apiError) {
       console.error("Error toggling bookmark:", apiError);
-      alert(t("homepage.expoCard.bookmark.error", "북마크 기능 처리 중 오류가 발생했습니다."));
+      showFailMessage(t("homepage.expoCard.bookmark.error", "북마크 기능 처리 중 오류가 발생했습니다."));
     }
   };
 
@@ -91,6 +115,7 @@ export default function ExpoCardList({
   }
 
   return (
+    <>
     <div className={styles.grid}>
       {internalExpos.map((expo) => (
         <div
@@ -129,5 +154,12 @@ export default function ExpoCardList({
         </div>
       ))}
     </div>
+    {showSuccessToast && (
+      <ToastSuccess message={toastMessage} onClose={() => setShowSuccessToast(false)} />
+    )}
+    {showFailToast && (
+      <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+    )}
+    </>
   );
 }

@@ -66,6 +66,14 @@ export default function MainPage() {
     handleBanner();
   }, []);
 
+  // 메인페이지에서는 진행중인 박람회만 PUBLISHED 상태로 표시
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      status: 'PUBLISHED'
+    }));
+  }, [setFilters]);
+
   const handleCategoryChange = (category) => {
     const newCategory = category === "전체" ? undefined : category;
     console.log("Setting category filter to:", newCategory);

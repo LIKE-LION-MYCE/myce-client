@@ -12,10 +12,11 @@ export const getCongestionData = async (expoId) => {
 
 export const getExpos = async (filters) => {
   try {
-    // Filter out undefined or null values from filters
+    // Filter out undefined, null values and 'all' status from filters
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== undefined && value !== null
+        ([key, value]) => value !== undefined && value !== null && 
+        !(key === 'status' && value === 'all')
       )
     );
 

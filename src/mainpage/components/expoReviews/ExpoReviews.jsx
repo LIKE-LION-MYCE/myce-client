@@ -4,6 +4,8 @@ import { reviewAPI } from '../../../api/service/review/ReviewService';
 import ReviewForm from '../review/ReviewForm';
 import Pagination from '../../../common/components/pagination/Pagination';
 import styles from './ExpoReviews.module.css';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const ExpoReviews = ({ expoId, userInfo }) => {
   const { t } = useTranslation();
@@ -17,6 +19,9 @@ const ExpoReviews = ({ expoId, userInfo }) => {
   const [editingReview, setEditingReview] = useState(null);
   const [canWriteReview, setCanWriteReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   
   // 백엔드에서 제공하는 전체 통계
   const [averageRating, setAverageRating] = useState(0);
@@ -65,6 +70,18 @@ const ExpoReviews = ({ expoId, userInfo }) => {
     }
   };
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const checkReviewPermission = async () => {
     try {
       const [attendanceResponse, reviewedResponse] = await Promise.all([
@@ -95,13 +112,13 @@ const ExpoReviews = ({ expoId, userInfo }) => {
       if (editingReview) {
         const response = await reviewAPI.updateReview(editingReview.id, reviewData);
         if (response.success) {
-          alert(t('expoDetail.expoReviews.messages.reviewUpdated', '리뷰가 수정되었습니다.'));
+          showSuccessMessage(t('expoDetail.expoReviews.messages.reviewUpdated', '리뷰가 수정되었습니다.'));
           setEditingReview(null);
         }
       } else {
         const response = await reviewAPI.createReview({ ...reviewData, expoId });
         if (response.success) {
-          alert(t('expoDetail.expoReviews.messages.reviewCreated', '리뷰가 작성되었습니다.'));
+          showSuccessMessage(t('expoDetail.expoReviews.messages.reviewCreated', '리뷰가 작성되었습니다.'));
           setCanWriteReview(false);
           setHasReviewed(true);
         }
@@ -110,7 +127,7 @@ const ExpoReviews = ({ expoId, userInfo }) => {
       await fetchReviews();
     } catch (error) {
       console.error('리뷰 처리 실패:', error);
-      alert(error.response?.data?.message || t('expoDetail.expoReviews.messages.reviewError', '리뷰 처리 중 오류가 발생했습니다.'));
+      showFailMessage(error.response?.data?.message || t('expoDetail.expoReviews.messages.reviewError', '리뷰 처리 중 오류가 발생했습니다.'));
     }
   };
 
@@ -127,14 +144,14 @@ const ExpoReviews = ({ expoId, userInfo }) => {
     try {
       const response = await reviewAPI.deleteReview(reviewId);
       if (response.success) {
-        alert(t('expoDetail.expoReviews.messages.reviewDeleted', '리뷰가 삭제되었습니다.'));
+        showSuccessMessage(t('expoDetail.expoReviews.messages.reviewDeleted', '리뷰가 삭제되었습니다.'));
         setCanWriteReview(true);
         setHasReviewed(false);
         await fetchReviews();
       }
     } catch (error) {
       console.error('리뷰 삭제 실패:', error);
-      alert(error.response?.data?.message || t('expoDetail.expoReviews.messages.deleteError', '리뷰 삭제 중 오류가 발생했습니다.'));
+      showFailMessage(error.response?.data?.message || t('expoDetail.expoReviews.messages.deleteError', '리뷰 삭제 중 오류가 발생했습니다.'));
     }
   };
   return (
@@ -314,6 +331,8 @@ const ExpoReviews = ({ expoId, userInfo }) => {
           )}
         </>
       )}
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

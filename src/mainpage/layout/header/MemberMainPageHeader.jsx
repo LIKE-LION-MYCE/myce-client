@@ -8,6 +8,7 @@ import LanguageSelector from "../../../common/components/language/LanguageSelect
 import { logout } from "../../../api/service/auth/AuthService";
 import { getUserInfoFromToken } from "../../../api/utils/jwtUtils";
 import { useExpoData } from "../../../hooks/useExpoData";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const MemberMainPageHeader = ({ notification }) => {
   const { t } = useTranslation();
@@ -17,6 +18,8 @@ const MemberMainPageHeader = ({ notification }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const { expos, setFilters } = useExpoData();
 
   // 사용자 권한 확인
@@ -33,15 +36,17 @@ const MemberMainPageHeader = ({ notification }) => {
       { name: t("nav.adApply"), path: "/ad-apply" },
       ...(isPlatformAdmin
         ? [
-          {
-            name: t("nav.platformAdmin"),
-            path: "/platform/admin/dashboard/revenue",
-          },
-        ]
+            {
+              name: t("nav.platformAdmin"),
+              path: "/platform/admin/dashboard/revenue",
+            },
+          ]
         : []),
     ];
 
-    const currentMenuItem = menuItems.find(item => item.path === location.pathname);
+    const currentMenuItem = menuItems.find(
+      (item) => item.path === location.pathname
+    );
     setActiveMenu(currentMenuItem ? currentMenuItem.name : null);
   }, [location.pathname, t, isPlatformAdmin]);
 
@@ -67,17 +72,22 @@ const MemberMainPageHeader = ({ notification }) => {
     { name: t("nav.adApply"), path: "/ad-apply" },
     ...(isPlatformAdmin
       ? [
-        {
-          name: t("nav.platformAdmin"),
-          path: "/platform/admin/dashboard/revenue",
-        },
-      ]
+          {
+            name: t("nav.platformAdmin"),
+            path: "/platform/admin/dashboard/revenue",
+          },
+        ]
       : []),
   ];
 
   const handleMenuClick = (item) => {
     setActiveMenu(item.name);
-    navigate(item.path); // 클릭된 메뉴의 path로 페이지 이동
+    // 박람회 목록 클릭 시 상태를 전체로 설정
+    if (item.path === "/expo-list") {
+      navigate("/expo-list?status=all");
+    } else {
+      navigate(item.path);
+    }
   };
 
   const handleLogoClick = () => {
@@ -95,15 +105,9 @@ const MemberMainPageHeader = ({ notification }) => {
     setSearchQuery(query);
 
     if (query.trim().length > 0) {
-      // 검색어가 있을 때 필터링된 결과 표시
-      const filtered = expos.filter(
-        (expo) =>
-          expo.title.toLowerCase().includes(query.toLowerCase()) ||
-          expo.location.toLowerCase().includes(query.toLowerCase()) ||
-          (expo.categories &&
-            expo.categories.some((cat) =>
-              cat.toLowerCase().includes(query.toLowerCase())
-            ))
+      // 검색어가 있을 때 필터링된 결과 표시 (제목만)
+      const filtered = expos.filter((expo) =>
+        expo.title.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filtered);
       setShowSearchResults(true);
@@ -145,7 +149,9 @@ const MemberMainPageHeader = ({ notification }) => {
       })
       .catch((err) => {
         console.log("로그아웃에 실패했습니다.", err);
-        alert("로그아웃에 실패했습니다.");
+        setToastMessage("로그아웃에 실패했습니다.");
+        setShowFailToast(true);
+        setTimeout(() => setShowFailToast(false), 3000);
       });
   };
 
@@ -161,8 +167,9 @@ const MemberMainPageHeader = ({ notification }) => {
           {menuItems.map((item) => (
             <button
               key={item.name}
-              className={`${styles.navButton} ${activeMenu === item.name ? styles.active : ""
-                }`}
+              className={`${styles.navButton} ${
+                activeMenu === item.name ? styles.active : ""
+              }`}
               onClick={() => handleMenuClick(item)}
             >
               {item.name}
@@ -170,10 +177,11 @@ const MemberMainPageHeader = ({ notification }) => {
           ))}
         </div>
         <div
-          className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
+          className={`${styles.searchContainer} ${
+            showSearchResults && searchResults.length > 0
               ? styles.withDropdown
               : ""
-            }`}
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           <form onSubmit={handleSearchSubmit}>
@@ -227,22 +235,22 @@ const MemberMainPageHeader = ({ notification }) => {
                         )} ~ ${new Date(expo.endDate).toLocaleDateString(
                           "ko-KR"
                         )}`}
-                      </div>
                     </div>
                   </div>
-                ))}
-                {searchResults.length > 5 && (
-                  <div
-                    className={styles.searchResultMore}
-                    onClick={() =>
-                      handleSearchSubmit({ preventDefault: () => { } })
-                    }
-                  >
-                    더 많은 결과 보기
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              ))}
+              {searchResults.length > 5 && (
+                <div
+                  className={styles.searchResultMore}
+                  onClick={() =>
+                    handleSearchSubmit({ preventDefault: () => {} })
+                  }
+                >
+                  더 많은 결과 보기
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 로그아웃, 마이페이지, 알림, 언어 선택을 포함하는 오른쪽 그룹 */}
@@ -289,6 +297,12 @@ const MemberMainPageHeader = ({ notification }) => {
           <LanguageSelector />
         </div>
       </div>
+      {showFailToast && (
+        <ToastFail
+          message={toastMessage}
+          onClose={() => setShowFailToast(false)}
+        />
+      )}
     </header>
   );
 };

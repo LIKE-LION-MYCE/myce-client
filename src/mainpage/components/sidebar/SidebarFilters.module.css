@@ -4,8 +4,8 @@
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
-  padding: 2rem;
-  font-size: 0.95rem;
+  padding: 1.5rem;
+  font-size: 0.9rem;
   width: 100%;
   min-width: 320px;
   box-sizing: border-box;
@@ -15,25 +15,25 @@
 .sidebar::before {
   content: '';
   position: absolute;
-  top: 1rem;
+  top: 0.875rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 4px;
+  width: 35px;
+  height: 3px;
   background: #e0e0e0;
   border-radius: 2px;
 }
 
 .search {
   width: 100%;
-  padding: 0.875rem 1.125rem;
-  margin-bottom: 2rem;
+  padding: 0.75rem 0.875rem;
+  margin-bottom: 1.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.95rem;
-  background: #f5f5f5;
+  font-size: 0.9rem;
+  background: #f8f9fa;
   transition: all 0.2s ease;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .search:focus {
@@ -49,16 +49,16 @@
 }
 
 .filterSection {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
 .filterSection h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
   color: #333333;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   position: relative;
   padding-left: 0;
 }
@@ -82,21 +82,21 @@
 .durationButtons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 .filterButton,
 .categoryButton {
   background: #ffffff;
   border: 1px solid #e0e0e0;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
+  padding: 0.75rem 0.875rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
   transition: all 0.2s ease;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   color: #555555;
 }
 
@@ -119,7 +119,7 @@
   background: #1a1a1a;
   border-color: #1a1a1a;
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .filterButton.active:hover,
@@ -131,27 +131,30 @@
 .datePickerWrapper {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .datePickerWrapper span {
   font-size: 0.9rem;
   color: #333333;
   font-weight: 600;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
+  white-space: nowrap;
 }
 
 .datePickerWrapper input[type="date"] {
-  padding: 0.875rem;
+  padding: 0.65rem 0.75rem;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #f8f9fa;
   transition: all 0.2s ease;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   color: #333333;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .datePickerWrapper input[type="date"]:focus {
@@ -169,8 +172,9 @@
   border: 1px solid #1a1a1a;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Pretendard', sans-serif;
   transition: all 0.2s ease;
 }
 

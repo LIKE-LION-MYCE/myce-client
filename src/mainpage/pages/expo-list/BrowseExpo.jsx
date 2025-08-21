@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import styles from "./BrowseExpo.module.css";
 import SidebarFilters from "../../components/sidebar/SidebarFilters";
 import ExpoCardList from "../../components/expocard/ExpoCardList";
@@ -8,6 +9,7 @@ import { useCategories } from "../../../hooks/useCategories";
 
 export default function BrowseExpo() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const {
     expos,
     filters,
@@ -18,11 +20,51 @@ export default function BrowseExpo() {
     pagination,
     setPagination,
   } = useExpoData(16);
+
+  // 클라이언트 사이드 검색 및 상태 필터링
+  const filteredExpos = React.useMemo(() => {
+    let result = expos || [];
+    
+    // 키워드 필터링 (제목만)
+    if (filters.keyword && result.length) {
+      const query = filters.keyword.toLowerCase();
+      result = result.filter(expo => 
+        expo.title.toLowerCase().includes(query)
+      );
+    }
+    
+    // 상태 필터링 (클라이언트 사이드)
+    if (filters.status && filters.status !== 'all' && result.length) {
+      result = result.filter(expo => expo.status === filters.status);
+    }
+    
+    return result;
+  }, [expos, filters.keyword, filters.status]);
   const {
     categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
+
+  // URL에서 search와 status 파라미터를 읽어서 필터에 적용
+  useEffect(() => {
+    const searchQuery = searchParams.get('search');
+    const statusQuery = searchParams.get('status');
+    
+    const newFilters = {};
+    
+    if (searchQuery && searchQuery !== filters.keyword) {
+      newFilters.keyword = searchQuery;
+    }
+    
+    if (statusQuery && statusQuery !== filters.status) {
+      newFilters.status = statusQuery;
+    }
+    
+    if (Object.keys(newFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...newFilters }));
+    }
+  }, [searchParams, setFilters]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
@@ -54,11 +96,11 @@ export default function BrowseExpo() {
           <h2 className={styles.title}>
             전체 행사{" "}
             <span className={styles.count}>
-              {pagination.totalElements}개의 행사
+              {filteredExpos?.length || 0}개의 행사
             </span>
           </h2>
           <ExpoCardList
-            expos={expos}
+            expos={filteredExpos}
             isLoading={isLoading}
             error={error}
             onBookmarkActionComplete={refresh}

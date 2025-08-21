@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ticketDropdown.module.css'; // Fixed case sensitivity: TicketDropdown -> ticketDropdown
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const TicketDropdown = ({ 
   tickets = [], 
@@ -12,6 +13,14 @@ const TicketDropdown = ({
   const { t } = useTranslation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   // 선택된 티켓 정보 가져오기
   const selectedTicket = tickets.find(t => t.ticketId === selectedTicketId);
@@ -61,16 +70,16 @@ const TicketDropdown = ({
 
   const handlePurchaseClick = () => {
     if (!selectedTicketId || !tickets || tickets.length === 0) {
-      alert(t('expoDetail.expoTickets.dropdown.alerts.selectTicket', '티켓을 선택해주세요.'));
+      showFailMessage(t('expoDetail.expoTickets.dropdown.alerts.selectTicket', '티켓을 선택해주세요.'));
       return;
     }
     
     const ticket = tickets.find(t => t.ticketId === selectedTicketId);
     if (ticket && !isTicketAvailable(ticket)) {
       if (ticket.remainingQuantity <= 0) {
-        alert(t('expoDetail.expoTickets.dropdown.alerts.ticketSoldOut', '선택한 티켓이 매진되었습니다.'));
+        showFailMessage(t('expoDetail.expoTickets.dropdown.alerts.ticketSoldOut', '선택한 티켓이 매진되었습니다.'));
       } else if (!isTicketSalePeriodValid(ticket)) {
-        alert(t('expoDetail.expoTickets.dropdown.alerts.notInSalePeriod', '선택한 티켓의 판매 기간이 아닙니다.'));
+        showFailMessage(t('expoDetail.expoTickets.dropdown.alerts.notInSalePeriod', '선택한 티켓의 판매 기간이 아닙니다.'));
       }
       return;
     }
@@ -147,6 +156,9 @@ const TicketDropdown = ({
           {t('expoDetail.expoTickets.dropdown.purchaseButton', '구매하기')}
         </button>
       </div>
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </div>
   );
 };

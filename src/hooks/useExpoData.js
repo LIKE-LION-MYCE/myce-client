@@ -14,7 +14,8 @@ export const useExpoData = (initialSize = 10) => {
     number: 0, // current page number
   });
   const [filters, setFilters] = useState({
-    sort: 'startDate,asc'
+    sort: 'startDate,asc',
+    status: 'all'  // 기본값을 'all'로 설정하여 전체 상태 조회
   });
   const { isLoading, setIsLoading } = useLoading(); // 전역 로딩 상태 사용
   const [error, setError] = useState(null);

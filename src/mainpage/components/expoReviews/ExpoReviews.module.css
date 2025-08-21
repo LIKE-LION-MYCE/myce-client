@@ -51,7 +51,7 @@
 /* 리뷰 작성 버튼 */
 .writeBtn {
   padding: 10px 20px;
-  background: #3498db;
+  background: #333;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -62,7 +62,7 @@
 }
 
 .writeBtn:hover {
-  background: #2980b9;
+  background: #555;
 }
 
 /* 로딩 */
