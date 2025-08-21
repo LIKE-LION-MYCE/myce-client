@@ -142,16 +142,14 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            pageTitle: {
-              create: "리뷰 작성",
-              edit: "리뷰 수정"
-            },
             rating: {
               label: "평점",
               points: "점"
             },
-            reviewTitle: {
+            title: {
               label: "제목",
+              create: "리뷰 작성",
+              edit: "리뷰 수정",
               placeholder: "리뷰 제목을 입력해주세요"
             },
             content: {
@@ -990,16 +988,14 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            pageTitle: {
-              create: "Write Review",
-              edit: "Edit Review"
-            },
             rating: {
               label: "Rating",
               points: "points"
             },
-            reviewTitle: {
+            title: {
               label: "Title",
+              create: "Write Review",
+              edit: "Edit Review",
               placeholder: "Please enter review title"
             },
             content: {
@@ -1838,16 +1834,14 @@ const mainResources = {
         review: {
           // ReviewForm
           form: {
-            pageTitle: {
-              create: "レビュー作成",
-              edit: "レビュー編集"
-            },
             rating: {
               label: "評価",
               points: "点"
             },
-            reviewTitle: {
+            title: {
               label: "タイトル",
+              create: "レビュー作成",
+              edit: "レビュー編集",
               placeholder: "レビューのタイトルを入力してください"
             },
             content: {
