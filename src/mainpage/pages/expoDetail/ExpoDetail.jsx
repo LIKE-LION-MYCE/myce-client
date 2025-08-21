@@ -51,6 +51,9 @@ export default function ExpoDetail() {
   // 채팅 관련 상태
   const [showChatModal, setShowChatModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     if (expoId) {
@@ -77,6 +80,18 @@ export default function ExpoDetail() {
       setActiveTab('reviews');
     }
   }, [expoId]);
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const loadExpoDetails = async () => {
     try {
@@ -141,7 +156,7 @@ export default function ExpoDetail() {
     // 로그인 확인
     const token = localStorage.getItem('access_token');
     if (!token || isTokenExpired(token)) {
-      alert('로그인이 필요한 서비스입니다.');
+      showFailMessage('로그인이 필요한 서비스입니다.');
       return;
     }
 
@@ -156,19 +171,19 @@ export default function ExpoDetail() {
       
       // 성공 메시지
       if (result.isBookmarked) {
-        alert(t('expoDetail.expoDetailMain.alerts.bookmarkAdded', '북마크에 추가되었습니다.'));
+        showSuccessMessage(t('expoDetail.expoDetailMain.alerts.bookmarkAdded', '북마크에 추가되었습니다.'));
       } else {
-        alert(t('expoDetail.expoDetailMain.alerts.bookmarkRemoved', '북마크에서 제거되었습니다.'));
+        showSuccessMessage(t('expoDetail.expoDetailMain.alerts.bookmarkRemoved', '북마크에서 제거되었습니다.'));
       }
       
     } catch (err) {
       console.error("찜하기 토글 실패:", err);
       
       if (err.response?.status === 401) {
-        alert(t('expoDetail.expoDetailMain.alerts.loginRequired', '로그인이 필요한 서비스입니다.'));
+        showFailMessage(t('expoDetail.expoDetailMain.alerts.loginRequired', '로그인이 필요한 서비스입니다.'));
         localStorage.removeItem('access_token');
       } else {
-        alert(t('expoDetail.expoDetailMain.alerts.bookmarkError', '찜하기 처리에 실패했습니다.'));
+        showFailMessage(t('expoDetail.expoDetailMain.alerts.bookmarkError', '찜하기 처리에 실패했습니다.'));
       }
     }
   };
@@ -202,9 +217,9 @@ export default function ExpoDetail() {
         localStorage.removeItem('access_token');
         setShowLoginPrompt(true);
       } else if (error.response?.status === 404) {
-        alert('박람회 정보를 찾을 수 없습니다.');
+        showFailMessage('박람회 정보를 찾을 수 없습니다.');
       } else {
-        alert('채팅을 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
+        showFailMessage('채팅을 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
       }
     } finally {
       setLoading(false);
@@ -244,7 +259,7 @@ export default function ExpoDetail() {
   const handleDropdownPurchase = () => {
     console.log('ticket!!!!!' + selectedTicketId);
     if (!selectedTicketId) {
-      alert("티켓을 선택해주세요.");
+      showFailMessage("티켓을 선택해주세요.");
       return;
     }
 
@@ -446,6 +461,9 @@ export default function ExpoDetail() {
           isOpen={showLoginPrompt} 
           onClose={handleLoginPromptClose}
         />
+        
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
 
       {/* PENDING_PUBLISH 상태 오버레이 - container 밖으로 이동 */}
