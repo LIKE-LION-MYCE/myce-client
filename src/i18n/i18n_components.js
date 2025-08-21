@@ -204,6 +204,55 @@ const resources = {
         }
       },
 
+      // NotificationModal
+      components: {
+        notification: {
+          modal: {
+            title: "알림",
+            markAllRead: "모두 읽음",
+            close: "닫기",
+            loading: "알림을 불러오는 중...",
+            empty: {
+              general: "새로운 알림이 없습니다.",
+              admin: "상태 변경 알림이 없습니다."
+            },
+            tabs: {
+              general: "일반",
+              admin: "상태 변경"
+            },
+            time: {
+              justNow: "방금 전",
+              minutesAgo: "분 전",
+              hoursAgo: "시간 전",
+              daysAgo: "일 전"
+            },
+            types: {
+              expo: "박람회",
+              event: "이벤트",
+              qrIssued: "QR 발급",
+              paymentComplete: "결제 완료",
+              reservationConfirm: "예약 확정",
+              ad: "광고",
+              notification: "알림"
+            },
+            statusKeywords: ["승인", "반려", "대기", "변경"],
+            confirmModal: {
+              title: "모두 읽음 처리",
+              message: "정말로 모든 알림을 읽음 처리하시겠습니까?",
+              cancel: "취소",
+              confirm: "확인"
+            },
+            processing: "처리 중...",
+            errors: {
+              fetchFailed: "알림을 불러오는데 실패했습니다.",
+              markReadFailed: "알림을 읽음 처리하는데 실패했습니다.",
+              markAllReadFailed: "모든 알림을 읽음 처리하는데 실패했습니다.",
+              unknownType: "알 수 없는 알림 타입입니다."
+            }
+          }
+        }
+      },
+
       // ChangePasswordModal
       changePasswordModal: {
         title: "비밀번호 변경",
@@ -432,6 +481,53 @@ const resources = {
         }
       },
 
+      // NotificationModal
+      notification: {
+        modal: {
+          title: "Notifications",
+          markAllRead: "Mark all as read",
+          close: "Close",
+          loading: "Loading notifications...",
+          empty: {
+            general: "No new notifications.",
+            admin: "No status change notifications."
+          },
+          tabs: {
+            general: "General",
+            admin: "Status Changes"
+          },
+          time: {
+            justNow: "Just now",
+            minutesAgo: "m ago",
+            hoursAgo: "h ago",
+            daysAgo: "d ago"
+          },
+          types: {
+            expo: "Exhibition",
+            event: "Event",
+            qrIssued: "QR Issued",
+            paymentComplete: "Payment Complete",
+            reservationConfirm: "Reservation Confirmed",
+            ad: "Advertisement",
+            notification: "Notification"
+          },
+          statusKeywords: ["Approved", "Rejected", "Pending", "Changed"],
+          confirmModal: {
+            title: "Mark all as read",
+            message: "Are you sure you want to mark all notifications as read?",
+            cancel: "Cancel",
+            confirm: "Confirm"
+          },
+          processing: "Processing...",
+          errors: {
+            fetchFailed: "Failed to fetch notifications.",
+            markReadFailed: "Failed to mark notification as read.",
+            markAllReadFailed: "Failed to mark all notifications as read.",
+            unknownType: "Unknown notification type."
+          }
+        }
+      },
+
       // ChangePasswordModal
       changePasswordModal: {
         title: "Change Password",
@@ -656,6 +752,53 @@ const resources = {
               titleRequired: "タイトルを入力してください。",
               contentRequired: "内容を入力してください。"
             }
+          }
+        }
+      },
+
+      // NotificationModal
+      notification: {
+        modal: {
+          title: "通知",
+          markAllRead: "すべて既読にする",
+          close: "閉じる",
+          loading: "通知を読み込み中...",
+          empty: {
+            general: "新しい通知はありません。",
+            admin: "ステータス変更の通知はありません。"
+          },
+          tabs: {
+            general: "一般",
+            admin: "ステータス変更"
+          },
+          time: {
+            justNow: "たった今",
+            minutesAgo: "分前",
+            hoursAgo: "時間前",
+            daysAgo: "日前"
+          },
+          types: {
+            expo: "博覧会",
+            event: "イベント",
+            qrIssued: "QR発行",
+            paymentComplete: "支払い完了",
+            reservationConfirm: "予約確定",
+            ad: "広告",
+            notification: "通知"
+          },
+          statusKeywords: ["承認", "拒否", "保留", "変更"],
+          confirmModal: {
+            title: "すべて既読にする",
+            message: "本当にすべての通知を既読にしますか？",
+            cancel: "キャンセル",
+            confirm: "確認"
+          },
+          processing: "処理中...",
+          errors: {
+            fetchFailed: "通知の読み込みに失敗しました。",
+            markReadFailed: "通知を既読にするのに失敗しました。",
+            markAllReadFailed: "すべての通知を既読にするのに失敗しました。",
+            unknownType: "不明な通知タイプです。"
           }
         }
       },
