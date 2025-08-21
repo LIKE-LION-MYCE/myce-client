@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import instance from "../../../api/lib/axios";
 import styles from "./PaymentButton.module.css";
-import { requestRefund } from "../../../api/service/payment/RefundService";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner/LoadingSpinner";
 
 function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart, onPaymentEnd }) {
   const [loading, setLoading] = useState(false);
@@ -84,29 +84,14 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
               // 그렇지 않으면 고객은 돈을 냈는데 예약은 실패한 상태가 됨.
               console.error("서버 처리 실패, 전액 환불을 시도합니다.", err);
 
-              try {
-                await requestRefund({
-                  impUid: rsp.imp_uid,
-                  merchantUid: rsp.merchant_uid,
-                  reason: "서버 처리 오류로 인한 자동 환불",
-                });
-                onPaymentEnd?.();
-                showFailMessage(
-                  "결제 처리 중 오류가 발생하여 결제가 자동으로 취소되었습니다."
-                );
-              } catch (refundError) {
-                onPaymentEnd?.();
-                showFailMessage("환불 처리에 실패했습니다. 고객센터에 문의해주세요.");
-              }
+              onPaymentEnd?.();
+              showFailMessage(
+                "결제는 성공했으나 처리 중 오류가 발생했습니다. 고객센터(1588-0000)로 문의해주세요."
+              );
             }
           } else {
             onPaymentEnd?.();
             showFailMessage("결제가 취소되었습니다. 다시 시도해주세요.");
-            if (targetType === "EXPO") {
-              navigate(`/mypage/expo-status/${id}`);
-            } else {
-              navigate(`/mypage/ads-status/${id}`);
-            }
           }
         }
       );
@@ -129,10 +114,7 @@ function PaymentTransferButton({ name, amount, buyer, targetType, onPaymentStart
         disabled={loading}
       >
         {loading ? (
-          <span className={styles.loadingContent}>
-            <span className={styles.spinner}></span>
-            결제 진행 중...
-          </span>
+          <LoadingSpinner size="small" message="결제 진행 중..." />
         ) : (
           "계좌 이체"
         )}

@@ -47,7 +47,7 @@ const ExpoHeader = ({
               title={bookmarkStatus?.isBookmarked ? t('expoDetail.expoHeader.buttons.bookmarkRemove', '북마크 제거') : t('expoDetail.expoHeader.buttons.bookmarkAdd', '북마크 추가')}
             >
               {bookmarkStatus?.isBookmarked ? (
-                <MdBookmark size={24} style={{ color: '#d32f2f' }} />
+                <MdBookmark size={24} style={{ color: '#333' }} />
               ) : (
                 <FiBookmark size={24} />
               )}

@@ -6,6 +6,7 @@ import { FiX, FiMinus, FiPlus, FiChevronDown, FiChevronUp } from "react-icons/fi
 import { getUserIdFromToken } from "../../../api/utils/jwtUtils";
 import { savePreReservation } from "../../../api/service/reservation/reservationApi";
 import { getActiveRefundPolicy, formatRefundPolicy } from "../../../api/service/system/refundPolicyApi";
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 export default function TicketPurchaseModal({
   ticket,
@@ -20,6 +21,8 @@ export default function TicketPurchaseModal({
   const [isLoading, setIsLoading] = useState(false);
   const [showNotices, setShowNotices] = useState(false);
   const [refundPolicies, setRefundPolicies] = useState([]);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   if (!isOpen || !ticket) return null;
 
@@ -96,7 +99,9 @@ export default function TicketPurchaseModal({
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
-      alert(t('expoDetail.expoTickets.modal.errors.purchaseFailed', '티켓 구매 준비에 실패했습니다. 다시 시도해주세요.'));
+      setToastMessage(t('expoDetail.expoTickets.modal.errors.purchaseFailed', '티켓 구매 준비에 실패했습니다. 다시 시도해주세요.'));
+      setShowFailToast(true);
+      setTimeout(() => setShowFailToast(false), 3000);
       setIsLoading(false);
     }
   };
@@ -231,6 +236,9 @@ export default function TicketPurchaseModal({
           </div>
         </div>
       </div>
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </div>
   );
 }

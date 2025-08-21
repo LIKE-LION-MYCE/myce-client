@@ -9,6 +9,8 @@ import {
   VERIFICATION_TYPE,
 } from "../../../api/service/auth/AuthService";
 import { savePreReservation } from "../../../api/service/reservation/reservationApi";
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 export default function NonMemberPurchaseModal({
   ticket,
@@ -26,7 +28,22 @@ export default function NonMemberPurchaseModal({
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const quantity = 1; // Non-members can only purchase 1 ticket
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   useEffect(() => {
     let interval;
@@ -42,19 +59,19 @@ export default function NonMemberPurchaseModal({
 
   const handleSendCode = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      alert(t('nonmember.purchaseModal.alerts.invalidEmail'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.invalidEmail'));
       return;
     }
     
     setIsSendingEmail(true);
     try {
       await sendVerificatiionEmail(VERIFICATION_TYPE.NONMEMBER_VERIFY, email);
-      alert(t('nonmember.purchaseModal.alerts.codeSent'));
+      showSuccessMessage(t('nonmember.purchaseModal.alerts.codeSent'));
       setIsCodeSent(true);
       setTimer(180); // 3 minutes timer
     } catch (error) {
       console.error("인증 코드 발송 실패:", error);
-      alert(t('nonmember.purchaseModal.alerts.codeSendFailed'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.codeSendFailed'));
     } finally {
       setIsSendingEmail(false);
     }
@@ -62,7 +79,7 @@ export default function NonMemberPurchaseModal({
 
   const handleVerifyCode = async () => {
     if (!verificationCode) {
-      alert(t('nonmember.purchaseModal.alerts.enterCode'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.enterCode'));
       return;
     }
     
@@ -73,12 +90,12 @@ export default function NonMemberPurchaseModal({
         email,
         verificationCode
       );
-      alert(t('nonmember.purchaseModal.alerts.emailVerified'));
+      showSuccessMessage(t('nonmember.purchaseModal.alerts.emailVerified'));
       setIsVerified(true);
       setTimer(0);
     } catch (error) {
       console.error("이메일 인증 실패:", error);
-      alert(t('nonmember.purchaseModal.alerts.invalidCode'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.invalidCode'));
     } finally {
       setIsVerifyingCode(false);
     }
@@ -88,7 +105,7 @@ export default function NonMemberPurchaseModal({
     // Added async
     if (!isVerified) {
       // 이 확인 로직이 있어야 함
-      alert(t('nonmember.purchaseModal.alerts.verifyFirst'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.verifyFirst'));
       return;
     }
 
@@ -129,7 +146,7 @@ export default function NonMemberPurchaseModal({
       onClose();
     } catch (error) {
       console.error("사전 예약 생성 실패:", error);
-      alert(t('nonmember.purchaseModal.alerts.purchaseFailed'));
+      showFailMessage(t('nonmember.purchaseModal.alerts.purchaseFailed'));
       setIsLoading(false);
     }
   };
@@ -242,6 +259,12 @@ export default function NonMemberPurchaseModal({
           </div>
         </div>
       </div>
+      {showSuccessToast && (
+        <ToastSuccess message={toastMessage} onClose={() => setShowSuccessToast(false)} />
+      )}
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </div>
   );
 }

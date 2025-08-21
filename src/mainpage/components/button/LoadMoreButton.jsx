@@ -10,7 +10,7 @@ export default function LoadMoreButton() {
   
   return (
     <div className={styles.buttonContainer}>
-      <Link to="/expo-list" className={styles.link}>
+      <Link to="/expo-list?status=PUBLISHED" className={styles.link}>
       <button className={styles.viewAllButton}>
         전체보기
         <svg className={styles.arrowIcon} viewBox="0 0 24 24">

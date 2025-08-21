@@ -43,6 +43,10 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
     setFilters(prevFilters => ({ ...prevFilters, category: newCategory }));
   };
 
+  const handleStatusChange = (statusValue) => {
+    setFilters(prevFilters => ({ ...prevFilters, status: statusValue }));
+  };
+
   const handleResetFilters = () => {
     setFilters({ sort: 'startDate,asc' });
   };
@@ -56,6 +60,30 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
         value={filters.keyword || ''}
         onChange={handleKeywordChange}
       />
+
+      <div className={styles.filterSection}>
+        <h4>상태</h4>
+        <div className={styles.durationButtons}>
+          <button
+            className={`${styles.filterButton} ${!filters.status || filters.status === 'all' ? styles.active : ''}`}
+            onClick={() => handleStatusChange('all')}
+          >
+            전체
+          </button>
+          <button
+            className={`${styles.filterButton} ${filters.status === 'PUBLISHED' ? styles.active : ''}`}
+            onClick={() => handleStatusChange('PUBLISHED')}
+          >
+            진행중
+          </button>
+          <button
+            className={`${styles.filterButton} ${filters.status === 'PENDING_PUBLISH' ? styles.active : ''}`}
+            onClick={() => handleStatusChange('PENDING_PUBLISH')}
+          >
+            오픈 예정
+          </button>
+        </div>
+      </div>
 
       <div className={styles.filterSection}>
         <h4>{t('homepage.sidebarFilters.period.title', '기간')}</h4>

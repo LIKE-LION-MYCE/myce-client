@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './Review.module.css';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
   const { t } = useTranslation();
@@ -9,6 +11,9 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
     content: '',
     rating: 5
   });
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     if (initialData) {
@@ -35,16 +40,28 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
     }));
   };
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      alert(t('components.review.form.alerts.titleRequired'));
+      showFailMessage(t('components.review.form.alerts.titleRequired'));
       return;
     }
     
     if (!formData.content.trim()) {
-      alert(t('components.review.form.alerts.contentRequired'));
+      showFailMessage(t('components.review.form.alerts.contentRequired'));
       return;
     }
 
@@ -131,6 +148,8 @@ const ReviewForm = ({ initialData, onSubmit, onCancel }) => {
           </button>
         </div>
       </form>
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

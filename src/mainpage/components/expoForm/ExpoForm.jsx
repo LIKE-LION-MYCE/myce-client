@@ -130,19 +130,17 @@ const ExpoForm = ({ onNextPage, initialData }) => {
     if (
       data.startDate &&
       data.displayEndDate &&
-      data.startDate >= data.displayEndDate
+      data.startDate > data.displayEndDate
     ) {
       errors.startDate = t('mainpage.expoForm.messages.eventStartDateBeforeDisplayEnd');
     }
     
-    // 개최 종료일은 개최 시작일보다 최소 하루 이후여야 함
+    // 개최 종료일은 개최 시작일과 같거나 이후여야 함
     if (data.startDate && data.endDate) {
       const startDate = new Date(data.startDate);
       const endDate = new Date(data.endDate);
-      const nextDay = new Date(startDate);
-      nextDay.setDate(nextDay.getDate() + 1);
       
-      if (endDate <= startDate) {
+      if (endDate < startDate) {
         errors.endDate = t('mainpage.expoForm.messages.eventEndDateAfterStartDate');
       }
     }
@@ -391,11 +389,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
               value={formData.startDate}
               onChange={handleChange}
               min={formData.displayStartDate || new Date().toISOString().split('T')[0]}
-              max={formData.displayEndDate ? (() => {
-                const prevDay = new Date(formData.displayEndDate);
-                prevDay.setDate(prevDay.getDate() - 1);
-                return prevDay.toISOString().split('T')[0];
-              })() : undefined}
+              max={formData.displayEndDate || undefined}
               className={styles["input-field"]}
             />
             <span>-</span>
@@ -404,11 +398,7 @@ const ExpoForm = ({ onNextPage, initialData }) => {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              min={formData.startDate ? (() => {
-                const nextDay = new Date(formData.startDate);
-                nextDay.setDate(nextDay.getDate() + 1);
-                return nextDay.toISOString().split('T')[0];
-              })() : new Date().toISOString().split('T')[0]}
+              min={formData.startDate || new Date().toISOString().split('T')[0]}
               max={formData.displayEndDate || undefined}
               className={styles["input-field"]}
             />

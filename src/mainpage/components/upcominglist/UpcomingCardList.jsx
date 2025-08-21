@@ -40,7 +40,9 @@ const UpcomingCardList = ({
           image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
           location: expo.location,
-          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회"),
+          displayStartDate: expo.displayStartDate || expo.display_start_date,
+          startDate: expo.startDate || expo.start_date
         }));
       } else if (Array.isArray(data)) {
         transformedExpos = data.map(expo => ({
@@ -49,9 +51,14 @@ const UpcomingCardList = ({
           image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
           location: expo.location,
-          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회"),
+          displayStartDate: expo.displayStartDate || expo.display_start_date,
+          startDate: expo.startDate || expo.start_date
         }));
       }
+      
+      // 백엔드에서 이미 게시 시작일 기준으로 정렬되어 옴
+      
       setExpos(transformedExpos);
     } catch (err) {
       console.error("Failed to fetch pending publish expos:", err);
@@ -99,8 +106,9 @@ const UpcomingCardList = ({
   };
 
   const handleViewAll = () => {
-    console.log('View all events clicked');
-    // 전체보기 페이지로 이동
+    console.log('View all upcoming events clicked');
+    // 오픈 예정 상태로 필터링된 전체보기 페이지로 이동
+    navigate('/expo-list?status=PENDING_PUBLISH');
   };
 
   // 로딩 상태
@@ -157,7 +165,7 @@ const UpcomingCardList = ({
       
       {/* 이벤트 카드 그리드 */}
       <div className={styles.grid}>
-        {events.map((event) => (
+        {events.slice(0, 4).map((event) => (
           <UpcomingCard
             key={event.id}
             event={event}

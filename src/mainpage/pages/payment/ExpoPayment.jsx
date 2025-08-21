@@ -12,6 +12,8 @@ import { getPaymentSummary } from "../../../api/service/reservation/reservationA
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import DateInput from "../../../common/components/dateInput/DateInput";
 import PaymentSpinner from "../../../common/components/spinner/PaymentSpinner";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 export default function ExpoPayment() {
   const { t } = useTranslation();
@@ -27,6 +29,21 @@ export default function ExpoPayment() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const {
     ticketId,
@@ -213,14 +230,14 @@ export default function ExpoPayment() {
             return newInfo;
           });
           setMileageRate(userInfo?.mileageRate || 0.01);
-          alert(
+          showSuccessMessage(
             t(
               "expoDetail.expoPayment.alerts.memberInfoLoaded",
-              "회원 정보가 불러와졌습니다."
+              "회원 정보를 불러왔습니다."
             )
           );
         } else {
-          alert(
+          showFailMessage(
             t(
               "expoDetail.expoPayment.alerts.memberInfoLoadFailed",
               "회원 정보를 불러오는데 실패했습니다. (데이터 없음)"
@@ -229,7 +246,7 @@ export default function ExpoPayment() {
         }
       } catch (error) {
         console.error("회원 정보 불러오기 API 호출 실패:", error);
-        alert(
+        showFailMessage(
           t(
             "expoDetail.expoPayment.alerts.memberInfoLoadError",
             "회원 정보를 불러오는데 실패했습니다. 오류: {{error}}",
@@ -238,7 +255,7 @@ export default function ExpoPayment() {
         );
       }
     } else {
-      alert(
+      showFailMessage(
         t(
           "expoDetail.expoPayment.alerts.loginRequired",
           "로그인 상태가 아닙니다."
@@ -793,6 +810,18 @@ export default function ExpoPayment() {
           </div>
         </div>
       </section>
+      {showSuccessToast && (
+        <ToastSuccess
+          message={toastMessage}
+          onClose={() => setShowSuccessToast(false)}
+        />
+      )}
+      {showFailToast && (
+        <ToastFail
+          message={toastMessage}
+          onClose={() => setShowFailToast(false)}
+        />
+      )}
     </div>
   );
 }
