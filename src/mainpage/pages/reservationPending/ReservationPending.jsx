@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import styles from "./ReservationPending.module.css"; // CSS 파일 경로 수정
 import { Link, useParams } from "react-router-dom";
 import { getReservationPending } from "../../../api/service/reservation/reservationApi";
+import ChatModal from "../../../components/shared/chat/ChatModal";
+import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
 
 export default function ReservationPending() {
   const { t } = useTranslation();
@@ -10,6 +12,8 @@ export default function ReservationPending() {
   // state 변수 이름을 더 명확하게 accountInfo로 변경했습니다.
   const [accountInfo, setAccountInfo] = useState(null);
   const [error, setError] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -24,6 +28,19 @@ export default function ReservationPending() {
       }
     })();
   }, [reservationId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const handleContactSupport = () => {
+    setIsChatOpen(true);
+  };
+
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+  };
 
   // 어떤 텍스트든 복사할 수 있도록 handleCopy 함수를 수정했습니다.
   const handleCopy = async (textToCopy, type) => {
@@ -93,14 +110,27 @@ export default function ReservationPending() {
 
       <div className={styles.helpBox}>
         <p className={styles.helpText}>{t('reservation.pending.messages.helpText')}</p>
-        <Link to="/contact" className={styles.contactLink}>
+        <button onClick={handleContactSupport} className={styles.contactLink}>
           <span className={styles.icon}>💬</span> {t('reservation.pending.buttons.contactSupport')}
-        </Link>
+        </button>
       </div>
 
       <Link to="/" className={styles.homeButton}>
         {t('reservation.pending.buttons.backToHome')}
       </Link>
+      
+      {/* Chat Modals */}
+      {isAuthenticated ? (
+        <ChatModal 
+          isOpen={isChatOpen} 
+          onClose={handleChatClose}
+        />
+      ) : (
+        <LoginPromptModal 
+          isOpen={isChatOpen} 
+          onClose={handleChatClose}
+        />
+      )}
     </div>
   );
 }
