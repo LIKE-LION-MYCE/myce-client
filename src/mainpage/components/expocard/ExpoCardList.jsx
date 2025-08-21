@@ -11,7 +11,6 @@ import {
 
 export default function ExpoCardList({
   expos,
-  isLoading,
   error,
   onBookmarkActionComplete,
 }) {
@@ -81,9 +80,7 @@ export default function ExpoCardList({
     return `${yyyy}.${mm}.${dd}`;
   };
 
-  if (isLoading) {
-    return <div className={styles.loading}>{t("homepage.loading.expos", "박람회 불러오는 중")}</div>;
-  }
+  
 
   if (error) {
     return <div className={styles.error}>{t("homepage.errors.expos", "박람회를 불러오는데 실패했습니다")}: {error.message}</div>;

@@ -20,7 +20,6 @@ export default function MainPage() {
     expos,
     setExpos,
     setFilters,
-    isLoading,
     error,
     refresh,
     pagination,
@@ -92,7 +91,6 @@ export default function MainPage() {
       />
       <ExpoCardList
         expos={expos}
-        isLoading={isLoading}
         error={error}
         onBookmarkToggle={handleBookmarkToggle}
       />

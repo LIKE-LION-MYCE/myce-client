@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom/client';
 import AppRouter from './routes/AppRouter';
 import './styles/main.css'; //전역 css 설정
 import './i18n/i18n'; // i18n 설정 import
+import { LoadingProvider } from './context/LoadingContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
+  <LoadingProvider>
     <AppRouter />
+  </LoadingProvider>
   // </React.StrictMode>
 );
 
