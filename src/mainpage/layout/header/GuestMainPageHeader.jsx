@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./GuestMainPageHeader.module.css";
 import LanguageSelector from "../../../common/components/language/LanguageSelector";
@@ -8,11 +8,25 @@ import { useExpoData } from "../../../hooks/useExpoData";
 const GuestMainPageHeader = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const { expos, setFilters } = useExpoData();
+
+  // 현재 경로에 따라 activeMenu 설정
+  useEffect(() => {
+    const menuItems = [
+      { name: t("nav.home"), path: "/" },
+      { name: t("nav.expoList"), path: "/expo-list" },
+      { name: t("nav.expoApply"), path: "/expo-apply" },
+      { name: t("nav.adApply"), path: "/ad-apply" },
+    ];
+
+    const currentMenuItem = menuItems.find(item => item.path === location.pathname);
+    setActiveMenu(currentMenuItem ? currentMenuItem.name : null);
+  }, [location.pathname, t]);
 
   useEffect(() => {
     const handleDocumentClick = () => {
@@ -114,81 +128,81 @@ const GuestMainPageHeader = () => {
               {item.name}
             </button>
           ))}
-          <div
-            className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
-              ? styles.withDropdown
-              : ""
-              }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <form onSubmit={handleSearchSubmit}>
-              <input
-                type="text"
-                placeholder={t("nav.searchPlaceholder")}
-                className={styles.searchInput}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
-              />
-              <button type="submit" className={styles.searchButton}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </form>
-            {showSearchResults && searchResults.length > 0 && (
-              <div className={styles.searchResultsDropdown}>
-                {searchResults.slice(0, 5).map((expo) => (
-                  <div
-                    key={expo.expoId || expo.id}
-                    className={styles.searchResultItem}
-                    onClick={() => handleSearchResultClick(expo)}
-                  >
-                    <div className={styles.searchResultImage}>
-                      <img
-                        src={expo.thumbnailUrl || "/default-expo-image.jpg"}
-                        alt={expo.title}
-                        onError={(e) => {
-                          e.target.src = "/default-expo-image.jpg";
-                        }}
-                      />
+        </div>
+        <div
+          className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
+            ? styles.withDropdown
+            : ""
+            }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <form onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              placeholder={t("nav.searchPlaceholder")}
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+            />
+            <button type="submit" className={styles.searchButton}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </form>
+          {showSearchResults && searchResults.length > 0 && (
+            <div className={styles.searchResultsDropdown}>
+              {searchResults.slice(0, 5).map((expo) => (
+                <div
+                  key={expo.expoId || expo.id}
+                  className={styles.searchResultItem}
+                  onClick={() => handleSearchResultClick(expo)}
+                >
+                  <div className={styles.searchResultImage}>
+                    <img
+                      src={expo.thumbnailUrl || "/default-expo-image.jpg"}
+                      alt={expo.title}
+                      onError={(e) => {
+                        e.target.src = "/default-expo-image.jpg";
+                      }}
+                    />
+                  </div>
+                  <div className={styles.searchResultContent}>
+                    <div className={styles.searchResultTitle}>{expo.title}</div>
+                    <div className={styles.searchResultLocation}>
+                      {expo.location}
                     </div>
-                    <div className={styles.searchResultContent}>
-                      <div className={styles.searchResultTitle}>{expo.title}</div>
-                      <div className={styles.searchResultLocation}>
-                        {expo.location}
-                      </div>
-                      <div className={styles.searchResultDate}>
-                        {expo.startDate &&
-                          expo.endDate &&
-                          `${new Date(expo.startDate).toLocaleDateString(
-                            "ko-KR"
-                          )} ~ ${new Date(expo.endDate).toLocaleDateString(
-                            "ko-KR"
-                          )}`}
-                      </div>
+                    <div className={styles.searchResultDate}>
+                      {expo.startDate &&
+                        expo.endDate &&
+                        `${new Date(expo.startDate).toLocaleDateString(
+                          "ko-KR"
+                        )} ~ ${new Date(expo.endDate).toLocaleDateString(
+                          "ko-KR"
+                        )}`}
                     </div>
                   </div>
-                ))}
-                {searchResults.length > 5 && (
-                  <div
-                    className={styles.searchResultMore}
-                    onClick={() =>
-                      handleSearchSubmit({ preventDefault: () => { } })
-                    }
-                  >
-                    더 많은 결과 보기
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {searchResults.length > 5 && (
+                <div
+                  className={styles.searchResultMore}
+                  onClick={() =>
+                    handleSearchSubmit({ preventDefault: () => { } })
+                  }
+                >
+                  더 많은 결과 보기
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className={styles.rightActions}>
           <button className={styles.actionButton} onClick={goToLogin}>
