@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import styles from "./ReservationSuccess.module.css";
 import { Link, useParams } from "react-router-dom";
 import { getReservationSuccess } from "../../../api/service/reservation/reservationApi";
+import ChatModal from "../../../components/shared/chat/ChatModal";
+import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
 
 export default function ReservationSuccess() {
   const { t } = useTranslation();
@@ -10,6 +12,8 @@ export default function ReservationSuccess() {
   const [info, setInfo] = useState(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -25,6 +29,19 @@ export default function ReservationSuccess() {
       alive = false;
     };
   }, [reservationId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const handleContactSupport = () => {
+    setIsChatOpen(true);
+  };
+
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+  };
 
   const handleCopy = async () => {
     if (!info?.reservationCode) return;
@@ -59,13 +76,6 @@ export default function ReservationSuccess() {
       <p className={styles.subtitle}>{t('reservation.success.subtitle')}</p>
       <p className={styles.email}>{info.email}</p>
 
-      <button
-        className={styles.resendButton}
-        onClick={() => alert(t('reservation.success.messages.resendApiPending'))}
-      >
-        {t('reservation.success.buttons.resendEmail')}
-      </button>
-
       <div className={styles.ticketBox}>
         <span className={styles.ticketLabel}>{t('reservation.success.fields.reservationNumber')}</span>
         <div className={styles.ticketCodeBox}>
@@ -78,14 +88,27 @@ export default function ReservationSuccess() {
 
       <div className={styles.helpBox}>
         <p className={styles.helpText}>{t('reservation.success.messages.helpText')}</p>
-        <Link to="/contact" className={styles.contactLink}>
+        <button onClick={handleContactSupport} className={styles.contactLink}>
           <span className={styles.icon}>💬</span> {t('reservation.success.buttons.contactSupport')}
-        </Link>
+        </button>
       </div>
 
       <Link to="/" className={styles.homeButton}>
         {t('reservation.success.buttons.backToHome')}
       </Link>
+      
+      {/* Chat Modals */}
+      {isAuthenticated ? (
+        <ChatModal 
+          isOpen={isChatOpen} 
+          onClose={handleChatClose}
+        />
+      ) : (
+        <LoginPromptModal 
+          isOpen={isChatOpen} 
+          onClose={handleChatClose}
+        />
+      )}
     </div>
   );
 }
