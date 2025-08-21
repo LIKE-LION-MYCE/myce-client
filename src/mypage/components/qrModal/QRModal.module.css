@@ -15,7 +15,7 @@
 
 /* 티켓 모달 */
 .ticketModal {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ffffff;
   width: 100%;
   max-width: 650px;
   border-radius: 20px;
@@ -23,6 +23,7 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   font-family: 'Noto Sans KR', sans-serif;
+  border: 1px solid #e0e0e0;
 }
 
 /* 닫기 버튼 */
@@ -30,10 +31,10 @@
   position: absolute;
   top: 15px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.1);
   border: none;
   font-size: 24px;
-  color: #fff;
+  color: #333;
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -46,39 +47,40 @@
 }
 
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* 티켓 헤더 */
 .ticketHeader {
   text-align: center;
   padding: 30px 40px 20px;
-  color: white;
+  color: #333;
 }
 
 .ticketTitle {
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 8px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #333;
 }
 
 .ticketSubtitle {
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.7;
   letter-spacing: 2px;
   font-weight: 300;
+  color: #666;
 }
 
 /* 티켓 바디 */
 .ticketBody {
   background: #fff;
   margin: 0 20px;
-  border-radius: 16px;
+  border-radius: 0;
   display: flex;
   min-height: 250px;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
 }
 
 /* 왼쪽 섹션 */
@@ -91,16 +93,22 @@
 }
 
 .expoInfo {
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .expoTitle {
   font-size: 24px;
   font-weight: 700;
   color: #333;
-  margin: 0 0 15px 0;
+  margin: 0;
   line-height: 1.3;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .infoGrid {
@@ -172,7 +180,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #f8f9ff 0%, #f0f2ff 100%);
+  background: #f8f9fa;
+  border-left: 1px solid #e0e0e0;
 }
 
 .qrContainer {
@@ -181,11 +190,10 @@
 
 .qrBox {
   background: #fff;
-  border: 3px solid #667eea;
+  border: 1px solid #e0e0e0;
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 15px;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
 }
 
 .qrImg {
@@ -212,7 +220,7 @@
 }
 
 .congestionBtn {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  background: #ff9500;
   color: white;
   border: none;
   border-radius: 12px;
@@ -221,16 +229,15 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
 }
 
 .congestionBtn:hover {
+  background: #ea580c;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);
 }
 
 .saveBtn {
-  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  background: #000000;
   color: white;
   border: none;
   border-radius: 12px;
@@ -239,21 +246,22 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(68, 160, 141, 0.3);
 }
 
 .saveBtn:hover {
+  background: #333333;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(68, 160, 141, 0.4);
 }
 
 /* 티켓 상세 정보 섹션 */
 .ticketDetails {
   background: #fff;
-  margin: 0 20px 15px;
+  margin: 0;
   padding: 18px 20px;
-  border-radius: 12px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  border: 1px solid #e0e0e0;
+  border-left: none;
+  border-right: none;
 }
 
 .detailsTitle {
