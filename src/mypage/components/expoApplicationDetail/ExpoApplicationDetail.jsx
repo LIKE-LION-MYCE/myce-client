@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ExpoApplicationDetail.module.css';
+import ExpoProgressBar from '../expoProgressBar/ExpoProgressBar';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
 // ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick, onCancelExpo, onRefundButtonClick을 받도록 변경
@@ -16,7 +17,7 @@ function ExpoApplicationDetail({
   onAdminPageClick,
 }) {
   const { t } = useTranslation();
-  
+
   // 카테고리 번역 매핑 함수
   const translateCategory = (category) => {
     const categoryMap = {
@@ -37,7 +38,7 @@ function ExpoApplicationDetail({
     };
     return categoryMap[category] || category;
   };
-  
+
   // 디버그: i18n 키 테스트 (더 자세히)
   console.log('=== ExpoApplicationDetail i18n Debug ===');
   console.log('Current language:', localStorage.getItem('language') || 'ko');
@@ -79,7 +80,7 @@ function ExpoApplicationDetail({
       'COMPLETED': { key: 'COMPLETED', style: 'completed' },
       'REJECTED': { key: 'REJECTED', style: 'rejected' },
       'CANCELLED': { key: 'CANCELLED', style: 'cancelled' },
-      
+
       // 한국어 키들 (백엔드가 한국어로 보낼 경우 대비)
       '승인대기': { key: 'PENDING_APPROVAL', style: 'pending' },
       '승인 대기': { key: 'PENDING_APPROVAL', style: 'pending' },
@@ -108,7 +109,7 @@ function ExpoApplicationDetail({
     }
 
     const statusText = t(`expoStatus.status.${statusConfig.key}`);
-    
+
     return (
       <span className={`${styles.statusTag} ${styles[statusConfig.style]}`}>
         {statusText}
@@ -136,7 +137,7 @@ function ExpoApplicationDetail({
     ];
     return !isStatus(status, excludedStatuses) && expoData?.paymentInfo;
   };
-  
+
   // 환불 정보를 볼 수 있는지 확인하는 함수 (결제를 했고 취소/환불 상태인 경우)
   const canViewRefundInfo = (status) => {
     const refundStatuses = ['PENDING_CANCEL', 'CANCELLED', '취소대기', '취소 대기', '취소됨', '취소 완료'];
@@ -150,13 +151,14 @@ function ExpoApplicationDetail({
   };
 
   const renderButtons = () => {
-    
+
     // 상태가 로드되지 않았으면 버튼을 렌더링하지 않음
     if (!status || status.length === 0) {
       return null;
     }
-    
+
     return (
+
       <div className={styles.buttonGroup}>
         {/* 상태별 정보 조회 버튼 */}
         <div className={styles.receiptButtons}>
@@ -164,7 +166,7 @@ function ExpoApplicationDetail({
           {isStatus(status, ['PENDING_PAYMENT', '결제대기', '결제 대기']) && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onPayButtonClick}>{t('mypageGeneral.expoStatus.detail.buttons.paymentRequest')}</button>
           )}
-          
+
           {/* 환불 관련 버튼 */}
           {isStatus(status, ['PENDING_PUBLISH', 'PUBLISHED', '게시대기', '게시 대기', '게시중', '게시 중']) && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onRefundButtonClick}>{t('mypageGeneral.expoStatus.detail.buttons.refundRequest')}</button>
@@ -178,7 +180,7 @@ function ExpoApplicationDetail({
               )}
             </>
           )}
-          
+
           {/* 정산 관련 버튼 */}
           {isStatus(status, ['PUBLISH_ENDED', '게시종료', '게시 종료']) && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementRequestClick}>{t('mypageGeneral.expoStatus.detail.buttons.settlementRequest')}</button>
@@ -189,32 +191,32 @@ function ExpoApplicationDetail({
           {isStatus(status, ['COMPLETED', '종료됨']) && (
             <button className={`${styles.button} ${styles.receiptButton}`} onClick={onSettlementReceiptClick}>{t('mypageGeneral.expoStatus.detail.buttons.settlementCompleted')}</button>
           )}
-          
+
           {/* 결제 정보 조회 버튼 */}
           {canViewPaymentInfo(status) && (
             <button className={`${styles.button} ${styles.paymentInfoButton}`} onClick={onPaymentInfoClick}>{t('mypageGeneral.expoStatus.detail.buttons.paymentInfo')}</button>
           )}
         </div>
-        
+
         {/* 상태별 주요 액션 버튼 */}
         <div className={styles.actionButtons}>
           {/* 취소 신청 버튼 */}
           {isStatus(status, ['PENDING_APPROVAL', 'PENDING_PAYMENT', '승인대기', '승인 대기', '결제대기', '결제 대기']) && (
             <button className={`${styles.button} ${styles.cancelButton}`} onClick={onCancelExpo}>{t('mypageGeneral.expoStatus.detail.buttons.cancelRequest')}</button>
           )}
-          
-          
+
+
         </div>
       </div>
     );
   };
-  
+
   const renderAdminButton = () => {
     const adminStatuses = [
       'PENDING_PUBLISH', 'PUBLISHED', 'PUBLISH_ENDED', 'COMPLETED', 'SETTLEMENT_REQUESTED',
       '게시대기', '게시 대기', '게시중', '게시 중', '게시종료', '게시 종료', '종료됨', '정산요청', '정산 요청'
     ];
-    
+
     if (isStatus(status, adminStatuses)) {
       return (
         <div className={styles.adminButtonGroup}>
@@ -233,13 +235,15 @@ function ExpoApplicationDetail({
       <div className={styles.header}>
         <div className={styles.titleGroup}>
           <h2 className={styles.pageTitle}>{form.name || t('mypageGeneral.expoStatus.detail.pageTitle')}</h2>
-          {renderStatusTag()}
           {renderAdminButton()}
         </div>
       </div>
-      
+
       {/* 박람회 기본 정보 박스 */}
       <div className={styles.infoBoxContainer}>
+        {/* 제목 밑에 프로그레스 바 컴포넌트 추가 */}
+        <ExpoProgressBar currentStatus={status} />
+
         <div className={styles.posterSection}>
           <img
             src={form.thumbnailUrl || ""}
@@ -299,7 +303,7 @@ function ExpoApplicationDetail({
             </div>
           </div>
         </div>
-        
+
         {/* 회사 정보 섹션 */}
         <div className={styles.additionalInfoSection}>
           <h3 className={styles.sectionTitle}>{t('mypageGeneral.expoStatus.detail.fields.companyInfo')}</h3>
@@ -319,7 +323,7 @@ function ExpoApplicationDetail({
               <div className={styles.infoValue}>{form.businessRegistrationNumber || t('mypageGeneral.expoStatus.detail.defaultValues.noInfo')}</div>
             </div>
           </div>
-          
+
           <h4 className={styles.subSectionTitle}>{t('mypageGeneral.expoStatus.detail.fields.ceoInfo')}</h4>
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
@@ -342,16 +346,16 @@ function ExpoApplicationDetail({
         {/* 상세 설명 섹션 */}
         <div className={styles.additionalInfoSection}>
           <h3 className={styles.sectionTitle}>
-            {t('mypageGeneral.expoStatus.detail.fields.description') !== 'mypage.expoStatus.detail.fields.description' 
-              ? t('mypageGeneral.expoStatus.detail.fields.description') 
-              : (localStorage.getItem('language') === 'en' ? 'Description' : 
-                 localStorage.getItem('language') === 'ja' ? '詳細説明' : '상세 설명')}
+            {t('mypageGeneral.expoStatus.detail.fields.description') !== 'mypage.expoStatus.detail.fields.description'
+              ? t('mypageGeneral.expoStatus.detail.fields.description')
+              : (localStorage.getItem('language') === 'en' ? 'Description' :
+                localStorage.getItem('language') === 'ja' ? '詳細説明' : '상세 설명')}
           </h3>
           <div className={styles.descriptionContent}>
             {form.description || t('mypageGeneral.expoStatus.detail.defaultValues.noDescription')}
           </div>
         </div>
-        
+
         {/* 티켓 정보 섹션 - PENDING_APPROVAL, PENDING_PUBLISH 상태에서는 숨김 */}
         {canViewTicketInfo(status) && (
           <div className={styles.additionalInfoSection}>
@@ -389,12 +393,12 @@ function ExpoApplicationDetail({
           </div>
         )}
       </div>
-      
+
       {/* 하단 버튼 영역 - 박스 스타일로 변경 */}
       <div className={styles.buttonBoxContainer}>
         {renderButtons()}
       </div>
-      
+
     </div>
   );
 }
