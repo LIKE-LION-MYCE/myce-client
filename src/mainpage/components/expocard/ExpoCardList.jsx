@@ -104,10 +104,10 @@ export default function ExpoCardList({
             className={styles.thumbnail}
           />
           <div className={styles.overlay}>
-            <h3 className={styles.title}>{expo.title}</h3>
             <p className={styles.remain}>
               {t("homepage.expoCard.remainingTickets", "남은 티켓 수량")} : {expo.remainingQuantity}{t("homepage.expoCard.ticketUnit", "개")}
             </p>
+            <h3 className={styles.title}>{expo.title}</h3>
             <p className={styles.location}>
               {expo.location} {expo.locationDetail}
             </p>
