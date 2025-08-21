@@ -4,7 +4,6 @@
   font-family: 'Pretendard', sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 32px;
   box-sizing: border-box;
 }
 
@@ -12,7 +11,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .titleGroup {
@@ -74,6 +72,7 @@
 
 /* 영수증 버튼 그룹 */
 .receiptButtons {
+  margin-top : 50px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
@@ -200,20 +199,20 @@
 /* 포스터 섹션 */
 .posterSection {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 32px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 24px;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  margin: 30px 0 40px;
+  background-color: #fafafa;
+  border-radius: 0;
 }
 
 .posterImage {
-  width: auto;
+  max-width: 25%;            /* 이미지 최대 폭 제한 */
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  max-width: 100%;
 }
 
 /* 정보 섹션 레이아웃 */
