@@ -39,8 +39,7 @@ const UpcomingCardList = ({
           title: expo.title,
           image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
-          location: expo.location,
-          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+          location: expo.location
         }));
       } else if (Array.isArray(data)) {
         transformedExpos = data.map(expo => ({
@@ -48,8 +47,7 @@ const UpcomingCardList = ({
           title: expo.title,
           image: expo.thumbnailImageUrl || expo.thumbnail_url || expo.thumbnailUrl || "https://picsum.photos/300/400?random=" + (expo.expoId || expo.expo_id),
           date: formatExpoDate(expo.startDate || expo.start_date, expo.endDate || expo.end_date),
-          location: expo.location,
-          category: expo.category || t("homepage.upcoming.defaultCategory", "박람회")
+          location: expo.location
         }));
       }
       setExpos(transformedExpos);
@@ -151,7 +149,6 @@ const UpcomingCardList = ({
       <div className={styles.sectionHeader}>
         <div>
           <h2 className={styles.title}>{t("homepage.upcoming.title", "오픈 예정")}</h2>
-          <p className={styles.subtitle}>{t("homepage.upcoming.subtitleNew", "곧 개최될 박람회를 소개합니다")}</p>
         </div>
       </div>
       

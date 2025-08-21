@@ -84,16 +84,10 @@ const UpcomingCard = ({
         {/* 날짜 */}
         {event.date && (
           <div className={styles.date}>
-            {event.date}
+            📍 {event.date}
           </div>
         )}
         
-        {/* 카테고리 (추후공지만) */}
-        {event.category && (
-          <div className={styles.category}>
-            {event.category}
-          </div>
-        )}
         
         {/* 제목 */}
         <h3 className={styles.title}>
@@ -110,7 +104,7 @@ const UpcomingCard = ({
         {/* 추가 정보들 */}
         {event.location && (
           <div className={styles.location}>
-            📍 {event.location}
+            {event.location}
           </div>
         )}
       </div>
