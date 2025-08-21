@@ -172,6 +172,38 @@ const resources = {
         }
       },
 
+      // Review Components
+      components: {
+        review: {
+          form: {
+            title: {
+              create: "리뷰 작성",
+              edit: "리뷰 수정",
+              label: "제목",
+              placeholder: "리뷰 제목을 입력하세요"
+            },
+            content: {
+              label: "내용",
+              placeholder: "리뷰 내용을 입력하세요"
+            },
+            rating: {
+              label: "평점",
+              points: "점"
+            },
+            required: "*",
+            buttons: {
+              create: "작성하기",
+              edit: "수정하기",
+              cancel: "취소"
+            },
+            alerts: {
+              titleRequired: "제목을 입력해주세요.",
+              contentRequired: "내용을 입력해주세요."
+            }
+          }
+        }
+      },
+
       // ChangePasswordModal
       changePasswordModal: {
         title: "비밀번호 변경",
@@ -368,6 +400,38 @@ const resources = {
         }
       },
 
+      // Review Components
+      components: {
+        review: {
+          form: {
+            title: {
+              create: "Write Review",
+              edit: "Edit Review",
+              label: "Title",
+              placeholder: "Enter review title"
+            },
+            content: {
+              label: "Content",
+              placeholder: "Enter review content"
+            },
+            rating: {
+              label: "Rating",
+              points: " stars"
+            },
+            required: "*",
+            buttons: {
+              create: "Submit",
+              edit: "Update",
+              cancel: "Cancel"
+            },
+            alerts: {
+              titleRequired: "Please enter a title.",
+              contentRequired: "Please enter content."
+            }
+          }
+        }
+      },
+
       // ChangePasswordModal
       changePasswordModal: {
         title: "Change Password",
@@ -561,6 +625,38 @@ const resources = {
           MODERATE: "普通",
           HIGH: "混雑",
           VERY_HIGH: "非常に混雑"
+        }
+      },
+
+      // Review Components
+      components: {
+        review: {
+          form: {
+            title: {
+              create: "レビューを書く",
+              edit: "レビューを編集",
+              label: "タイトル",
+              placeholder: "レビュータイトルを入力してください"
+            },
+            content: {
+              label: "内容",
+              placeholder: "レビュー内容を入力してください"
+            },
+            rating: {
+              label: "評価",
+              points: "つ星"
+            },
+            required: "*",
+            buttons: {
+              create: "投稿する",
+              edit: "更新する",
+              cancel: "キャンセル"
+            },
+            alerts: {
+              titleRequired: "タイトルを入力してください。",
+              contentRequired: "内容を入力してください。"
+            }
+          }
         }
       },
 
