@@ -20,7 +20,6 @@ const MemberMainPageHeader = ({ notification }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const navigate = useNavigate(); // useNavigate 훅 사용
   const { expos, setFilters } = useExpoData();
 
   // 사용자 권한 확인
