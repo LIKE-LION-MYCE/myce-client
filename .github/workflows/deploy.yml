@@ -29,16 +29,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Temporarily disable cache due to npm optional dependency bug
 
       - name: 📦 Install dependencies
         run: |
-          # Handle npm optional dependency bug with Rollup
-          if [ -f package-lock.json ]; then
-            npm ci || (echo "npm ci failed, trying fresh install..." && rm -rf node_modules package-lock.json && npm install)
-          else
-            npm install
-          fi
+          # Fix for npm optional dependency bug with Rollup
+          # Remove package-lock.json and node_modules, then fresh install
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: 🔧 Build project
         env:
