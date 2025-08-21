@@ -26,6 +26,8 @@ import ChatModal from "../../../components/shared/chat/ChatModal";
 import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
 import { isTokenExpired, decodeJWT } from "../../../api/utils/jwtUtils";
 import { getOrCreateExpoChatRoom } from "../../../api/service/chat/chatService";
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 export default function ExpoDetail() {
   const { t } = useTranslation();
@@ -182,8 +184,12 @@ export default function ExpoDetail() {
     } catch (err) {
       console.error("찜하기 토글 실패:", err);
       
-      if (err.response?.status === 401) {
+      // 에러 상태 코드 확인
+      const status = err.response?.status || err.status;
+      
+      if (status === 401 || err.message === "LOGIN_REQUIRED") {
         showFailMessage(t('expoDetail.expoDetailMain.alerts.loginRequired', '로그인이 필요한 서비스입니다.'));
+        // 토큰 제거만 하고 페이지 리로드 방지
         localStorage.removeItem('access_token');
       } else {
         showFailMessage(t('expoDetail.expoDetailMain.alerts.bookmarkError', '찜하기 처리에 실패했습니다.'));
