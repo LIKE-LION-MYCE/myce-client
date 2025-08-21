@@ -1,5 +1,5 @@
 .banner {
-  max-width: 1400px; /* ExpoCardList와 동일한 최대 넓이 */
+  max-width: 1605px; /* ExpoCardList와 동일한 최대 넓이 */
   width: 100%; /* 전체 너비 */
   margin: 0 auto;
   aspect-ratio: 10 / 1; /* 5/1 → 10/1로 변경 (세로 사이즈 반으로 줄임) */
