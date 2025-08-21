@@ -220,8 +220,17 @@ const ExpoStatusPage = () => {
                   <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                   <td>
                     {expo.title}
-                    {expo.isPremium && <span className={styles.premiumBadge}>{t('expoStatus.table.premium')}</span>}
-                  </td>
+                    {expo.isPremium && (
+                      <span
+                        className={styles.premiumBadge}
+                        aria-label="Premium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className={styles.premiumIcon} role="img" aria-hidden>👑</span>
+                        PREMIUM
+                      </span>
+                    )}
+                                      </td>
                   <td>{expo.applyDate}</td>
                   <td>{expo.postPeriod}</td>
                   <td>{expo.location}</td>

@@ -11,8 +11,7 @@ function BannerApplicationForm({ bannerData }) {
     description: '',
   };
 
-  useEffect(() => {
-  }, [data]); 
+  useEffect(() => {}, [data]);
 
   return (
     <div className={styles.container}>
@@ -28,37 +27,22 @@ function BannerApplicationForm({ bannerData }) {
         <div className={styles.formGrid}>
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>배너 제목</label>
-            <input
-              className={styles.inputField}
-              value={data.title || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {data.title || '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>배너 위치</label>
-            <input
-              className={styles.inputField}
-              value={data.bannerLocationName || ''}
-              readOnly
-            />
+            <div className={styles.displayField}>
+              {data.bannerLocationName || '-'}
+            </div>
           </div>
 
           <div className={`${styles.formGroup} ${styles.full}`}>
             <label className={styles.label}>광고 기간</label>
-            <div className={styles.dateGroup}>
-              <input
-                type="date"
-                className={styles.inputField}
-                value={data.startAt || ''}
-                readOnly
-              />
-              <input
-                type="date"
-                className={styles.inputField}
-                value={data.endAt || ''}
-                readOnly
-              />
+            <div className={styles.displayField}>
+              {data.startAt && data.endAt ? `${data.startAt} ~ ${data.endAt}` : '-'}
             </div>
           </div>
         </div>
@@ -66,11 +50,9 @@ function BannerApplicationForm({ bannerData }) {
 
       <div className={`${styles.formGroup} ${styles.full}`}>
         <label className={styles.label}>광고 설명</label>
-        <textarea
-          className={styles.textarea}
-          value={data.description || ''}
-          readOnly
-        />
+        <div className={styles.textarea}>
+          {data.description || '-'}
+        </div>
       </div>
     </div>
   );
