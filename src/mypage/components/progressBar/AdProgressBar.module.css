@@ -1,0 +1,57 @@
+.progressBarContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.stepCircle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    position: relative;
+    /* 자식 요소 위치 지정을 위해 추가 */
+    transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.stepCircle.completed {
+    background-color: #2a9c68;
+    transform: scale(1);
+}
+
+.stepCircle.current {
+    background-color: #2a9c68;
+    transform: scale(1.2);
+}
+
+.stepLine {
+    flex-grow: 1;
+    height: 5px;
+    background-color: #ddd;
+    margin: 0 5px;
+    transition: background-color 0.5s ease-in-out;
+}
+
+.stepLine.completedLine {
+    background-color: #2a9c68;
+}
+
+/* 추가된 CSS */
+.statusLabel {
+    position: absolute;
+    /* 부모 요소인 .stepCircle을 기준으로 위치 지정 */
+    top: 35px;
+    /* 원 위에 위치하도록 조정 */
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    /* 텍스트가 줄바꿈되지 않도록 설정 */
+    color: #333;
+    font-weight: normal;
+}

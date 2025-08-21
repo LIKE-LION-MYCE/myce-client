@@ -6,6 +6,7 @@ import styles from "./AdsStatusDetail.module.css";
 import AdPaymentDetailModal from "../../components/paymentDetailModal/AdPaymentDetailModal";
 import AdPaymentRefundModal from "../../components/paymentDetailModal/AdPaymentRefundModal";
 import AdRejectInfoModal from "../../components/rejectInfoModal/AdRejectInfoModal";
+import AdProgressBar from "../../components/progressBar/AdProgressBar";
 import AdCancelModal from "../../components/cancelModal/AdCancelModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
 import AdsInfoGrid from "../../components/adApplicationDetail/AdApplicationDetail";
@@ -79,7 +80,7 @@ function AdsStatusDetail() {
   const [adData, setAdData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // 모달 상태
   const [modalType, setModalType] = useState(null); // 'payment' | 'paymentView' | 'refund' | 'rejectInfo' | 'cancel' | null
   const [showPaymentSelection, setShowPaymentSelection] = useState(false); // 결제수단 선택 페이지 표시 상태
@@ -331,7 +332,7 @@ function AdsStatusDetail() {
       }
     }
   };
-  
+
   const handleCancelAdvertisement = async () => {
     if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.cancelConfirm'))) {
       try {
@@ -407,16 +408,11 @@ function AdsStatusDetail() {
         {/* 상단 헤더/상태 뱃지 */}
         <div className={styles.headerRow}>
           <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.detail.title')}</h2>
-          <span
-            className={`${styles.statusBadge} ${
-              styles[statusConf.badge.className]
-            }`}
-          >
-            {t(`mypageGeneral.adsStatus.status.${statusConf.badge.key}`)}
-          </span>
+          
+          <AdProgressBar currentStatus={adData.status} />
         </div>
         {/* infoGrid(흰색 박스) */}
-        <AdsInfoGrid 
+        <AdsInfoGrid
           adData={adData}
           statusConf={statusConf}
           handleButtonAction={handleButtonAction}
