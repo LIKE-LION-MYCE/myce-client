@@ -169,12 +169,12 @@ export default function SharedChatRoomList({
       </div>
 
       {/* Loading State */}
-      {loading && sortedRooms.length === 0 && (
+      {/* {loading && sortedRooms.length === 0 && (
         <div className={styles.loadingState}>
           <div className={styles.loadingSpinner} />
           <p>채팅방을 불러오는 중...</p>
         </div>
-      )}
+      )} */}
 
       {/* Room List */}
       <ul className={styles.roomList}>
