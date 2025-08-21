@@ -172,7 +172,7 @@ const resources = {
         },
       },
 
-      // Review Components
+      // Review Components & NotificationModal
       components: {
         review: {
           form: {
@@ -202,10 +202,6 @@ const resources = {
             },
           },
         },
-      },
-
-      // NotificationModal
-      components: {
         notification: {
           modal: {
             title: "알림",
