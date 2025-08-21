@@ -204,9 +204,6 @@
   border: none;
 }
 
-.otherMessage {
-  /* 기본 스타일 유지 */
-}
 
 /* --- 메시지 래퍼 (버블 + 시간/읽음표시) --- */
 .messageWrapper {

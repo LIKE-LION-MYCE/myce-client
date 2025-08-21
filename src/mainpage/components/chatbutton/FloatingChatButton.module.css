@@ -4,7 +4,7 @@
   right: 2rem;
   width: 60px;
   height: 60px;
-  background-color: #ff6b35;
+  background-color: #F39C12;
   color: white;
   border: none;
   border-radius: 50%;
@@ -19,11 +19,11 @@
 
 /* 로그인 전 상태 - glow 효과 제거 */
 .fab.loginHint {
-  background: #ff6b35;
+  background: #F39C12;
 }
 
 .fab:hover {
-  background-color: #ff5722;
+  background-color: #ffba4a;
   transform: scale(1.05);
 }
 

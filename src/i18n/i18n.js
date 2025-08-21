@@ -60,7 +60,7 @@ const mainResources = {
         platformAdmin: "플랫폼 관리",
         logout: "로그아웃",
         login: "로그인",
-        signup: "회원가입",
+        join: "회원가입",
         reservationCheck: "예매 확인",
         searchPlaceholder: "박람회를 검색해보세요"
       },
@@ -908,7 +908,7 @@ const mainResources = {
         platformAdmin: "Platform Admin",
         logout: "Logout",
         login: "Login",
-        signup: "Sign Up",
+        join: "Sign Up",
         reservationCheck: "Check Reservation",
         searchPlaceholder: "Search for exhibitions"
       },
@@ -1756,7 +1756,7 @@ const mainResources = {
         platformAdmin: "プラットフォーム管理",
         logout: "ログアウト",
         login: "ログイン",
-        signup: "会員登録",
+        join: "会員登録",
         reservationCheck: "予約確認",
         searchPlaceholder: "博覧会を検索してください"
       },
