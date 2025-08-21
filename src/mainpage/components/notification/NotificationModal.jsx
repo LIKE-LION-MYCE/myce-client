@@ -83,14 +83,14 @@ export default function NotificationModal({ onClose }) {
       case 'EXPO_REMINDER':
         return { icon: '📅', color: '#f97316' };
       case 'EVENT_REMINDER':
-        return { icon: '🎯', color: '#8b5cf6' };
+        return { icon: '🎪', color: '#fbbf24' };
       case 'QR_ISSUED':
         return { icon: '🎫', color: '#10b981' };
       case 'PAYMENT_COMPLETE':
       case 'RESERVATION_CONFIRM':
         return { icon: '💳', color: '#3b82f6' };
       case 'EXPO_STATUS_CHANGE':
-        return { icon: '🏢', color: '#ef4444' };
+        return { icon: '🏛️', color: '#6366f1' };
       case 'AD_STATUS_CHANGE':
         return { icon: '📢', color: '#f59e0b' };
       default:
