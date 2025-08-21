@@ -7,6 +7,8 @@ import QRModal from "../qrModal/QRModal";
 import RefundModal from "../refundModal/RefundModal";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import { getReservationDetail, updateReservers } from "../../../api/service/reservation/reservationApi";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const ReservationDetailPage = () => {
   const { t } = useTranslation();
@@ -24,12 +26,27 @@ const ReservationDetailPage = () => {
   const [selectedReserver, setSelectedReserver] = useState(null);
   
   const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     if (id) {
       fetchReservationDetail();
     }
   }, [id]);
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const fetchReservationDetail = async () => {
     try {
@@ -82,12 +99,12 @@ const ReservationDetailPage = () => {
       }));
       
       setIsEditMode(false);
-      alert(t('reservationDetail.updateSuccess'));
+      showSuccessMessage(t('reservationDetail.updateSuccess'));
       
     } catch (err) {
       console.error('참여 인원 업데이트 실패:', err);
       setError(t('reservationDetail.updateError'));
-      alert(t('reservationDetail.updateFailAlert'));
+      showFailMessage(t('reservationDetail.updateFailAlert'));
     } finally {
       setLoading(false);
     }
@@ -126,7 +143,7 @@ const ReservationDetailPage = () => {
   // 상세보기 버튼 클릭 시
   const handleQrOpen = (qrUrl, reserver) => {
     if (!isExpoActive()) {
-      alert(t('reservationDetail.expoNotActive'));
+      showFailMessage(t('reservationDetail.expoNotActive'));
       return;
     }
     setQrImgUrl(qrUrl);
@@ -508,6 +525,9 @@ const ReservationDetailPage = () => {
           navigate('/mypage/reservation', { replace: true });
         }}
       />
+      
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

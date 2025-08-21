@@ -12,6 +12,8 @@ import styles from './ExpoStatusDetail.module.css';
 import PaymentSelection from '../payment-selection/PaymentSelection';
 import { getMyExpo, deleteMyExpo, getExpoRefundReceipt, getExpoRefundHistory, getExpoAdminCodes, requestExpoSettlement, getExpoSettlementReceipt, getExpoPaymentDetail, completeExpoPayment, requestExpoRefund } from '../../../api/service/user/memberApi';
 import { useNavigate } from 'react-router-dom';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 // 상태 라벨 매핑 (i18n 적용)
 const getStatusLabel = (status, t) => {
@@ -71,12 +73,27 @@ const ExpoStatusDetail = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showSevenDayRuleModal, setShowSevenDayRuleModal] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     if (id) {
       fetchExpoDetail();
     }
   }, [id]);
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const fetchExpoDetail = async () => {
     try {
@@ -165,7 +182,7 @@ const ExpoStatusDetail = () => {
       setModalType('waiting');
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.paymentInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.paymentInfoError'));
     } finally {
       setLoading(false);
     }
@@ -182,7 +199,7 @@ const ExpoStatusDetail = () => {
       // 결제 완료 API 호출 (실제 결제 API 대신)
       await completeExpoPayment(id);
       
-      alert(t('expoStatus.detail.messages.paymentCompleted'));
+      showSuccessMessage(t('expoStatus.detail.messages.paymentCompleted'));
       
       // 상세 정보 다시 불러오기
       await fetchExpoDetail();
@@ -190,7 +207,7 @@ const ExpoStatusDetail = () => {
       handleCloseModal();
     } catch (err) {
       console.error('결제 완료 처리 실패:', err);
-      alert(t('expoStatus.detail.messages.paymentFailed'));
+      showFailMessage(t('expoStatus.detail.messages.paymentFailed'));
     } finally {
       setLoading(false);
     }
@@ -205,7 +222,7 @@ const ExpoStatusDetail = () => {
       setShowAdminModal(true);
     } catch (err) {
       console.error('관리자 정보 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.adminInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.adminInfoError'));
     } finally {
       setLoading(false);
     }
@@ -220,11 +237,11 @@ const ExpoStatusDetail = () => {
   const handleCancelExpo = async () => {
     try {
       await deleteMyExpo(id);
-      alert(t('expoStatus.detail.messages.expoCancelled'));
+      showSuccessMessage(t('expoStatus.detail.messages.expoCancelled'));
       window.history.back(); // 이전 페이지로 돌아가기
     } catch (err) {
       console.error('박람회 취소 실패:', err);
-      alert(t('expoStatus.detail.messages.expoCancelFailed'));
+      showFailMessage(t('expoStatus.detail.messages.expoCancelFailed'));
     }
   };
 
@@ -247,7 +264,7 @@ const ExpoStatusDetail = () => {
       setShowRefundModal(true);
     } catch (err) {
       console.error('환불 정보 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.refundInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.refundInfoError'));
     } finally {
       setLoading(false);
     }
@@ -271,7 +288,7 @@ const ExpoStatusDetail = () => {
       };
       
       await requestExpoRefund(id, refundRequest);
-      alert(t('expoStatus.detail.messages.refundCompleted'));
+      showSuccessMessage(t('expoStatus.detail.messages.refundCompleted'));
       handleCloseRefundModal();
       // 상세 정보 다시 불러오기
       await fetchExpoDetail();
@@ -283,7 +300,7 @@ const ExpoStatusDetail = () => {
         handleCloseRefundModal(); // 환불 모달 닫기
         setShowSevenDayRuleModal(true); // 7일 규칙 모달 열기
       } else {
-        alert(t('expoStatus.detail.messages.refundFailed'));
+        showFailMessage(t('expoStatus.detail.messages.refundFailed'));
       }
     } finally {
       setLoading(false);
@@ -318,7 +335,7 @@ const ExpoStatusDetail = () => {
       setShowSettlementReceiptModal(true);
     } catch (err) {
       console.error('정산 내역 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.settlementInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.settlementInfoError'));
     } finally {
       setLoading(false);
     }
@@ -347,7 +364,7 @@ const ExpoStatusDetail = () => {
       setShowSettlementReceiptModal(true);
     } catch (err) {
       console.error('정산 내역 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.settlementInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.settlementInfoError'));
     } finally {
       setLoading(false);
     }
@@ -370,12 +387,12 @@ const ExpoStatusDetail = () => {
       };
       
       await requestExpoSettlement(id, settlementData);
-      alert(t('expoStatus.detail.messages.settlementCompleted'));
+      showSuccessMessage(t('expoStatus.detail.messages.settlementCompleted'));
       handleCloseSettlementReceiptModal();
       fetchExpoDetail(); // 상태 업데이트를 위해 데이터 다시 불러오기
     } catch (err) {
       console.error('정산 요청 실패:', err);
-      alert(t('expoStatus.detail.messages.settlementFailed'));
+      showFailMessage(t('expoStatus.detail.messages.settlementFailed'));
     } finally {
       setLoading(false);
     }
@@ -395,7 +412,7 @@ const ExpoStatusDetail = () => {
       setShowPaymentInfoModal(true);
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
-      alert(t('expoStatus.detail.messages.paymentInfoError'));
+      showFailMessage(t('expoStatus.detail.messages.paymentInfoError'));
     } finally {
       setLoading(false);
     }
@@ -566,6 +583,8 @@ const ExpoStatusDetail = () => {
         />
       )}
 
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

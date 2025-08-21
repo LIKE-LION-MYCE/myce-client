@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./PaymentDetailModal.module.css";
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 function PaymentRefundModal({
   expoName,
@@ -27,6 +29,9 @@ function PaymentRefundModal({
 }) {
   const { t } = useTranslation();
   const [inputRefundReason, setInputRefundReason] = useState("");
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   
   // 전액 환불 여부 확인 (게시 대기 상태)
   const isFullRefund = status === 'PENDING_PUBLISH';
@@ -44,9 +49,21 @@ function PaymentRefundModal({
     return (value && value >= 0) ? value : defaultValue;
   };
   
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+  
   const handleRefundClick = () => {
     if (!inputRefundReason.trim()) {
-      alert(t('paymentRefundModal.messages.reasonRequired'));
+      showFailMessage(t('paymentRefundModal.messages.reasonRequired'));
       return;
     }
     onRefund(inputRefundReason);
@@ -234,6 +251,8 @@ function PaymentRefundModal({
             </>
           )}
         </div>
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './RefundModal.module.css';
 import instance from '../../../api/lib/axios';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
   const { t } = useTranslation();
@@ -9,6 +11,9 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [reason, setReason] = useState('personal');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // 환불 정보 조회
   const getRefundPreview = async () => {
@@ -17,11 +22,23 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
       const response = await instance.get(`/refund/reservation/${reservationId}/preview`);
       setRefundInfo(response.data);
     } catch (error) {
-      alert(error.response?.data?.message || t('refundModal.messages.errorFetch'));
+      showFailMessage(error.response?.data?.message || t('refundModal.messages.errorFetch'));
       onClose();
     } finally {
       setLoading(false);
     }
+  };
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   // 실제 환불 처리
@@ -32,11 +49,11 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
       setProcessing(true);
       const reasonKey = t(`refundModal.reasons.${reason}`);
       await instance.post(`/refund/reservation/${reservationId}?reason=${encodeURIComponent(reasonKey)}`);
-      alert(t('refundModal.messages.refundCompleted'));
+      showSuccessMessage(t('refundModal.messages.refundCompleted'));
       onRefundComplete();
       onClose();
     } catch (error) {
-      alert(error.response?.data?.message || t('refundModal.messages.errorProcess'));
+      showFailMessage(error.response?.data?.message || t('refundModal.messages.errorProcess'));
     } finally {
       setProcessing(false);
     }
@@ -128,6 +145,9 @@ const RefundModal = ({ isOpen, onClose, reservationId, onRefundComplete }) => {
             )}
           </div>
         ) : null}
+        
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

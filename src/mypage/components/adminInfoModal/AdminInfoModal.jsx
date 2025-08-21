@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './AdminInfoModal.module.css';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const AdminInfoModal = ({ 
   adminName,
@@ -9,6 +11,10 @@ const AdminInfoModal = ({
   onNavigateToAdminPage
 }) => {
   const { t } = useTranslation();
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  
   // Use the passed adminName, with a fallback
   const adminId = adminName || t('adminInfoModal.messages.noAdminId');
   
@@ -17,12 +23,24 @@ const AdminInfoModal = ({
     code: item.code,
     action: t('adminInfoModal.buttons.copy')
   })) || [];
+  
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code).then(() => {
-      alert(t('adminInfoModal.messages.codeCopied'));
+      showSuccessMessage(t('adminInfoModal.messages.codeCopied'));
     }).catch(() => {
-      alert(t('adminInfoModal.messages.copyFailed'));
+      showFailMessage(t('adminInfoModal.messages.copyFailed'));
     });
   };
 
@@ -72,6 +90,8 @@ const AdminInfoModal = ({
         >
           {t('adminInfoModal.buttons.navigateToAdmin')}
         </button>
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

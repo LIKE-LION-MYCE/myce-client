@@ -4,6 +4,8 @@ import styles from "./MyInfoPage.module.css";
 import ChangePasswordModal from "../../components/changePasswordModal/changePasswordModal";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import { getMemberInfo, updateMemberInfo, withdrawMember } from "../../../api/service/user/memberApi";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const MyInfoPage = () => {
   const { t } = useTranslation();
@@ -19,9 +21,24 @@ const MyInfoPage = () => {
   });
   const [originalInfo, setOriginalInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const handleEditToggle = () => {
     if (isEditMode) {
@@ -37,12 +54,12 @@ const MyInfoPage = () => {
   const handleUpdateInfo = async () => {
     try {
       await updateMemberInfo(memberInfo);
-      alert(t('mypageGeneral.infoUpdated'));
+      showSuccessMessage(t('mypageGeneral.infoUpdated'));
       setOriginalInfo({...memberInfo});
       setIsEditMode(false);
     } catch (error) {
       console.error('회원 정보 수정 실패:', error);
-      alert(t('mypageGeneral.infoUpdateFailed'));
+      showFailMessage(t('mypageGeneral.infoUpdateFailed'));
     }
   };
 
@@ -50,12 +67,12 @@ const MyInfoPage = () => {
     if (window.confirm(t('mypageGeneral.withdrawConfirm'))) {
       try {
         await withdrawMember();
-        alert(t('mypageGeneral.withdrawSuccess'));
+        showSuccessMessage(t('mypageGeneral.withdrawSuccess'));
         localStorage.removeItem('access_token');
         window.location.href = '/';
       } catch (error) {
         console.error('회원 탈퇴 실패:', error);
-        alert(t('mypageGeneral.withdrawFailed'));
+        showFailMessage(t('mypageGeneral.withdrawFailed'));
       }
     }
   };
@@ -228,6 +245,9 @@ const MyInfoPage = () => {
 
         {/* 모달 */}
         {isModalOpen && <ChangePasswordModal onClose={closeModal} />}
+        
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );
