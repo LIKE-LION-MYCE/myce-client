@@ -31,23 +31,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: 🐛 Debug and force fresh install
+      - name: 📦 Install dependencies
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files in current directory:"
-          ls -la
-          echo "Package-lock.json content (first 10 lines):"
-          head -10 package-lock.json
-          echo "NPM version:"
-          npm --version
-          echo "Node version:"
-          node --version
-
-      - name: 📦 Install dependencies (fallback)
-        run: |
+          # Handle npm optional dependency bug with Rollup
           if [ -f package-lock.json ]; then
-            npm ci
+            npm ci || (echo "npm ci failed, trying fresh install..." && rm -rf node_modules package-lock.json && npm install)
           else
             npm install
           fi
