@@ -3,23 +3,55 @@
 }
 
 .notificationWrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 0.25rem;
+  color: #29292d;
+  transition: all 0.2s ease;
+  font-family: 'GmarketSansMedium', sans-serif;
+  position: relative;
+  height: 32px;
+}
+
+.notificationWrapper:hover {
+  background: #e9ecef;
 }
 
 .notificationIcon {
-  color: #000;
+  color: #29292d;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.notificationText {
+  font-weight: 600;
+  color: #29292d;
+  font-family: 'GmarketSansMedium', sans-serif;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .notificationBadge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  background-color: #ef4444;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  background-color: #ff4757;
+  border-radius: 9px;
   color: white;
-  border-radius: 9999px;
   font-size: 10px;
-  padding: 2px 6px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  padding: 0 3px;
+  box-sizing: border-box;
 }

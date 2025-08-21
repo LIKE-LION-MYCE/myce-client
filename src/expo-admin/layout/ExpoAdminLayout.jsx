@@ -1,70 +1,94 @@
+// ExpoAdminLayout.jsx
 import { useEffect, useState } from "react";
-  import { Outlet, useParams, useLocation } from "react-router-dom";
-  import styles from './ExpoAdminLayout.module.css';
-  import ExpoAdminHeader from "./header/ExpoAdminHeader";
-  import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
+import { Outlet, useParams, useLocation } from "react-router-dom";
+import styles from "./ExpoAdminLayout.module.css";
+import ExpoAdminHeader from "./header/ExpoAdminHeader";
+import ExpoAdminSideBar from "./sidebar/ExpoAdminSidebar";
 
-  import { getMyExpos } from "../../api/service/expo-admin/AuthService";
-  import { jwtDecode } from 'jwt-decode';
-  import instance from "../../api/lib/axios";
-  import { usePermission } from "../permission/PermissionContext";
+import { jwtDecode } from "jwt-decode";
+import instance from "../../api/lib/axios";
+import { usePermission } from "../permission/PermissionContext";
+import AccessDeniedPage from "../../common/pages/AccessDeniedPage";
 
+function ExpoAdminLayout() {
+  const { expoId } = useParams();
+  const location = useLocation();
+  const { perm } = usePermission(); // perm === null 이면 아직 로딩 중으로 간주
 
-  function ExpoAdminLayout() {
-    const { expoId } = useParams();
-    const location = useLocation();
-    const { perm } = usePermission();
+  const [hasExpoAccess, setHasExpoAccess] = useState(null); // true | false | null
+  const [checking, setChecking] = useState(false); // 이 컴포넌트 내부 체크 진행 여부
 
-    const [hasExpoAccess, setHasExpoAccess] = useState(null);
+  // expoId 접근 권한 체크
+  useEffect(() => {
+    const checkPermission = async () => {
+      // PermissionContext가 아직 준비 전
+      if (perm === null) return;
 
-    // 1) expoId 접근 권한(해당 박람회 소속 여부) 체크 및 직입 방지
-    useEffect(() => {
-      const checkPermission = async () => {
-        try {
-          if (!perm) return;
-
-          const token = localStorage.getItem('access_token');
-          if (!token) {
-            setHasExpoAccess(false);
-            return;
-          }
-
-          const decodedToken = jwtDecode(token);
-
-          if (decodedToken.loginType === 'ADMIN_CODE') {
-            // AdminCode 로그인: 채팅 API로 권한 체크
-            try {
-              await instance.get(`/expos/${expoId}/chats/rooms`);
-              setHasExpoAccess(true);
-            } catch (error) {
-              console.error("AdminCode 권한 확인 실패:", error.message);
-              setHasExpoAccess(false);
-            }
-          } else {
-            // MEMBER 로그인: Permission Context 사용
-            const expoIdNumber = Number(expoId);
-            setHasExpoAccess(perm.expoIds.includes(expoIdNumber));
-          }
-        } catch (error) {
-          console.error("권한 확인 실패:", error.message);
+      setChecking(true);
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
           setHasExpoAccess(false);
+          return;
         }
-      };
-      checkPermission();
-    }, [perm, expoId]);
 
-    if (hasExpoAccess === null) return null;
-    if (!hasExpoAccess) return <NoAccessPage />;
+        let decoded = null;
+        try {
+          decoded = jwtDecode(token);
+        } catch {
+          setHasExpoAccess(false);
+          return;
+        }
 
-    // 2) 페이지별 권한 체크 (주소창 직입 방지)
-    const basePath = `/expos/${expoId}/admin`;
-    const path = location.pathname;
+        if (decoded?.loginType === "ADMIN_CODE") {
+          // AdminCode 로그인 → API로 접근 검증
+          try {
+            await instance.get(`/expos/${expoId}/chats/rooms`);
+            setHasExpoAccess(true);
+          } catch {
+            setHasExpoAccess(false);
+          }
+        } else {
+          // MEMBER 로그인 → perm.expoIds 검증
+          const expoIdNumber = Number(expoId);
+          const ok = Array.isArray(perm?.expoIds) && perm.expoIds.includes(expoIdNumber);
+          setHasExpoAccess(ok);
+        }
+      } catch {
+        setHasExpoAccess(false);
+      } finally {
+        setChecking(false);
+      }
+    };
 
-    const pageAllowed = hasPagePermission(path, basePath, perm);
+    checkPermission();
+  }, [perm, expoId]);
 
-    if (!pageAllowed) return <NoAccessPage />;
+  // 페이지별 권한 체크 (perm/접근 허용 이후에만 의미 있음)
+  const basePath = `/expos/${expoId}/admin`;
+  const path = location.pathname;
+  const pageAllowed = hasPagePermission(path, basePath, perm);
 
-    return (
+  // 뷰 분기 (조기 return 최소화)
+  let content = null;
+
+  // perm 로딩 중이거나, 이 컴포넌트의 접근 체크 진행 중이거나, 아직 판정 전 → 스피너
+  if (perm === null || checking || hasExpoAccess === null) {
+    content = (
+      <div className={styles.loading}>
+        <div className={styles.spinner} />
+        권한 확인 중...
+      </div>
+    );
+  } else if (hasExpoAccess === false) {
+    // 접근 불가 확정
+    content = <AccessDeniedPage />;
+  } else if (!pageAllowed) {
+    // 페이지 권한 불가
+    content = <AccessDeniedPage />;
+  } else {
+    // 정상 화면
+    content = (
       <div className={styles.layout}>
         <div className={styles.contentWrapper}>
           <div className={styles.sidebar}>
@@ -83,44 +107,28 @@ import { useEffect, useState } from "react";
     );
   }
 
-  export default ExpoAdminLayout;
+  return content;
+}
 
+export default ExpoAdminLayout;
 
-  function hasPagePermission(path, basePath, perm) {
-    if (path === basePath || path === `${basePath}/`) return true;
+// 주소창 직입 방지: 페이지별 권한 규칙
+function hasPagePermission(path, basePath, perm) {
+  if (path === basePath || path === `${basePath}/`) return true;
 
-    const rules = [
-      { match: `${basePath}/setting`,      allow: !!perm?.isExpoDetailUpdate },
-      { match: `${basePath}/booths`,       allow: !!perm?.isBoothInfoUpdate },
-      { match: `${basePath}/events`,       allow: !!perm?.isScheduleUpdate },
-      { match: `${basePath}/payments`,     allow: !!perm?.isPaymentView },
-      { match: `${basePath}/reservations`, allow: !!perm?.isReserverListView },
-      { match: `${basePath}/emails`,       allow: !!perm?.isEmailLogView },
-      { match: `${basePath}/operation`,    allow: !!perm?.isOperationsConfigUpdate },
-      { match: `${basePath}/settlement`,   allow: !!perm?.isSettlementView },
-      { match: `${basePath}/inquiry`,      allow: !!perm?.isInquiryView },
-    ];
+  const rules = [
+    { match: `${basePath}/setting`,      allow: !!perm?.isExpoDetailUpdate },
+    { match: `${basePath}/booths`,       allow: !!perm?.isBoothInfoUpdate },
+    { match: `${basePath}/events`,       allow: !!perm?.isScheduleUpdate },
+    { match: `${basePath}/payments`,     allow: !!perm?.isPaymentView },
+    { match: `${basePath}/reservations`, allow: !!perm?.isReserverListView },
+    { match: `${basePath}/emails`,       allow: !!perm?.isEmailLogView },
+    { match: `${basePath}/operation`,    allow: !!perm?.isOperationsConfigUpdate },
+    { match: `${basePath}/inquiry`,      allow: !!perm?.isInquiryView },
+  ];
 
-    for (const r of rules) {
-      if (path.startsWith(r.match)) return r.allow;
-    }
-    return true;
+  for (const r of rules) {
+    if (path.startsWith(r.match)) return r.allow;
   }
-
-  function NoAccessPage() {
-    return (
-      <div style={{
-        minHeight: "60vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        padding: "2rem"
-      }}>
-        <h2 style={{ fontSize: "1.5rem", color: "#d32f2f", marginBottom: "1rem" }}>
-          [403 Forbidden] 접근 권한이 없습니다.
-        </h2>
-      </div>
-    );
-  }
+  return true;
+}

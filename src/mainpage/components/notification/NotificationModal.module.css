@@ -2,142 +2,481 @@
 
 .modalContainer {
   background: white;
-  width: 400px;
-  border-radius: 12px;
-  box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
-  padding: 1.25rem;
+  width: 480px;
+  max-width: 90vw;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 0;
   position: absolute;
   top: 60px;
   right: 0;
   z-index: 999;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .headerTitle {
   display: flex;
   align-items: center;
-  font-weight: bold;
-  font-size: 1rem;
-  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  gap: 0.5rem;
+  color: #1f2937;
 }
 
 .headerActions {
   display: flex;
+  gap: 0.75rem;
+}
+
+/* 탭 네비게이션 */
+.tabNavigation {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
-.readAll,
-.close {
-  background: none;
-  border: none;
-  font-size: 0.875rem;
+.tabButton:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.tabButton.active {
+  color: #3b82f6;
+  background: white;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.tabBadge {
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* 상태 하이라이트 */
+.statusHighlight {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.readAll {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  font-size: 0.8rem;
   cursor: pointer;
-  color: #666;
+  color: #3b82f6;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.readAll:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.readAll:disabled {
+  background: rgba(156, 163, 175, 0.1);
+  border-color: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.close {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 1rem;
+  cursor: pointer;
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .notificationList {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 300px;
+  max-height: 450px;
   overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.notificationList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notificationList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notificationList::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.notificationList::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
 }
 
 .notificationItem {
   display: flex;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #eee;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: none;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background: #f8f9fa; /* 읽은 알림 - 연한 회색 */
+  opacity: 0.6; /* 읽은 알림 - 흐리게 */
+}
+
+.notificationItem:last-child {
+  margin-bottom: 0;
+}
+
+.notificationItem:hover {
+  background: #e9ecef; /* 읽은 알림 호버 */
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.notificationItem.unread {
+  background: white; /* 안읽은 알림 - 깔끔한 흰색 */
+  opacity: 1; /* 안읽은 알림 - 선명하게 */
+  border-left: 4px solid #3b82f6;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1); /* 안읽은 알림 - 파란 그림자 */
+}
+
+.notificationItem.unread::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.notificationItem.unread:hover {
+  background: #f8fafc; /* 안읽은 알림 호버 - 더 밝은 흰색 */
 }
 
 .notificationIconWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notificationIconWrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  pointer-events: none;
 }
 
 .notificationContent {
   flex-grow: 1;
+  min-width: 0;
 }
 
 .notificationTitle {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #1f2937;
+  font-size: 0.95rem;
+  line-height: 1.3;
 }
 
 .notificationDesc {
-  font-size: 0.875rem;
-  color: #555;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .notificationMeta {
   font-size: 0.75rem;
-  color: #999;
+  color: #9ca3af;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.6rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .typeBadge {
-  background-color: #f4f4f5;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 500;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  color: #4b5563;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .timeAgo {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 500;
 }
 
 .unreadDot {
-  width: 6px;
-  height: 6px;
-  background-color: #f87171;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   border-radius: 50%;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  animation: pulse 2s infinite;
 }
 
 .confirmButton {
-  width: 100%;
-  margin-top: 1rem;
-  padding: 0.6rem;
-  background-color: #000;
+  width: calc(100% - 2rem);
+  margin: 1rem 1rem 1.5rem 1rem;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, #1f2937, #374151);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 알림 아이콘 트리거 버튼 */
-.notificationWrapper {
-  position: relative;
+.confirmButton:hover {
+  background: linear-gradient(135deg, #374151, #4b5563);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 로딩 및 빈 상태 */
+.loadingItem,
+.emptyItem {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #9ca3af;
+  font-style: italic;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loadingItem::before,
+.emptyItem::before {
+  content: '📭';
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.loadingItem::before {
+  content: '⏳';
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 확인 모달 스타일 */
+.confirmModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirmModal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalZoomIn 0.3s ease-out;
+}
+
+.confirmModal h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.confirmModal p {
+  margin: 0 0 2rem 0;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.confirmModalButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.cancelButton,
+.confirmReadAllButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 80px;
 }
 
-.notificationIcon {
-  color: #000;
+.cancelButton {
+  background: #f3f4f6;
+  color: #374151;
 }
 
-.notificationBadge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background-color: #ef4444;
+.cancelButton:hover {
+  background: #e5e7eb;
+}
+
+.confirmReadAllButton {
+  background: #ef4444;
   color: white;
-  border-radius: 50%;
-  font-size: 10px;
-  padding: 2px 6px;
-  font-weight: bold;
+}
+
+.confirmReadAllButton:hover {
+  background: #dc2626;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .modalContainer {
+    width: 95vw;
+    right: 2.5vw;
+    left: 2.5vw;
+  }
+  
+  .notificationItem {
+    padding: 0.8rem;
+  }
+  
+  .notificationIconWrap {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .confirmModal {
+    width: 95vw;
+    padding: 1.5rem;
+  }
+  
+  .confirmModalButtons {
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .confirmReadAllButton {
+    width: 100%;
+  }
 }

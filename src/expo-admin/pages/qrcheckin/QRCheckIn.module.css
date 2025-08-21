@@ -1,0 +1,143 @@
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 50px auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 30px;           /* 기존 2rem → 프로젝트 타이포 스케일에 맞춤 */
+  color: #2b2b2b;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.header p {
+  color: #777;
+  font-size: 13px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.scanSection {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;             /* 40px → 약간 축소 */
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06); /* 얕은 그림자 */
+  border: 1px solid #e9ecef;                   /* 2px → 1px */
+}
+
+.scanIcon {
+  font-size: 28px;           /* 4rem → 축소 */
+  margin-bottom: 12px;
+  color: #1e2a38;
+}
+
+.scanSection h2 {
+  font-size: 16px;           /* 1.5rem → 축소 */
+  color: #2b2b2b;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.scanSection p {
+  color: #444;
+  margin-bottom: 16px;        /* 30px → 축소 */
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* 버튼만 프로젝트 톤으로 변경 (그라데이션 제거, 네이비계열) */
+.scanBtn {
+  background: #1e2a38;
+  color: #ffffff;
+  border: 1px solid #1e2a38;
+  padding: 10px 16px;         /* 프로젝트 버튼 높이와 통일 */
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
+}
+
+.scanBtn:hover {
+  background: #16202b;
+  border-color: #16202b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 32, 43, 0.18);
+}
+
+.scanBtn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.scanBtn:focus-visible {
+  outline: 2px solid rgba(30,42,56,.3);
+  outline-offset: 2px;
+}
+
+.instructions {
+  background: #f7f8fa;       /* 파스텔 톤으로 톤 다운 */
+  border-radius: 12px;
+  padding: 20px;             /* 30px → 20px */
+  border: 1px solid #e9ecef;
+}
+
+.instructions h3 {
+  color: #2b2b2b;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.instructions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.instructions li {
+  color: #444;
+  padding: 8px 0 8px 22px;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+  font-size: 13px;
+}
+
+.instructions li:last-child {
+  border-bottom: none;
+}
+
+.instructions li::before {
+  content: "•";               /* 체크 → 도트로 톤 다운 */
+  color: #1e2a38;
+  font-weight: 700;
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .scanSection {
+    padding: 20px;
+  }
+
+  .instructions {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,181 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #f5f5f5;
+}
+
+.closeIcon {
+  font-size: 16px;
+  color: #333;
+}
+
+.modalContent {
+  padding: 20px 24px;
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.formFlat {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.inputField {
+  padding: 10px 8px;
+  font-size: 14px;
+  color: #333;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  outline: none;
+  width: 100%;
+}
+
+.inputField:focus {
+  border-color: #1e2a38;
+}
+
+.toggleWrapper {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  inset: 0;
+  background-color: #d1d5db;
+  border-radius: 999px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  top: 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: #1e2a38;
+}
+
+.toggleInput:checked + .toggleSlider::before {
+  transform: translateX(20px);
+}
+
+.buttonDivider {
+  border-top: 1px dashed #ddd;
+  margin: 12px 0;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.submitBtn {
+  background-color: #1e2a38;
+  color: white;
+}
+
+.submitBtn:hover {
+  background-color: #2c3e50;
+}
+
+.cancelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+}
+
+.cancelBtn:hover {
+  background-color: #d9d9d9;
+}
+
+.iconBtn {
+  font-size: 14px;
+}
+
+.errorText {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #e53935;
+}

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./PaymentDetailModal.module.css";
 
 function AdPaymentRefundModal({
@@ -14,78 +15,162 @@ function AdPaymentRefundModal({
   usedAmount,
   remainingDays,
   refundAmount,
+  currentStatus,
+  isRefundCompleted = false,
   onRefund,
   onCancel,
   onClose,
 }) {
+  const { t } = useTranslation();
+  const [refundReason, setRefundReason] = useState('');
+
+  // 상태별 환불 유형 결정
+  const getRefundType = () => {
+    const refundTypeKey = currentStatus || 'DEFAULT';
+    const refundTypeData = t(`adPaymentRefundModal.refundTypes.${refundTypeKey}`, { returnObjects: true });
+    
+    const colorMap = {
+      'PENDING_PUBLISH': '#10b981',
+      'PUBLISHED': '#f59e0b', 
+      'PENDING_CANCEL': '#6b7280',
+      'DEFAULT': '#3b82f6'
+    };
+
+    return {
+      type: refundTypeData.type,
+      color: colorMap[refundTypeKey] || colorMap.DEFAULT,
+      description: refundTypeData.description
+    };
+  };
+
+  const refundType = getRefundType();
+
+  const handleRefundSubmit = () => {
+    if (!refundReason.trim()) {
+      alert(t('adPaymentRefundModal.messages.reasonRequired'));
+      return;
+    }
+    if (onRefund) {
+      onRefund(refundReason);
+    }
+  };
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
-        <h2 className={styles.title}>광고 환불 신청 내역</h2>
-        <div className={styles.infoSection}>
-          <div>
-            <div className={styles.row}>
-              <span>광고명</span>
-              <span>{advertisementTitle}</span>
-            </div>
-            <div className={styles.row}>
-              <span>신청자</span>
-              <span>{applicantName}</span>
-            </div>
-            <div className={styles.row}>
-              <span>게시 기간</span>
-              <span>{displayStartDate} ~ {displayEndDate}</span>
-            </div>
-            <div className={styles.row}>
-              <span>환불 신청일</span>
-              <span>{refundRequestDate}</span>
-            </div>
-          </div>
-          <div className={styles.feeBox}>
-            <div className={styles.row}>
-              <span>총 게시 일수</span>
-              <span>{totalDays}일</span>
-            </div>
-            <div className={styles.row}>
-              <span>일일 광고비</span>
-              <span>{feePerDay?.toLocaleString()}원</span>
-            </div>
-            <div className={styles.row}>
-              <span>총 결제 금액</span>
-              <span>{totalAmount?.toLocaleString()}원</span>
-            </div>
-            <hr className={styles.divider} />
-            <div className={styles.row}>
-              <span>사용 일수</span>
-              <span>{usedDays}일</span>
-            </div>
-            <div className={styles.row}>
-              <span>사용 금액</span>
-              <span>{usedAmount?.toLocaleString()}원</span>
-            </div>
-            <div className={styles.row}>
-              <span>남은 일수</span>
-              <span>{remainingDays}일</span>
-            </div>
-            <div className={styles.row}>
-              <span>환불 계산식</span>
-              <span>{remainingDays}일 × {feePerDay?.toLocaleString()}원</span>
-            </div>
-            <div className={`${styles.totalRow} ${styles.refundRow}`}>
-              <span>환불 예정 금액</span>
-              <span className={styles.refundAmount}>{refundAmount?.toLocaleString()}원</span>
-            </div>
+        <div className={styles.titleSection}>
+          <h2 className={styles.title}>{t(isRefundCompleted ? 'adPaymentRefundModal.title.completed' : 'adPaymentRefundModal.title.pending')}</h2>
+          <div className={styles.refundTypeBadge} style={{ backgroundColor: refundType.color }}>
+            {refundType.type}
           </div>
         </div>
+        <div className={styles.refundDescription}>
+          {refundType.description}
+        </div>
+        <div className={styles.twoColumnLayout}>
+          {/* 좌측 컬럼 */}
+          <div className={styles.leftColumn}>
+            {/* 좌측 상단: 결제 정보 */}
+            <div className={styles.leftTopBox}>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.totalDays')}</span>
+                <span>{totalDays}{t('adPaymentRefundModal.units.days')}</span>
+              </div>
+              {!isRefundCompleted && (
+                <div className={styles.row}>
+                  <span>{t('adPaymentRefundModal.fields.dailyFee')}</span>
+                  <span>{feePerDay?.toLocaleString()}{t('adPaymentRefundModal.units.currency')}</span>
+                </div>
+              )}
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.totalAmount')}</span>
+                <span>{totalAmount?.toLocaleString()}{t('adPaymentRefundModal.units.currency')}</span>
+              </div>
+            </div>
+            
+            {/* 좌측 하단: 사용 정보 */}
+            <div className={styles.leftBottomBox}>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.usedDays')}</span>
+                <span>{usedDays}{t('adPaymentRefundModal.units.days')}</span>
+              </div>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.usedAmount')}</span>
+                <span>{usedAmount?.toLocaleString()}{t('adPaymentRefundModal.units.currency')}</span>
+              </div>
+              {!isRefundCompleted && (
+                <>
+                  <div className={styles.row}>
+                    <span>{t('adPaymentRefundModal.fields.remainingDays')}</span>
+                    <span>{remainingDays}{t('adPaymentRefundModal.units.days')}</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span>{t('adPaymentRefundModal.fields.refundFormula')}</span>
+                    <span>{remainingDays}{t('adPaymentRefundModal.units.days')} × {feePerDay?.toLocaleString()}{t('adPaymentRefundModal.units.currency')}</span>
+                  </div>
+                </>
+              )}
+              <div className={`${styles.totalRow} ${styles.refundRow}`}>
+                <span>{t(isRefundCompleted ? 'adPaymentRefundModal.fields.refundAmountCompleted' : 'adPaymentRefundModal.fields.refundAmountPending')}</span>
+                <span className={styles.refundAmount}>{refundAmount?.toLocaleString()}{t('adPaymentRefundModal.units.currency')}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* 우측 컬럼 */}
+          <div className={styles.rightColumn}>
+            {/* 우측 상단: 기본 정보 */}
+            <div className={styles.rightTopBox}>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.advertisementTitle')}</span>
+                <span>{advertisementTitle}</span>
+              </div>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.applicant')}</span>
+                <span>{applicantName}</span>
+              </div>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.displayPeriod')}</span>
+                <span>{displayStartDate} ~ {displayEndDate}</span>
+              </div>
+              <div className={styles.row}>
+                <span>{t('adPaymentRefundModal.fields.refundRequestDate')}</span>
+                <span>{refundRequestDate}</span>
+              </div>
+            </div>
+            
+            {/* 우측 하단: 환불 사유 */}
+            {onRefund && !isRefundCompleted && (
+              <div className={styles.rightBottomBox}>
+                <label className={styles.refundReasonLabel}>{t('adPaymentRefundModal.fields.refundReason')}</label>
+                <textarea
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  placeholder={t('adPaymentRefundModal.placeholders.refundReason')}
+                  className={styles.refundReasonTextarea}
+                  rows={4}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        
         {/* 하단 버튼 영역 */}
         <div className={styles.btnRow}>
-          <button className={styles.whiteBtn} onClick={onCancel || onClose}>
-            닫기
-          </button>
-          {onRefund && (
-            <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={onRefund}>
-              환불 신청
+          {isRefundCompleted ? (
+            <button className={styles.blackBtn} onClick={onClose}>
+              {t('adPaymentRefundModal.buttons.confirm')}
             </button>
+          ) : (
+            <>
+              <button className={styles.whiteBtn} onClick={onCancel || onClose}>
+                {t('adPaymentRefundModal.buttons.close')}
+              </button>
+              {onRefund && (
+                <button className={`${styles.blackBtn} ${styles.refundBtn}`} onClick={handleRefundSubmit}>
+                  {t('adPaymentRefundModal.buttons.refund')}
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

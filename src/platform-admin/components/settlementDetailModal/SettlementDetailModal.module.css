@@ -13,7 +13,7 @@
 
 .modal {
   background: #fff;
-  width: 480px;
+  width: 900px;
   padding: 28px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   font-family: 'Pretendard', sans-serif;
@@ -94,4 +94,152 @@
   background-color: #ffffff;
   border: 1px solid #ccc;
   color: #333;
+  font-weight: 500;
+}
+
+.cancelBtn:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.approveBtn {
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+}
+
+.approveBtn:hover {
+  background-color: #0056b3;
+}
+
+.approveBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.completionBox {
+  background-color: #e8f5e8;
+  border: 1px solid #28a745;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.completionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #155724;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* 2컬럼 레이아웃 */
+.contentLayout {
+  display: flex;
+  gap: 48px;
+  margin-bottom: 25px;
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  flex: 1;
+}
+
+/* 티켓 판매 내역 섹션 스타일 */
+.ticketSalesSection {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.ticketTable {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e1e8ed;
+}
+
+.ticketHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 16px;
+  padding: 12px 20px;
+  background: #f7f9fc;
+  border-bottom: 2px solid #e1e8ed;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.ticketRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f3f5;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.ticketRow:hover {
+  background-color: #f8f9fa;
+}
+
+.ticketName {
+  font-weight: 500;
+  color: #333;
+}
+
+.ticketPrice {
+  text-align: right;
+  color: #666;
+}
+
+.ticketCount {
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+}
+
+.ticketSales {
+  text-align: right;
+  color: #0066cc;
+  font-weight: 600;
+}
+
+.ticketTotal {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #f0f7ff;
+  border-top: 2px solid #0066cc;
+  font-weight: 600;
+}
+
+.ticketTotal > span:first-child {
+  color: #0066cc;
+  font-size: 15px;
+}
+
+.totalCount {
+  text-align: center;
+  color: #0066cc;
+}
+
+.totalAmount {
+  text-align: right;
+  color: #0066cc;
+  font-size: 16px;
 }

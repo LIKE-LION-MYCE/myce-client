@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './ExpoStatusPage.module.css';
+import settingStyles from '../../../expo-admin/pages/setting/Setting.module.css';
 import { getMyExpos } from '../../../api/service/user/memberApi';
+import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetailModal';
 
 // 한 페이지에 보여줄 항목 수
 const ITEMS_PER_PAGE = 5;
@@ -11,11 +14,14 @@ const PAGE_BTN_COUNT = 5;
 
 const ExpoStatusPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [expos, setExpos] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentData, setSelectedPaymentData] = useState(null);
 
   useEffect(() => {
     fetchMyExpos();
@@ -36,6 +42,7 @@ const ExpoStatusPage = () => {
         postPeriod: formatDateRange(expo.displayStartDate, expo.displayEndDate),
         location: expo.locationDetail ? `${expo.location} (${expo.locationDetail})` : expo.location,
         status: getStatusLabel(expo.status),
+        statusKey: expo.status, // 원본 상태 키 저장
         isPremium: expo.isPremium
       }));
       
@@ -43,7 +50,7 @@ const ExpoStatusPage = () => {
       setTotalPages(total);
     } catch (err) {
       console.error('신청 박람회 조회 실패:', err);
-      setError('신청 박람회를 불러오는데 실패했습니다.');
+      setError(t('expoStatus.loadError'));
       setExpos([]);
     } finally {
       setLoading(false);
@@ -59,18 +66,71 @@ const ExpoStatusPage = () => {
 
   const getStatusLabel = (status) => {
     const statusMap = {
-      'PENDING_APPROVAL': '승인대기',
-      'PENDING_PAYMENT': '결제대기',
-      'PENDING_PUBLISH': '게시대기',
-      'PENDING_CANCEL': '취소대기',
-      'PUBLISHED': '게시중',
-      'PUBLISH_ENDED': '게시종료',
-      'SETTLEMENT_REQUESTED': '정산요청',
-      'COMPLETED': '종료됨',
-      'REJECTED': '거절됨',
-      'CANCELLED': '취소됨'
+      'PENDING_APPROVAL': t('expoStatus.status.PENDING_APPROVAL'),
+      'PENDING_PAYMENT': t('expoStatus.status.PENDING_PAYMENT'),
+      'PENDING_PUBLISH': t('expoStatus.status.PENDING_PUBLISH'),
+      'PENDING_CANCEL': t('expoStatus.status.PENDING_CANCEL'),
+      'PUBLISHED': t('expoStatus.status.PUBLISHED'),
+      'PUBLISH_ENDED': t('expoStatus.status.PUBLISH_ENDED'),
+      'SETTLEMENT_REQUESTED': t('expoStatus.status.SETTLEMENT_REQUESTED'),
+      'COMPLETED': t('expoStatus.status.COMPLETED'),
+      'REJECTED': t('expoStatus.status.REJECTED'),
+      'CANCELLED': t('expoStatus.status.CANCELLED')
     };
     return statusMap[status] || status;
+  };
+
+  // 상태에 따른 CSS 클래스 매핑
+  const getStatusClass = (status) => {
+    const statusClassMap = {
+      'PENDING_APPROVAL': styles.badgePENDING_APPROVAL,
+      'PENDING_PAYMENT': styles.badgePENDING_PAYMENT,
+      'PENDING_PUBLISH': styles.badgePENDING_PUBLISH,
+      'PENDING_CANCEL': styles.badgePENDING_CANCEL,
+      'PUBLISHED': styles.badgePUBLISHED,
+      'PUBLISH_ENDED': styles.badgePUBLISH_ENDED,
+      'SETTLEMENT_REQUESTED': styles.badgeSETTLEMENT_REQUESTED,
+      'COMPLETED': styles.badgeCOMPLETED,
+      'REJECTED': styles.badgeREJECTED,
+      'CANCELLED': styles.badgeCANCELLED
+    };
+    return statusClassMap[status] || '';
+  };
+
+  // 결제 정보를 볼 수 있는 상태인지 확인하는 함수 (승인대기, 결제대기 제외)
+  const canViewPaymentInfo = (statusKey) => {
+    const excludedStatuses = [
+      'PENDING_APPROVAL', // 승인대기
+      'PENDING_PAYMENT'   // 결제대기 
+    ];
+    return !excludedStatuses.includes(statusKey);
+  };
+
+  // 결제 정보 버튼 클릭 핸들러
+  const handlePaymentInfoClick = (e, expo) => {
+    e.stopPropagation(); // 행 클릭 이벤트 방지
+    
+    // 기존 PaymentDetailModal 형식에 맞는 데이터
+    const paymentData = {
+      expoName: expo.title,
+      applicant: '홍길동', // TODO: 실제 신청자 정보로 교체
+      period: expo.postPeriod,
+      totalDays: 30, // TODO: 실제 게시 일수로 교체
+      dailyUsageFee: expo.isPremium ? 30000 : 20000,
+      usageFeeAmount: expo.isPremium ? 900000 : 600000,
+      depositAmount: expo.isPremium ? 300000 : 200000,
+      totalAmount: expo.isPremium ? 1200000 : 800000,
+      isPremium: expo.isPremium,
+      commissionRate: 10
+    };
+    
+    setSelectedPaymentData(paymentData);
+    setShowPaymentModal(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setSelectedPaymentData(null);
   };
 
   const handleRowClick = (expo) => {
@@ -79,25 +139,23 @@ const ExpoStatusPage = () => {
 
   // 페이지네이션 버튼 렌더링
   const renderPaginationButtons = () => {
+    if (totalPages <= 1) return null;
+
     const pages = [];
-    const startPage = Math.floor((currentPage - 1) / PAGE_BTN_COUNT) * PAGE_BTN_COUNT + 1;
-    const endPage = Math.min(startPage + PAGE_BTN_COUNT - 1, totalPages);
 
-    // 첫 페이지로 이동
-    pages.push(
-      <button key="first" onClick={() => setCurrentPage(1)} className={styles.pageButton} disabled={currentPage === 1}>
-        «
-      </button>
-    );
+    // 이전 버튼
+    if (currentPage > 1) {
+      pages.push(
+        <button key="prev" onClick={() => setCurrentPage(currentPage - 1)} className={styles.pageButton}>
+          {t('expoStatus.pagination.prev')}
+        </button>
+      );
+    }
 
-    // 이전 페이지 그룹으로 이동
-    pages.push(
-      <button key="prev" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} className={styles.pageButton} disabled={currentPage === 1}>
-        이전
-      </button>
-    );
+    // 페이지 번호들 (현재 페이지 기준 ±2)
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
 
-    // 페이지 번호 버튼들
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
@@ -110,19 +168,14 @@ const ExpoStatusPage = () => {
       );
     }
 
-    // 다음 페이지 그룹으로 이동
-    pages.push(
-      <button key="next" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} className={styles.pageButton} disabled={currentPage === totalPages}>
-        다음
-      </button>
-    );
-
-    // 마지막 페이지로 이동
-    pages.push(
-      <button key="last" onClick={() => setCurrentPage(totalPages)} className={styles.pageButton} disabled={currentPage === totalPages}>
-        »
-      </button>
-    );
+    // 다음 버튼
+    if (currentPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => setCurrentPage(currentPage + 1)} className={styles.pageButton}>
+          {t('expoStatus.pagination.next')}
+        </button>
+      );
+    }
 
     return pages;
   };
@@ -130,8 +183,8 @@ const ExpoStatusPage = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <h2 className={styles.title}>신청 박람회 현황</h2>
-        <div className={styles.loading}>로딩 중...</div>
+        <h2 className={styles.title}>{t('expoStatus.title')}</h2>
+        <div className={styles.loading}>{t('expoStatus.loading')}</div>
       </div>
     );
   }
@@ -139,7 +192,7 @@ const ExpoStatusPage = () => {
   if (error) {
     return (
       <div className={styles.container}>
-        <h2 className={styles.title}>신청 박람회 현황</h2>
+        <h2 className={styles.title}>{t('expoStatus.title')}</h2>
         <div className={styles.error}>{error}</div>
       </div>
     );
@@ -147,18 +200,18 @@ const ExpoStatusPage = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>신청 박람회 현황</h2>
+      <h2 className={styles.title}>{t('expoStatus.title')}</h2>
       {expos.length > 0 ? (
         <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>No.</th>
-                <th>박람회명</th>
-                <th>신청일</th>
-                <th>게시 기간</th>
-                <th>개최 장소</th>
-                <th>상태</th>
+                <th>{t('expoStatus.table.no')}</th>
+                <th>{t('expoStatus.table.expoName')}</th>
+                <th>{t('expoStatus.table.appliedAt')}</th>
+                <th>{t('expoStatus.table.postPeriod')}</th>
+                <th>{t('expoStatus.table.location')}</th>
+                <th>{t('expoStatus.table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -167,13 +220,22 @@ const ExpoStatusPage = () => {
                   <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                   <td>
                     {expo.title}
-                    {expo.isPremium && <span className={styles.premiumBadge}>프리미엄</span>}
-                  </td>
+                    {expo.isPremium && (
+                      <span
+                        className={styles.premiumBadge}
+                        aria-label="Premium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className={styles.premiumIcon} role="img" aria-hidden>👑</span>
+                        PREMIUM
+                      </span>
+                    )}
+                                      </td>
                   <td>{expo.applyDate}</td>
                   <td>{expo.postPeriod}</td>
                   <td>{expo.location}</td>
                   <td>
-                    <span className={`${styles.statusBadge} ${styles[expo.status.replace(/\s/g, '')]}`}>
+                    <span className={`${settingStyles.badge} ${settingStyles[`badge${expo.statusKey}`]} ${styles.statusBadge}`}>
                       {expo.status}
                     </span>
                   </td>
@@ -187,7 +249,32 @@ const ExpoStatusPage = () => {
           </div>
         </>
       ) : (
-        <div className={styles.noData}>신청한 박람회가 없습니다.</div>
+        <div className={styles.noData}>{t('expoStatus.noData')}</div>
+      )}
+      
+      {/* 결제 상세 정보 모달 */}
+      {showPaymentModal && selectedPaymentData && (
+        <PaymentDetailModal
+          expoName={selectedPaymentData.expoName}
+          applicant={selectedPaymentData.applicant}
+          period={selectedPaymentData.period}
+          totalDays={selectedPaymentData.totalDays}
+          dailyUsageFee={selectedPaymentData.dailyUsageFee}
+          usageFeeAmount={selectedPaymentData.usageFeeAmount}
+          depositAmount={selectedPaymentData.depositAmount}
+          totalAmount={selectedPaymentData.totalAmount}
+          isPremium={selectedPaymentData.isPremium}
+          commissionRate={selectedPaymentData.commissionRate}
+          onClose={handleClosePaymentModal}
+        >
+          {/* 결제 버튼 없이 확인 버튼만 */}
+          <button 
+            className={styles.confirmBtn}
+            onClick={handleClosePaymentModal}
+          >
+            {t('expoStatus.modal.confirm')}
+          </button>
+        </PaymentDetailModal>
       )}
     </div>
   );

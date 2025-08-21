@@ -1,0 +1,114 @@
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 5rem; /* 채팅 버튼 옆에 위치 */
+  width: 60px;
+  height: 60px;
+  background-color: #3c3c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 999;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Add a subtle glow for non-authenticated users to hint at login */
+.fab.loginHint {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 10px rgba(0, 0, 0, 0.2),
+      0 0 20px rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 4px 10px rgba(0, 0, 0, 0.2),
+      0 0 30px rgba(102, 126, 234, 0.5);
+  }
+}
+
+.fab:hover {
+  background-color: #2b2b2b;
+  transform: scale(1.05);
+}
+
+.icon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  background-color: #ff4757;
+  border-radius: 10px;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+/* 태블릿 이하 */
+@media (max-width: 768px) {
+  .fab {
+    bottom: 1.5rem;
+    right: 4rem; /* 모바일에서도 채팅 버튼 옆에 */
+    width: 50px;
+    height: 50px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+}
+
+/* 모바일 소형 기기 */
+@media (max-width: 480px) {
+  .fab {
+    bottom: 1rem;
+    right: 3.5rem; /* 더 작은 화면에서 간격 조정 */
+    width: 45px;
+    height: 45px;
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+
+  .badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 8px;
+    top: -4px;
+    right: -4px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .fab {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}

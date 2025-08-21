@@ -1,17 +1,17 @@
 .container {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 1200px;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .leftSection, .rightSection {
-  flex: 1; /* 1:1 비율 유지 */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .info {
@@ -23,105 +23,69 @@
 }
 
 .divider {
-  margin : 1.5rem 0;
+  margin : 1.5rem 0 0.5rem 0;
   border-top: 1px dashed #ccc;
 }
 
 /* 우측 썸네일 및 행사 정보 */
 .thumbnailBox {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 8px;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  align-items: flex-start;
 }
 
-.radioGroup {
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.genderGroup {
-  display: flex;
-  gap: 1rem;
-}
-
-.radioItem {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #333;
-  position: relative;
-}
-
-.radioItem input[type="radio"] {
+.radioOption input[type="radio"] {
   appearance: none;
-  width: 25px;
-  height: 25px;
-  border: 2px solid #ccc;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
   border-radius: 50%;
   outline: none;
   cursor: pointer;
   position: relative;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  vertical-align: middle;
+  background-color: #ffffff;
 }
 
-.radioItem input[type="radio"]::before {
+.radioOption input[type="radio"]::before {
   content: '';
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 14px;
-  height: 14px;
-  background-color: #007aff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: #111827;
   border-radius: 50%;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.radioItem input[type="radio"]:checked {
-  border-color: #007aff;
+.radioOption input[type="radio"]:checked {
+  border-color: #111827;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px #111827;
 }
 
-.radioItem input[type="radio"]:checked::before {
+.radioOption input[type="radio"]:checked::before {
   opacity: 1;
 }
 
-.radioItem input[type="radio"]:focus {
-  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+.radioOption input[type="radio"]:hover {
+  border-color: #9ca3af;
 }
 
-.applyButton {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-
-.inputGroup {
-  margin-top: 1rem;
-}
-
-.inputGroup input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.95rem;
-}
-
-.formGroup {
-  gap: 0.5rem;
-  margin-top: 1rem;
+.radioOption input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
 }
 
 .checkbox {
@@ -135,53 +99,221 @@
 .checkbox input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #007aff; /* 최신 브라우저에서 체크 색상 지정 */
+  accent-color: #000;
 }
 
+
+.expoTitle {
+  margin: 0 0 0.8rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  text-align: left;
+  min-width: 250px;
+}
 
 .thumbnail {
-  width: 50%;
-  aspect-ratio: 3/4;
-  overflow: hidden;
-  font-size: 1.2rem;
+  max-width: 220px;
+  max-height: 280px;
+  border-radius: 0;
+  object-fit: contain;
+  box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 8px -4px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.details p {
-  margin: 0;
+.thumbnail:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 15px 20px -5px rgba(0, 0, 0, 0.08);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 0.8rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.iconWrapper {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.iconWrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15);
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  color: white;
+}
+
+.infoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  padding-top: 1px;
+}
+
+.infoMain {
   font-size: 0.9rem;
-  color: #000;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.infoSub {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.25;
+  font-weight: 400;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.categoryTag {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border-radius: 15px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.categoryTag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* 결제 요약 */
 .summary {
-  padding: 1rem 0;
-  border-top: 1px dashed #ccc;
-  border-bottom: 1px dashed #ccc;
-  font-size: 0.95rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  margin: 1.2rem 0;
+}
+
+.summary:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.summary h3 {
+  margin: 0 0 1.2rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reciept {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 0;
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.row:not(.total) {
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .total {
-  font-weight: bold;
-  font-size: 1rem;
-  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 0.8rem;
+  padding: 0.8rem 0 0 0;
+  border-top: 2px solid #111827;
+  color: #111827;
+  letter-spacing: -0.02em;
 }
 
 /* 결제 방법 */
+.payment {
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.payment:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
 .payment h3 {
-  margin-bottom: 0.5rem;
+  margin: 0 0 1.2rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .methodGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.8rem;
 }
 
 .cardButton {
@@ -204,7 +336,7 @@
 }
 
 .cardButton.active img {
-  filter: brightness(100); /* 아이콘이 흰 배경에서 안 보일 경우 대비 */
+  filter: brightness(100);
 }
 
 
@@ -222,4 +354,311 @@
   cursor: pointer;
   border: none;
   border-radius: 4px;
+}
+
+.loadMemberInfoButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  outline: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.loadMemberInfoButton:hover {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15);
+}
+
+.mileageSection {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.mileageSection:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.mileageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mileageHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.currentMileage {
+  text-align: right;
+}
+
+.currentMileage span {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.currentMileage strong {
+  font-size: 1.1rem;
+  color: #111827;
+  font-weight: 700;
+  margin-left: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.mileageControls {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.mileageInputContainer {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.mileageInput {
+  width: 100%;
+  padding: 0.8rem 5rem 0.8rem 0.8rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #111827;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  /* Firefox / 표준 */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.mileageInput:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+  transform: translateY(-1px);
+}
+
+.mileageInput:hover {
+  border-color: #9ca3af;
+}
+
+/* Chrome / Edge / Safari (WebKit) 스핀 버튼 제거 */
+.mileageInput::-webkit-outer-spin-button,
+.mileageInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 일부 Safari에서 필요할 수 있음 */
+.mileageInput[type="number"] {
+  -webkit-appearance: none;
+}
+
+.useAllButton {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.useAllButton:hover {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  transform: translateY(-50%) scale(1.02);
+}
+
+.applyMileageButton {
+  padding: 0.8rem 1.2rem;
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.applyMileageButton:hover {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15);
+}
+
+.applyMileageButton:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.mileageFooter {
+  margin-top: 0.8rem;
+  text-align: right;
+}
+
+.remainingMileage span {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.remainingMileage strong {
+  font-size: 1rem;
+  color: #111827;
+  font-weight: 700;
+  margin-left: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.personInfoCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.personInfoCard:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.inputField {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.inputField label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.inputField input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  color: #111827;
+  font-weight: 500;
+}
+
+.inputField input:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+  transform: translateY(-1px);
+}
+
+.inputField input:hover {
+  border-color: #9ca3af;
+}
+
+.genderSelection {
+  margin-top: 1.2rem;
+}
+
+.genderSelection > label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.6rem;
+  display: block;
+  letter-spacing: 0.02em;
+}
+
+.genderOptions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.6rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+  padding: 0.4rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.radioOption:hover {
+  background-color: #f9fafb;
 }

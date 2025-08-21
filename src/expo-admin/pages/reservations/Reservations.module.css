@@ -140,3 +140,37 @@
   font-size: 14px;
   margin-right: 4px;
 }
+
+.selectionBar {
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  background: #f6f7fb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.selectionLinkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #2563eb;
+}
+.selectionLinkBtn:hover { opacity: 0.85; }
+
+.selectionClearBtn {
+  margin-left: auto; /* 오른쪽 정렬 원하면 사용 */
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.selectionClearBtn:hover { background: #f3f4f6; }

@@ -1,0 +1,110 @@
+.businessNumberWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.businessPartInput {
+  padding: 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  text-align: center;
+  font-family: inherit;
+  height: 100%;
+  background-color: #fff;
+}
+
+.businessInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.businessPartInput:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.businessPartInput.error {
+  border-color: #dc3545;
+}
+
+.businessPartInput.error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+
+.businessPartInput:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 각 입력 칸의 크기 조정 */
+.part1 {
+  width: 60px;  /* 3자리 */
+  min-width: 60px;
+}
+
+.part2 {
+  width: 50px;  /* 2자리 */
+  min-width: 50px;
+}
+
+.part3 {
+  width: 80px;  /* 5자리 */
+  min-width: 80px;
+}
+
+.separator {
+  font-size: 18px;
+  font-weight: bold;
+  color: #666;
+  user-select: none;
+  min-width: 10px;
+  text-align: center;
+}
+
+.errorMessage {
+  display: block;
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .businessNumberWrapper {
+    gap: 4px;
+  }
+  
+  .businessPartInput {
+    padding: 16px 8px;
+    font-size: 14px;
+  }
+  
+  .part1 {
+    width: 50px;
+    min-width: 50px;
+  }
+  
+  .part2 {
+    width: 40px;
+    min-width: 40px;
+  }
+  
+  .part3 {
+    width: 70px;
+    min-width: 70px;
+  }
+  
+  .separator {
+    font-size: 16px;
+  }
+}

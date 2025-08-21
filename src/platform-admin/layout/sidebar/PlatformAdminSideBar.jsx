@@ -14,20 +14,23 @@ import { MdEventNote, MdOutlineOndemandVideo } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
 
-import PlatformAdminInfoBox from '../../components/platformAdminInfoBox/PlatformAdminInfoBox';
+import PlatformAdminInfoBox from '../../components/InfoBox/PlatformAdminInfoBox';
 
 function PlatformAdminSideBar() {
   const location = useLocation();
   const currentPath = location.pathname;
-  const currentHash = location.hash;
 
   const [selectedMenu, setSelectedMenu] = useState('');
+  // 한 번에 하나만 열리도록 유지: ['dashboard'] | ['expo'] | ['banner'] | ['role'] | ['setting'] | []
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
   // 경로 이동 시 해당 서브메뉴만 열리게 처리
   useEffect(() => {
     setSelectedMenu(currentPath);
-    if (currentPath.includes('/platform/admin/expo')) {
+
+    if (currentPath.includes('/platform/admin/dashboard')) {
+      setOpenSubMenus(['dashboard']);
+    } else if (currentPath.includes('/platform/admin/expo')) {
       setOpenSubMenus(['expo']);
     } else if (currentPath.includes('/platform/admin/banner')) {
       setOpenSubMenus(['banner']);
@@ -42,17 +45,17 @@ function PlatformAdminSideBar() {
     }
   }, [currentPath]);
 
-  // 여러 개 열 수 있도록 유지
+  // 한 번에 하나만 열리도록 토글
   const toggleSubMenu = (menuKey) => {
-    setOpenSubMenus((prev) =>
-      prev.includes(menuKey)
-        ? prev.filter((key) => key !== menuKey)
-        : [...prev, menuKey]
-    );
+    setOpenSubMenus((prev) => (prev.includes(menuKey) ? [] : [menuKey]));
   };
 
-  // 스크롤 위치에 따라 해시값 갱신 (선택사항)
+  // 대시보드(루트)에서 스크롤에 따라 해시 갱신 (선택사항)
   useEffect(() => {
+    if (currentPath !== '/platform/admin/dashboard/revenue' && currentPath !== '/platform/admin/dashboard/usage') {
+      return;
+    }
+
     const handleScroll = () => {
       const revenueSection = document.getElementById('revenue');
       const usageSection = document.getElementById('usage');
@@ -69,10 +72,8 @@ function PlatformAdminSideBar() {
       }
     };
 
-    if (currentPath === '/platform/admin') {
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [currentPath, location.hash]);
 
   return (
@@ -121,14 +122,14 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('dashboard')}
         >
           <MenuItem
-            component={<Link to="/platform/admin#revenue" />}
-            active={currentPath === '/platform/admin' && currentHash === '#revenue'}
+            component={<Link to="/platform/admin/dashboard/revenue" />}
+            active={selectedMenu === '/platform/admin/dashboard/revenue'}
           >
             수익 정산
           </MenuItem>
           <MenuItem
-            component={<Link to="/platform/admin#usage" />}
-            active={currentPath === '/platform/admin' && currentHash === '#usage'}
+            component={<Link to="/platform/admin/dashboard/usage" />}
+            active={selectedMenu === '/platform/admin/dashboard/usage'}
           >
             이용량 조회
           </MenuItem>
@@ -168,7 +169,7 @@ function PlatformAdminSideBar() {
 
         <SubMenu
           icon={<MdOutlineOndemandVideo />}
-          label="배너 관리"
+          label="광고 관리"
           open={openSubMenus.includes('banner')}
           onOpenChange={() => toggleSubMenu('banner')}
         >
@@ -176,13 +177,13 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/bannerApplications" />}
             active={selectedMenu === '/platform/admin/bannerApplications'}
           >
-            배너 신청 관리
+            광고 신청 관리
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin/bannerCurrent" />}
             active={selectedMenu === '/platform/admin/bannerCurrent'}
           >
-            현재 배너 관리
+            현재 광고 관리
           </MenuItem>
         </SubMenu>
 
@@ -193,16 +194,10 @@ function PlatformAdminSideBar() {
           onOpenChange={() => toggleSubMenu('role')}
         >
           <MenuItem
-            component={<Link to="/platform/admin/roleAdmins" />}
-            active={selectedMenu === '/platform/admin/roleAdmins'}
-          >
-            박람회 관리자 계정
-          </MenuItem>
-          <MenuItem
             component={<Link to="/platform/admin/roleUsers" />}
             active={selectedMenu === '/platform/admin/roleUsers'}
           >
-            일반 사용자 목록
+            일반 사용자 관리
           </MenuItem>
         </SubMenu>
 
@@ -228,19 +223,19 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/settingMessage" />}
             active={selectedMenu === '/platform/admin/settingMessage'}
           >
-            발송 메시지
+            발송 메시지 설정
+          </MenuItem>
+          <MenuItem
+            component={<Link to="/platform/admin/adPosition" />}
+            active={selectedMenu === '/platform/admin/adPosition'}
+          >
+            광고 타입 설정
           </MenuItem>
           <MenuItem
             component={<Link to="/platform/admin/settingAmount" />}
             active={selectedMenu === '/platform/admin/settingAmount'}
           >
             금액 설정
-          </MenuItem>
-          <MenuItem
-            component={<Link to="/platform/admin/bannerLocations" />}
-            active={selectedMenu === '/platform/admin/bannerLocations'}
-          >
-            배너 타입 설정
           </MenuItem>
         </SubMenu>
       </Menu>

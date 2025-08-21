@@ -1,28 +1,34 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './ExpoApplicationTable.module.css';
 
-// 상태값 매핑: 화면에 보여줄 한글
-const statusMap = {
-  PENDING: '승인 대기',
-  APPROVED: '승인 완료',
-  REJECTED: '승인 거절',
-  CANCELED: '취소 완료',
-  SETTLE_PENDING: '정산 대기',
-  SETTLED: '정산 완료'
-};
+// statusMessage는 백엔드에서 한글로 변환되어 옴
 
 function ExpoApplicationTable({ data }) {
   const navigate = useNavigate();
 
+  // 상태별 CSS 클래스 매핑 (상세 페이지와 동일한 색상)
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'PENDING_APPROVAL':
+        return styles.pendingApproval; // 승인_대기 - 주황색
+      case 'REJECTED':
+        return styles.rejected; // 승인_거절 - 빨간색
+      case 'PENDING_PAYMENT':
+        return styles.pendingPayment; // 결제_대기 - 녹색
+      default:
+        return styles.defaultStatus;
+    }
+  };
+
   const columns = [
     { key: 'id', header: 'ID' },
-    { key: 'username', header: '아이디' },
-    { key: 'name', header: '신청자' },
-    { key: 'expoName', header: '박람회명' },
-    { key: 'email', header: '이메일' },
-    { key: 'phone', header: '전화번호' },
+    { key: 'memberUsername', header: '아이디' },
+    { key: 'memberName', header: '신청자' },
+    { key: 'title', header: '박람회명' },
+    { key: 'memberEmail', header: '이메일' },
+    { key: 'memberPhone', header: '전화번호' },
     { key: 'createdAt', header: '신청일자' },
-    { key: 'status', header: '상태' },
+    { key: 'statusMessage', header: '상태' },
     { key: 'action', header: '상세보기' },
   ];
 
@@ -30,7 +36,7 @@ function ExpoApplicationTable({ data }) {
   const goToDetail = (row) => {
     navigate(`/platform/admin/expoApplications/${row.id}`, {
       state: {
-        expoStatus: row.status, // 예: 'APPROVED'
+        expoStatus: row.statusMessage, // 예: '승인 대기'
         expoId: row.id
       },
     });
@@ -53,8 +59,10 @@ function ExpoApplicationTable({ data }) {
             <tr key={rowIndex} className={styles.row}>
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
-                  {col.key === 'status' ? (
-                    statusMap[row[col.key]] || row[col.key]
+                  {col.key === 'statusMessage' ? (
+                    <span className={`${styles.statusBadge} ${getStatusClass(row.status)}`}>
+                      {row[col.key]}
+                    </span>
                   ) : col.key === 'action' ? (
                     <button
                       className={styles.detailBtn}
@@ -62,6 +70,14 @@ function ExpoApplicationTable({ data }) {
                     >
                       상세보기
                     </button>
+                  ) : col.key === 'createdAt' ? (
+                    new Date(row[col.key]).toLocaleString('ko-KR', {
+                      year: 'numeric',
+                      month: '2-digit', 
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
                   ) : (
                     row[col.key] || '-'
                   )}

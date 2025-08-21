@@ -3,6 +3,7 @@ import styles from './ExpoAdminHeader.module.css';
 
 const pathMap = {
   '/expos/:expoId/admin': ['대시보드'],
+  '/expos/:expoId/admin/qrcheckin': ['QR 체크인'],
   '/expos/:expoId/admin/setting': ['박람회 관리', '박람회 상세'],
   '/expos/:expoId/admin/booths': ['박람회 관리', '참가 부스'],
   '/expos/:expoId/admin/events': ['박람회 관리', '행사 일정'],
@@ -10,8 +11,13 @@ const pathMap = {
   '/expos/:expoId/admin/reservations': ['예약 관리', '예약자 리스트'],
   '/expos/:expoId/admin/emails': ['예약 관리', '이메일 전송 이력'],
   '/expos/:expoId/admin/operation': ['운영 설정'],
-  '/expos/:expoId/admin/settlement': ['정산'],
   '/expos/:expoId/admin/inquiry': ['문의'],
+};
+
+// prefix 라벨 매핑
+const prefixMap = {
+  '/expos/:expoId/admin': 'Dashboards',
+  '/expos/:expoId/admin/qrcheckin': 'QR CheckIn',
 };
 
 // 경로 내 :expoId를 무시하고 매칭하기 위한 헬퍼 함수
@@ -32,12 +38,14 @@ function ExpoAdminHeader() {
     .find((key) => currentPath.startsWith(key));
 
   const crumbs = matchedKey ? pathMap[matchedKey] : [];
-  const isDashboard = matchedKey === '/expos/:expoId/admin';
+
+  // 경로별 prefix 라벨 선택: 매칭 없으면 기본 'Pages'
+  const prefixLabel = (matchedKey && prefixMap[matchedKey]) || 'Pages';
 
   return (
     <nav className={styles.breadcrumb}>
       <span className={`${styles.item} ${styles.prefix}`}>
-        {isDashboard ? 'Dashboards' : 'Pages'}
+        {prefixLabel}
       </span>
       {crumbs.map((label, idx) => {
         const isLast = idx === crumbs.length - 1;

@@ -1,6 +1,6 @@
 .container {
   padding: 2rem;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   border-radius: 0.75rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -33,6 +33,7 @@
 .table th, .table td {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
 }
 
 .tableRow {
@@ -48,38 +49,11 @@
   border-bottom: none;
 }
 
+/* badge 정렬을 위해 margin 조정 */
 .statusBadge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* 상태별 뱃지 색상 */
-.결제대기 {
-  background-color: #fde68a;
-  color: #92400e;
-}
-
-.진행중 {
-  background-color: #bbf7d0;
-  color: #15803d;
-}
-
-.승인대기 {
-  background-color: #c7d2fe;
-  color: #312e81;
-}
-
-.종료됨 {
-  background-color: #e5e7eb;
-  color: #4b5563;
-}
-
-.정산완료 {
-  background-color: #faeded;
-  color: #e05260;
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+  vertical-align: middle;
 }
 
 /* 페이지네이션 스타일 */
@@ -91,22 +65,95 @@
 }
 
 .pageButton {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+  font-size: 14px;
+}
+
+.pageButton:hover:not(.activePage) {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.pageButton.activePage {
+  background-color: #000000;
+  border-color: #000000;
+  color: #fff;
+  font-weight: 600;
+}
+
+.paymentInfoBtn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
   padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
-  color: #4b5563;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
-.pageButton:hover {
-  background-color: #e5e7eb;
+.paymentInfoBtn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
-.pageButton.activePage {
-  background-color: #000000;
-  color: #ffffff;
-  border-color: #000000;
+.premiumBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  background: linear-gradient(90deg, #fcd34d, #facc15, #eab308);
+  color: #78350f;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  border: 1px solid rgba(231, 168, 32, 0.7);
+
+  text-transform: uppercase;
+  margin-left: 10px;
+}
+
+.premiumBadge .icon {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.loading, .error, .noData {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.confirmBtn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn:hover {
+  background-color: #4b5563;
 }

@@ -63,6 +63,7 @@ function PaymentSummaryModal({ isOpen, onClose, onSubmit }) {
   const requesterName = paymentInfo?.requesterName ?? '-';
   const startAt = paymentInfo?.startAt ?? '-';
   const endAt = paymentInfo?.endAt ?? '-';
+  const totalDays = paymentInfo?.totalDays ?? '-';
   const totalPayment = paymentInfo?.totalPayment ?? 0;
 
   return (
@@ -94,6 +95,11 @@ function PaymentSummaryModal({ isOpen, onClose, onSubmit }) {
         </div>
 
         <div className={styles.feeBox}>
+          <div className={styles.row}>
+            <span className={styles.label}>이용 일수</span>
+            <span className={styles.amount}>{totalDays}일</span>
+          </div>
+
           {feeItems.map(([label, amount]) => (
             <div className={styles.row} key={label}>
               <span className={styles.label}>{label}</span>

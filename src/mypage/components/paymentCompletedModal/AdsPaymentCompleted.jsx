@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './AdsPaymentCompleted.module.css';
 
 const AdsPaymentCompleted = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleRedirectToMain = () => {
@@ -11,19 +13,19 @@ const AdsPaymentCompleted = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>광고 배너 등록 결제 완료</h1>
+      <h1 className={styles.title}>{t('adsPaymentCompleted.title')}</h1>
       
       <div className={styles.content}>
-        <div className={styles.question}>문제가 있으신가요?</div>
+        <div className={styles.question}>{t('adsPaymentCompleted.question')}</div>
         
         <div className={styles.contact}>
           <span className={styles.contactIcon}>💬</span>
-          <a href="#" className={styles.contactLink}>담당자 문의</a>
+          <a href="#" className={styles.contactLink}>{t('adsPaymentCompleted.contact')}</a>
         </div>
       </div>
       
       <button className={styles.redirectButton} onClick={handleRedirectToMain}>
-        메인 페이지
+        {t('adsPaymentCompleted.buttons.goToMain')}
       </button>
     </div>
   );

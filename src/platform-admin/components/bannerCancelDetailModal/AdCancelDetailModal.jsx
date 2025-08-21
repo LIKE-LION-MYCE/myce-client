@@ -35,7 +35,7 @@ function AdCancelDetailModal({ isOpen, onClose, cancelDetail }) {
         {/* 광고 기본 정보 */}
         <div className={styles.infoBox}>
           <div className={styles.row}>
-            <span className={styles.label}>박람회명</span>
+            <span className={styles.label}>배너 제목</span>
             <span className={styles.value}>{title}</span>
           </div>
           <div className={styles.row}>

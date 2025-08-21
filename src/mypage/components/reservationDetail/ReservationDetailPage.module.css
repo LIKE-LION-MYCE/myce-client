@@ -4,12 +4,16 @@
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 한 개의 큰 흰 박스 */
-.mainBox {
+/* 컨테이너 */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 메인 콘텐츠 영역 */
+.mainContent {
   background: #fff;
   border-radius: 18px;
-  max-width: 1100px;
-  margin: 0 auto;
   box-shadow: 0 4px 32px rgba(0,0,0,0.09);
   padding: 48px 56px 46px 56px;
   display: flex;
@@ -17,32 +21,47 @@
   gap: 0;
 }
 
-/* section 구분 강조 + 간격 확장 */
-.section {
-  padding: 20px 0 20px 0;   /* 하단 패딩 늘림 */
-  margin-bottom: 0;
-  border-top: 2.5px solid #f0f1f6;
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  position: relative;
-}
-.section:not(:first-of-type) {
-  margin-top: 40px;     /* 섹션 사이 간격 넉넉하게 */
-}
-.section:first-of-type {
-  border-top: none;
-  padding-top: 0;
+/* 그리드 컨테이너 */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 32px;
+  margin-top: 32px;
 }
 
-/* 섹션 구분용 그림자(선택 사항, 좀 더 구분감 원할 때) */
-/* .section:not(:first-of-type) {
-  box-shadow: 0 8px 16px rgba(60,80,210,0.04);
-} */
+/* 그리드 섹션 */
+.gridSection {
+  padding: 24px;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+/* 전체 너비 상단 - 참여 행사 정보 */
+.fullWidthTop {
+  grid-column: 1 / -1;
+}
+
+/* 전체 너비 중단 - 참여 인원 */
+.fullWidthMiddle {
+  grid-column: 1 / -1;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
 .pageTitle {
-  margin-bottom: 38px;
+  margin-bottom: 0;
   letter-spacing: -1.5px;
+}
+
+.statusBadge {
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /* 소제목 크기 확장 + 강조 */
@@ -128,11 +147,17 @@
   margin-bottom: 6px;
 }
 .poster {
-  width: 110px;
-  height: 144px;
+  width: 120px;
+  height: 160px;
   border-radius: 8px;
   object-fit: cover;
   border: 1px solid #e3e3e3;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.poster:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 .expoTitle {
   font-size: 20px;
@@ -209,9 +234,21 @@
   cursor: pointer;
   transition: background 0.18s;
 }
-.qrBtn:hover {
+.qrBtn:hover:not(:disabled) {
   background: #222;
   color: #fff;
+}
+
+.qrBtnDisabled {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  cursor: not-allowed !important;
+}
+
+.qrBtnDisabled:hover {
+  background: #f5f5f5 !important;
+  color: #999 !important;
 }
 
 /* 예약취소 버튼(가운데 정렬) */
@@ -232,4 +269,90 @@
 .neutralCancelBtn:hover {
   background: #ececec;
   color: #555;
+}
+
+/* 비활성화된 버튼 스타일 */
+.disabledBtn {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  cursor: not-allowed !important;
+}
+
+.disabledBtn:hover {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+}
+
+
+.reservationInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.feeText {
+  color: #e17055;
+  font-weight: 600;
+}
+
+.totalPriceText {
+  font-weight: 700;
+  color: #0984e3;
+  font-size: 16px;
+}
+
+.paymentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.priceText {
+  font-weight: 700;
+  color: #007bff;
+  font-size: 16px;
+}
+
+.mileageUsed {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.mileageEarned {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.gradeText {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 32px 24px;
+  }
+  
+  .gridContainer {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .gridSection {
+    padding: 20px;
+  }
+  
+  .paymentGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .reservationInfoGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 }

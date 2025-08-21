@@ -1,7 +1,8 @@
 import styles from './ReservationTable.module.css';
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { FaCheckCircle } from 'react-icons/fa';
 
-//날짜 포맷
+// 날짜 포맷
 function formatDateTime(iso) {
   if (!iso) return '-';
   const d = new Date(iso);
@@ -28,15 +29,20 @@ function formatBirth(date) {
   return `${y}-${m}-${day}`;
 }
 
-function ReservationTable({ data = [], onEntranceClick }) {
-  //선택 행 관리
-  const [selectedKeys, setSelectedKeys] = useState([]); // [reserverId...]
-
+function ReservationTable({
+  data = [],
+  selectedIds,
+  selectAllMatching,
+  onToggleRow,
+  onTogglePage,
+  onEntranceClick,
+  reissuedIds = new Set(),
+}) {
   const columns = [
     { key: 'reservationCode', header: '예약 코드' },
     { key: 'name', header: '이름' },
     { key: 'gender', header: '성별' },
-    { key: 'birth', header : '생년월일'},
+    { key: 'birth', header: '생년월일' },
     { key: 'phone', header: '전화번호' },
     { key: 'email', header: '이메일' },
     { key: 'ticketName', header: '티켓 이름' },
@@ -44,20 +50,18 @@ function ReservationTable({ data = [], onEntranceClick }) {
     { key: 'entranceStatus', header: '입장 상태' },
   ];
 
-  const getRowKey = (row, index) =>
-    row?.reserverId ?? `${row?.reservationCode || 'row'}-${index}`;
+  const getRowKey = (row, index) => row?.reserverId ?? `${row?.reservationCode || 'row'}-${index}`;
+  const currentPageIds = data.map(getRowKey);
 
-  const toggleRow = (rowKey) => {
-    setSelectedKeys((prev) =>
-      prev.includes(rowKey) ? prev.filter((k) => k !== rowKey) : [...prev, rowKey]
-    );
-  };
+  const allCheckedOnThisPage =
+    currentPageIds.length > 0 && currentPageIds.every((k) => selectedIds.has(k));
+  const someCheckedOnThisPage =
+    !allCheckedOnThisPage && currentPageIds.some((k) => selectedIds.has(k));
 
-  const toggleAllRows = () => {
-    const allKeys = data.map((row, i) => getRowKey(row, i));
-    const allSelected = allKeys.every((k) => selectedKeys.includes(k));
-    setSelectedKeys(allSelected ? [] : allKeys);
-  };
+  const headerRef = useRef(null);
+  useEffect(() => {
+    if (headerRef.current) headerRef.current.indeterminate = someCheckedOnThisPage;
+  }, [someCheckedOnThisPage]);
 
   const renderCell = (key, value, row) => {
     if (key === 'entranceStatus') {
@@ -73,39 +77,41 @@ function ReservationTable({ data = [], onEntranceClick }) {
           ? styles.badgePending
           : '';
 
-      const clickable =  text === '입장 전' || text === '발급 대기';
+      const clickable = text === '입장 전' || text === '발급 대기';
+
+      const recentlyReissued = reissuedIds.has(row.reserverId);
 
       return (
-        <span
-          className={`${styles.badge} ${statusClass}`}
-          onClick={(e) => {
-            if (!clickable) return;
-            e.stopPropagation();
-            onEntranceClick && onEntranceClick(row);
-          }}
-          role="button"
-          aria-disabled={!clickable}
-          title={clickable ? '수기 입장 처리' : '상태 변경 불가'}
-        >
-          {text}
+        <span className={styles.statusCellWrapper}>
+          <span
+            className={`${styles.badge} ${statusClass}`}
+            onClick={(e) => {
+              if (!clickable) return;
+              e.stopPropagation();
+              onEntranceClick && onEntranceClick(row);
+            }}
+            role="button"
+            aria-disabled={!clickable}
+            title={clickable ? '수기 입장 처리' : '상태 변경 불가'}
+          >
+            {text}
+          </span>
+
+          {recentlyReissued && (
+            <span className={styles.reissueChip} title="방금 재발급 완료">
+              <FaCheckCircle className={styles.reissueIcon} />
+              재발급 완료
+            </span>
+          )}
         </span>
       );
     }
 
-    if (key === 'entranceAt') {
-      return formatDateTime(value);
-    }
-
-    if (key === 'birth') {
-      return formatBirth(value);
-    }
+    if (key === 'entranceAt') return formatDateTime(value);
+    if (key === 'birth') return formatBirth(value);
 
     return value || '-';
   };
-
-  // 헤더 체크박스 상태
-  const allRowKeys = data.map((row, i) => getRowKey(row, i));
-  const allChecked = allRowKeys.length > 0 && allRowKeys.every((k) => selectedKeys.includes(k));
 
   return (
     <div className={styles.tableWrapper}>
@@ -114,10 +120,12 @@ function ReservationTable({ data = [], onEntranceClick }) {
           <tr className={styles.headerRow}>
             <th className={styles.th}>
               <input
+                ref={headerRef}
                 type="checkbox"
-                onChange={toggleAllRows}
-                checked={allChecked}
-                aria-label="전체 선택"
+                onChange={() => onTogglePage(currentPageIds, data)}
+                checked={allCheckedOnThisPage}
+                aria-label="현재 페이지 전체 선택"
+                title="현재 페이지 전체 선택"
               />
             </th>
             {columns.map((col) => (
@@ -131,18 +139,19 @@ function ReservationTable({ data = [], onEntranceClick }) {
         <tbody>
           {data.map((row, rowIndex) => {
             const rowKey = getRowKey(row, rowIndex);
-            const isSelected = selectedKeys.includes(rowKey);
+            const isSelected = selectAllMatching ? true : selectedIds.has(rowKey);
+            const recentlyReissued = reissuedIds.has(row.reserverId);
 
             return (
               <tr
                 key={rowKey}
-                className={`${styles.row} ${isSelected ? styles.selectedRow : ''}`}
+                className={`${styles.row} ${isSelected ? styles.selectedRow : ''} ${recentlyReissued ? styles.updatedRow : ''}`}
               >
                 <td className={styles.td} onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={isSelected}
-                    onChange={() => toggleRow(rowKey)}
+                    onChange={() => onToggleRow(rowKey, row)}
                     aria-label="행 선택"
                   />
                 </td>

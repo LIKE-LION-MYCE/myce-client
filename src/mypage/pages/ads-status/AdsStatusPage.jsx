@@ -1,161 +1,105 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getMyAdvertisements } from '../../../api/service/user/memberApi';
 import styles from "./AdsStatusPage.module.css";
+import settingStyles from "../../../expo-admin/pages/setting/Setting.module.css";
 
-// 상태 라벨 및 스타일 맵
-const STATUS_MAP = {
-  PENDING_APPROVAL: { label: "승인대기", className: "pending" },
-  PENDING_PAYMENT: { label: "결제대기", className: "waiting" },
-  PUBLISHED: { label: "게시중", className: "active" },
-  REJECTED: { label: "거절됨", className: "canceled" },
-  CANCELLED: { label: "취소됨", className: "canceled" },
-  COMPLETED: { label: "게시완료", className: "finished" },
-};
-
-const ITEMS_PER_PAGE = 10;
-
-// 상태별 스타일 클래스
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'PENDING_APPROVAL':
-    case 'PENDING_PAYMENT':
-      return styles.statusPending;
-    case 'PUBLISHED':
-      return styles.statusActive;
-    case 'COMPLETED':
-      return styles.statusCompleted;
-    case 'REJECTED':
-    case 'CANCELLED':
-      return styles.statusRejected;
-    default:
-      return styles.statusDefault;
-  }
-};
-
-// 상태 라벨 매핑
-const getStatusLabel = (status) => {
-  return STATUS_MAP[status]?.label || status;
-};
-
-// 날짜 포맷팅
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ko-KR');
-};
-
-function StatusBadge({ status }) {
-  const info = STATUS_MAP[status] || { label: status, className: "" };
-  return (
-    <span className={`${styles.statusBadge} ${styles[info.className]}`}>
-      {info.label}
-    </span>
-  );
-}
-
-function AdsTable({ data, onRowClick }) {
-  return (
-    <div className={styles.tableWrapper}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>제목</th>
-            <th>광고 위치</th>
-            <th>게시 기간</th>
-            <th>상태</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((ad) => (
-            <tr
-              key={ad.advertisementId}
-              className={styles.clickableRow}
-              tabIndex={0}
-              onClick={() => onRowClick(ad)}
-              style={{ cursor: "pointer" }}
-              aria-label={`${ad.title} 상세로 이동`}
-            >
-              <td>{ad.title}</td>
-              <td>{ad.adPositionName}</td>
-              <td>{formatDate(ad.displayStartDate)} ~ {formatDate(ad.displayEndDate)}</td>
-              <td>
-                <StatusBadge status={ad.status} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  return (
-    <div className={styles.pagination}>
-      <button
-        className={styles.pageButton}
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 0}
-      >
-        이전
-      </button>
-      
-      <div className={styles.pageNumbers}>
-        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-          const startPage = Math.max(0, currentPage - 2);
-          const pageNumber = startPage + i;
-          
-          if (pageNumber >= totalPages) return null;
-          
-          return (
-            <button
-              key={pageNumber}
-              className={`${styles.pageNumber} ${
-                pageNumber === currentPage ? styles.active : ''
-              }`}
-              onClick={() => onPageChange(pageNumber)}
-            >
-              {pageNumber + 1}
-            </button>
-          );
-        })}
-      </div>
-      
-      <button
-        className={styles.pageButton}
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages - 1}
-      >
-        다음
-      </button>
-    </div>
-  );
-}
+const ITEMS_PER_PAGE = 5;
+const PAGE_BTN_COUNT = 5;
 
 const AdsStatusPage = () => {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  const STATUS_MAP = {
+    PENDING_APPROVAL: { label: t('mypageGeneral.adsStatus.status.PENDING_APPROVAL'), className: "badgePENDING_APPROVAL" },
+    PENDING_PAYMENT: { label: t('mypageGeneral.adsStatus.status.PENDING_PAYMENT'), className: "badgePENDING_PAYMENT" },
+    PENDING_PUBLISH: { label: t('mypageGeneral.adsStatus.status.PENDING_PUBLISH'), className: "badgePENDING_PUBLISH" },
+    PENDING_CANCEL: { label: t('mypageGeneral.adsStatus.status.PENDING_CANCEL'), className: "badgePENDING_CANCEL" },
+    PUBLISHED: { label: t('mypageGeneral.adsStatus.status.PUBLISHED'), className: "badgePUBLISHED" },
+    REJECTED: { label: t('mypageGeneral.adsStatus.status.REJECTED'), className: "badgeREJECTED" },
+    CANCELLED: { label: t('mypageGeneral.adsStatus.status.CANCELLED'), className: "badgeCANCELLED" },
+    COMPLETED: { label: t('mypageGeneral.adsStatus.status.COMPLETED'), className: "badgeCOMPLETED" },
+  };
+
+  const getStatusLabel = (status) => {
+    return STATUS_MAP[status]?.label || status;
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString(i18n.language);
+  };
+
+  function StatusBadge({ status }) {
+    const info = STATUS_MAP[status] || { label: status, className: "" };
+    return (
+      <span className={`${settingStyles.badge} ${settingStyles[info.className]} ${styles.statusBadge}`}>
+        {info.label}
+      </span>
+    );
+  }
+
+  function AdsTable({ data, onRowClick, currentPage }) {
+    return (
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>{t('mypageGeneral.adsStatus.table.title')}</th>
+              <th>신청일</th>
+              <th>게시 기간</th>
+              <th>게시 장소</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((ad, index) => (
+              <tr
+                key={ad.advertisementId}
+                className={styles.clickableRow}
+                tabIndex={0}
+                onClick={() => onRowClick(ad)}
+                style={{ cursor: "pointer" }}
+                aria-label={t('mypageGeneral.adsStatus.aria.goToDetail', { title: ad.title })}
+              >
+                <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
+                <td>{ad.title}</td>
+                <td>{formatDate(ad.createdAt || ad.displayStartDate)}</td>
+                <td>{formatDate(ad.displayStartDate)} ~ {formatDate(ad.displayEndDate)}</td>
+                <td>{ad.adPositionName}</td>
+                <td>
+                  <StatusBadge status={ad.status} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   const [advertisements, setAdvertisements] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  const navigate = useNavigate();
 
-  // 광고 데이터 불러오기
-  const fetchAdvertisements = async (page = 0) => {
+  const fetchAdvertisements = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getMyAdvertisements(page, ITEMS_PER_PAGE);
-      const { content, totalPages, totalElements, number } = response.data;
+      const response = await getMyAdvertisements(currentPage - 1, ITEMS_PER_PAGE);
+      const { content, totalPages, totalElements } = response.data;
       
       setAdvertisements(content);
       setTotalPages(totalPages);
       setTotalElements(totalElements);
-      setCurrentPage(number);
     } catch (err) {
       console.error('광고 목록 조회 실패:', err);
-      setError('광고 목록을 불러오는데 실패했습니다.');
+      setError(t('mypageGeneral.adsStatus.loadError'));
     } finally {
       setLoading(false);
     }
@@ -163,16 +107,47 @@ const AdsStatusPage = () => {
 
   useEffect(() => {
     fetchAdvertisements();
-  }, []);
+  }, [currentPage]);
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (page) => {
-    if (page >= 0 && page < totalPages && page !== currentPage) {
-      fetchAdvertisements(page);
+  const renderPaginationButtons = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+
+    if (currentPage > 1) {
+      pages.push(
+        <button key="prev" onClick={() => setCurrentPage(currentPage - 1)} className={styles.pageBtn}>
+          {t('mypageGeneral.adsStatus.pagination.prev')}
+        </button>
+      );
     }
+
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i)}
+          className={`${styles.pageBtn} ${i === currentPage ? styles.active : ''}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    if (currentPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => setCurrentPage(currentPage + 1)} className={styles.pageBtn}>
+          {t('mypageGeneral.adsStatus.pagination.next')}
+        </button>
+      );
+    }
+
+    return pages;
   };
 
-  // 광고 상세 페이지로 이동
   const handleRowClick = (advertisement) => {
     navigate(`/mypage/ads-status/${advertisement.advertisementId}`);
   };
@@ -180,7 +155,7 @@ const AdsStatusPage = () => {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.loading}>{t('common.loading')}</div>
       </div>
     );
   }
@@ -195,25 +170,18 @@ const AdsStatusPage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <h2 className={styles.pageTitle}>내 광고 현황</h2>
-        <div className={styles.summary}>
-          총 {totalElements}개의 광고
-        </div>
-      </div>
+      <h2 className={styles.pageTitle}>{t('mypageGeneral.adsStatus.title')}</h2>
 
       {advertisements.length === 0 ? (
         <div className={styles.emptyState}>
-          <p>등록된 광고가 없습니다.</p>
+          <p>{t('mypageGeneral.adsStatus.noAds')}</p>
         </div>
       ) : (
         <>
-          <AdsTable data={advertisements} onRowClick={handleRowClick} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          <AdsTable data={advertisements} onRowClick={handleRowClick} currentPage={currentPage} />
+          <div className={styles.pagination}>
+            {renderPaginationButtons()}
+          </div>
         </>
       )}
     </div>

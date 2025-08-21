@@ -8,87 +8,66 @@ import {
 } from 'react-icons/fa';
 import styles from './OperatorApplicationForm.module.css';
 
-function OperatorApplicationForm({ operatorData }) {
+function OperatorApplicationForm({businessData}) {
 
-  const form = operatorData || {
-    title: '',
-    bannerLocationName: '',
-    bannerImageUrl: '',
-    startAt: '',
-    endAt: '',
-    description: '',
+  const form = {
+    companyName: businessData?.companyName || '',
+    ceoName: businessData?.ceoName || '',
+    email: businessData?.contactEmail || '',
+    phone: businessData?.contactPhone || '',
+    address: businessData?.address || '',
+    businessNumber: businessData?.businessRegistrationNumber || '',
   };
 
   return (
     <div className={styles.container}>
-
       <div className={styles.formGrid}>
-        {/* 1행 */}
-        <div className={`${styles.formGroup} ${styles.half}`}>
+        {/* 회사명 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>회사명</label>
-          <input
-            className={styles.inputField}
-            name="companyName"
-            value={form.companyName}
-            readOnly
-          />
-          <FaUserTie className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.companyName}
+          </div>
         </div>
-        <div className={`${styles.formGroup} ${styles.half}`}>
+
+        {/* 대표명 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>대표명</label>
-          <input
-            className={styles.inputField}
-            name="ceoName"
-            value={form.ceoName}
-            readOnly
-          />
-          <FaUserFriends className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.ceoName}
+          </div>
         </div>
 
-        {/* 2행 */}
-        <div className={`${styles.formGroup} ${styles.half}`}>
+        {/* 이메일 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>이메일</label>
-          <input
-            className={styles.inputField}
-            name="email"
-            value={form.email}
-            readOnly
-          />
-          <FaEnvelope className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.email}
+          </div>
         </div>
-        <div className={`${styles.formGroup} ${styles.half}`}>
+
+        {/* 연락처 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>연락처</label>
-          <input
-            className={styles.inputField}
-            name="phone"
-            value={form.phone}
-            readOnly
-          />
-          <FaPhone className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.phone}
+          </div>
         </div>
 
-        {/* 3행 */}
-        <div className={`${styles.formGroup} ${styles.full}`}>
+        {/* 주소 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>주소</label>
-          <input
-            className={styles.inputField}
-            name="address"
-            value={form.address}
-            readOnly
-          />
-          <FaMapMarkerAlt className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.address}
+          </div>
         </div>
 
-        {/* 4행 */}
-        <div className={`${styles.formGroup} ${styles.half}`}>
+        {/* 사업자번호 */}
+        <div className={styles.formGroup}>
           <label className={styles.label}>사업자번호</label>
-          <input
-            className={styles.inputField}
-            name="businessNumber"
-            value={form.businessNumber}
-            readOnly
-          />
-          <FaBuilding className={styles.icon} />
+          <div className={styles.displayField}>
+            {form.businessNumber}
+          </div>
         </div>
       </div>
     </div>

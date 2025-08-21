@@ -1,0 +1,177 @@
+.tableWrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headerRow {
+  background-color: #f7f9fc;
+}
+
+.th {
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.row {
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background-color: #f5f8ff;
+}
+
+.td {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #222;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.detailRow {
+  background-color: #fafcff;
+}
+
+.detailBox {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.detailLabel {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+}
+
+.inputField {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #666;
+  background-color: #f9f9ff;
+}
+
+.buttonGroupBottom {
+  display: flex;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px dashed #e2e2e2;
+  justify-content: flex-start;
+}
+
+.editBtn {
+  background-color: #1e2a38;
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.editBtn:hover {
+  background-color: #2c3e50;
+}
+
+.cancelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.cancelBtn:hover {
+  background-color: #d9d9d9;
+}
+
+.deleteBtn {
+  background-color: #f87171;
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.deleteBtn:hover {
+  background-color: #ef4444;
+}
+
+.timeGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tilde {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+
+.valueText {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.valueGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.errorText {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #e53935;
+}
+
+.buttonDivider {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border-top: 1px dashed #ddd;
+}

@@ -23,7 +23,7 @@
 }
 
 .td {
-  padding: 12px 16px;
+  padding: 9px 16px;
   font-size: 14px;
   color: #222;
   border-bottom: 1px solid #f0f0f0;
@@ -78,4 +78,51 @@
 .detailBtn:hover {
   background-color: #d9d9d9;
   color: #1e2a38;
+}
+
+.statusBadge {
+  margin-left: 10px;
+  margin-bottom: 0px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status_게시중 {
+  background-color: #ebf9f1;
+  /* 연한 초록 */
+  color: #2a9c68;
+  /* 진한 초록 */
+}
+
+.status_게시_대기 {
+  background-color: #fff5ec;
+  /* 연한 주황 */
+  color: #e79d3c;
+  /* 진한 주황 */
+}
+
+.status_취소_대기 {
+  background-color: #fff5ec;
+  /* 연한 주황 */
+  color: #e79d3c;
+  /* 진한 주황 */
+}
+
+
+.status_취소됨 {
+  background-color: #ffecec;
+  /* 연한 빨강 */
+  color: #e74c3c;
+  /* 진한 빨강 */
+}
+
+.status_게시_종료 {
+  background-color: #f2f2f2;
+  /* 연한 회색 */
+  color: #555;
+  /* 진한 회색 */
 }

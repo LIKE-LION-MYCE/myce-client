@@ -1,10 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { reviewAPI } from '../../../../api/service/review/ReviewService';
 import styles from './ReviewForm.module.css';
+import ToastSuccess from '../../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../../common/components/toastFail/ToastFail';
 
 export default function ReviewForm() {
+  const { expoId } = useParams();
+  const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [canWriteReview, setCanWriteReview] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
+  useEffect(() => {
+    checkPermissions();
+  }, [expoId]);
+
+  const checkPermissions = async () => {
+    try {
+      const [attendanceResponse, reviewedResponse] = await Promise.all([
+        reviewAPI.checkAttendance(expoId),
+        reviewAPI.checkReviewed(expoId)
+      ]);
+      
+      if (attendanceResponse.success && reviewedResponse.success) {
+        const canWrite = attendanceResponse.data && !reviewedResponse.data;
+        if (!canWrite) {
+          showFailMessage('박람회에 참석하지 않았거나 이미 리뷰를 작성하셨습니다.');
+          setTimeout(() => navigate(-1), 3000);
+          return;
+        }
+        setCanWriteReview(true);
+      }
+    } catch (error) {
+      console.error('권한 확인 실패:', error);
+      showFailMessage('권한 확인 중 오류가 발생했습니다.');
+      setTimeout(() => navigate(-1), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleContentChange = (e) => {
     setContent(e.target.value);
@@ -13,24 +66,58 @@ export default function ReviewForm() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (content.trim() === '') {
-      setErrorMsg('내용은 빈칸이 되어선 안됩니다.');
+    if (!title.trim()) {
+      setErrorMsg('제목을 입력해주세요.');
+      return;
+    }
+    
+    if (!content.trim()) {
+      setErrorMsg('내용을 입력해주세요.');
       return;
     }
 
-    // TODO: API POST 로직 추가
-    alert('후기가 정상적으로 등록되었습니다!');
-    setContent('');
-    setRating(0);
+    if (rating === 0) {
+      setErrorMsg('평점을 선택해주세요.');
+      return;
+    }
+
+    try {
+      const response = await reviewAPI.createReview({
+        expoId: parseInt(expoId),
+        title: title.trim(),
+        content: content.trim(),
+        rating
+      });
+      
+      if (response.success) {
+        showSuccessMessage('리뷰가 성공적으로 등록되었습니다!');
+        setTimeout(() => navigate(`/detail/${expoId}`), 3000);
+      }
+    } catch (error) {
+      console.error('리뷰 작성 실패:', error);
+      showFailMessage(error.response?.data?.message || '리뷰 작성 중 오류가 발생했습니다.');
+    }
   };
+
+  if (loading) {
+    return (
+      <main className={styles.container}>
+        <div className={styles.loading}>권한 확인 중...</div>
+      </main>
+    );
+  }
+
+  if (!canWriteReview) {
+    return null;
+  }
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>행사 후기 작성</h1>
-      <p className={styles.subtitle}>참여하신 행사에 대한 소중한 후기를 남겨주세요.</p>
+      <h1 className={styles.title}>행사 리뷰 작성</h1>
+      <p className={styles.subtitle}>참여하신 행사에 대한 소중한 리뷰를 남겨주세요.</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
 
@@ -52,15 +139,31 @@ export default function ReviewForm() {
           </div>
         </div>
 
-        {/* 후기 내용 */}
+        {/* 제목 */}
+        <div className={styles.formGroup}>
+          <label htmlFor="title">
+            제목 <span className={styles.required}>*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            maxLength={100}
+            placeholder="리뷰 제목을 입력해주세요"
+            className={styles.input}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        {/* 리뷰 내용 */}
         <div className={styles.formGroup}>
           <label htmlFor="content">
-            후기 내용 <span className={styles.required}>*</span>
+            리뷰 내용 <span className={styles.required}>*</span>
           </label>
           <textarea
             id="content"
             maxLength={500}
-            placeholder="후기 내용을 입력해주세요"
+            placeholder="리뷰 내용을 입력해주세요"
             className={styles.textarea}
             value={content}
             onChange={handleContentChange}
@@ -83,13 +186,19 @@ export default function ReviewForm() {
         {/* 버튼 영역 */}
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitBtn}>
-            후기 등록
+            리뷰 등록
           </button>
-          <button type="button" className={styles.cancelBtn}>
+          <button type="button" className={styles.cancelBtn} onClick={() => navigate(-1)}>
             취소
           </button>
         </div>
       </form>
+      {showSuccessToast && (
+        <ToastSuccess message={toastMessage} onClose={() => setShowSuccessToast(false)} />
+      )}
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </main>
   );
 }

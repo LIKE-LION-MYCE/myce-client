@@ -1,13 +1,27 @@
 .wrapper {
+  width: 100%;
   background: #f9fafb;
-  min-height: 600px;
+  min-height: 100vh;
+  box-sizing: border-box;
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.container {
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 32px;
+  box-sizing: border-box;
 }
 
 .pageTitle {
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
 }
 
 .list {
@@ -19,12 +33,17 @@
 .card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  border: 1px solid #e0e0e0;
   padding: 24px;
   display: flex;
   gap: 20px;
   width: calc(50% - 10px);
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #c0c0c0;
 }
 
 .info {
@@ -34,9 +53,46 @@
   gap: 12px;
 }
 
-.info h3 {
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleRow h3 {
   font-weight: 700;
   font-size: 1.3rem;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.statusConfirmed {
+  background-color: #ebf9f1; /* 연한 초록 */
+  color: #2a9c68;            /* 진한 초록 */
+}
+
+.statusPending {
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
+}
+
+.statusCancelled {
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
+}
+
+.statusDefault {
+  background-color: #f2f2f2; /* 연한 회색 */
+  color: #555;               /* 진한 회색 */
 }
 
 .detailRow {
@@ -53,6 +109,12 @@
 .detailRow strong {
   font-weight: 600;
   margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.detailRow p {
+  margin: 0;
+  color: #444;
 }
 
 .buttons {
@@ -73,7 +135,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: #222;
+  background-color: #333;
 }
 
 .secondaryBtn {
@@ -96,4 +158,64 @@
   height: auto;
   border-radius: 12px;
   object-fit: cover;
+}
+
+.noData {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-top: 60px;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-top: 60px;
+}
+
+.error {
+  text-align: center;
+  color: #e74c3c;
+  font-size: 16px;
+  margin-top: 60px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.pageBtn {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+  font-size: 14px;
+}
+
+.pageBtn:hover:not(.active) {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.pageBtn.active {
+  background-color: #000000;
+  border-color: #000000;
+  color: #fff;
+  font-weight: 600;
+}
+
+.pageBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

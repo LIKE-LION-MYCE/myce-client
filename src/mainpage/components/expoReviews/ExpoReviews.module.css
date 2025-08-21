@@ -1,0 +1,316 @@
+/* 리뷰 섹션 */
+.reviewsSection h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* 리뷰 헤더 */
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* 정렬 버튼 */
+.sortButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.sortBtn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: #666;
+}
+
+.sortBtn:hover {
+  background: #f5f5f5;
+}
+
+.sortBtn.active {
+  background: #f39c12;
+  color: #fff;
+  border-color: #f39c12;
+}
+
+/* 리뷰 작성 버튼 */
+.writeBtn {
+  padding: 10px 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.writeBtn:hover {
+  background: #555;
+}
+
+/* 로딩 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.reviewStats {
+  background: #fff9e6;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #f39c12;
+  margin-bottom: 20px;
+}
+
+.reviewStats p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.ratingSummary {
+  margin: 20px 0;
+}
+
+.ratingBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.ratingBar span {
+  min-width: 30px;
+  font-size: 14px;
+  color: #666;
+}
+
+.barContainer {
+  flex: 1;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #f39c12, #e67e22);
+  transition: width 0.3s ease;
+}
+
+.reviewsList {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reviewCard {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.reviewCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.reviewCard .reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewerName {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.myReviewBadge {
+  background: #3498db;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reviewRating {
+  font-size: 16px;
+}
+
+.reviewMeta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.reviewDate {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 리뷰 액션 버튼 */
+.reviewActions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  padding: 4px 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.editBtn:hover {
+  background: #3498db;
+  color: #fff;
+  border-color: #3498db;
+}
+
+.deleteBtn:hover {
+  background: #e74c3c;
+  color: #fff;
+  border-color: #e74c3c;
+}
+
+.reviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reviewTitle {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.reviewComment {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .reviewsSection h3 {
+    font-size: 20px;
+  }
+  
+  .reviewHeader {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .sortButtons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .writeBtn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .reviewStats {
+    padding: 12px;
+  }
+  
+  .reviewCard {
+    padding: 15px;
+  }
+  
+  .reviewCard .reviewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .reviewMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .reviewActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .reviewerInfo {
+    width: 100%;
+  }
+  
+  .reviewTitle {
+    font-size: 15px;
+  }
+  
+  .reviewComment {
+    font-size: 13px;
+  }
+  
+  .ratingBar span {
+    min-width: 25px;
+    font-size: 13px;
+  }
+}
+
+/* 권한 없음 메시지 */
+.noPermissionMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}

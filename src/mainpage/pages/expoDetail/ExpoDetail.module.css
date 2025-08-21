@@ -1,0 +1,421 @@
+/* 페이지 전체 래퍼 */
+.pageWrapper {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 30px 0 60px 0; /* 상단 공간 줄임 */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background: transparent;
+  position: relative;
+}
+
+/* PENDING_PUBLISH 상태일 때 컨테이너 스타일 */
+.container.pendingPublish {
+  filter: blur(2px);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 새로운 로딩 스타일 */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin: 40px auto;
+  max-width: 500px;
+  min-height: 300px;
+}
+
+.loadingSpinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 30px;
+}
+
+.spinnerRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  animation: spinRing 1.5s linear infinite;
+}
+
+.spinnerRing:nth-child(1) {
+  border-top-color: #667eea;
+  animation-delay: 0s;
+}
+
+.spinnerRing:nth-child(2) {
+  border-right-color: #764ba2;
+  animation-delay: -0.5s;
+  width: 70%;
+  height: 70%;
+  top: 15%;
+  left: 15%;
+}
+
+.spinnerRing:nth-child(3) {
+  border-bottom-color: #f093fb;
+  animation-delay: -1s;
+  width: 40%;
+  height: 40%;
+  top: 30%;
+  left: 30%;
+}
+
+@keyframes spinRing {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  text-align: center;
+  color: #4a5568;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loadingDots {
+  display: flex;
+  gap: 2px;
+}
+
+.loadingDots span {
+  animation: dotPulse 1.4s infinite ease-in-out;
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.loadingDots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loadingDots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loadingDots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* 기존 에러 스타일 */
+.error {
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 18px;
+  color: #666;
+  background: white;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+/* 뒤로가기 버튼 섹션 */
+.backButtonSection {
+  margin-bottom: 20px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.backButton:hover {
+  color: #000;
+}
+
+.backButton:active {
+  transform: translateY(0);
+}
+
+/* 탭 메뉴 - 모던한 언더라인 스타일 */
+.tabs {
+  display: flex;
+  background: white;
+  border-radius: 0;
+  padding: 0 30px;
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  overflow-x: auto;
+  position: relative;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6c757d;
+  border-radius: 0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #495057;
+  background: rgba(0, 123, 255, 0.04);
+}
+
+.tab.active {
+  color: #000;
+  /* background: rgba(77, 77, 78, 0.04); */
+  border-bottom: 4px solid #000;
+  font-weight: 700;
+}
+
+/* 탭 컨텐츠 */
+.tabContent {
+  background: white;
+  border-radius: 0;
+  padding: 30px;
+  border: none;
+  min-height: 400px;
+}
+
+/* PENDING_PUBLISH 오버레이 스타일 */
+.pendingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.pendingMessage {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 60px 40px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  animation: fadeInUp 0.6s ease-out;
+  pointer-events: auto;
+  filter: none;
+}
+
+.pendingIcon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+.pendingTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pendingText {
+  font-size: 1.3rem;
+  color: #34495e;
+  margin-bottom: 15px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.pendingSubtext {
+  font-size: 1rem;
+  color: #7f8c8d;
+  font-weight: 400;
+  margin-bottom: 30px;
+}
+
+.homeButton {
+  background: #000; 
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.homeButton:hover {
+  transform: translateY(-2px);
+  background: #333;
+}
+
+.homeButton:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .pageWrapper {
+    padding: 30px 0 40px 0; /* 모바일에서도 상단 공간 줄임 */
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .backButtonSection {
+    padding: 0 20px;
+  }
+  
+  .backButton {
+    padding: 10px 0;
+    font-size: 13px;
+  }
+  
+  .tabs {
+    padding: 0 20px;
+    margin-bottom: 0;
+  }
+  
+  .tab {
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+  
+  .tabContent {
+    padding: 20px;
+    border-radius: 0;
+  }
+  
+  .loading, .error {
+    padding: 60px 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+  }
+
+  .pendingMessage {
+    padding: 40px 30px;
+    margin: 0 15px;
+  }
+
+  .pendingTitle {
+    font-size: 2rem;
+  }
+
+  .pendingText {
+    font-size: 1.1rem;
+  }
+
+  .homeButton {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageWrapper {
+    padding: 20px 0 30px 0; /* 작은 모바일에서 더 줄임 */
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+  
+  .backButtonSection {
+    padding: 0 15px;
+  }
+  
+  .backButton {
+    padding: 8px 0;
+    font-size: 12px;
+  }
+  
+  .tabs {
+    padding: 0 15px;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .tabContent {
+    padding: 15px;
+  }
+}

@@ -65,6 +65,14 @@
   border-color: #1e2a38;
 }
 
+.inputField:disabled {
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
+  background: transparent; /* 배경 흰색이 너무 튀면 transparent 처리 */
+  color: #555; /* 텍스트도 살짝 연한 톤 */
+  cursor: not-allowed;
+}
+
 /* 날짜/시간 */
 .dateGroup {
   display: flex;
@@ -107,7 +115,7 @@
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
-  margin-top : 9px;
+  margin-top: 9px;
 }
 
 .badge {
@@ -130,11 +138,22 @@
   color: #21a85e;
 }
 
-/* 예/아니오 스위치 */
+/* ✅ 프리미엄: 토글 라인 */
+.premiumRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hintText {
+  font-size: 12px;
+  color: #888;
+}
+
+/* 예/아니오 스위치 (이전 커스텀 라디오 스타일은 유지 가능) */
 .booleanGroup {
   display: flex;
   gap: 12px;
-  margin-top : 9px;
+  margin-top: 9px;
 }
 
 .booleanInput {
@@ -207,4 +226,16 @@
 }
 .half {
   flex: 0 0 calc(50% - 10px);
+}
+
+.loadingText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  padding : 20px;
+  margin-top : 20px;
 }

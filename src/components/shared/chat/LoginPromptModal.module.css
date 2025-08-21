@@ -1,0 +1,359 @@
+/* Login Prompt Modal Styles */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.modalOverlay.open {
+  opacity: 1;
+}
+
+.modalOverlay.closing {
+  opacity: 0;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 
+    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.9) translateY(40px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.modalContent.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modalContent.closing {
+  transform: scale(0.9) translateY(40px);
+  opacity: 0;
+}
+
+/* Close Button */
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
+}
+
+.closeButton svg {
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+/* Content */
+.content {
+  padding: 40px 32px 32px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.iconContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.chatIcon {
+  font-size: 3rem;
+  opacity: 0.9;
+}
+
+.aiIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  object-fit: contain;
+}
+
+.header h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff6b35;
+}
+
+.header p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Benefits */
+.benefits {
+  margin-bottom: 32px;
+}
+
+.benefits h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.benefitsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefitsList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.benefitsList li:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.benefitIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+  object-fit: contain;
+}
+
+/* Handle both emoji spans and images */
+.benefitIcon img,
+.benefitsList img.benefitIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.benefitsList strong {
+  display: block;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.benefitsList p {
+  margin: 0;
+  color: #666;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.loginButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 24px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.loginButton:hover {
+  background: #ff5722;
+  transform: translateY(-2px);
+}
+
+.loginButton:active {
+  transform: translateY(0);
+}
+
+.loginButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.signupButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 24px;
+  background: white;
+  color: #ff6b35;
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signupButton:hover {
+  background: rgba(255, 107, 53, 0.1);
+  border-color: #ff6b35;
+  color: #ff6b35;
+  transform: translateY(-1px);
+}
+
+.signupButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+}
+
+.footer p {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.linkButton:hover {
+  color: #5a6fd8;
+}
+
+.privacy {
+  margin-top: 12px !important;
+  font-size: 0.8rem !important;
+  color: #999 !important;
+  line-height: 1.4;
+}
+
+.privacy a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.privacy a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .modalOverlay {
+    padding: 16px;
+  }
+  
+  .modalContent {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+  
+  .content {
+    padding: 32px 24px 24px;
+  }
+  
+  .header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .benefits h3 {
+    font-size: 1rem;
+  }
+  
+  .benefitsList li {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .benefitIcon {
+    font-size: 1.25rem;
+  }
+  
+  .benefitsList strong {
+    font-size: 0.9rem;
+  }
+  
+  .benefitsList p {
+    font-size: 0.8rem;
+  }
+  
+  .actions {
+    gap: 10px;
+  }
+  
+  .loginButton,
+  .signupButton {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+  }
+}

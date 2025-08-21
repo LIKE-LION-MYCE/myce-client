@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import styles from "./MySavedExpoPage.module.css";
 import { getFavoriteExpos } from "../../../api/service/user/memberApi";
 
 function SavedExpoCard({ expo }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // 카드 클릭 시 상세 페이지 이동
@@ -31,17 +33,17 @@ function SavedExpoCard({ expo }) {
       style={{ cursor: "pointer" }} // 추가!
       tabIndex={0} // 키보드 접근성
       role="button"
-      aria-label={`${expo.title} 상세보기`}
+      aria-label={`${expo.title} ${t('savedExpo.detailView')}`}
     >
       <div className={styles.info}>
         <h3>{expo.title}</h3>
         <div className={styles.detailBlock}>
           <div>
-            <div className={styles.detailLabel}>행사 기간</div>
+            <div className={styles.detailLabel}>{t('savedExpo.eventPeriod')}</div>
             <div className={styles.detailValue}>{formatDateRange(expo.startDate, expo.endDate)}</div>
           </div>
           <div>
-            <div className={styles.detailLabel}>행사 위치</div>
+            <div className={styles.detailLabel}>{t('savedExpo.eventLocation')}</div>
             <div className={styles.detailValue}>{location}</div>
           </div>
         </div>
@@ -56,6 +58,7 @@ function SavedExpoCard({ expo }) {
 }
 
 const MySavedExpoPage = () => {
+  const { t } = useTranslation();
   const [favoriteExpos, setFavoriteExpos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,7 +75,7 @@ const MySavedExpoPage = () => {
       setFavoriteExpos(response.data || []);
     } catch (err) {
       console.error('찜한 박람회 조회 실패:', err);
-      setError('찜한 박람회를 불러오는데 실패했습니다.');
+      setError(t('savedExpo.loadError'));
       setFavoriteExpos([]);
     } finally {
       setLoading(false);
@@ -82,8 +85,10 @@ const MySavedExpoPage = () => {
   if (loading) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>찜한 박람회</h2>
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+          <div className={styles.loading}>{t('savedExpo.loading')}</div>
+        </div>
       </div>
     );
   }
@@ -91,24 +96,28 @@ const MySavedExpoPage = () => {
   if (error) {
     return (
       <div className={styles.wrapper}>
-        <h2 className={styles.pageTitle}>찜한 박람회</h2>
-        <div className={styles.error}>{error}</div>
+        <div className={styles.container}>
+          <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+          <div className={styles.error}>{error}</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.pageTitle}>찜한 박람회</h2>
-      {favoriteExpos.length > 0 ? (
-        <div className={styles.list}>
-          {favoriteExpos.map((expo) => (
-            <SavedExpoCard key={expo.expoId} expo={expo} />
-          ))}
-        </div>
-      ) : (
-        <div className={styles.noData}>찜한 박람회가 없습니다.</div>
-      )}
+      <div className={styles.container}>
+        <h2 className={styles.pageTitle}>{t('savedExpo.title')}</h2>
+        {favoriteExpos.length > 0 ? (
+          <div className={styles.list}>
+            {favoriteExpos.map((expo) => (
+              <SavedExpoCard key={expo.expoId} expo={expo} />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.noData}>{t('savedExpo.noData')}</div>
+        )}
+      </div>
     </div>
   );
 };

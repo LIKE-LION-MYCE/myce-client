@@ -10,7 +10,7 @@ const permissionTabs = {
   '박람회 관리': ['isExpoDetailUpdate', 'isBoothInfoUpdate', 'isScheduleUpdate'],
   '예약 관리': ['isReserverListView', 'isPaymentView', 'isEmailLogView'],
   '운영 설정': ['isOperationsConfigUpdate'],
-  '기타': ['isSettlementView', 'isInquiryView'],
+  '기타': ['isInquiryView'],
 };
 
 const permissionLabels = {
@@ -21,7 +21,6 @@ const permissionLabels = {
   isReserverListView: '예약자 리스트',
   isEmailLogView: '이메일 전송 이력',
   isOperationsConfigUpdate: '운영 설정',
-  isSettlementView: '정산',
   isInquiryView: '문의',
 };
 
@@ -55,19 +54,22 @@ function ManagerSection() {
   const [permissionsByCode, setPermissionsByCode] = useState({});
   const [apiCodes, setApiCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
 
-  const triggerSuccessToast = () => {
+  const triggerSuccessToast = (msg) => {
+    setSuccessMessage(msg || '성공적으로 처리되었습니다.');
     setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 5000);
+    setTimeout(() => setShowSuccessToast(false), 2000);
   };
 
   const triggerToastFail = (message) => {
-    setFailMessage(message);
+    setFailMessage(message || '요청 처리 중 오류가 발생했습니다.');
     setShowFailToast(true);
-    setTimeout(() => setShowFailToast(false), 5000);
+    setTimeout(() => setShowFailToast(false), 2000);
   };
 
   const fetchData = async () => {
@@ -124,7 +126,7 @@ function ManagerSection() {
       const finalCodes = [loginAccountCode, ...fetchedCodes];
       setPermissionsByCode(processedData);
       setApiCodes(finalCodes);
-      triggerSuccessToast();
+      triggerSuccessToast('권한 설정이 저장되었습니다.');
     } catch (error) {
       triggerToastFail(error.message);
     }
@@ -200,7 +202,7 @@ function ManagerSection() {
         </table>
       </div>
 
-      {showSuccessToast && <ToastSuccess />}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
       {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );

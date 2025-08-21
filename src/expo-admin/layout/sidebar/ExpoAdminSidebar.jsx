@@ -4,8 +4,7 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineBarChart } from 'react-icons/ai';
 import { MdEventNote } from 'react-icons/md';
 import { FiMessageSquare, FiSettings } from 'react-icons/fi';
-import { FaUserFriends } from 'react-icons/fa';
-import { BiMoneyWithdraw } from 'react-icons/bi';
+import { FaUserFriends, FaQrcode } from 'react-icons/fa';
 import { usePermission } from '../../permission/PermissionContext';
 import ExpoAdminInfoBox from '../../components/InfoBox/ExpoAdminInfoBox';
 
@@ -14,8 +13,10 @@ function ExpoAdminSideBar() {
   const navigate = useNavigate();
   const { expoId } = useParams();
   const { perm } = usePermission();
+
   const currentPath = location.pathname;
   const [selectedMenu, setSelectedMenu] = useState('');
+  // 하나만 열리도록: ['expo'] | ['reservation'] | []
   const [openSubMenus, setOpenSubMenus] = useState([]);
 
   const basePath = `/expos/${expoId}/admin`;
@@ -33,17 +34,12 @@ function ExpoAdminSideBar() {
     }
   }, [currentPath, basePath]);
 
+  // 한 번에 하나만 열리도록 토글
   const toggleSubMenu = (menuKey) => {
-    setOpenSubMenus((prev) =>
-      prev.includes(menuKey)
-        ? prev.filter((key) => key !== menuKey)
-        : [...prev, menuKey]
-    );
+    setOpenSubMenus((prev) => (prev.includes(menuKey) ? [] : [menuKey]));
   };
 
-  const go = (path) => () => {
-    navigate(path);
-  };
+  const go = (path) => () => navigate(path);
 
   const can = {
     dashboard: true,
@@ -58,10 +54,7 @@ function ExpoAdminSideBar() {
     inquiry: !!perm?.isInquiryView,
   };
 
-  const disabledStyle = {
-    cursor: 'not-allowed',
-    color : '#838383ff'
-  };
+  const disabledStyle = { cursor: 'not-allowed', color: '#838383ff' };
 
   return (
     <Sidebar
@@ -76,7 +69,7 @@ function ExpoAdminSideBar() {
     >
       <div
         style={{
-          padding: '16px',
+          padding: '8px',
           backgroundColor: '#1e2a38',
           borderBottom: '1px solid #2b3c50ff',
         }}
@@ -94,7 +87,7 @@ function ExpoAdminSideBar() {
             backgroundColor: '#2c3e50',
           },
           [`.${menuClasses.active}`]: {
-            backgroundColor: '#2c3e50',
+            backgroundColor: '#2c3e50'
           },
           [`.${menuClasses.subMenuRoot}`]: {
             backgroundColor: '#1e2a38',
@@ -111,6 +104,18 @@ function ExpoAdminSideBar() {
           active={selectedMenu === `${basePath}`}
         >
           대시 보드
+        </MenuItem>
+
+        <MenuItem disabled style={{ cursor: 'default', opacity: 0.6 }}>
+          QR CheckIn
+        </MenuItem>
+
+        <MenuItem
+          icon={<FaQrcode />}
+          onClick={go(`${basePath}/qrcheckin`)}
+          active={selectedMenu === `${basePath}/qrcheckin`}
+        >
+          QR 체크인
         </MenuItem>
 
         <MenuItem disabled style={{ cursor: 'default', opacity: 0.6 }}>
@@ -193,16 +198,6 @@ function ExpoAdminSideBar() {
           style={!can.operation ? disabledStyle : {}}
         >
           운영 설정
-        </MenuItem>
-
-        <MenuItem
-          icon={<BiMoneyWithdraw />}
-          onClick={can.settlement ? go(`${basePath}/settlement`) : undefined}
-          active={selectedMenu === `${basePath}/settlement`}
-          disabled={!can.settlement}
-          style={!can.settlement ? disabledStyle : {}}
-        >
-          정산
         </MenuItem>
 
         <MenuItem

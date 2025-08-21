@@ -1,18 +1,12 @@
 import { BrowserRouter } from "react-router-dom";
-import ExpoAdminRoutes from "./ExpoAdminRoutes";
-import AuthPageRoutes from "./AuthPageRoutes";
-import MyPageRoutes from "./MyPageRoutes";
-import MainPageRoutes from './MainPageRoutes';
-import PlatformAdminRoutes from './PlatformAdminRoutes';
+import AppRouteBody from "./AppRouteBody";
+import ScrollToTop from "../common/ScrollToTop";
 
 function AppRouter() {
   return (
     <BrowserRouter>
-        <ExpoAdminRoutes />
-        <PlatformAdminRoutes/>
-        <MainPageRoutes />
-        <AuthPageRoutes />
-        <MyPageRoutes />
+      <ScrollToTop/>
+      <AppRouteBody/>
     </BrowserRouter>
   );
 }

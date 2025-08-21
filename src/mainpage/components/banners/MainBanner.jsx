@@ -12,7 +12,7 @@ export default function MainBanner({ banners }) {
     }, 4000); // 4초마다 전환
 
     return () => clearInterval(interval);
-  }, []);
+  }, [banners, current]);;
 
   return (
     <div className={styles.banner}>
@@ -36,6 +36,10 @@ export default function MainBanner({ banners }) {
           <span
             key={idx}
             className={`${styles.dot} ${current === idx ? styles.active : ''}`}
+            onClick={() => {
+              setCurrent(idx)
+            }
+            } // 👈 이 부분 추가
           />
         ))}
       </div>

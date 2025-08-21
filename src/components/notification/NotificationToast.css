@@ -1,0 +1,90 @@
+/* 알림 토스트 스타일 */
+.notification-toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  min-width: 300px;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #4CAF50;
+  z-index: 9999;
+  transform: translateX(120%);
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.notification-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-content {
+  padding: 16px;
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.notification-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.notification-type {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.notification-message {
+  color: #555;
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+/* 알림 타입별 색상 */
+.notification-toast[data-type="QR_ISSUED"],
+.notification-toast[data-type="QR_REISSUED"] {
+  border-left-color: #2196F3; /* 파란색 */
+}
+
+.notification-toast[data-type="EXPO_REMINDER"] {
+  border-left-color: #FF9800; /* 주황색 */
+}
+
+.notification-toast[data-type="GENERAL"] {
+  border-left-color: #4CAF50; /* 초록색 */
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .notification-toast {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+  }
+}

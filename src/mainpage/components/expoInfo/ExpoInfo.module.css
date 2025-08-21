@@ -1,0 +1,151 @@
+/* 정보 탭 */
+.infoTab {
+  padding: 20px 0;
+}
+
+.description {
+  margin-bottom: 40px;
+}
+
+.description h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.description p {
+  color: #666;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* 비즈니스 프로필 */
+.businessProfile {
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+.businessProfile h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.businessCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.businessHeader {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.businessHeader h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.companyName {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.businessNumber {
+  font-size: 12px;
+  color: #666;
+  background: #e9e9e9;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.businessItem {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.businessPhone {
+  color: #555;
+  font-size: 14px;
+}
+
+/* 위치 섹션 */
+.locationSection {
+  max-width: 600px;
+}
+
+.locationSection h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.locationInfo p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.coordinates {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.coordinates {
+  margin-top: 15px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .infoTab {
+    padding: 15px 0;
+  }
+  
+  .description {
+    margin-bottom: 30px;
+  }
+  
+  .description h3 {
+    font-size: 18px;
+  }
+  
+  .description p {
+    font-size: 15px;
+  }
+  
+  .businessProfile {
+    margin-bottom: 30px;
+  }
+  
+  .businessProfile h3,
+  .locationSection h3 {
+    font-size: 16px;
+  }
+  
+  .businessCard {
+    padding: 15px;
+  }
+  
+  .locationInfo p {
+    font-size: 15px;
+  }
+}

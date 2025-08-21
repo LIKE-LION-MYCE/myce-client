@@ -337,3 +337,45 @@
   margin-bottom: 0;
   font-weight: 500;
 }
+
+/* 예상 결제금액 섹션 스타일 */
+.estimated-payment-section {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.estimated-payment-button {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.estimated-payment-button:hover {
+  background: linear-gradient(135deg, #2980b9, #1f5582);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.estimated-payment-button:active {
+  transform: translateY(0);
+}
+
+.estimated-payment-description {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}

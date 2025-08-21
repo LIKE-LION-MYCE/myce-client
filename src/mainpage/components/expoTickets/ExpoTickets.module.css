@@ -1,0 +1,121 @@
+/* 티켓 섹션 */
+.ticketsSection h3 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.ticketsStats {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 30px;
+}
+
+.ticketsStats p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.ticketsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 티켓 정보 탭 (정보만 표시) */
+.ticketInfoCard {
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: white;
+  /* margin-bottom: 15px; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.ticketLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ticketLeft h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ticketType {
+  color: #e74c3c;
+  font-weight: bold;
+  margin: 0;
+  font-size: 14px;
+}
+
+.salePeriod {
+  color: #666;
+  margin: 0;
+  font-size: 14px;
+}
+
+.description {
+  color: #777;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.ticketRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #27ae60;
+  margin: 0;
+}
+
+.quantity {
+  color: #666;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ticketsSection h3 {
+    font-size: 20px;
+  }
+  
+  .ticketInfoCard {
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .ticketRight {
+    align-items: flex-start;
+  }
+  
+  .ticketLeft h4 {
+    font-size: 16px;
+  }
+  
+  .price {
+    font-size: 18px;
+  }
+}

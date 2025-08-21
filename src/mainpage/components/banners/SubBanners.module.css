@@ -1,24 +1,79 @@
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 3rem 0 3rem 0;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .item {
   position: relative;
-  width: 100%;
-  aspect-ratio: 5 / 2;
+  width: calc(25% - 0.9rem);
+  aspect-ratio: 5 / 1;
   overflow: hidden;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
+.item:hover {
+  transform: scale(1.02); /* 호버 효과 추가 */
+}
 
 .image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center; /* 이미지 중앙 정렬 */
   display: block;
+  transition: transform 0.2s ease; /* 부드러운 전환 효과 */
+}
+
+.item:hover .image {
+  transform: scale(1.05); /* 호버 시 이미지 확대 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 75rem) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 4rem 0.75rem 2rem 0.75rem;
+  }
+  
+  .item {
+    aspect-ratio: 3 / 1;
+  }
+}
+
+@media (max-width: 30rem) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 4rem 0.5rem 2rem 0.5rem;
+  }
+  
+  .item {
+    aspect-ratio: 4 / 1;
+  }
 }

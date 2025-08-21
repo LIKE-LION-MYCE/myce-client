@@ -1,27 +1,53 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './BannerLocationTable.module.css';
 
-
-function BannerLocationTable({ data }) {
+function BannerLocationTable({ data = [] }) {
   const navigate = useNavigate();
 
   const columns = [
     { key: 'id', header: 'ID' },
     { key: 'name', header: '배너명' },
     { key: 'createdAt', header: '생성일' },
-    { key: 'updatedAt' , header: '수정일자'},
-    { key: 'status', header: '상태' },
+    { key: 'updatedAt', header: '수정일자' },
+    { key: 'active', header: '상태' },
     { key: 'action', header: '상세보기' },
   ];
 
-  // 상세 페이지로 이동하면서 status도 함께 전달
   const goToDetail = (row) => {
-    navigate(`/platform/admin/bannerLocations/${row.id}`, {
+    navigate(`/platform/admin/adPosition/${row.id}`, {
       state: {
-        expoStatus: row.status, // 예: '활성'
-        expoId: row.id
+        expoStatus: row.status,
+        expoId: row.id,
       },
     });
+  };
+
+  const formatDate = (v) => (v ? String(v).substring(0, 10) : '-');
+
+  const renderCell = (colKey, row) => {
+    if (colKey === 'action') {
+      return (
+        <button className={styles.detailBtn} onClick={() => goToDetail(row)}>
+          상세보기
+        </button>
+      );
+    }
+    if (colKey === 'createdAt' || colKey === 'updatedAt') {
+      return formatDate(row[colKey]);
+    }
+    if (colKey === 'active') {
+      const isActive = row[colKey] === true;
+      return (
+        <span
+          className={`${styles.badge} ${
+            isActive ? styles.badgeActive : styles.badgeInactive
+          }`}
+        >
+          {isActive ? '활성' : '비활성'}
+        </span>
+      );
+    }
+    return row[colKey] ?? '-';
   };
 
   return (
@@ -38,23 +64,21 @@ function BannerLocationTable({ data }) {
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className={styles.row}>
+            <tr key={row.id ?? rowIndex} className={styles.row}>
               {columns.map((col) => (
                 <td key={col.key} className={styles.td}>
-                  {col.key === 'action' ? (
-                    <button
-                      className={styles.detailBtn}
-                      onClick={() => goToDetail(row)}
-                    >
-                      상세보기
-                    </button>
-                  ) : (
-                    row[col.key] || '-'
-                  )}
+                  {renderCell(col.key, row)}
                 </td>
               ))}
             </tr>
           ))}
+          {data.length === 0 && (
+            <tr>
+              <td className={styles.empty} colSpan={columns.length}>
+                데이터가 없습니다.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

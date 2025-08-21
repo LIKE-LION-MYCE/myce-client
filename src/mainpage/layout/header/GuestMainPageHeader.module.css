@@ -1,130 +1,629 @@
-.navbar {
+.header {
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단 줄 스타일 */
+.topRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  height: 80px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
+  min-height: 5rem;
+  padding: 1rem 0.5rem 1rem 1rem;
+  gap: 1rem;
 }
 
-.logoSection {
+.leftGroup {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  gap: 1rem;
+  /* flex: 1; */
+  margin-left: 3rem;
+  /* 필요에 따라 주석 처리 */
 }
 
-.logo {
+.rightGroup {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  /* 기존 .rightActions의 gap을 여기에 적용 */
+  margin-right: 3rem;
+  /* 기존 .rightActions의 margin을 여기에 적용 */
+  margin-bottom: 0.25rem;
+}
+
+.topLeft {
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  margin-left: 0;
+  /* 기존 8rem 삭제 */
 }
 
-.logo:hover {
-  opacity: 0.8;
-}
-
-.logoImage {
-  height: 40px;
+.logo {
+  height: 2.75rem;
   width: auto;
   object-fit: contain;
 }
 
-.rightSection {
+/* 검색창 스타일 - NOL interpark와 완전히 동일 */
+.searchContainer {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 20px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 2rem;
+  padding: 0;
+  flex: 0 0 auto;
+  max-width: 18rem;
+  height: 2.625rem;
+  margin-left: auto;
+  margin-right: 1rem;
+  align-self: center;
 }
 
-.authBtn {
-  padding: 12px 24px;
+.searchContainer.withDropdown {
+  border-radius: 2rem 2rem 0 0;
+}
+
+.searchContainer form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.searchInput {
+  flex: 1;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  background: transparent;
+  padding: 0 1.75rem;
+  font-size: 0.9rem;
+  color: #374151;
+  outline: none;
+  height: 100%;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  padding: 1.25rem;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  text-decoration: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.loginBtn {
-  background: white;
+.searchButton:hover {
+  color: #000000;
+}
+
+.searchButton svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* 프로모션 배너 스타일 */
+.promoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.promoContainer:hover {
+  opacity: 0.8;
+}
+
+.promoImage {
+  width: 3.125rem;
+  height: 3.125rem;
+  border-radius: 0.375rem;
+  object-fit: cover;
+}
+
+.promoText {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  line-height: 1.2;
   color: #374151;
-  border: 1px solid #d1d5db;
+  white-space: nowrap;
+  font-family: 'Pretendard', sans-serif;
 }
 
-.loginBtn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+.promoText div:first-child {
+  font-weight: 600;
+  color: #29292d;
 }
 
-.joinBtn {
-  background: #000000;
-  color: white;
+.promoText div:last-child {
+  color: #6b7280;
 }
 
-.joinBtn:hover {
-  background: #1f2937;
+.topRightActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  margin-right: 2rem;
 }
 
-.studyBtn {
-  background: #000000;
-  color: white;
+.topRightLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-left: auto;
 }
 
-.studyBtn:hover {
-  background: #1f2937;
+.topRightLinks span {
+  white-space: nowrap;
 }
 
-/* Focus styles */
-.authBtn:focus {
+/* 하단 줄 스타일 */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 8rem;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  margin-left: 0;
+  padding: 0.75rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #29292d;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-radius: 0;
+  position: relative;
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1rem;
+  line-height: 1;
+}
+
+.navButton:hover {
+  color: #1f2937;
+  background-color: #f8f9fa;
+}
+
+.navButton.active {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.navButton.active::after {
+  content: '';
+  position: absolute;
+  bottom: -0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 1rem);
+  height: 3px;
+  background-color: #29292d;
+}
+
+.rightActions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-right: 3rem;
+  height: 2.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: #29292d;
+  transition: all 0.2s ease;
+  font-family: 'Pretendard', sans-serif;
+  height: 2rem;
+  min-width: fit-content;
+}
+
+.actionButton:hover {
+  background: #e9ecef;
+}
+
+.actionIcon {
+  color: #29292d;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.actionText {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #29292d;
+  font-family: 'Pretendard', sans-serif;
+}
+
+/* 검색 결과 드롭다운 스타일 */
+.searchResultsDropdown {
+  position: absolute;
+  top: calc(100% - 0.0625rem);
+  left: -0.0625rem;
+  right: -0.0625rem;
+  background: white;
+  border: 0.0625rem solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 2rem 2rem;
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 18.75rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+}
+
+.searchResultsDropdown::-webkit-scrollbar {
+  display: none;
+  /* WebKit */
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  border-bottom: 0.0625rem solid #f3f4f6;
+  transition: background-color 0.2s ease;
+  gap: 0.75rem;
+}
+
+.searchResultItem:hover {
+  background-color: #f8f9fa;
+}
+
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+
+.searchResultImage {
+  flex-shrink: 0;
+  width: 2.8125rem;
+  height: 3.75rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.searchResultImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.searchResultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchResultTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-family: 'Pretendard', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultLocation {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-family: 'Pretendard', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultDate {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-family: 'Pretendard', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchResultMore {
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #000000;
+  cursor: pointer;
+  border-top: 0.0625rem solid #f3f4f6;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.searchResultMore:hover {
+  background-color: #e5e7eb;
+}
+
+/* Clean focus styles */
+.menuItem:focus {
+  outline: none;
+}
+
+.logoutBtn:focus,
+.mypageBtn:focus {
   outline: 2px solid #000000;
   outline-offset: 2px;
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0 20px;
-    height: 70px;
+/* 모바일 반응형 스타일 */
+@media (max-width: 1024px) {
+  .topRow {
+    padding: 0.75rem 1.5rem 0.75rem 1rem;
+    gap: 0.75rem;
   }
-
-  .logoImage {
-    height: 35px;
+  
+  .leftGroup {
+    margin-left: 1rem;
+    gap: 0.75rem;
   }
-
-  .rightSection {
-    gap: 12px;
+  
+  .rightActions {
+    margin-right: 1rem;
   }
-
-  .authBtn {
-    padding: 10px 18px;
-    font-size: 13px;
+  
+  .searchContainer {
+    max-width: 15rem;
+  }
+  
+  .navButton {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .actionText {
+    font-size: 0.8rem;
   }
 }
 
-@media (max-width: 640px) {
-  .navbar {
-    padding: 0 16px;
+@media (max-width: 768px) {
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    min-height: auto;
   }
-
-  .rightSection {
-    gap: 8px;
+  
+  .leftGroup {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: 0;
+    gap: 0.5rem;
+    align-items: center;
   }
-
-  .authBtn {
-    padding: 8px 16px;
-    font-size: 12px;
+  
+  .searchContainer {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+    width: 100%;
+    order: 3;
+    flex-basis: 100%;
+    margin-top: 0.5rem;
   }
+  
+  .searchInput {
+    padding: 0 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .searchButton {
+    padding: 0.75rem;
+    min-width: 2.5rem;
+  }
+  
+  .rightGroup {
+    margin-right: 1rem;
+    align-self: flex-end;
+  }
+  
+  .topLeft {
+    align-self: flex-start;
+  }
+  
+  .logo {
+    height: 1.75rem;
+  }
+  
+  .navButton {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .searchContainer {
+    max-width: 100%;
+    margin-left: 0;
+    height: 2.25rem;
+  }
+  
+  .searchInput {
+    padding: 0 1.25rem;
+    font-size: 0.85rem;
+  }
+  
+  .searchButton {
+    padding: 0.75rem;
+  }
+  
+  .searchButton svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .rightActions {
+    margin-right: 0;
+    align-self: flex-end;
+    gap: 0.375rem;
+  }
+  
+  .actionButton {
+    height: 1.75rem;
+    padding: 0.25rem 0.5rem;
+    gap: 0.25rem;
+  }
+  
+  .actionIcon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .actionText {
+    font-size: 0.75rem;
+  }
+}
 
-  .loginBtn {
-    display: none;
+@media (max-width: 480px) {
+  .topRow {
+    padding: 0.375rem 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .leftGroup {
+    gap: 0.375rem;
+    margin-left: 0;
+  }
+  
+  .searchContainer {
+    height: 2.25rem;
+  }
+  
+  .searchInput {
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .searchButton {
+    padding: 0.5rem;
+    min-width: 2rem;
+  }
+  
+  .searchButton svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .rightGroup {
+    margin-right: 0.75rem;
+  }
+  
+  .logo {
+    height: 1.5rem;
+  }
+  
+  .navButton {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.7rem;
+  }
+  
+  .searchContainer {
+    height: 2rem;
+  }
+  
+  .searchInput {
+    padding: 0 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .searchButton {
+    padding: 0.5rem;
+  }
+  
+  .searchButton svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .actionButton {
+    height: 1.5rem;
+    padding: 0.25rem 0.375rem;
+    gap: 0.125rem;
+  }
+  
+  .actionIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  
+  .actionText {
+    font-size: 0.625rem;
+  }
+  
+  .searchResultsDropdown {
+    max-height: 12.5rem;
+  }
+  
+  .searchResultItem {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .searchResultImage {
+    width: 2rem;
+    height: 2.5rem;
+  }
+  
+  .searchResultTitle {
+    font-size: 0.8rem;
+  }
+  
+  .searchResultLocation {
+    font-size: 0.7rem;
+  }
+  
+  .searchResultDate {
+    font-size: 0.65rem;
   }
 }

@@ -1,0 +1,109 @@
+.container {
+  max-width: 100rem;
+  margin: 5rem auto;
+  padding: 3rem 1rem;
+  margin-bottom: 5rem;
+}
+.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 auto;
+  letter-spacing: -0.04em;
+  position: relative;
+  text-align: center;
+  width: fit-content;
+  margin-bottom: 2.5rem;
+}
+
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+.loading {
+  background-color: #f8f9fa;
+  color: #666;
+  font-size: 1.125rem;
+}
+
+.error {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 0.0625rem solid #fed7d7;
+  font-size: 1.125rem;
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 5rem;
+}
+
+.buttonContainer {
+  text-align: center;
+  margin-top: 0;
+}
+
+.moreButton {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 62.4375rem;
+  color: #374151;
+  font-size: 1.125rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.moreButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.refreshIcon {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .moreButton {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+}

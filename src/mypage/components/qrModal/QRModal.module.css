@@ -1,67 +1,368 @@
+/* 오버레이 */
 .overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.18);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1100;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
-.modal {
-  background: #fff;
-  border-radius: 24px;
-  padding: 36px 44px 32px 44px;
-  box-shadow: 0 6px 24px rgba(60,60,60,0.09);
-  min-width: 430px;
-  min-height: 320px;
+
+/* 티켓 모달 */
+.ticketModal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 100%;
+  max-width: 650px;
+  border-radius: 20px;
   position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
 }
+
+/* 닫기 버튼 */
 .closeBtn {
   position: absolute;
-  top: 26px;
-  right: 26px;
-  background: none;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  font-size: 2.1rem;
-  color: #888;
+  font-size: 24px;
+  color: #fff;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
 }
-.title {
-  font-size: 21px;
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 티켓 헤더 */
+.ticketHeader {
+  text-align: center;
+  padding: 30px 40px 20px;
+  color: white;
+}
+
+.ticketTitle {
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
-.content {
+
+.ticketSubtitle {
+  font-size: 14px;
+  opacity: 0.8;
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+
+/* 티켓 바디 */
+.ticketBody {
+  background: #fff;
+  margin: 0 20px;
+  border-radius: 16px;
+  display: flex;
+  min-height: 250px;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+/* 왼쪽 섹션 */
+.leftSection {
+  flex: 2;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.expoInfo {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+}
+
+.expoTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 15px 0;
+  line-height: 1.3;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.infoValue {
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+  margin-left: 15px;
+}
+
+/* 구분선 */
+.divider {
+  width: 2px;
+  background: #f0f0f0;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
+
+.dividerLine {
+  width: 1px;
+  height: 100%;
+  background: #e0e0e0;
+  position: absolute;
+}
+
+.dividerCircles {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  z-index: 1;
+}
+
+.circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  border: 2px solid #e0e0e0;
+}
+
+/* 오른쪽 섹션 */
+.rightSection {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #f8f9ff 0%, #f0f2ff 100%);
+}
+
+.qrContainer {
+  text-align: center;
+}
+
 .qrBox {
-  background: #f8f9fa;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 12px;
-}
-.qrImg {
-  width: 180px; height: 180px; object-fit: contain;
-  background: #111;
-  border-radius: 8px;
-  border: 5px solid #fff;
-}
-.desc {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 16px;
-}
-.saveBtn {
-  margin-top: 5px;
   background: #fff;
-  color: #444;
-  border: 1.2px solid #e3e3e3;
-  border-radius: 7px;
-  padding: 8px 30px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+  border: 3px solid #667eea;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
 }
+
+.qrImg {
+  width: 160px;
+  height: 160px;
+  display: block;
+  border-radius: 8px;
+}
+
+.qrDesc {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 티켓 푸터 */
+.ticketFooter {
+  padding: 25px 40px 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.congestionBtn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
+}
+
+.congestionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(68, 160, 141, 0.3);
+}
+
 .saveBtn:hover {
-  background: #f7f7f7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(68, 160, 141, 0.4);
+}
+
+/* 티켓 상세 정보 섹션 */
+.ticketDetails {
+  background: #fff;
+  margin: 0 20px 15px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.detailsTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 15px 0;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 30px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.detailLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.detailValue {
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+  margin-left: 15px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .ticketModal {
+    max-width: 95%;
+    margin: 10px;
+  }
+  
+  .ticketBody {
+    flex-direction: column;
+    margin: 0 15px;
+  }
+  
+  .leftSection {
+    padding: 25px 20px;
+  }
+  
+  .rightSection {
+    padding: 25px 20px;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .divider {
+    display: none;
+  }
+  
+  .expoTitle {
+    font-size: 20px;
+  }
+  
+  .ticketFooter {
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .ticketDetails {
+    margin: 0 15px 15px;
+    padding: 20px;
+  }
+  
+  .detailsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* QR 상태 스타일 */
+.statusActive {
+  color: #4CAF50 !important;
+  font-weight: bold;
+}
+
+.statusApproved {
+  color: #FF9800 !important;
+  font-weight: bold;
+}
+
+.statusUsed {
+  color: #757575 !important;
+  font-weight: bold;
+}
+
+.statusExpired {
+  color: #f44336 !important;
+  font-weight: bold;
+}
+
+.statusDefault {
+  color: #757575 !important;
+  font-weight: bold;
 }

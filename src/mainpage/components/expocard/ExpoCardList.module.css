@@ -1,24 +1,36 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  max-width: 100rem; 
+  margin: 0 auto;
+  padding: 0 1rem 3rem 1rem;
 }
 
 .card {
   position: relative;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem; 
   background-color: #e5e5e5;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 4; 
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.3s ease;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .thumbnail {
+  transform: scale(1.05);
 }
 
 .overlay {
@@ -26,59 +38,220 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.3); /* 기본은 30% 투명도 */
+  padding: 1.5rem;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0.6) 60%,
+    rgba(0, 0, 0, 0.9) 100%
+  ); 
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100%;
+  height: 60%; 
   transition: background 0.3s ease;
+  pointer-events: none;
 }
 
-/* 기본 텍스트 */
+.bookmark {
+  position: absolute;
+  top: 1rem; 
+  right: 1rem; 
+  color: white;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(0.25rem);
+}
+
+.bookmark:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+}
+
 .title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.2rem;
+  font-size: 1.5rem; 
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  margin-top: 0.25rem;
+  line-height: 1.2;
+  color: white;
+  text-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.8); 
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: font-size 0.3s ease;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 300;
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
+}
+
+.location {
+  font-size: 0.75rem;
+  color: white;
+  font-weight: 300;
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
+  overflow: hidden;
 }
 
 .remain {
-  font-size: 0.85rem;
-  color: #f87171;
-}
-
-/* 숨겨지는 텍스트 (hover 시 보임) */
-.location,
-.date {
-  font-size: 0.85rem;
-  color: #e5e5e5;
+  font-size: 0.7rem;
+  color: #ff69b4;
+  font-weight: 300;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-/* 북마크는 항상 표시 */
-.bookmark {
-  position: absolute;
-  bottom: 0.7rem;
-  right: 0.7rem;
-  color: white;
-  z-index: 10;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* Hover 효과 */
 .card:hover .overlay {
-  background: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 20%,
+    rgba(0, 0, 0, 0.8) 50%,
+    rgba(0, 0, 0, 0.98) 100%
+  ); 
+  height: 70%; 
 }
 
-.card:hover .location,
 .card:hover .date {
   opacity: 1;
+  visibility: visible;
+  height: auto;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.card:hover .location {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.card:hover .title {
+  font-size: 1.75rem;
 }
 
 .card:hover .remain {
-  display: none;
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.loading,
+.error,
+.noResults {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.125rem;
+  color: #6b7280;
+  grid-column: 1 / -1;
+}
+
+.error {
+  color: #ef4444;
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+  
+  .card {
+    aspect-ratio: 2 / 3; 
+  }
+  
+  .title {
+    font-size: 1rem;
+  }
+  
+  .remain {
+    font-size: 0.9rem;
+  }
+  
+  .bookmark {
+    width: 36px;
+    height: 36px;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .overlay {
+    height: 50%;
+    padding: 1rem;
+  }
+  
+  .card:hover .overlay {
+    height: 60%;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .card {
+    aspect-ratio: 3 / 5; 
+  }
 }

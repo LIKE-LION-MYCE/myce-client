@@ -12,7 +12,7 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .sectionTitle {
@@ -49,38 +49,31 @@
 
 /* --- 상태 뱃지 --- */
 .statusBadge {
+  margin-left : 6px;
+  margin-bottom : 7px;
+  padding: 4px 10px;
+  border-radius: 16px;
   font-size: 12px;
-  font-weight: 400;
-  padding: 4px 10px 6px 10px;
-  border-radius: 20px;
-  color: white;
+  font-weight: 500;
+  display: inline-block;
   white-space: nowrap;
-  margin-bottom: 7px;
 }
 
 .승인_대기 {
-  background-color: #f0ad4e;
+  background-color: #fff5ec;  /* 연한 주황 */
+  color: #e79d3c;            /* 진한 주황 */
 }
 
 .결제_대기 {
-  background-color: #f0ad4e;
-}
-
-.게시_대기 {
-  background-color: #5cb85c;
-}
-
-.취소됨 {
-  background-color: #d9534f;
+  background-color: #fff5ec; /* 연한 주황 */
+  color: #e79d3c; /* 진한 주황 */
 }
 
 .승인_거절 {
-  background-color: #d9534f;
+  background-color: #ffecec; /* 연한 빨강 */
+  color: #e74c3c;            /* 진한 빨강 */
 }
 
-.게시_종료 {
-  background-color: #6c757d;
-}
 
 /* --- 버튼 그룹 --- */
 .buttonGroup {

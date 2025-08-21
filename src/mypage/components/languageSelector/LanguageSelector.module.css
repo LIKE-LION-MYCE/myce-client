@@ -1,0 +1,107 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.languageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.languageCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 60px;
+}
+
+.languageCard:hover {
+  border-color: #ff6b35;
+  background: #fff9f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+}
+
+.languageCard.selected {
+  border-color: #ff6b35;
+  background: #fff5ec;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+}
+
+.flag {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.languageName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+}
+
+.checkmark {
+  font-size: 18px;
+  color: #ff6b35;
+  font-weight: bold;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.currentLanguage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  border-left: 4px solid #ff6b35;
+}
+
+.currentLabel {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.currentValue {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+  .languageGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .languageCard {
+    padding: 14px 16px;
+    min-height: 50px;
+  }
+  
+  .flag {
+    font-size: 20px;
+  }
+  
+  .languageName {
+    font-size: 15px;
+  }
+  
+  .checkmark {
+    font-size: 16px;
+    right: 12px;
+  }
+}

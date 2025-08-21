@@ -1,0 +1,61 @@
+/* --- Layout Container (Expo/Setting 페이지들과 톤 맞춤) --- */
+.operatorContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  width: 1200px;
+  box-sizing: border-box;
+}
+
+/* --- Section --- */
+.section {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 제목 타이포 동일 */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* 제목과 버튼을 같은 줄에 */
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 티켓 등록 버튼과 동일 스타일 */
+.addBtn {
+  margin-left: 10px;
+  background-color: #ececec;
+  color: #1e2a38;
+  font-weight: 400;
+  padding: 6px 15px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.addBtn:hover {
+  background-color: #d9d9d9;
+  color: #1e2a38;
+}
+
+.addIcon {
+  font-size: 12px;
+}
+
+/* (선택) 페이지네이션 별도 래퍼가 필요하면 사용 */
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
