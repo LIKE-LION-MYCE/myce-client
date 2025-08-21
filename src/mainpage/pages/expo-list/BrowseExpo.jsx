@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import styles from "./BrowseExpo.module.css";
 import SidebarFilters from "../../components/sidebar/SidebarFilters";
 import ExpoCardList from "../../components/expocard/ExpoCardList";
@@ -8,6 +9,7 @@ import { useCategories } from "../../../hooks/useCategories";
 
 export default function BrowseExpo() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const {
     expos,
     filters,
@@ -18,11 +20,33 @@ export default function BrowseExpo() {
     pagination,
     setPagination,
   } = useExpoData(16);
+
+  // 클라이언트 사이드 검색 필터링 (헤더 검색과 동일한 로직)
+  const filteredExpos = React.useMemo(() => {
+    if (!filters.keyword || !expos?.length) return expos;
+    
+    const query = filters.keyword.toLowerCase();
+    return expos.filter(expo => 
+      expo.title.toLowerCase().includes(query) ||
+      expo.location.toLowerCase().includes(query) ||
+      (expo.categories && expo.categories.some(cat => 
+        cat.toLowerCase().includes(query)
+      ))
+    );
+  }, [expos, filters.keyword]);
   const {
     categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
+
+  // URL에서 search 파라미터를 읽어서 필터에 적용
+  useEffect(() => {
+    const searchQuery = searchParams.get('search');
+    if (searchQuery && searchQuery !== filters.keyword) {
+      setFilters(prev => ({ ...prev, keyword: searchQuery }));
+    }
+  }, [searchParams, setFilters]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
@@ -58,7 +82,7 @@ export default function BrowseExpo() {
             </span>
           </h2>
           <ExpoCardList
-            expos={expos}
+            expos={filteredExpos}
             isLoading={isLoading}
             error={error}
             onBookmarkActionComplete={refresh}
