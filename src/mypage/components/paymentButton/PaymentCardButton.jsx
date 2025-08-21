@@ -6,6 +6,7 @@ import styles from "./PaymentButton.module.css";
 import { requestRefund } from "../../../api/service/payment/RefundService";
 import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
 import ToastFail from "../../../common/components/toastFail/ToastFail";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner/LoadingSpinner";
 
 function PaymentCardButton({ name, amount, buyer, targetType, onPaymentStart, onPaymentEnd }) {
   const [loading, setLoading] = useState(false);
@@ -128,10 +129,7 @@ function PaymentCardButton({ name, amount, buyer, targetType, onPaymentStart, on
         disabled={loading}
       >
         {loading ? (
-          <span className={styles.loadingContent}>
-            <span className={styles.spinner}></span>
-            결제 진행 중...
-          </span>
+          <LoadingSpinner size="small" message="결제 진행 중..." />
         ) : (
           "카드 결제"
         )}
