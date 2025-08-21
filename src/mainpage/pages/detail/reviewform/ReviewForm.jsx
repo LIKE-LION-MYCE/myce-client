@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { reviewAPI } from '../../../../api/service/review/ReviewService';
 import styles from './ReviewForm.module.css';
+import ToastSuccess from '../../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../../common/components/toastFail/ToastFail';
 
 export default function ReviewForm() {
   const { expoId } = useParams();
@@ -12,6 +14,21 @@ export default function ReviewForm() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [canWriteReview, setCanWriteReview] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   useEffect(() => {
     checkPermissions();
@@ -27,16 +44,16 @@ export default function ReviewForm() {
       if (attendanceResponse.success && reviewedResponse.success) {
         const canWrite = attendanceResponse.data && !reviewedResponse.data;
         if (!canWrite) {
-          alert('박람회에 참석하지 않았거나 이미 리뷰를 작성하셨습니다.');
-          navigate(-1);
+          showFailMessage('박람회에 참석하지 않았거나 이미 리뷰를 작성하셨습니다.');
+          setTimeout(() => navigate(-1), 3000);
           return;
         }
         setCanWriteReview(true);
       }
     } catch (error) {
       console.error('권한 확인 실패:', error);
-      alert('권한 확인 중 오류가 발생했습니다.');
-      navigate(-1);
+      showFailMessage('권한 확인 중 오류가 발생했습니다.');
+      setTimeout(() => navigate(-1), 3000);
     } finally {
       setLoading(false);
     }
@@ -76,12 +93,12 @@ export default function ReviewForm() {
       });
       
       if (response.success) {
-        alert('리뷰가 성공적으로 등록되었습니다!');
-        navigate(`/detail/${expoId}`);
+        showSuccessMessage('리뷰가 성공적으로 등록되었습니다!');
+        setTimeout(() => navigate(`/detail/${expoId}`), 3000);
       }
     } catch (error) {
       console.error('리뷰 작성 실패:', error);
-      alert(error.response?.data?.message || '리뷰 작성 중 오류가 발생했습니다.');
+      showFailMessage(error.response?.data?.message || '리뷰 작성 중 오류가 발생했습니다.');
     }
   };
 
@@ -176,6 +193,12 @@ export default function ReviewForm() {
           </button>
         </div>
       </form>
+      {showSuccessToast && (
+        <ToastSuccess message={toastMessage} onClose={() => setShowSuccessToast(false)} />
+      )}
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </main>
   );
 }
