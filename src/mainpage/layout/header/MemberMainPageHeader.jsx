@@ -8,6 +8,7 @@ import LanguageSelector from "../../../common/components/language/LanguageSelect
 import { logout } from "../../../api/service/auth/AuthService";
 import { getUserInfoFromToken } from "../../../api/utils/jwtUtils";
 import { useExpoData } from "../../../hooks/useExpoData";
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const MemberMainPageHeader = ({ notification }) => {
   const { t } = useTranslation();
@@ -15,6 +16,8 @@ const MemberMainPageHeader = ({ notification }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const navigate = useNavigate(); // useNavigate 훅 사용
   const { expos, setFilters } = useExpoData();
 
@@ -130,7 +133,9 @@ const MemberMainPageHeader = ({ notification }) => {
       })
       .catch((err) => {
         console.log("로그아웃에 실패했습니다.", err);
-        alert("로그아웃에 실패했습니다.");
+        setToastMessage("로그아웃에 실패했습니다.");
+        setShowFailToast(true);
+        setTimeout(() => setShowFailToast(false), 3000);
       });
   };
 
@@ -274,6 +279,9 @@ const MemberMainPageHeader = ({ notification }) => {
           <LanguageSelector />
         </div>
       </div>
+      {showFailToast && (
+        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+      )}
     </header>
   );
 };
