@@ -30,7 +30,6 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000, // Increase warning threshold
-    outDir: "dist",
   },
   server: {
     port: 5173,
