@@ -44,7 +44,7 @@ const LanguageSelector = () => {
       </div>
       
       <div className={styles.currentLanguage}>
-        <span className={styles.currentLabel}>현재 선택된 언어:</span>
+        <span className={styles.currentLabel}>{t('language.currentLanguage', '현재 선택된 언어:')}</span>
         <span className={styles.currentValue}>
           {languages.find(lang => lang.code === selectedLanguage)?.name}
         </span>
