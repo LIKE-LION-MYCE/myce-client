@@ -10,6 +10,7 @@ import { getCurrentBanner } from "../../../api/service/platform-admin/banner/Ban
 import { useExpoData } from "../../../hooks/useExpoData";
 import { useCategories } from "../../../hooks/useCategories";
 import UpcomingCardList from "../../components/upcominglist/UpcomingCardList";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import BestReviews from "../../components/bestreviews/BestReviews";
 
 export default function MainPage() {
@@ -37,8 +38,7 @@ export default function MainPage() {
       const updatedExpos = prevExpos.map((expo) => {
         if (expo.expoId === expoId) {
           console.log(
-            `Expo ${expoId}: Toggling isBookmark from ${
-              expo.isBookmark
+            `Expo ${expoId}: Toggling isBookmark from ${expo.isBookmark
             } to ${!expo.isBookmark}`
           );
           return { ...expo, isBookmark: !expo.isBookmark };
@@ -75,7 +75,11 @@ export default function MainPage() {
     }));
   };
 
-  if (categoriesLoading) return <div>카테고리 로딩중...</div>;
+  if (categoriesLoading) return (
+    <div>
+      <LoadingSpinner />
+    </div>
+  );
   if (categoriesError)
     return <div>Error loading categories: {categoriesError.message}</div>;
 
