@@ -8,7 +8,7 @@ const pathMap = {
   '/platform/admin/bannerApplications': ['광고 관리', '광고 신청 관리'],
   '/platform/admin/bannerCurrent': ['광고 관리', '현재 광고 관리'],
   '/platform/admin/roleAdmins': ['권한 관리', '관리자 계정'],
-  '/platform/admin/roleUsers': ['권한 관리', '일반 사용자'],
+  '/platform/admin/roleUsers': ['권한 관리', '일반 사용자 관리'],
   '/platform/admin/inquiry': ['문의'],
   '/platform/admin/settingMessage': ['시스템 설정', '발송 메시지'],
   '/platform/admin/settingAmount': ['시스템 설정', '금액 설정'],

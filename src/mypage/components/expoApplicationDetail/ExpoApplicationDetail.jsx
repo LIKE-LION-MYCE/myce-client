@@ -242,7 +242,7 @@ function ExpoApplicationDetail({
       <div className={styles.infoBoxContainer}>
         <div className={styles.posterSection}>
           <img
-            src={form.thumbnailUrl || "https://cdn.netongs.com/news/photo/202412/322861_127383_830.jpg"}
+            src={form.thumbnailUrl || ""}
             alt={t('mypageGeneral.expoStatus.detail.altText.poster')}
             className={styles.posterImage}
           />

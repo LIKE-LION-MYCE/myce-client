@@ -66,6 +66,7 @@
 }
 
 .inputField:disabled {
+  font-weight: 500;
   border-bottom: 1px solid #eee;
   background: transparent; /* 배경 흰색이 너무 튀면 transparent 처리 */
   color: #555; /* 텍스트도 살짝 연한 톤 */

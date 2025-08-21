@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoNotifications } from "react-icons/io5";
-import { useNavigate } from "react-router-dom"; // useNavigate 임포트
+import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
 import { useTranslation } from "react-i18next";
 import styles from "./MemberMainPageHeader.module.css";
 import NotificationButton from "../../components/notification/NotificationButton";
@@ -8,16 +8,18 @@ import LanguageSelector from "../../../common/components/language/LanguageSelect
 import { logout } from "../../../api/service/auth/AuthService";
 import { getUserInfoFromToken } from "../../../api/utils/jwtUtils";
 import { useExpoData } from "../../../hooks/useExpoData";
-import ToastFail from '../../../common/components/toastFail/ToastFail';
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const MemberMainPageHeader = ({ notification }) => {
   const { t } = useTranslation();
-  const [activeMenu, setActiveMenu] = useState(t("nav.expoList"));
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastMessage, setToastMessage] = useState("");
   const navigate = useNavigate(); // useNavigate 훅 사용
   const { expos, setFilters } = useExpoData();
 
@@ -26,12 +28,28 @@ const MemberMainPageHeader = ({ notification }) => {
   const userInfo = getUserInfoFromToken(token);
   const isPlatformAdmin = userInfo?.role === "PLATFORM_ADMIN";
 
-  // 언어 변경 시 activeMenu 업데이트
+  // 현재 경로에 따라 activeMenu 설정
   useEffect(() => {
-    if (!activeMenu || activeMenu === "박람회 목록") {
-      setActiveMenu(t("nav.expoList"));
-    }
-  }, [t]);
+    const menuItems = [
+      { name: t("nav.home"), path: "/" },
+      { name: t("nav.expoList"), path: "/expo-list" },
+      { name: t("nav.expoApply"), path: "/expo-apply" },
+      { name: t("nav.adApply"), path: "/ad-apply" },
+      ...(isPlatformAdmin
+        ? [
+            {
+              name: t("nav.platformAdmin"),
+              path: "/platform/admin/dashboard/revenue",
+            },
+          ]
+        : []),
+    ];
+
+    const currentMenuItem = menuItems.find(
+      (item) => item.path === location.pathname
+    );
+    setActiveMenu(currentMenuItem ? currentMenuItem.name : null);
+  }, [location.pathname, t, isPlatformAdmin]);
 
   // 외부 클릭 시 검색 결과 닫기
   useEffect(() => {
@@ -55,19 +73,19 @@ const MemberMainPageHeader = ({ notification }) => {
     { name: t("nav.adApply"), path: "/ad-apply" },
     ...(isPlatformAdmin
       ? [
-        {
-          name: t("nav.platformAdmin"),
-          path: "/platform/admin/dashboard/revenue",
-        },
-      ]
+          {
+            name: t("nav.platformAdmin"),
+            path: "/platform/admin/dashboard/revenue",
+          },
+        ]
       : []),
   ];
 
   const handleMenuClick = (item) => {
     setActiveMenu(item.name);
     // 박람회 목록 클릭 시 상태를 전체로 설정
-    if (item.path === '/expo-list') {
-      navigate('/expo-list?status=all');
+    if (item.path === "/expo-list") {
+      navigate("/expo-list?status=all");
     } else {
       navigate(item.path);
     }
@@ -89,9 +107,8 @@ const MemberMainPageHeader = ({ notification }) => {
 
     if (query.trim().length > 0) {
       // 검색어가 있을 때 필터링된 결과 표시 (제목만)
-      const filtered = expos.filter(
-        (expo) =>
-          expo.title.toLowerCase().includes(query.toLowerCase())
+      const filtered = expos.filter((expo) =>
+        expo.title.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filtered);
       setShowSearchResults(true);
@@ -151,88 +168,90 @@ const MemberMainPageHeader = ({ notification }) => {
           {menuItems.map((item) => (
             <button
               key={item.name}
-              className={`${styles.navButton} ${activeMenu === item.name ? styles.active : ""
-                }`}
+              className={`${styles.navButton} ${
+                activeMenu === item.name ? styles.active : ""
+              }`}
               onClick={() => handleMenuClick(item)}
             >
               {item.name}
             </button>
           ))}
-          <div
-            className={`${styles.searchContainer} ${showSearchResults && searchResults.length > 0
-                ? styles.withDropdown
-                : ""
-              }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <form onSubmit={handleSearchSubmit}>
-              <input
-                type="text"
-                placeholder={t("nav.searchPlaceholder")}
-                className={styles.searchInput}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
-              />
-              <button type="submit" className={styles.searchButton}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </form>
-            {showSearchResults && searchResults.length > 0 && (
-              <div className={styles.searchResultsDropdown}>
-                {searchResults.slice(0, 5).map((expo) => (
-                  <div
-                    key={expo.expoId || expo.id}
-                    className={styles.searchResultItem}
-                    onClick={() => handleSearchResultClick(expo)}
-                  >
-                    <div className={styles.searchResultImage}>
-                      <img
-                        src={expo.thumbnailUrl || "/default-expo-image.jpg"}
-                        alt={expo.title}
-                        onError={(e) => {
-                          e.target.src = "/default-expo-image.jpg";
-                        }}
-                      />
+        </div>
+        <div
+          className={`${styles.searchContainer} ${
+            showSearchResults && searchResults.length > 0
+              ? styles.withDropdown
+              : ""
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <form onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              placeholder={t("nav.searchPlaceholder")}
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+            />
+            <button type="submit" className={styles.searchButton}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </form>
+          {showSearchResults && searchResults.length > 0 && (
+            <div className={styles.searchResultsDropdown}>
+              {searchResults.slice(0, 5).map((expo) => (
+                <div
+                  key={expo.expoId || expo.id}
+                  className={styles.searchResultItem}
+                  onClick={() => handleSearchResultClick(expo)}
+                >
+                  <div className={styles.searchResultImage}>
+                    <img
+                      src={expo.thumbnailUrl || "/default-expo-image.jpg"}
+                      alt={expo.title}
+                      onError={(e) => {
+                        e.target.src = "/default-expo-image.jpg";
+                      }}
+                    />
+                  </div>
+                  <div className={styles.searchResultContent}>
+                    <div className={styles.searchResultTitle}>{expo.title}</div>
+                    <div className={styles.searchResultLocation}>
+                      {expo.location}
                     </div>
-                    <div className={styles.searchResultContent}>
-                      <div className={styles.searchResultTitle}>{expo.title}</div>
-                      <div className={styles.searchResultLocation}>
-                        {expo.location}
-                      </div>
-                      <div className={styles.searchResultDate}>
-                        {expo.startDate &&
-                          expo.endDate &&
-                          `${new Date(expo.startDate).toLocaleDateString(
-                            "ko-KR"
-                          )} ~ ${new Date(expo.endDate).toLocaleDateString(
-                            "ko-KR"
-                          )}`}
-                      </div>
+                    <div className={styles.searchResultDate}>
+                      {expo.startDate &&
+                        expo.endDate &&
+                        `${new Date(expo.startDate).toLocaleDateString(
+                          "ko-KR"
+                        )} ~ ${new Date(expo.endDate).toLocaleDateString(
+                          "ko-KR"
+                        )}`}
                     </div>
                   </div>
-                ))}
-                {searchResults.length > 5 && (
-                  <div
-                    className={styles.searchResultMore}
-                    onClick={() =>
-                      handleSearchSubmit({ preventDefault: () => { } })
-                    }
-                  >
-                    더 많은 결과 보기
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {searchResults.length > 5 && (
+                <div
+                  className={styles.searchResultMore}
+                  onClick={() =>
+                    handleSearchSubmit({ preventDefault: () => {} })
+                  }
+                >
+                  더 많은 결과 보기
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 로그아웃, 마이페이지, 알림, 언어 선택을 포함하는 오른쪽 그룹 */}
@@ -280,7 +299,10 @@ const MemberMainPageHeader = ({ notification }) => {
         </div>
       </div>
       {showFailToast && (
-        <ToastFail message={toastMessage} onClose={() => setShowFailToast(false)} />
+        <ToastFail
+          message={toastMessage}
+          onClose={() => setShowFailToast(false)}
+        />
       )}
     </header>
   );
