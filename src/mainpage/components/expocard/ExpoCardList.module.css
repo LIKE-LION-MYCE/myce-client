@@ -96,7 +96,7 @@
 }
 
 .date {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: white;
   font-weight: 300;
   opacity: 1;
@@ -124,7 +124,7 @@
 
 .remain {
   font-size: 0.7rem;
-  color: white;
+  color: #ff69b4;
   font-weight: 300;
   text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
   opacity: 0;
