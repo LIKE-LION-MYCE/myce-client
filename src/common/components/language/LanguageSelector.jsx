@@ -28,7 +28,7 @@ const LanguageSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t('common.selectLanguage', '언어 선택')}
       >
-        <BsGlobe2 style={{ strokeWidth: 0 }}/>
+        <BsGlobe2 className={styles.globeIcon} style={{ strokeWidth: 0 }} />
       </button>
       
       {isOpen && (
