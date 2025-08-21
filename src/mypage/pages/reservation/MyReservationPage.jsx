@@ -11,9 +11,9 @@ function ReservationCard({ reservation }) {
   // 예약 상태를 번역으로 변환하는 함수
   const getStatusLabel = (status) => {
     const statusMap = {
-      'CANCELLED': t('reservation.status.cancelled'),
-      'CONFIRMED_PENDING': t('reservation.status.pending'),
-      'CONFIRMED': t('reservation.status.confirmed')
+      'CANCELLED': '예약 취소',
+      'CONFIRMED_PENDING': '결제 대기',
+      'CONFIRMED': '예약 확정'
     };
     return statusMap[status] || status;
   };

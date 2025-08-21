@@ -1,62 +1,96 @@
-.bannerSettings {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.heading {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+.modal {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #f5f5f5;
+}
+
+.closeIcon {
+  font-size: 16px;
   color: #333;
 }
 
+.modalContent {
+  padding: 20px 24px;
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.formFlat {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .formGroup {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .label {
-  display: block;
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 0.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: #777;
+  margin-bottom: 4px;
 }
 
-/* 공통 input 스타일 */
-.input {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #f9f9f9;
+.inputField {
+  padding: 10px 8px;
+  font-size: 14px;
+  color: #333;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
   outline: none;
-  transition: border-color 0.2s;
+  width: 100%;
 }
 
-.input:focus {
-  border-color: #007bff;
+.inputField:focus {
+  border-color: #1e2a38;
 }
 
-/* 확장용 input 타입 */
-.inputText {
-  /* 텍스트 기본 */
-}
-
-.inputNumber {
-  text-align: left;
-}
-
-/* 토글 스위치 */
 .toggleWrapper {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 20px;
+  width: 44px;
+  height: 24px;
 }
 
 .toggleInput {
@@ -67,91 +101,81 @@
 
 .toggleSlider {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: #d1d5db;
   border-radius: 999px;
-  transition: 0.4s;
+  transition: 0.3s;
   cursor: pointer;
 }
 
 .toggleSlider::before {
   content: '';
   position: absolute;
-  height: 16px;
-  width: 16px;
+  height: 20px;
+  width: 20px;
   left: 2px;
-  bottom: 2px;
-  background-color: white;
+  top: 2px;
+  background-color: #fff;
   border-radius: 50%;
-  transition: 0.4s;
+  transition: 0.3s;
 }
 
 .toggleInput:checked + .toggleSlider {
-  background-color: #3b82f6;
+  background-color: #1e2a38;
 }
 
 .toggleInput:checked + .toggleSlider::before {
   transform: translateX(20px);
 }
 
-/* 버튼 영역 */
-.formActions {
+.buttonDivider {
+  border-top: 1px dashed #ddd;
+  margin: 12px 0;
+}
+
+.buttonGroup {
   display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.btnPrimary {
-  padding: 0.8rem 2rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.btnPrimary:hover {
-  background-color: #0056b3;
-}
-
-.btnCancel {
-  padding: 0.8rem 2rem;
-  background-color: #555;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.btnCancel:hover {
-  background-color: #333;
-}
-
-
-.titleWrapper{
-	display: flex;
-  justify-content: space-between;
-}
-
-.backArrow {
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.2s ease;
+.actionBtn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 1;
-  margin-bottom: 7px;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.backArrow:hover {
-  color: #999;
+.submitBtn {
+  background-color: #1e2a38;
+  color: white;
+}
+
+.submitBtn:hover {
+  background-color: #2c3e50;
+}
+
+.cancelBtn {
+  background-color: #ececec;
+  color: #1e2a38;
+}
+
+.cancelBtn:hover {
+  background-color: #d9d9d9;
+}
+
+.iconBtn {
+  font-size: 14px;
+}
+
+.errorText {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #e53935;
 }

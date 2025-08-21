@@ -197,7 +197,7 @@ function PlatformAdminSideBar() {
             component={<Link to="/platform/admin/roleUsers" />}
             active={selectedMenu === '/platform/admin/roleUsers'}
           >
-            일반 사용자 목록
+            일반 사용자 관리
           </MenuItem>
         </SubMenu>
 
