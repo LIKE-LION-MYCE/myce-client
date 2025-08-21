@@ -152,7 +152,10 @@ export default function ExpoDetail() {
     }
   };
 
-  const handleBookmarkToggle = async () => {
+  const handleBookmarkToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     // 로그인 확인
     const token = localStorage.getItem('access_token');
     if (!token || isTokenExpired(token)) {
