@@ -1,15 +1,14 @@
 import React from 'react';
 import { FaCheck } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
-import styles from './ExpoProgressBar.module.css';
+import styles from './AdProgressBar.module.css';
 
 const STEPS = [
     ['PENDING_APPROVAL', 'REJECTED'],
     ['PENDING_PAYMENT'],
-    ['PENDING_PUBLISH', 'CANCELLED'],
+    ['PENDING_PUBLISH'],
     ['PUBLISHED'],
-    ['PUBLISH_ENDED', 'SETTLEMENT_REQUESTED'],
-    ['COMPLETED'],
+    ['COMPLETED', 'CANCELLED'],
 ];
 
 const STATUS_LABELS = {
@@ -51,7 +50,7 @@ const getStatusStyle = (status) => {
     return statusMapping[status] || null;
 };
 
-const ExpoProgressBar = ({ currentStatus }) => {
+const AdProgressBar = ({ currentStatus }) => {
     const currentStepIndex = STEPS.findIndex(step => step.includes(currentStatus));
     const currentStatusStyleKey = getStatusStyle(currentStatus);
     const currentColor = STATUS_COLORS[currentStatusStyleKey] || '#007bff'; // 기본 색상
@@ -92,4 +91,4 @@ const ExpoProgressBar = ({ currentStatus }) => {
     );
 };
 
-export default ExpoProgressBar;
+export default AdProgressBar;

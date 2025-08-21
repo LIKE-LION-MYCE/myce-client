@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ExpoApplicationDetail.module.css';
-import ExpoProgressBar from '../expoProgressBar/ExpoProgressBar';
+import ExpoProgressBar from '../progressBar/ExpoProgressBar';
 import ToggleSwitch from '../../../common/components/toggleSwitch/ToggleSwitch';
 
 // ExpoApplicationDetail 컴포넌트가 props로 expoData, onPayButtonClick, onAdminInfoClick, onCancelExpo, onRefundButtonClick을 받도록 변경
