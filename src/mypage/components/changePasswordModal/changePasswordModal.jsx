@@ -3,17 +3,34 @@ import { useTranslation } from 'react-i18next';
 import styles from "./changePasswordModal.module.css";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { changePassword } from "../../../api/service/auth/AuthService";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const ChangePasswordModal = ({ onClose }) => {
   const { t } = useTranslation();
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [password, setPassword] = useState({
     'currentPassword': '',
     'newPassword': '',
     'confirmPassword': ''
   });
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const handleInputChange = (field, value) => {
     setPassword(prev => ({
@@ -25,11 +42,11 @@ const ChangePasswordModal = ({ onClose }) => {
   const handleChangePassword = () => {
     changePassword({...password})
     .then(res => {
-      alert(t('changePasswordModal.messages.success'));
+      showSuccessMessage(t('changePasswordModal.messages.success'));
       onClose();
     })
     .catch(err => {
-      alert(t('changePasswordModal.messages.failure'));
+      showFailMessage(t('changePasswordModal.messages.failure'));
     })
   }
 
@@ -105,6 +122,9 @@ const ChangePasswordModal = ({ onClose }) => {
             {t('changePasswordModal.buttons.cancel')}
           </button>
         </div>
+        
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

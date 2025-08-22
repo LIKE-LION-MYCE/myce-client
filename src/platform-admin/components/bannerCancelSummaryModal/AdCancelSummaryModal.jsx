@@ -3,12 +3,30 @@ import { useState } from "react";
 import styles from "./AdCancelSummaryModal.module.css";
 import { processAdRefund } from "../../../api/service/payment/AdRefundService";
 import { denyCancelBanner } from "../../../api/service/platform-admin/banner/BannerService";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const { id } = useParams(); // URL 경로에서 {id} 부분을 가져옴
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   if (!isOpen) return null;
 
@@ -20,11 +38,12 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
   const handleCancelDeny = async () => {
     try {
       await denyCancelBanner(id);
-      alert("취소 거절에 성공했습니다.");
+      triggerToastSuccess("취소 거절에 성공했습니다.");
       onClose;
       navigate(-1);
     } catch (err) {
       console.log("취소 거부 실패 : ", err);
+      triggerToastFail("취소 거절에 실패했습니다.");
     }
   }
 
@@ -44,14 +63,14 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
 
       await processAdRefund(refundData);
 
-      alert("환불 처리가 성공적으로 완료되었습니다.");
+      triggerToastSuccess("환불 처리가 성공적으로 완료되었습니다.");
       onClose();
       if (onSubmit) {
         onSubmit();
       }
     } catch (err) {
       console.error("환불 처리 중 오류 발생:", err);
-      setError("환불 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      triggerToastFail("환불 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -129,6 +148,10 @@ function SettlementSummaryModal({ isOpen, onClose, onSubmit, cancelForm }) {
           </button>
         </div>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

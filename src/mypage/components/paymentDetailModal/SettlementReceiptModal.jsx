@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './SettlementReceiptModal.module.css';
 import { requestExpoSettlement } from '../../../api/service/user/memberApi';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const bankOptions = ['토스뱅크', '카카오뱅크', '신한은행', '국민은행', '우리은행', '하나은행', '기업은행', 'NH농협은행'];
 
@@ -17,6 +19,9 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
   });
   const [loading, setLoading] = useState(false);
   const [inputWarning, setInputWarning] = useState({ bankAccount: '', receiverName: '' });
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -54,21 +59,33 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
     setSettlementForm(prev => ({ ...prev, [name]: filteredValue }));
   };
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handleSubmitSettlement = async () => {
     if (!settlementForm.bankName || !settlementForm.bankAccount || !settlementForm.receiverName) {
-      alert(t('settlementReceiptModal.messages.allFieldsRequired'));
+      showFailMessage(t('settlementReceiptModal.messages.allFieldsRequired'));
       return;
     }
 
     try {
       setLoading(true);
       await requestExpoSettlement(expoId, settlementForm);
-      alert(t('settlementReceiptModal.messages.submitSuccess'));
+      showSuccessMessage(t('settlementReceiptModal.messages.submitSuccess'));
       onClose();
     } catch (err) {
       console.error('정산 신청 실패:', err);
       const errorMessage = err.response?.data?.message || t('settlementReceiptModal.messages.submitError');
-      alert(errorMessage);
+      showFailMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -224,6 +241,8 @@ const SettlementReceiptModal = ({ receiptData, onClose, expoId, readOnly = false
             </button>
           )}
         </div>
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

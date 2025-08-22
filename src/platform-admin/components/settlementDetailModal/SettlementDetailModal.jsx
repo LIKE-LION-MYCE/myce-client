@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import styles from './SettlementDetailModal.module.css';
 import { fetchSettlementDetail, approveSettlement } from '../../../api/service/platform-admin/expo/ExpoService';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSettlementApprove }) {
   const [settlementData, setSettlementData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
   const [approving, setApproving] = useState(false);
 
   // 정산 데이터 로드
@@ -17,7 +23,7 @@ function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSe
       setSettlementData(response);
     } catch (error) {
       console.error('정산 내역 조회 실패:', error);
-      alert('정산 내역을 불러오는데 실패했습니다.');
+      triggerToastFail('정산 내역을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -30,14 +36,14 @@ function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSe
     try {
       setApproving(true);
       await approveSettlement(expoId);
-      alert('정산이 승인되었습니다.');
+      triggerToastSuccess('정산이 승인되었습니다.');
       onClose(); // 모달 닫기
       if (onSettlementApprove) {
         onSettlementApprove(); // 부모 컴포넌트에 승인 완료 알림
       }
     } catch (error) {
       console.error('정산 승인 실패:', error);
-      alert('정산 승인 처리에 실패했습니다.');
+      triggerToastFail('정산 승인 처리에 실패했습니다.');
     } finally {
       setApproving(false);
     }
@@ -48,6 +54,18 @@ function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSe
       loadSettlementData();
     }
   }, [isOpen, expoId]);
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   if (!isOpen) return null;
 
@@ -196,6 +214,10 @@ function SettlementDetailModal({ isOpen, onClose, expoId, readOnly = false, onSe
           )}
         </div>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

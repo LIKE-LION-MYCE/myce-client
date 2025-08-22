@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MySettingPage.module.css";
 import { getSettings, updateSettings } from "../../../api/service/user/memberApi";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const MySettingPage = () => {
   const [language, setLanguage] = useState("ko");
   const [fontSize, setFontSize] = useState("medium");
   const [loading, setLoading] = useState(true);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -24,14 +29,26 @@ const MySettingPage = () => {
     fetchSettings();
   }, []);
 
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await updateSettings({ language, fontSize });
-      alert("설정이 저장되었습니다.");
+      showSuccessMessage("설정이 저장되었습니다.");
     } catch (error) {
       console.error('설정 저장 실패:', error);
-      alert("설정 저장에 실패했습니다.");
+      showFailMessage("설정 저장에 실패했습니다.");
     }
   };
 
@@ -119,6 +136,9 @@ const MySettingPage = () => {
           적용
         </button>
       </form>
+      
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

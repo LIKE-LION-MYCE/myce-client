@@ -6,6 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { googleLogin, kakaoLogin, login } from "../../../api/service/auth/AuthService";
 import { getMyPermission } from "../../../api/service/expo-admin/permission/PermissionService";
 import { HttpStatusCode } from "axios";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const LOGIN_TYPE = {
   MEMBER: 'MEMBER',
@@ -18,17 +19,19 @@ const LoginPage = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
     if(!userId) {
-        alert(t('login.validation.userIdRequired'));
+        triggerToastFail(t('login.validation.userIdRequired'));
         return;
     }
     if(!password) {
       activeTab === LOGIN_TYPE.MEMBER ? 
-        alert(t('login.validation.passwordRequired')) 
-      : alert(t('login.validation.adminCodeRequired'));
+        triggerToastFail(t('login.validation.passwordRequired'))
+      : triggerToastFail(t('login.validation.adminCodeRequired'));
       return;
     }
 
@@ -50,7 +53,7 @@ const LoginPage = () => {
         await movePage();
       }
     } catch (err) {
-      alert(t('login.messages.loginFailed'));
+      triggerToastFail(t('login.messages.loginFailed'));
       console.log(`로그인에 실패했습니다. ${err}`);
     }
   };
@@ -67,13 +70,19 @@ const LoginPage = () => {
             }
           } catch (permissionError) {
             console.error('권한 조회 실패:', permissionError);
-            alert(t('login.messages.expoInfoLoadFailed'));
+            triggerToastFail(t('login.messages.expoInfoLoadFailed'));
           }
         }
         
         // 일반 로그인이거나 관리자 권한 조회 실패시 메인 페이지로
         window.location.href = '/';
   }
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   return (
     <AuthLayout>
@@ -208,6 +217,7 @@ const LoginPage = () => {
           </button>
         </form>
       )}
+      {showFailToast && <ToastFail message={failMessage} />}
     </AuthLayout>
   );
 };

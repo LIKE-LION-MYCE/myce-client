@@ -9,6 +9,7 @@ import PaymentDetailModal from '../../components/paymentDetailModal/PaymentDetai
 import AdCancelDetailModal from '../../components/bannerCancelDetailModal/AdCancelDetailModal';
 import AdCancelSummaryModal from '../../components/bannerCancelSummaryModal/AdCancelSummaryModal';
 import ToastFail from '../../../common/components/toastFail/ToastFail';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
 import { fetchDetailBanner, fetchCancelInfo, cancelBanner, fetchPaymentDetail, fetchCancelDetail } from '../../../api/service/platform-admin/banner/BannerService';
 
 const statusClassMap = {
@@ -47,6 +48,8 @@ function BannerCurrentDetail() {
   const [cancelForm, setCancelForm] = useState(null);
   const [showFailToast, setShowFailToast] = useState(false);
   const [failMessage, setFailMessage] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [paymentDetail, setPaymentDetail] = useState(null);
 
   const getPaymentDetail = async () => {
@@ -82,15 +85,23 @@ function BannerCurrentDetail() {
   const handleSettlementSubmit = async () => {
     try {
       await cancelBanner(id, cancelForm);
-      alert("취소 처리에 성공했습니다.");
-      navigate(-1, {
-        replace: true,
-        state: { ...location.state, expoStatus: 'CANCELLED' },
-      });
+      triggerToastSuccess("취소 처리에 성공했습니다.");
+      setTimeout(() => {
+        navigate(-1, {
+          replace: true,
+          state: { ...location.state, expoStatus: 'CANCELLED' },
+        });
+      }, 1000);
     } catch (err) {
       console.log("취소 처리 실패 : ", err);
     }
     setShowSettlementSummary(false);
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
   };
 
   useEffect(() => {
@@ -222,6 +233,7 @@ function BannerCurrentDetail() {
 
 
       {showFailToast && <ToastFail message={failMessage} />}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
     </div>
   );
 }

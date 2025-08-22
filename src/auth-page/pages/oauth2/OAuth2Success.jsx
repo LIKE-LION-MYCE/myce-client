@@ -1,9 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const OAuth2Success = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     const provider = searchParams.get('provider');
@@ -22,18 +28,30 @@ const OAuth2Success = () => {
       
       const providerName = provider === 'google' ? '구글' : provider === 'kakao' ? '카카오' : provider;
       console.log(`${providerName} OAuth2 로그인 성공`);
-      alert('로그인이 완료되었습니다.');
+      triggerToastSuccess('로그인이 완료되었습니다.');
       
       // 메인 페이지로 리다이렉트
-      navigate('/');
+      setTimeout(() => navigate('/'), 1000);
     } else {
       // provider나 token이 없는 경우
       console.error('OAuth2 로그인 정보가 불완전합니다.');
       console.error('Provider:', provider, 'Token:', token);
-      alert('로그인 처리 중 오류가 발생했습니다.');
-      navigate('/login');
+      triggerToastFail('로그인 처리 중 오류가 발생했습니다.');
+      setTimeout(() => navigate('/login'), 1000);
     }
   }, [navigate, searchParams]);
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   return (
     <div style={{
@@ -45,6 +63,8 @@ const OAuth2Success = () => {
     }}>
       <h2>로그인 처리 중...</h2>
       <p>잠시만 기다려주세요.</p>
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };

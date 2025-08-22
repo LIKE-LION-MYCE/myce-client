@@ -4,6 +4,8 @@ import styles from './Dashboard.module.css';
 import { FiRefreshCw } from 'react-icons/fi';
 import DashboardService from '../../../api/service/expo-admin/dashboard/DashboardService';
 import DashboardTable from '../../components/dashboardTable/DashboardTable';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -47,6 +49,10 @@ function Dashboard() {
   const [selectedCheckinDate, setSelectedCheckinDate] = useState('');
   const [customHourlyData, setCustomHourlyData] = useState(null);
   const [isCustomCheckinMode, setIsCustomCheckinMode] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   // 캐시 삭제 버튼 표시 여부 (필요시 true로 변경)
   const [showClearCacheBtn, setShowClearCacheBtn] = useState(false);
@@ -114,7 +120,7 @@ function Dashboard() {
 
   const loadCustomWeeklyData = async () => {
     if (!selectedStartDate || !selectedEndDate) {
-      alert('시작일과 종료일을 모두 선택해주세요.');
+      triggerToastFail('시작일과 종료일을 모두 선택해주세요.');
       return;
     }
     try {
@@ -126,7 +132,7 @@ function Dashboard() {
       setCustomWeeklyData(response.dailyReservations);
       setIsCustomDateMode(true);
     } catch (err) {
-      alert('선택한 날짜 범위의 데이터를 불러오는데 실패했습니다.');
+      triggerToastFail('선택한 날짜 범위의 데이터를 불러오는데 실패했습니다.');
       console.error('Custom weekly data loading error:', err);
     }
   };
@@ -138,7 +144,7 @@ function Dashboard() {
 
   const loadCustomHourlyData = async () => {
     if (!selectedCheckinDate) {
-      alert('날짜를 선택해주세요.');
+      triggerToastFail('날짜를 선택해주세요.');
       return;
     }
     try {
@@ -146,7 +152,7 @@ function Dashboard() {
       setCustomHourlyData(hourlyData);
       setIsCustomCheckinMode(true);
     } catch (err) {
-      alert('선택한 날짜의 시간대별 입장 데이터를 불러오는데 실패했습니다.');
+      triggerToastFail('선택한 날짜의 시간대별 입장 데이터를 불러오는데 실패했습니다.');
       console.error('Custom hourly data loading error:', err);
     }
   };
@@ -188,11 +194,23 @@ function Dashboard() {
       await DashboardService.clearAllCache(expoId);
       await loadDashboardData();
       setShowClearCacheBtn(false);
-      alert('캐시가 완전히 삭제되었습니다.');
+      triggerToastSuccess('캐시가 완전히 삭제되었습니다.');
     } catch (err) {
       console.error('Cache clear error:', err);
-      alert('캐시 삭제 중 오류가 발생했습니다.');
+      triggerToastFail('캐시 삭제 중 오류가 발생했습니다.');
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   if (loading) {
@@ -612,6 +630,10 @@ function Dashboard() {
           <DashboardTable columns={columns} data={tableData} summaryRow={summaryRow} />
         </div>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './LanguageSelector.module.css';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const LanguageSelector = () => {
   const { i18n, t } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const languages = [
     { code: 'ko', name: t('language.korean'), flag: '🇰🇷' },
     { code: 'en', name: t('language.english'), flag: '🇺🇸' },
     { code: 'ja', name: t('language.japanese'), flag: '🇯🇵' }
   ];
+  
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const handleLanguageChange = (languageCode) => {
     setSelectedLanguage(languageCode);
@@ -19,7 +36,7 @@ const LanguageSelector = () => {
     
     // 성공 메시지 표시 (옵션)
     setTimeout(() => {
-      alert(t('language.languageChanged'));
+      showSuccessMessage(t('language.languageChanged'));
     }, 100);
   };
 
@@ -49,6 +66,8 @@ const LanguageSelector = () => {
           {languages.find(lang => lang.code === selectedLanguage)?.name}
         </span>
       </div>
+      {showSuccessToast && <ToastSuccess message={toastMessage} />}
+      {showFailToast && <ToastFail message={toastMessage} />}
     </div>
   );
 };

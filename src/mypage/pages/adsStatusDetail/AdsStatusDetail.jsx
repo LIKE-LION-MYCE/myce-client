@@ -10,6 +10,8 @@ import AdProgressBar from "../../components/progressBar/AdProgressBar";
 import AdCancelModal from "../../components/cancelModal/AdCancelModal";
 import PaymentSelection from "../payment-selection/PaymentSelection";
 import AdsInfoGrid from "../../components/adApplicationDetail/AdApplicationDetail";
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 // 단순화된 버튼 설정 (i18n 적용은 component 내부에서)
 const ALL_BUTTONS = [
@@ -88,6 +90,9 @@ function AdsStatusDetail() {
   const [refundData, setRefundData] = useState(null);
   const [rejectInfoData, setRejectInfoData] = useState(null);
   const [cancelData, setCancelData] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // 광고 상세 데이터 불러오기
   const fetchAdvertisementDetail = async () => {
@@ -109,6 +114,18 @@ function AdsStatusDetail() {
       fetchAdvertisementDetail();
     }
   }, [id]);
+
+  const showSuccessMessage = (message) => {
+    setToastMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const showFailMessage = (message) => {
+    setToastMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   if (loading) {
     return (
@@ -177,7 +194,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
+      showFailMessage(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -192,7 +209,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('정산 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
+      showFailMessage(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -208,7 +225,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('거절 사유 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
+      showFailMessage(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -224,7 +241,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('환불 영수증 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      showFailMessage('환붐 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -242,7 +259,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('환불 영수증 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      showFailMessage('환붐 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -261,7 +278,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('환불 내역 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('환불 내역을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      showFailMessage('환불 내역을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -276,7 +293,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('부분 환불 영수증 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert('부분 환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
+      showFailMessage('부분 환불 영수증을 불러오는데 실패했습니다: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -296,12 +313,12 @@ function AdsStatusDetail() {
   const handleCancelConfirm = async () => {
     try {
       await cancelAdvertisementByStatus(id);
-      alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
+      showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
       handleCloseModal();
       fetchAdvertisementDetail(); // 데이터 새로고침
     } catch (error) {
       console.error('취소 실패:', error);
-      alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
+      showFailMessage(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
     }
   };
 
@@ -310,11 +327,11 @@ function AdsStatusDetail() {
     if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.pendingApprovalCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
+        showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('승인대기 취소 실패:', error);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
+        showFailMessage(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
@@ -324,11 +341,11 @@ function AdsStatusDetail() {
     if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.pendingPaymentCancelConfirm'))) {
       try {
         await cancelAdvertisementByStatus(id);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
+        showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('결제대기 취소 실패:', error);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
+        showFailMessage(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
@@ -337,11 +354,11 @@ function AdsStatusDetail() {
     if (window.confirm(t('mypageGeneral.adsStatus.detail.messages.cancelConfirm'))) {
       try {
         await deleteAdvertisement(id);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
+        showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.cancelSuccess'));
         fetchAdvertisementDetail(); // 데이터 새로고침
       } catch (error) {
         console.error('취소 실패:', error);
-        alert(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
+        showFailMessage(t('mypageGeneral.adsStatus.detail.messages.cancelError'));
       }
     }
   };
@@ -357,7 +374,7 @@ function AdsStatusDetail() {
     } catch (err) {
       console.error('결제 정보 조회 실패:', err);
       console.error('에러 상세:', err.response?.data || err.message);
-      alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
+      showFailMessage(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -434,12 +451,12 @@ function AdsStatusDetail() {
             onPay={async () => {
               try {
                 await completeAdvertisementPayment(id);
-                alert(t('mypageGeneral.adsStatus.detail.messages.paymentSuccess'));
+                showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.paymentSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('결제 완료 실패:', error);
-                alert(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (error.response?.data?.message || error.message));
+                showFailMessage(t('mypageGeneral.adsStatus.detail.messages.paymentError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onCancel={handleCloseModal}
@@ -478,12 +495,12 @@ function AdsStatusDetail() {
             onRefund={!refundData.isRefundCompleted ? async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
+                showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
+                showFailMessage(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             } : null}
             onClose={handleCloseModal}
@@ -506,12 +523,12 @@ function AdsStatusDetail() {
             onRefund={async (reason) => {
               try {
                 await requestAdvertisementPartialRefund(id, { reason });
-                alert('부분 환불 신청이 성공적으로 접수되었습니다.');
+                showSuccessMessage('부분 환불 신청이 성공적으로 접수되었습니다.');
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('부분 환불 신청 실패:', error);
-                alert('부분 환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                showFailMessage('부분 환불 신청 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
               }
             }}
             onClose={handleCloseModal}
@@ -534,12 +551,12 @@ function AdsStatusDetail() {
             onRefund={async (reason) => {
               try {
                 await requestAdvertisementRefundByStatus(id, { reason });
-                alert(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
+                showSuccessMessage(t('mypageGeneral.adsStatus.detail.messages.refundSuccess'));
                 handleCloseModal();
                 fetchAdvertisementDetail(); // 데이터 새로고침
               } catch (error) {
                 console.error('환불 신청 실패:', error);
-                alert(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
+                showFailMessage(t('mypageGeneral.adsStatus.detail.messages.refundError') + ': ' + (error.response?.data?.message || error.message));
               }
             }}
             onClose={handleCloseModal}
@@ -563,6 +580,8 @@ function AdsStatusDetail() {
             onClose={handleCloseModal}
           />
         )}
+        {showSuccessToast && <ToastSuccess message={toastMessage} />}
+        {showFailToast && <ToastFail message={toastMessage} />}
       </div>
     </div>
   );

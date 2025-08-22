@@ -4,11 +4,14 @@ const formatDateTime = (dateString) => {
   };import React, { useEffect, useState } from 'react';
 import styles from './RefundFeeSettingTable.module.css';
 import { addRefundFee, getRefundFeeList, updateActivatuibRefundFee, updateRefundFeeSetting } from '../../../api/service/system/settings/refundfee/RefundFeeSettingService';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const RefundFeeSettingTable = ({ card, navigate }) => {
   const [refundFeeSettings, setRefundFeeSettings] = useState([]);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [editingRow, setEditingRow] = useState(null);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -19,6 +22,12 @@ const RefundFeeSettingTable = ({ card, navigate }) => {
     validUntil: ''
   });
   const [editData, setEditData] = useState({});
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   const standardTypeOptions = [
     { value: 'AFTER_RESERVATION', label: '예매 후' },
@@ -76,9 +85,9 @@ const RefundFeeSettingTable = ({ card, navigate }) => {
     }).catch(err => {
       console.log(`Fail to save refund fee ${err}`);
       if(err.response.data?.message) {
-        alert(err.response.data?.message);
+        triggerToastFail(err.response.data?.message);
       } else {
-        alert('환불 요금제를 저장할 수 없습니다.');
+        triggerToastFail('환불 요금제를 저장할 수 없습니다.');
       }
     })
   };
@@ -543,6 +552,9 @@ const RefundFeeSettingTable = ({ card, navigate }) => {
           </tbody>
         </table>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showFailToast && <ToastFail message={failMessage} />}
     </main>
   );
 };

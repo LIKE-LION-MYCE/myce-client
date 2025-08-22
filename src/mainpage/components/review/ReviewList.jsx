@@ -5,6 +5,8 @@ import ReviewItem from './ReviewItem';
 import ReviewForm from './ReviewForm';
 import Pagination from '../../../common/components/pagination/Pagination';
 import styles from './Review.module.css';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const ReviewList = ({ expoId, userInfo }) => {
   const { t } = useTranslation();
@@ -18,6 +20,10 @@ const ReviewList = ({ expoId, userInfo }) => {
   const [editingReview, setEditingReview] = useState(null);
   const [canWriteReview, setCanWriteReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     fetchReviews();
@@ -73,13 +79,13 @@ const ReviewList = ({ expoId, userInfo }) => {
       if (editingReview) {
         const response = await reviewAPI.updateReview(editingReview.id, reviewData);
         if (response.success) {
-          alert(t('components.review.list.alerts.updated'));
+          triggerToastSuccess(t('components.review.list.alerts.updated'));
           setEditingReview(null);
         }
       } else {
         const response = await reviewAPI.createReview({ ...reviewData, expoId });
         if (response.success) {
-          alert(t('components.review.list.alerts.created'));
+          triggerToastSuccess(t('components.review.list.alerts.created'));
           setCanWriteReview(false);
           setHasReviewed(true);
         }
@@ -88,7 +94,7 @@ const ReviewList = ({ expoId, userInfo }) => {
       await fetchReviews();
     } catch (error) {
       console.error(t('components.review.list.errors.processFailed'), error);
-      alert(error.response?.data?.message || t('components.review.list.alerts.error'));
+      triggerToastFail(error.response?.data?.message || t('components.review.list.alerts.error'));
     }
   };
 
@@ -105,15 +111,27 @@ const ReviewList = ({ expoId, userInfo }) => {
     try {
       const response = await reviewAPI.deleteReview(reviewId);
       if (response.success) {
-        alert(t('components.review.list.alerts.deleted'));
+        triggerToastSuccess(t('components.review.list.alerts.deleted'));
         setCanWriteReview(true);
         setHasReviewed(false);
         await fetchReviews();
       }
     } catch (error) {
       console.error(t('components.review.list.errors.deleteFailed'), error);
-      alert(error.response?.data?.message || t('components.review.list.alerts.error'));
+      triggerToastFail(error.response?.data?.message || t('components.review.list.alerts.error'));
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   return (
@@ -199,6 +217,10 @@ const ReviewList = ({ expoId, userInfo }) => {
           )}
         </>
       )}
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };
