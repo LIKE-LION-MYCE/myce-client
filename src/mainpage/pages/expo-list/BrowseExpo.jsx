@@ -94,9 +94,9 @@ export default function BrowseExpo() {
       <main className={styles.main}>
         <section className={styles.content}>
           <h2 className={styles.title}>
-            전체 행사{" "}
+            {t("homepage.browseExpo.title", "전체 박람회")}{" "}
             <span className={styles.count}>
-              {filteredExpos?.length || 0}개의 행사
+              {t("homepage.browseExpo.count", "{{count}}개의 박람회", { count: filteredExpos?.length || 0 })}
             </span>
           </h2>
           <ExpoCardList
@@ -113,7 +113,7 @@ export default function BrowseExpo() {
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.first}
             >
-              이전
+              {t("homepage.browseExpo.pagination.previous", "이전")}
             </button>
 
             {Array.from({ length: pagination.totalPages }, (_, i) => i)
@@ -150,7 +150,7 @@ export default function BrowseExpo() {
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.last}
             >
-              다음
+              {t("homepage.browseExpo.pagination.next", "다음")}
             </button>
           </div>
         </section>

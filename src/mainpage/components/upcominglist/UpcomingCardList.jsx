@@ -173,7 +173,7 @@ const UpcomingCardList = ({
           onClick={handleViewAll}
           className={styles.viewAllButton}
         >
-전체보기
+          {t("homepage.upcoming.viewAll", "전체보기")}
           <svg className={styles.arrowIcon} viewBox="0 0 24 24">
             <path d="M9 5l7 7-7 7" />
           </svg>

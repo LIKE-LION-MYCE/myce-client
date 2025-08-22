@@ -62,25 +62,25 @@ export default function SidebarFilters({ filters, setFilters, categories }) {
       />
 
       <div className={styles.filterSection}>
-        <h4>상태</h4>
+        <h4>{t('homepage.sidebarFilters.status.title', '상태')}</h4>
         <div className={styles.durationButtons}>
           <button
             className={`${styles.filterButton} ${!filters.status || filters.status === 'all' ? styles.active : ''}`}
             onClick={() => handleStatusChange('all')}
           >
-            전체
+            {t('homepage.sidebarFilters.status.all', '전체')}
           </button>
           <button
             className={`${styles.filterButton} ${filters.status === 'PUBLISHED' ? styles.active : ''}`}
             onClick={() => handleStatusChange('PUBLISHED')}
           >
-            진행중
+            {t('homepage.sidebarFilters.status.ongoing', '진행중')}
           </button>
           <button
             className={`${styles.filterButton} ${filters.status === 'PENDING_PUBLISH' ? styles.active : ''}`}
             onClick={() => handleStatusChange('PENDING_PUBLISH')}
           >
-            오픈 예정
+            {t('homepage.sidebarFilters.status.upcoming', '오픈 예정')}
           </button>
         </div>
       </div>
