@@ -19,7 +19,7 @@ const resources = {
 
         // 카테고리 탭
         categories: {
-          ongoingEvents: "진행중인 행사",
+          ongoingExpos: "진행중인 박람회",
           all: "전체",
           tech: "IT/테크/보안",
           fashion: "뷰티/라이프스타일",
@@ -81,6 +81,11 @@ const resources = {
           viewAll: "전체 보기",
           loading: "로딩중...",
           noMore: "더 이상 박람회가 없습니다",
+        },
+
+        // 진행중인 박람회 섹션
+        ongoing: {
+          viewAll: "전체보기",
         },
 
         // 예정 박람회 섹션
@@ -170,6 +175,12 @@ const resources = {
           search: {
             placeholder: "박람회를 검색하세요.",
           },
+          status: {
+            title: "상태",
+            all: "전체",
+            ongoing: "진행중",
+            upcoming: "오픈 예정",
+          },
           period: {
             title: "기간",
             months: "{{count}}개월",
@@ -256,8 +267,12 @@ const resources = {
         browseExpo: {
           loadingCategories: "카테고리 로딩중...",
           errorCategories: "카테고리 로딩 오류: {{message}}",
-          title: "전체 행사",
-          count: "{{count}}개의 행사",
+          title: "전체 박람회",
+          count: "{{count}}개의 박람회",
+          pagination: {
+            previous: "이전",
+            next: "다음",
+          },
         },
       },
     },
@@ -268,19 +283,19 @@ const resources = {
         // Loading and error messages
         loading: {
           categories: "Loading categories...",
-          expos: "Loading exhibitions...",
+          expos: "Loading expos...",
           banners: "Loading banners...",
         },
         errors: {
           categories: "Failed to load categories",
-          expos: "Failed to load exhibitions",
+          expos: "Failed to load expos",
           banners: "Failed to load banners",
           network: "Please check your network connection",
         },
 
         // Category tabs
         categories: {
-          ongoingEvents: "Ongoing Events",
+          ongoingExpos: "Ongoing Expos",
           all: "All",
           tech: "IT/Tech/Security",
           fashion: "Beauty/Lifestyle",
@@ -338,10 +353,15 @@ const resources = {
 
         // Load more button
         loadMore: {
-          button: "Load More Exhibitions",
+          button: "Load More Expos",
           viewAll: "View All",
           loading: "Loading...",
-          noMore: "No more exhibitions",
+          noMore: "No more expos",
+        },
+
+        // Ongoing expos section
+        ongoing: {
+          viewAll: "View All",
         },
 
         // Upcoming section
@@ -352,7 +372,7 @@ const resources = {
           viewAllButton: "View All Upcoming Shows",
           daysLeft: "days left",
           comingSoon: "Coming Soon",
-          defaultCategory: "Exhibition",
+          defaultCategory: "Expo",
           dateUndetermined: "Date TBD",
           loading: "Loading events...",
           error: "Failed to load events.",
@@ -393,7 +413,7 @@ const resources = {
 
         // Search and filters
         search: {
-          placeholder: "Search exhibitions",
+          placeholder: "Search expos",
           button: "Search",
           filters: "Filters",
           sortBy: "Sort by",
@@ -407,7 +427,7 @@ const resources = {
 
         // Common messages
         common: {
-          noResults: "No exhibitions found",
+          noResults: "No expos found",
           tryAgain: "Try Again",
           loading: "Loading...",
           error: "An error occurred",
@@ -429,7 +449,13 @@ const resources = {
         // SidebarFilters
         sidebarFilters: {
           search: {
-            placeholder: "Search exhibitions",
+            placeholder: "Search expos",
+          },
+          status: {
+            title: "Status",
+            all: "All",
+            ongoing: "Ongoing",
+            upcoming: "Coming Soon",
           },
           period: {
             title: "Period",
@@ -449,13 +475,13 @@ const resources = {
           companyAddress: "Company Address Information",
           service: {
             title: "Services",
-            reservation: "Exhibition Booking",
+            reservation: "Expo Booking",
             inquiry: "Booking Inquiry",
             consultation: "1:1 Consultation",
           },
           business: {
             title: "Business",
-            application: "Exhibition Application",
+            application: "Expo Application",
             advertising: "Advertisement Application",
           },
           copyright: "© 2024 Myce. All rights reserved.",
@@ -517,8 +543,12 @@ const resources = {
         browseExpo: {
           loadingCategories: "Loading categories...",
           errorCategories: "Error loading categories: {{message}}",
-          title: "All Events",
-          count: "{{count}} events",
+          title: "All Expos",
+          count: "{{count}} expos",
+          pagination: {
+            previous: "Previous",
+            next: "Next",
+          },
         },
       },
     },
@@ -529,19 +559,19 @@ const resources = {
         // ローディングとエラーメッセージ
         loading: {
           categories: "カテゴリ読み込み中...",
-          expos: "展示会読み込み中...",
+          expos: "博覧会読み込み中...",
           banners: "バナー読み込み中...",
         },
         errors: {
           categories: "カテゴリの読み込みに失敗しました",
-          expos: "展示会の読み込みに失敗しました",
+          expos: "博覧会の読み込みに失敗しました",
           banners: "バナーの読み込みに失敗しました",
           network: "ネットワーク接続をご確認ください",
         },
 
         // カテゴリタブ
         categories: {
-          ongoingEvents: "開催中のイベント",
+          ongoingExpos: "開催中の博覧会",
           all: "すべて",
           tech: "IT/テック/セキュリティ",
           fashion: "ビューティ/ライフスタイル",
@@ -599,10 +629,15 @@ const resources = {
 
         // もっと見るボタン
         loadMore: {
-          button: "もっと多くの展示会を見る",
+          button: "もっと多くの博覧会を見る",
           viewAll: "すべて見る",
           loading: "読み込み中...",
-          noMore: "これ以上展示会はありません",
+          noMore: "これ以上博覧会はありません",
+        },
+
+        // 開催中の博覧会セクション
+        ongoing: {
+          viewAll: "すべて見る",
         },
 
         // 開催予定セクション
@@ -613,7 +648,7 @@ const resources = {
           viewAllButton: "開催予定公演をすべて見る",
           daysLeft: "日後",
           comingSoon: "まもなく開催",
-          defaultCategory: "展示会",
+          defaultCategory: "博覧会",
           dateUndetermined: "日程未定",
           loading: "イベント読み込み中...",
           error: "イベントの読み込みに失敗しました。",
@@ -654,7 +689,7 @@ const resources = {
 
         // 検索とフィルター
         search: {
-          placeholder: "展示会を検索",
+          placeholder: "博覧会を検索",
           button: "検索",
           filters: "フィルター",
           sortBy: "並び替え",
@@ -668,7 +703,7 @@ const resources = {
 
         // 共通メッセージ
         common: {
-          noResults: "検索結果がありません",
+          noResults: "博覧会が見つかりません",
           tryAgain: "再試行",
           loading: "読み込み中...",
           error: "エラーが発生しました",
@@ -690,7 +725,13 @@ const resources = {
         // SidebarFilters
         sidebarFilters: {
           search: {
-            placeholder: "展示会を検索",
+            placeholder: "博覧会を検索",
+          },
+          status: {
+            title: "状態",
+            all: "すべて",
+            ongoing: "開催中",
+            upcoming: "開催予定",
           },
           period: {
             title: "期間",
@@ -710,13 +751,13 @@ const resources = {
           companyAddress: "会社住所情報",
           service: {
             title: "サービス",
-            reservation: "展示会予約",
+            reservation: "博覧会予約",
             inquiry: "予約照会",
             consultation: "1対1相談",
           },
           business: {
             title: "ビジネス",
-            application: "展示会申込",
+            application: "博覧会申込",
             advertising: "広告申込",
           },
           copyright: "© 2024 Myce. All rights reserved.",
@@ -778,8 +819,12 @@ const resources = {
         browseExpo: {
           loadingCategories: "カテゴリ読み込み中...",
           errorCategories: "カテゴリ読み込みエラー: {{message}}",
-          title: "全てのイベント",
-          count: "{{count}}件のイベント",
+          title: "全ての博覧会",
+          count: "{{count}}件の博覧会",
+          pagination: {
+            previous: "前へ",
+            next: "次へ",
+          },
         },
       },
     },
