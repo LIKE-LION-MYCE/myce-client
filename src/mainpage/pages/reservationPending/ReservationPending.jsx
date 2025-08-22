@@ -5,6 +5,8 @@ import { Link, useParams } from "react-router-dom";
 import { getReservationPending } from "../../../api/service/reservation/reservationApi";
 import ChatModal from "../../../components/shared/chat/ChatModal";
 import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 export default function ReservationPending() {
   const { t } = useTranslation();
@@ -14,6 +16,10 @@ export default function ReservationPending() {
   const [error, setError] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -47,10 +53,22 @@ export default function ReservationPending() {
     if (!textToCopy) return;
     try {
       await navigator.clipboard.writeText(textToCopy);
-      alert(t('reservation.pending.messages.copied', { type }));
+      triggerToastSuccess(t('reservation.pending.messages.copied', { type }));
     } catch {
-      alert(t('reservation.pending.messages.copyFailed'));
+      triggerToastFail(t('reservation.pending.messages.copyFailed'));
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   if (error) {
@@ -131,6 +149,10 @@ export default function ReservationPending() {
           onClose={handleChatClose}
         />
       )}
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

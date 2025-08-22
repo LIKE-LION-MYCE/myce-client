@@ -10,6 +10,8 @@ import PaymentSummaryModal from '../../components/paymentSummaryModal/PaymentSum
 import ExpoPaymentDetailModal from '../../components/expoPaymentDetailModal/ExpoPaymentDetailModal';
 import CancelDetailModal from '../../components/cancelDetailModal/cancelDetailModal';
 import { fetchExpoDetail, approveExpo, rejectExpo, fetchPaymentInfo, fetchPaymentPreview, fetchRejectInfo, fetchCancelInfo, approveCancellation } from '../../../api/service/platform-admin/expo/ExpoService';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 const statusClassMap = {
   PENDING_APPROVAL: '승인_대기',
@@ -40,6 +42,10 @@ function ExpoApplicationDetail() {
   const [rejectReason, setRejectReason] = useState('');
   const [paymentDetail, setPaymentDetail] = useState(null);
   const [cancelDetail, setCancelDetail] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   // 박람회 상세 정보 로드
   const loadExpoDetail = async () => {
@@ -92,8 +98,20 @@ function ExpoApplicationDetail() {
       navigate('/platform/admin/expoApplications');
     } catch (error) {
       console.error('박람회 거절 실패:', error);
-      alert('박람회 거절 처리에 실패했습니다.');
+      triggerToastFail('박람회 거절 처리에 실패했습니다.');
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   const handleApprove = async () => {
@@ -113,7 +131,7 @@ function ExpoApplicationDetail() {
       navigate('/platform/admin/expoApplications');
     } catch (error) {
       console.error('박람회 승인 실패:', error);
-      alert('박람회 승인 처리에 실패했습니다.');
+      triggerToastFail('박람회 승인 처리에 실패했습니다.');
     }
   };
 
@@ -134,7 +152,7 @@ function ExpoApplicationDetail() {
       setShowPaymentDetail(true);
     } catch (error) {
       console.error('결제 정보 조회 실패:', error);
-      alert('결제 정보를 불러올 수 없습니다.');
+      triggerToastFail('결제 정보를 불러올 수 없습니다.');
     }
   };
 
@@ -145,14 +163,14 @@ function ExpoApplicationDetail() {
       setShowCancelDetail(true);
     } catch (error) {
       console.error('취소 내역 조회 실패:', error);
-      alert('취소 내역을 불러올 수 없습니다.');
+      triggerToastFail('취소 내역을 불러올 수 없습니다.');
     }
   };
 
   const handleCancelApprove = async () => {
     try {
       await approveCancellation(id);
-      alert('취소 승인이 완료되었습니다.');
+      triggerToastFail('취소 승인이 완료되었습니다.');
       setShowCancelDetail(false);
       // 상세 정보 다시 로드하여 상태 업데이트
       await loadExpoDetail();
@@ -160,7 +178,7 @@ function ExpoApplicationDetail() {
       navigate('/platform/admin/expoApplications');
     } catch (error) {
       console.error('취소 승인 실패:', error);
-      alert('취소 승인 처리에 실패했습니다.');
+      triggerToastFail('취소 승인 처리에 실패했습니다.');
     }
   };
 
@@ -261,6 +279,9 @@ function ExpoApplicationDetail() {
         isPendingCancel={expo?.status === 'PENDING_CANCEL'}
       />
 
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

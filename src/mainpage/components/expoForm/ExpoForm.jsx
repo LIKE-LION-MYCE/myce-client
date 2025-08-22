@@ -7,6 +7,7 @@ import ImageUpload from "../../../common/components/imageUpload/ImageUpload";
 import DaumPostcode from "react-daum-postcode";
 import UsageGuidelines from "../../../common/components/usageGuidelines/UsageGuidelines";
 import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 // .env 환경변수에서 구글맵 API 키 불러오기
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -37,6 +38,8 @@ const ExpoForm = ({ onNextPage, initialData }) => {
   const [uploading, setUploading] = useState(false);
   // 주소 검색 팝업 표시 여부
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
   // 주소 선택 시 실행됨
   const handleAddressComplete = (data) => {
@@ -266,10 +269,16 @@ const ExpoForm = ({ onNextPage, initialData }) => {
 
     if (Object.keys(errors).length > 0) {
       // 에러가 있으면 제출 막기
-      alert(t('mainpage.expoForm.messages.enterRequiredFields'));
+      triggerToastFail(t('mainpage.expoForm.messages.enterRequiredFields'));
       return;
     }
     onNextPage && onNextPage(formData);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   // 운영 시간 드롭다운용 시간 옵션
@@ -542,6 +551,9 @@ const ExpoForm = ({ onNextPage, initialData }) => {
           </button>
         </div>
       </form>
+      
+      {/* 토스트 알림 */}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };

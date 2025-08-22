@@ -88,8 +88,8 @@ const FindPassword = () => {
 
     findPassword(form.name, form.loginId, form.email)
     .then(res => {
-      alert(t('findPassword.messages.tempPasswordSent'));
-      navigate('/login');
+      triggerToastSuccess(t('findPassword.messages.tempPasswordSent'));
+      setTimeout(() => navigate('/login'), 1000);
     })
     .catch(err => {
       const res = err.response;

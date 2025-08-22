@@ -65,8 +65,10 @@ const SignUpPage = () => {
       
     signup({...form}).then((res) => {
       if (res.status === HttpStatusCode.Ok) {
-        alert(t('signup.messages.success'));
-        window.location.href = '/login';
+        triggerToastSuccess(t('signup.messages.success'));
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1000);
       } else {
         onsole.log(`회원가입에 실패했습니다. ${res.status}`)
       }

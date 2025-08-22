@@ -8,6 +8,8 @@ import {
   VERIFICATION_TYPE,
 } from "../../../api/service/auth/AuthService";
 import { getNonMemberReservation } from "../../../api/service/reservation/reservationApi";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 function NonMemberReservationCheckPage() {
   const { t } = useTranslation();
@@ -19,12 +21,16 @@ function NonMemberReservationCheckPage() {
   const [timer, setTimer] = useState(0);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
   const navigate = useNavigate();
 
   // 인증번호 발송
   const handleSendCode = async () => {
     if (!email) {
-      alert(t('nonmember.reservationCheck.alerts.enterEmail', '이메일을 입력해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.enterEmail', '이메일을 입력해주세요.'));
       return;
     }
 
@@ -33,7 +39,7 @@ function NonMemberReservationCheckPage() {
       await sendVerificatiionEmail(VERIFICATION_TYPE.NONMEMBER_VERIFY, email);
       setIsCodeSent(true);
       setTimer(180); // 3분 타이머 시작
-      alert(t('nonmember.reservationCheck.alerts.codeSent', '인증번호가 발송되었습니다.'));
+      triggerToastSuccess(t('nonmember.reservationCheck.alerts.codeSent', '인증번호가 발송되었습니다.'));
 
       // 타이머 시작
       const interval = setInterval(() => {
@@ -48,7 +54,7 @@ function NonMemberReservationCheckPage() {
       }, 1000);
     } catch (error) {
       console.error("인증번호 발송 실패:", error);
-      alert(t('nonmember.reservationCheck.alerts.codeSendFailed', '인증번호 발송에 실패했습니다. 다시 시도해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.codeSendFailed', '인증번호 발송에 실패했습니다. 다시 시도해주세요.'));
     } finally {
       setIsSendingEmail(false);
     }
@@ -57,7 +63,7 @@ function NonMemberReservationCheckPage() {
   // 인증번호 검증
   const handleVerifyCode = async () => {
     if (!email || !code) {
-      alert(t('nonmember.reservationCheck.alerts.enterEmailAndCode', '이메일과 인증번호를 모두 입력해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.enterEmailAndCode', '이메일과 인증번호를 모두 입력해주세요.'));
       return;
     }
 
@@ -69,10 +75,10 @@ function NonMemberReservationCheckPage() {
         code
       );
       setIsEmailVerified(true);
-      alert(t('nonmember.reservationCheck.alerts.emailVerified', '이메일 인증이 완료되었습니다.'));
+      triggerToastSuccess(t('nonmember.reservationCheck.alerts.emailVerified', '이메일 인증이 완료되었습니다.'));
     } catch (error) {
       console.error("인증번호 검증 실패:", error);
-      alert(t('nonmember.reservationCheck.alerts.invalidCode', '인증번호가 올바르지 않습니다. 다시 확인해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.invalidCode', '인증번호가 올바르지 않습니다. 다시 확인해주세요.'));
     } finally {
       setIsVerifyingCode(false);
     }
@@ -81,11 +87,11 @@ function NonMemberReservationCheckPage() {
   // 예매 확인 처리 (이메일 인증 + 예매번호)
   const handleCheck = async () => {
     if (!isEmailVerified) {
-      alert(t('nonmember.reservationCheck.alerts.verifyEmailFirst', '이메일 인증을 먼저 완료해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.verifyEmailFirst', '이메일 인증을 먼저 완료해주세요.'));
       return;
     }
     if (!reservationNum) {
-      alert(t('nonmember.reservationCheck.alerts.enterReservationNumber', '예매번호를 입력해주세요.'));
+      triggerToastFail(t('nonmember.reservationCheck.alerts.enterReservationNumber', '예매번호를 입력해주세요.'));
       return;
     }
 
@@ -104,11 +110,23 @@ function NonMemberReservationCheckPage() {
     } catch (error) {
       console.error("예매 조회 실패:", error);
       if (error.response?.status === 404) {
-        alert(t('nonmember.reservationCheck.alerts.reservationNotFound', '입력하신 이메일과 예매번호에 해당하는 예매 정보를 찾을 수 없습니다.'));
+        triggerToastFail(t('nonmember.reservationCheck.alerts.reservationNotFound', '입력하신 이메일과 예매번호에 해당하는 예매 정보를 찾을 수 없습니다.'));
       } else {
-        alert(t('nonmember.reservationCheck.alerts.reservationError', '예매 조회 중 오류가 발생했습니다. 다시 시도해주세요.'));
+        triggerToastFail(t('nonmember.reservationCheck.alerts.reservationError', '예매 조회 중 오류가 발생했습니다. 다시 시도해주세요.'));
       }
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   // 타이머 포맷팅 (MM:SS)
@@ -219,6 +237,10 @@ function NonMemberReservationCheckPage() {
           </div>
         </div>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

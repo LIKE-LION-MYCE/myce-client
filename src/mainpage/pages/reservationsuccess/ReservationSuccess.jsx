@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { getReservationSuccess } from "../../../api/service/reservation/reservationApi";
 import ChatModal from "../../../components/shared/chat/ChatModal";
 import LoginPromptModal from "../../../components/shared/chat/LoginPromptModal";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 export default function ReservationSuccess() {
   const { t } = useTranslation();
@@ -14,6 +15,8 @@ export default function ReservationSuccess() {
   const [error, setError] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     let alive = true;
@@ -50,8 +53,14 @@ export default function ReservationSuccess() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      alert(t('reservation.success.messages.copyFailed'));
+      triggerToastFail(t('reservation.success.messages.copyFailed'));
     }
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   if (error) {
@@ -109,6 +118,9 @@ export default function ReservationSuccess() {
           onClose={handleChatClose}
         />
       )}
+      
+      {/* 토스트 알림 */}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

@@ -3,6 +3,8 @@ import styles from './MessageTemplateDetail.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getMessageTemplate, updateMessageTemplate } from '../../../api/service/system/settings/messageFormat/MessageFormatService';
 import EmailTemplateView from '../../components/emailTemplateView/EmailTemplateView';
+import ToastSuccess from '../../../common/components/toastSuccess/ToastSuccess';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 import NotificationTemplateView from '../../components/notificationTemplateView/NotificationTemplateView';
 
 export default function MessageTemplateDetail() {
@@ -27,11 +29,15 @@ export default function MessageTemplateDetail() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     getMessageTemplate(id)
     .then(res => {
-      console.log(res);
+      triggerToastFail(res);
       const initTemplate = res.data;
       setTemplate(initTemplate);
 
@@ -42,22 +48,22 @@ export default function MessageTemplateDetail() {
       });
     })
     .catch(err => {
-      console.log(`Fail to get template. id=${id}`, err);
+      triggerToastFail(`Fail to get template. id=${id}`, err);
     })
   }, []);
 
   const handleSaveTemplate = () => {
     updateMessageTemplate(id, editData.name, editData.subject, editData.content)
     .then((res) => {
-      alert('템플릿이 저장되었습니다!');
+      triggerToastSuccess('템플릿이 저장되었습니다!');
       setTemplate(res.data);
       setIsEditing(false);
-      console.log('저장된 템플릿:', res.data); 
+      triggerToastFail('저장된 템플릿:', res.data); 
     })
     .catch((err) => {
-      if(err.response.data?.message) alert(err.response.data?.message);
-      else alert('템플릿 저장에 실패했습니다.');
-      console.log('Fail to update template.', err);
+      if(err.response.data?.message) triggerToastFail(err.response.data?.message);
+      else triggerToastFail('템플릿 저장에 실패했습니다.');
+      triggerToastFail('Fail to update template.', err);
     });
   };
 
@@ -65,7 +71,7 @@ export default function MessageTemplateDetail() {
     if (template.channelType === 'EMAIL') {
       setShowEditor(true);
     } else {
-      console.log('Navigate to edit page');
+      triggerToastFail('Navigate to edit page');
     }
   };
 
@@ -81,11 +87,23 @@ export default function MessageTemplateDetail() {
     navigate('/platform/admin/settingMessage');
   };
 
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
+
   const handleOnChange = (e) => {
     const newTemplate = {...template, [e.name]: e.value};
     setEditData(newTemplate);
 
-    console.log(newTemplate);
+    triggerToastFail(newTemplate);
   }
 
   return (
@@ -156,6 +174,10 @@ export default function MessageTemplateDetail() {
           </div>
         </div>
       </div>
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 }

@@ -489,7 +489,7 @@ function PlatformInquiry() {
     
     // Permission check for intervention
     if (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)) {
-      alert(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
+      triggerToastFail(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
       return;
     }
     
@@ -502,9 +502,9 @@ function PlatformInquiry() {
     } catch (err) {
       console.error('Proactive intervention failed:', err);
       if (err.response?.data?.message?.includes('권한') || err.response?.data?.message?.includes('담당')) {
-        alert(`개입 권한이 없습니다: ${err.response.data.message}`);
+        triggerToastFail(`개입 권한이 없습니다: ${err.response.data.message}`);
       } else {
-        alert('관리자 개입에 실패했습니다.');
+        triggerToastFail('관리자 개입에 실패했습니다.');
       }
     }
   }, [selectedRoom, hasAdminPermission]);
@@ -515,7 +515,7 @@ function PlatformInquiry() {
     
     // Permission check for takeover
     if (selectedRoom.hasAssignedAdmin && !hasAdminPermission(selectedRoom)) {
-      alert(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
+      triggerToastFail(`다른 관리자(${selectedRoom.adminDisplayName || '관리자'})가 이미 이 상담을 담당하고 있습니다.`);
       return;
     }
     
@@ -547,9 +547,9 @@ function PlatformInquiry() {
     } catch (err) {
       console.error('❌ 상담 인계 실패:', err);
       if (err.response?.data?.message?.includes('권한') || err.response?.data?.message?.includes('담당')) {
-        alert(`인계 권한이 없습니다: ${err.response.data.message}`);
+        triggerToastFail(`인계 권한이 없습니다: ${err.response.data.message}`);
       } else {
-        alert('상담 인계에 실패했습니다.');
+        triggerToastFail('상담 인계에 실패했습니다.');
       }
     }
   }, [selectedRoom, hasAdminPermission]);
@@ -579,7 +579,7 @@ function PlatformInquiry() {
     }
   }, []);
 
-  // Trigger handoff notification (subtle visual alerts only)
+  // Trigger handoff notification (subtle visual triggerToastFails only)
   const triggerHandoffNotification = useCallback(() => {
     console.log('🔔 Triggering handoff notification...');
     setHasNewHandoffRequest(true);
@@ -646,9 +646,9 @@ function PlatformInquiry() {
         ChatWebSocketService.subscribeToUserErrors((errorData) => {
           console.log('❌ WebSocket error received:', errorData);
           if (errorData.error === 'INTERVENTION_REQUIRED') {
-            alert(errorData.message);
+            triggerToastFail(errorData.message);
           } else if (errorData.error === 'PERMISSION_DENIED') {
-            alert(`권한이 없습니다: ${errorData.message}`);
+            triggerToastFail(`권한이 없습니다: ${errorData.message}`);
           }
         });
         
