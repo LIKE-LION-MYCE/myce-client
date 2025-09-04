@@ -27,6 +27,7 @@ export default function MessageTemplateDetail() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     getMessageTemplate(id)
