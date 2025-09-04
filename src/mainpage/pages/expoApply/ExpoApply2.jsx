@@ -8,6 +8,8 @@ import { getCategories } from "../../../api/service/user/categoryApi";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
 import EstimatedPaymentModal from "../../../common/components/estimatedPaymentModal/EstimatedPaymentModal";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const ExpoApply2 = () => {
   const { t } = useTranslation();
@@ -29,6 +31,10 @@ const ExpoApply2 = () => {
   const [formErrors, setFormErrors] = useState({}); // 입력값별 에러 메시지
   const [categoryOptions, setCategoryOptions] = useState([]); // 카테고리 목록을 동적으로 관리할 상태 추가
   const [showEstimatedPaymentModal, setShowEstimatedPaymentModal] = useState(false); // 예상 결제금액 모달 상태
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
 
   // 모든 폼 입력값 검증 (제출 시/입력 시)
   const validateAll = (data = formData) => {
@@ -140,12 +146,12 @@ const ExpoApply2 = () => {
   // 예상 결제금액 모달 열기
   const handleEstimatedPaymentClick = () => {
     if (!initialExpoData) {
-      alert(t('homepage.expoApply.alerts.noPreviousData', "이전 페이지 데이터가 없습니다. 첫 번째 페이지를 먼저 작성해주세요."));
+      triggerToastFail(t('homepage.expoApply.alerts.noPreviousData', "이전 페이지 데이터가 없습니다. 첫 번째 페이지를 먼저 작성해주세요."));
       return;
     }
     
     if (!initialExpoData.displayStartDate || !initialExpoData.displayEndDate) {
-      alert(t('homepage.expoApply.alerts.noDisplayPeriod', "게시 기간 정보가 없습니다. 첫 번째 페이지에서 게시 기간을 입력해주세요."));
+      triggerToastFail(t('homepage.expoApply.alerts.noDisplayPeriod', "게시 기간 정보가 없습니다. 첫 번째 페이지에서 게시 기간을 입력해주세요."));
       return;
     }
     
@@ -162,7 +168,7 @@ const ExpoApply2 = () => {
     e.preventDefault();
 
     if (!initialExpoData) {
-      alert(t('homepage.expoApply.alerts.noPreviousData', "이전 페이지 데이터가 없습니다."));
+      triggerToastFail(t('homepage.expoApply.alerts.noPreviousData', "이전 페이지 데이터가 없습니다."));
       return;
     }
 
@@ -171,7 +177,7 @@ const ExpoApply2 = () => {
 
     if (Object.keys(errors).length > 0) {
       // 에러가 있으면 제출 막기
-      alert(t('homepage.expoApply.alerts.validationError', "필수 정보를 모두 올바르게 입력해주세요."));
+      triggerToastFail(t('homepage.expoApply.alerts.validationError', "필수 정보를 모두 올바르게 입력해주세요."));
       return;
     }
 
@@ -207,12 +213,24 @@ const ExpoApply2 = () => {
 
     try {
       await saveExpo(requestData);
-      alert(t('homepage.expoApply.alerts.registrationSuccess', "박람회 등록 완료!"));
-      navigate("/mypage/expo-status"); // 등록 후 이동할 페이지
+      triggerToastSuccess(t('homepage.expoApply.alerts.registrationSuccess', "박람회 등록 완료!"));
+      setTimeout(() => navigate("/mypage/expo-status"), 1000); // 등록 후 이동할 페이지
     } catch (error) {
       console.error("등록 오류:", error);
-      alert(t('homepage.expoApply.alerts.registrationError', "등록 중 오류가 발생했습니다."));
+      triggerToastFail(t('homepage.expoApply.alerts.registrationError', "등록 중 오류가 발생했습니다."));
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   return (
@@ -493,6 +511,10 @@ const ExpoApply2 = () => {
         displayEndDate={initialExpoData?.displayEndDate}
         isPremium={isPremiumChecked}
       />
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };

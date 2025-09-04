@@ -141,8 +141,7 @@ const resources = {
             buttons: {
               copy: "복사",
               contactSupport: "담당자 문의",
-              backToHome: "메인 페이지로 돌아가기",
-              resendEmail: "이메일 재전송"
+              backToHome: "메인 페이지로 돌아가기"
             },
             messages: {
               copied: "{{type}}가 복사되었습니다.",
@@ -163,15 +162,13 @@ const resources = {
             buttons: {
               copy: "복사",
               copied: "복사됨!",
-              resendEmail: "이메일 재전송",
               contactSupport: "담당자 문의",
               backToHome: "메인 페이지"
             },
             messages: {
               copyFailed: "클립보드 복사에 실패했습니다.",
               loadFailed: "예약 정보 조회 실패",
-              helpText: "문제가 있으신가요?",
-              resendApiPending: "이메일 재전송 API 연결 예정"
+              helpText: "문제가 있으신가요?"
             },
             loading: "로딩 중…"
           }
@@ -556,8 +553,7 @@ const resources = {
             buttons: {
               copy: "Copy",
               contactSupport: "Contact Support",
-              backToHome: "Back to Home",
-              resendEmail: "Resend Email"
+              backToHome: "Back to Home"
             },
             messages: {
               copied: "{{type}} copied.",
@@ -578,15 +574,13 @@ const resources = {
             buttons: {
               copy: "Copy",
               copied: "Copied!",
-              resendEmail: "Resend Email",
               contactSupport: "Contact Support",
               backToHome: "Home"
             },
             messages: {
               copyFailed: "Failed to copy to clipboard.",
               loadFailed: "Failed to retrieve reservation information",
-              helpText: "Having problems?",
-              resendApiPending: "Email resend API connection pending"
+              helpText: "Having problems?"
             },
             loading: "Loading..."
           }
@@ -971,8 +965,7 @@ const resources = {
             buttons: {
               copy: "コピー",
               contactSupport: "担当者問い合わせ",
-              backToHome: "メインページに戻る",
-              resendEmail: "メール再送信"
+              backToHome: "メインページに戻る"
             },
             messages: {
               copied: "{{type}}がコピーされました。",
@@ -993,15 +986,13 @@ const resources = {
             buttons: {
               copy: "コピー",
               copied: "コピー済み！",
-              resendEmail: "メール再送信",
               contactSupport: "担当者問い合わせ",
               backToHome: "メインページ"
             },
             messages: {
               copyFailed: "クリップボードコピーに失敗しました。",
               loadFailed: "予約情報取得失敗",
-              helpText: "問題がありますか？",
-              resendApiPending: "メール再送信API接続予定"
+              helpText: "問題がありますか？"
             },
             loading: "読み込み中…"
           }

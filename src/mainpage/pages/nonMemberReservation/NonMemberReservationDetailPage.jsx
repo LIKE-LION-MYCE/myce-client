@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./NonMemberReservationDetailPage.module.css";
 import QRModal from "../../../mypage/components/qrModal/QRModal";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const NonMemberReservationDetailPage = () => {
   const { t } = useTranslation();
@@ -17,6 +18,8 @@ const NonMemberReservationDetailPage = () => {
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrImgUrl, setQrImgUrl] = useState("");
   const [selectedReserver, setSelectedReserver] = useState(null);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
 
   useEffect(() => {
     // 비회원 예매 조회에서 전달된 데이터 확인
@@ -36,18 +39,24 @@ const NonMemberReservationDetailPage = () => {
     console.log('QR 버튼 클릭:', { qrUrl, reserver, isActive: isExpoActive() });
     
     if (!isExpoActive()) {
-      alert(t('nonmember.reservationDetail.alerts.notExpoActive', '박람회 기간이 아닙니다.'));
+      triggerToastFail(t('nonmember.reservationDetail.alerts.notExpoActive', '박람회 기간이 아닙니다.'));
       return;
     }
     
     if (!qrUrl) {
-      alert(t('nonmember.reservationDetail.alerts.qrNotGenerated', 'QR 코드가 아직 생성되지 않았습니다.'));
+      triggerToastFail(t('nonmember.reservationDetail.alerts.qrNotGenerated', 'QR 코드가 아직 생성되지 않았습니다.'));
       return;
     }
     
     setQrImgUrl(qrUrl);
     setSelectedReserver(reserver);
     setQrModalOpen(true);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   // 날짜 포맷팅
@@ -313,6 +322,9 @@ const NonMemberReservationDetailPage = () => {
         reservationInfo={reservationInfo}
         reserver={selectedReserver}
       />
+      
+      {/* 토스트 알림 */}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };

@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'
 import styles from './ExpoAdminDetailModal.module.css';
 import { fetchExpoAdminInfo } from '../../../api/service/platform-admin/expo/ExpoService';
+import ToastFail from '../../../common/components/toastFail/ToastFail';
 
 function ExpoAdminDetailModal({ isOpen, onClose }) {
     const { id } = useParams();
     const [adminData, setAdminData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showFailToast, setShowFailToast] = useState(false);
+    const [failMessage, setFailMessage] = useState('');
 
     useEffect(() => {
         const loadAdminData = async () => {
@@ -18,7 +21,7 @@ function ExpoAdminDetailModal({ isOpen, onClose }) {
                     setAdminData(data);
                 } catch (error) {
                     console.error('관리자 정보 조회 실패:', error);
-                    alert('관리자 정보를 불러오는 데 실패했습니다.');
+                    triggerToastFail('관리자 정보를 불러오는 데 실패했습니다.');
                     onClose();
                 } finally {
                     setLoading(false);
@@ -27,6 +30,12 @@ function ExpoAdminDetailModal({ isOpen, onClose }) {
         };
         loadAdminData();
     }, [isOpen, id, onClose]);
+
+    const triggerToastFail = (message) => {
+        setFailMessage(message);
+        setShowFailToast(true);
+        setTimeout(() => setShowFailToast(false), 3000);
+    };
 
     if (!isOpen) return null;
 
@@ -95,6 +104,9 @@ function ExpoAdminDetailModal({ isOpen, onClose }) {
                     <button className={styles.closeBtn} onClick={onClose}>닫기</button>
                 </div>
             </div>
+            
+            {/* 토스트 알림 */}
+            {showFailToast && <ToastFail message={failMessage} />}
         </div>
     );
 }

@@ -4,11 +4,20 @@ import styles from './FloatingNotificationButton.module.css';
 import NotificationModal from '../../mainpage/components/notification/NotificationModal';
 import { getNotifications } from '../../api/service/notification/notificationApi';
 import { useNotification } from '../../context/NotificationContext';
+import ToastFail from '../../common/components/toastFail/ToastFail';
 
 export default function FloatingNotificationButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
   const { unreadCount, updateUnreadCount } = useNotification();
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
+  };
 
   // 인증 상태 및 읽지 않은 알림 개수 확인
   useEffect(() => {
@@ -55,7 +64,7 @@ export default function FloatingNotificationButton() {
 
   const handleNotificationClick = () => {
     if (!isAuthenticated) {
-      alert('로그인 후 알림을 확인할 수 있습니다.');
+      triggerToastFail('로그인 후 알림을 확인할 수 있습니다.');
       return;
     }
     setIsModalOpen(true);
@@ -104,6 +113,9 @@ export default function FloatingNotificationButton() {
           onClose={handleModalClose}
         />
       )}
+      
+      {/* 토스트 알림 */}
+      {showFailToast && <ToastFail message={failMessage} />}
     </>
   );
 }

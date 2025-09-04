@@ -14,6 +14,8 @@ import PricingInfo from "../../../common/components/pricingInfo/PricingInfo";
 import PhoneInput from "../../../common/components/phoneInput/PhoneInput";
 import BusinessNumberInput from "../../../common/components/businessNumberInput/BusinessNumberInput";
 import EstimatedAdCostModal from "../../../common/components/estimatedAdCostModal/EstimatedAdCostModal";
+import ToastSuccess from "../../../common/components/toastSuccess/ToastSuccess";
+import ToastFail from "../../../common/components/toastFail/ToastFail";
 
 const AdForm = ({ onFormSubmit, onCancel }) => {
   const { t } = useTranslation();
@@ -42,6 +44,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   const [isFormValid, setIsFormValid] = useState(false); // 폼 유효성 상태
   const [errorMessage, setErrorMessage] = useState(""); // 유효성 검사 오류 메시지 상태
   const [showEstimatedCostModal, setShowEstimatedCostModal] = useState(false); // 예상 이용료 모달 상태
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showFailToast, setShowFailToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
   const navigate = useNavigate();
 
   // 주소 선택 시 호출
@@ -56,12 +62,12 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
   // 예상 이용료 모달 열기
   const handleEstimatedCostClick = () => {
     if (!formData.adPositionId) {
-      alert(t("mainpage.adForm.messages.selectPositionFirst"));
+      triggerToastFail(t("mainpage.adForm.messages.selectPositionFirst"));
       return;
     }
 
     if (!formData.displayStartDate || !formData.displayEndDate) {
-      alert(t("mainpage.adForm.messages.enterPeriodFirst"));
+      triggerToastFail(t("mainpage.adForm.messages.enterPeriodFirst"));
       return;
     }
 
@@ -168,7 +174,7 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
 
   // 이미지 업로드 실패 시
   const handleImageUploadError = (error) => {
-    alert(t("mainpage.adForm.messages.imageUploadFailed"));
+    triggerToastFail(t("mainpage.adForm.messages.imageUploadFailed"));
   };
 
   // 유효성 검사
@@ -237,14 +243,26 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
     setSubmitting(true);
     try {
       await saveAdvertisement(adData);
-      alert(t("mainpage.adForm.messages.adRegistered"));
-      navigate("/mypage/ads-status");
+      triggerToastSuccess(t("mainpage.adForm.messages.adRegistered"));
+      setTimeout(() => navigate("/mypage/ads-status"), 1000);
     } catch (error) {
-      alert(t("mainpage.adForm.messages.adRegistrationFailed"));
+      triggerToastFail(t("mainpage.adForm.messages.adRegistrationFailed"));
       console.error(error);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const triggerToastSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  const triggerToastFail = (message) => {
+    setFailMessage(message);
+    setShowFailToast(true);
+    setTimeout(() => setShowFailToast(false), 3000);
   };
 
   return (
@@ -561,6 +579,10 @@ const AdForm = ({ onFormSubmit, onCancel }) => {
         displayEndDate={formData.displayEndDate}
         selectedPositionId={formData.adPositionId}
       />
+      
+      {/* 토스트 알림 */}
+      {showSuccessToast && <ToastSuccess message={successMessage} />}
+      {showFailToast && <ToastFail message={failMessage} />}
     </div>
   );
 };
