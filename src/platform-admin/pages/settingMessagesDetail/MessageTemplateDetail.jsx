@@ -29,6 +29,7 @@ export default function MessageTemplateDetail() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showFailToast, setShowFailToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');

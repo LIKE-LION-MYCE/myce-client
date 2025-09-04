@@ -14,7 +14,7 @@ export default function NotificationTemplateView({ template, editData, isEditing
               name="name"
               type="text"
               value={editData.name}
-              onChange={(e) => onChange(e)}
+              onChange={(e) => onChange({name: e.target.name, value: e.target.value})}
               className={styles.editInput}
               placeholder="템플릿 이름을 입력하세요"
             />
@@ -30,7 +30,7 @@ export default function NotificationTemplateView({ template, editData, isEditing
               name="subject"
               type="text"
               value={editData.subject}
-              onChange={(e) => onChange(e)}
+              onChange={(e) => onChange({name: e.target.name, value: e.target.value})}
               className={styles.editInput}
               placeholder="알림 제목을 입력하세요"
             />
@@ -45,7 +45,7 @@ export default function NotificationTemplateView({ template, editData, isEditing
             <textarea
               name="content"
               value={editData.content}
-              onChange={(e) => onChange(e.target)}
+              onChange={(e) => onChange({name: e.target.name, value: e.target.value})}
               className={styles.editTextarea}
               placeholder="알림 내용을 입력하세요"
               rows={6}
