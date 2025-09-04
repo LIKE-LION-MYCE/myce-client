@@ -38,7 +38,7 @@ export default function MessageTemplateDetail() {
   useEffect(() => {
     getMessageTemplate(id)
     .then(res => {
-      triggerToastFail(res);
+      console.log(res);
       const initTemplate = res.data;
       setTemplate(initTemplate);
 
@@ -49,7 +49,8 @@ export default function MessageTemplateDetail() {
       });
     })
     .catch(err => {
-      triggerToastFail(`Fail to get template. id=${id}`, err);
+      console.log(`Fail to get template. id=${id}`, err);
+      triggerToastFail(`템플릿을 불러오는데 실패했습니다.`);
     })
   }, []);
 
@@ -59,12 +60,12 @@ export default function MessageTemplateDetail() {
       triggerToastSuccess('템플릿이 저장되었습니다!');
       setTemplate(res.data);
       setIsEditing(false);
-      triggerToastFail('저장된 템플릿:', res.data); 
+      console.log('저장된 템플릿:', res.data); 
     })
     .catch((err) => {
-      if(err.response.data?.message) triggerToastFail(err.response.data?.message);
+      if(err.response?.data?.message) triggerToastFail(err.response.data.message);
       else triggerToastFail('템플릿 저장에 실패했습니다.');
-      triggerToastFail('Fail to update template.', err);
+      console.log('Fail to update template.', err);
     });
   };
 
@@ -72,7 +73,7 @@ export default function MessageTemplateDetail() {
     if (template.channelType === 'EMAIL') {
       setShowEditor(true);
     } else {
-      triggerToastFail('Navigate to edit page');
+      console.log('Navigate to edit page');
     }
   };
 
@@ -101,10 +102,10 @@ export default function MessageTemplateDetail() {
   };
 
   const handleOnChange = (e) => {
-    const newTemplate = {...template, [e.name]: e.value};
+    const newTemplate = {...editData, [e.name]: e.value};
     setEditData(newTemplate);
 
-    triggerToastFail(newTemplate);
+    console.log(newTemplate);
   }
 
   return (
