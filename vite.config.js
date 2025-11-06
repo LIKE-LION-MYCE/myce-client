@@ -35,7 +35,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // target: 'http://localhost:8080', // Local backend (commented out for testing)
+        target: 'https://api.myce.live',    // Production backend
         changeOrigin: true,
         secure: false,
       },

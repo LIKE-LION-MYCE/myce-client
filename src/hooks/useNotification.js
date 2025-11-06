@@ -1,32 +1,42 @@
 import { useEffect, useState, useCallback } from 'react';
 import { createSseInstance } from '../api/service/system/sse/SseListener';
+import { useNotification } from '../context/NotificationContext';
 
-const useRealtimeNotification = () => {
+const useRealtimeNotification = (onNotificationReceived) => {
   const [currentNotification, setCurrentNotification] = useState(null);
   const [sseInstance, setSseInstance] = useState(null);
+  const { incrementUnreadCount } = useNotification();
 
   const handleMessage = useCallback((event) => {
     try {
       console.log('SSE 알림 수신:', event.data);
-      
+
       // SSE 연결 확인 메시지는 무시
       if (event.data.includes('SSE connected')) {
         return;
       }
 
       const notification = JSON.parse(event.data);
-      
+
       if (notification.type && notification.message) {
         setCurrentNotification({
           ...notification,
           id: Date.now(),
           timestamp: new Date()
         });
+
+        // 즉시 배지 카운트 증가
+        incrementUnreadCount();
+
+        // 알림 목록 새로고침 트리거 (콜백이 제공된 경우)
+        if (onNotificationReceived && typeof onNotificationReceived === 'function') {
+          onNotificationReceived();
+        }
       }
     } catch (error) {
       console.error('알림 파싱 오류:', error);
     }
-  }, []);
+  }, [incrementUnreadCount, onNotificationReceived]);
 
   const handleError = useCallback((error) => {
     console.error('SSE 연결 오류:', error);

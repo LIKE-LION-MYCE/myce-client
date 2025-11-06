@@ -43,7 +43,7 @@ export default function FloatingNotificationButton() {
 
     checkAuthAndLoadData();
 
-    // 주기적으로 업데이트 (30초마다)
+    // 주기적으로 업데이트 (5분마다) - SSE가 주 알림 수단, 폴링은 백업용
     let interval;
     if (isAuthenticated) {
       interval = setInterval(() => {
@@ -54,7 +54,7 @@ export default function FloatingNotificationButton() {
           setIsAuthenticated(false);
           updateUnreadCount(0);
         }
-      }, 30000);
+      }, 300000); // 30초 → 5분으로 변경 (SSE 실시간 알림으로 즉시 업데이트됨)
     }
 
     return () => {
